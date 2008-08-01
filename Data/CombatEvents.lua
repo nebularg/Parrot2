@@ -3411,8 +3411,8 @@ Parrot:RegisterCombatEvent{
 		{
 		eventType = "SPELL_DAMAGE",
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-		
-			if srcGUID ~= UnitGUID("player") then
+			-- 2nd condition is to prevent self-damage shown as outgoing
+			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") then
 				return nil
 			end
 			
