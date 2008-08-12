@@ -70,7 +70,11 @@ local coloredDamageAmount = function(info)
 end
 
 local damageTypeString = function(info)
-	return L[info.damageType]
+	if info.damageType then
+		return L[info.damageType]
+	else
+		return ""
+	end
 
 end
 
