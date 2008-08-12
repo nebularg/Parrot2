@@ -1373,7 +1373,7 @@ Parrot:RegisterCombatEvent{
 		{
 		eventType = "SPELL_HEAL",
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
-			if dstGUID ~= UnitGUID("player") or srcGUID == UnitGUID("player") then
+			if dstGUID ~= UnitGUID("player") or srcGUID == UnitGUID("player") or srcGUID == UnitGUID("pet") then
 				return nil
 			end
 			
@@ -1551,7 +1551,7 @@ Parrot:RegisterCombatEvent{
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
-			if dstGUID ~= UnitGUID("player") or srcGUID == UnitGUID("player") then
+			if dstGUID ~= UnitGUID("player") or srcGUID == UnitGUID("player") or srcGUID == UnitGUID("pet") then
 				return nil
 			end
 			
@@ -2938,7 +2938,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
-	subCategory = L["Heals"],
+	subCategory = L["Pet Heals"],
 	name = "Pet heals over time",
 	localName = L["Pet heals over time"],
 	defaultTag = PET .. " ([Skill] - [Name]) +[Amount]",
@@ -5770,7 +5770,7 @@ Parrot:RegisterCombatEvent{
 }
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
-	subCategory = L["Heals"],
+	subCategory = L["Pet Heals"],
 	name = "Pet heals over time",
 	localName = L["Pet heals over time"],
 	defaultTag = PET .. " ([Skill] - [Name]) +[Amount]",
