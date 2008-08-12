@@ -4327,7 +4327,7 @@ Parrot:RegisterCombatEvent{
 		{
 		eventType = "SPELL_HEAL",
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
-			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") then
+			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") or dstGUID == UnitGUID("pet") then
 				return nil
 			end
 			
@@ -4512,7 +4512,7 @@ Parrot:RegisterCombatEvent{
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
-			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") then
+			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") or dstGUID == UnitGUID("pet") then
 				return nil
 			end
 			
