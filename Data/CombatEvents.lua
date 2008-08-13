@@ -1372,18 +1372,11 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if dstGUID ~= UnitGUID("player") or srcGUID == UnitGUID("player") or srcGUID == UnitGUID("pet") then
 				return nil
 			end
 			
-			local overHeal = 0;
-			if (UnitIsPlayer( dstName )) or (UnitPlayerControlled( dstName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
-			end
 			
 			local info = newList()
 			info.damageType = SchoolParser[school]
@@ -1393,12 +1386,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = false
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 			
@@ -1461,17 +1454,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if dstGUID ~= UnitGUID("player") or srcGUID ~= UnitGUID("player") then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -1482,12 +1467,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = false
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 			
@@ -1550,17 +1535,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if dstGUID ~= UnitGUID("player") or srcGUID == UnitGUID("player") or srcGUID == UnitGUID("pet") then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -1571,12 +1548,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = true
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 		end,
@@ -1615,18 +1592,11 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if dstGUID ~= UnitGUID("player") or srcGUID ~= UnitGUID("player") then
 				return nil
 			end
 			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
-			end
 			
 			local info = newList()
 			info.damageType = SchoolParser[school]
@@ -1636,12 +1606,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = true
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 			
@@ -2856,17 +2826,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if dstGUID ~= (UnitGUID("pet") or 0) then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -2877,12 +2839,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = false
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 			
@@ -2945,17 +2907,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if dstGUID ~= (UnitGUID("pet") or 0) then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -2966,12 +2920,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = true
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 		end,
@@ -4326,22 +4280,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") or dstGUID == UnitGUID("pet") then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local uhm = UnitHealthMax(dstName)
-				-- TODO make more accurate, when is the UnithHealth really known
-				if uhm > 0 and uhm ~= 100 then
-					local hp_delta = uhm - UnitHealth(dstName)
-					if (amount > hp_delta) then
-						overHeal = amount-hp_delta
-					end
-				end
-				-- else assume the Unithealth is not known
 			end
 			
 			local info = newList()
@@ -4352,12 +4293,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = false
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 			
@@ -4421,17 +4362,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if srcGUID ~= UnitGUID("player") or dstGUID ~= UnitGUID("player") then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -4442,12 +4375,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = false
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 			
@@ -4511,17 +4444,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") or dstGUID == UnitGUID("pet") then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -4532,12 +4457,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = true
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 		end,
@@ -4576,17 +4501,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if dstGUID ~= UnitGUID("player") or srcGUID ~= UnitGUID("player") then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -4597,12 +4514,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = true
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 			
@@ -5689,17 +5606,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -5710,12 +5619,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = false
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 			
@@ -5777,17 +5686,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, critical)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
 			if srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
-			end
-			
-			local overHeal = 0;
-			if (UnitIsPlayer( srcName )) or (UnitPlayerControlled( srcName )) then
-				local hp_delta = UnitHealthMax(dstName) - UnitHealth(dstName)
-				if (amount > hp_delta) then
-					overHeal = amount-hp_delta
-				end
 			end
 			
 			local info = newList()
@@ -5798,12 +5699,12 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
-			info.realAmount = amount-overHeal
+			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
 			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isHoT = true
-			info.overhealAmount = overHeal
+			info.overhealAmount = overheal
 			
 			return info
 		end,
