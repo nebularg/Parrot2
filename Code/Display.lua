@@ -1,11 +1,11 @@
-local VERSION = tonumber(("$Revision: 73474 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 79518 $"):match("%d+"))
 
 local Parrot = Parrot
 local Parrot_Display = Parrot:NewModule("Display", "LibRockTimer-1.0", "LibRockHook-1.0")
 if Parrot.revision < VERSION then
 	Parrot.version = "r" .. VERSION
 	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-05-11 17:44:45 +0200 (Sun, 11 May 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
+	Parrot.date = ("$Date: 2008-07-30 20:06:38 +0200 (Wed, 30 Jul 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
 end
 
 
@@ -296,7 +296,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 		fs:SetParent(frame)
 	else
 		fontString_num = fontString_num + 1
-		fs = frame:CreateFontString("ParrotFrameFontString" .. fontString_num, "ARTWORK", "MasterFont")
+		fs = frame:CreateFontString("ParrotFrameFontString" .. fontString_num, "ARTWORK")
 	end
 	fs:SetFont(SharedMedia:Fetch('font', font), fontSize, outline)
 	if not fs:GetFont() then

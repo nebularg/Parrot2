@@ -1,11 +1,11 @@
-local VERSION = tonumber(("$Revision: 74535 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 79518 $"):match("%d+"))
 
 local Parrot = Parrot
 local Parrot_Triggers = Parrot:NewModule("Triggers", "LibRockTimer-1.0")
 if Parrot.revision < VERSION then
 	Parrot.version = "r" .. VERSION
 	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-05-20 15:57:38 +0200 (Tue, 20 May 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
+	Parrot.date = ("$Date: 2008-07-30 20:06:38 +0200 (Wed, 30 Jul 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
 end
 
 -- local L = Parrot:L("Parrot_Triggers")
@@ -244,21 +244,22 @@ function Parrot_Triggers:OnEnable(first)
 				sticky = true,
 				disabled = true,
 				color = "ff0000",
-			},			
-			{
-				-- Overpower = 11585
-				name = L["%s!"]:format(GetSpellInfo(11585)),
-				icon = 11585,
-				class = "WARRIOR",
-				conditions = {
-					["Outgoing dodge"] = true,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(11585),
-				},
-				sticky = true,
-				color = "7f007f",
 			},
+			-- doesn't work in WotLK
+-- 			{
+-- 				-- Overpower = 11585
+-- 				name = L["%s!"]:format(GetSpellInfo(11585)),
+-- 				icon = 11585,
+-- 				class = "WARRIOR",
+-- 				conditions = {
+-- 					["Outgoing dodge"] = true,
+-- 				},
+-- 				secondaryConditions = {
+-- 					["Spell ready"] = GetSpellInfo(11585),
+-- 				},
+-- 				sticky = true,
+-- 				color = "7f007f",
+-- 			},
 			{
 				-- Rampage = 30033
 				name = L["%s!"]:format(GetSpellInfo(30033)),
