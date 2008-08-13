@@ -544,15 +544,10 @@ Parrot:RegisterAnimationStyle({
 		if percent < 0.3 then
 			xDiff = percent/0.3 * size/2 * cos(frame.angle)
 			yDiff = percent/0.3 * size/2 * sin(frame.angle)
--- 		elseif percent < 0.8 then
--- 			local now = GetTime()
--- 			if not frame.nextSquiggle or now > frame.nextSquiggle then
--- 				frame.nextSquiggle = now + 0.05
--- 				frame.squiggleX = math.random(-1, 1)
--- 				frame.squiggleY = math.random(-1, 1)
--- 			end
--- 			xDiff = size/2 * cos(frame.angle) + frame.squiggleX
--- 			yDiff = size/2 * sin(frame.angle) + frame.squiggleY
+		elseif percent < 0.8 then
+			local now = GetTime()
+			xDiff = size/2 * cos(frame.angle)
+			yDiff = size/2 * sin(frame.angle)
 		else
 			xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
 			yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
