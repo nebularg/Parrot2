@@ -1,10 +1,10 @@
-local VERSION = tonumber(("$Revision: 76052 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 79434 $"):match("%d+"))
 
 local Parrot = Parrot
 if Parrot.revision < VERSION then
 	Parrot.version = "r" .. VERSION
 	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-06-05 08:31:49 +0200 (Thu, 05 Jun 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
+	Parrot.date = ("$Date: 2008-07-30 02:18:37 +0200 (Wed, 30 Jul 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
 end
 
 local mod = Parrot:NewModule("Cooldowns", "LibRockEvent-1.0", "LibRockTimer-1.0")
@@ -98,10 +98,6 @@ local groups = {
 	[GetSpellInfo(25457)] = L["Shocks"],
 	--[BSL["Earth Shock"]] 
 	[GetSpellInfo(25454)] = L["Shocks"],
--- 	[BSL["Divine Shield"]] 
-	[GetSpellInfo(1020)] = GetSpellInfo(1020),
--- 	[BSL["Divine Protection"]] 
-	[GetSpellInfo(5573)] = GetSpellInfo(1020),
 }
 
 function mod:OnUpdate()
