@@ -515,3 +515,77 @@ Parrot:RegisterAnimationStyle({
 		["RIGHT;CCW"] = L["Right, counter-clockwise"],
 	},
 })
+
+Parrot:RegisterAnimationStyle({
+	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
+	name = "Sprinkler2",
+	localName = L["Sprinkler"] .. "2",
+	init = function(frame, xOffset, yOffset, size, direction, uid)
+		local dir, clock = (";"):split(direction)
+		local base
+		if dir == "RIGHT" then
+			base = 0
+		elseif dir == "TOP" then
+			base = 90
+		elseif dir == "LEFT" then
+			base = 180
+		else -- bottom
+			base = 270
+		end
+		local slices = math.floor(size / frame.fs:GetHeight() / 2)
+		local diff = (uid%slices)*(120/(slices - 1)) - 60
+		if clock == "CCW" then
+			diff = -diff
+		end
+		frame.angle = base + diff
+	end,
+	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+		local xDiff, yDiff
+		if percent < 0.3 then
+			xDiff = percent/0.3 * size/2 * cos(frame.angle)
+			yDiff = percent/0.3 * size/2 * sin(frame.angle)
+-- 		elseif percent < 0.8 then
+-- 			local now = GetTime()
+-- 			if not frame.nextSquiggle or now > frame.nextSquiggle then
+-- 				frame.nextSquiggle = now + 0.05
+-- 				frame.squiggleX = math.random(-1, 1)
+-- 				frame.squiggleY = math.random(-1, 1)
+-- 			end
+-- 			xDiff = size/2 * cos(frame.angle) + frame.squiggleX
+-- 			yDiff = size/2 * sin(frame.angle) + frame.squiggleY
+		else
+			xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
+			yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
+		end
+		
+		local y = yOffset + yDiff
+		local x = xOffset + xDiff
+		local dir, clock = (";"):split(direction)
+		local point = "CENTER"
+		if dir == "LEFT" then
+			point = "RIGHT"
+		elseif dir == "RIGHT" then
+			point = "LEFT"
+		end
+		frame:SetPoint(point, UIParent, "CENTER", x, y)
+	end,
+	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+		frame.nextSquiggle = nil
+		frame.squiggleX = nil
+		frame.squiggleY = nil
+		frame.finishX = nil
+		frame.finishY = nil
+	end,
+	overlap = false,
+	defaultDirection = "UP;CCW",
+	directions = {
+		["UP;CW"] = L["Up, clockwise"],
+		["DOWN;CW"] = L["Down, clockwise"],
+		["LEFT;CW"] = L["Left, clockwise"],
+		["RIGHT;CW"] = L["Right, clockwise"],
+		["UP;CCW"] = L["Up, counter-clockwise"],
+		["DOWN;CCW"] = L["Down, counter-clockwise"],
+		["LEFT;CCW"] = L["Left, counter-clockwise"],
+		["RIGHT;CCW"] = L["Right, counter-clockwise"],
+	},
+})
