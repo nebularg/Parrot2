@@ -112,7 +112,7 @@ function Parrot_Triggers:OnEnable(first)
 				icon = 25236,
 				class = "WARRIOR",
 				conditions = {
-					["Enemy target health percent"] = 0.2,
+					["Enemy target health percent"] = 0.19,
 				},
 				secondaryConditions = {
 					["Spell ready"] = GetSpellInfo(25236),
