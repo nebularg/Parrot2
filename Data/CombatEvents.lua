@@ -2938,7 +2938,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
-	subCategory = L["Pet Heals"],
+	subCategory = L["Pet heals"],
 	name = "Pet heals over time",
 	localName = L["Pet heals over time"],
 	defaultTag = PET .. " ([Skill] - [Name]) +[Amount]",
@@ -5770,7 +5770,7 @@ Parrot:RegisterCombatEvent{
 }
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
-	subCategory = L["Pet Heals"],
+	subCategory = L["Pet heals"],
 	name = "Pet heals over time",
 	localName = L["Pet heals over time"],
 	defaultTag = PET .. " ([Skill] - [Name]) +[Amount]",
