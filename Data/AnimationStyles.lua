@@ -444,6 +444,60 @@ Parrot:RegisterAnimationStyle({
 
 Parrot:RegisterAnimationStyle({
 	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
+	name = "Angled2",
+	localName = L["Angled"] .. "2",
+	init = function(frame, xOffset, yOffset, size, direction, uid)
+		frame.finishX = size/2 * (math.random()/2 + 0.75)
+		frame.finishY = size/2 * (math.random()/2 + 0.75)
+	end,
+	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+		local xDiff, yDiff
+		if percent < 0.3 then
+			xDiff = percent/0.3 * frame.finishX
+			yDiff = -percent/0.3 * frame.finishY
+		elseif percent < 0.8 then
+			local now = GetTime()
+			xDiff = frame.finishX
+			yDiff = -frame.finishY
+		else
+			xDiff = ((percent - 0.8)/0.2 + 1) * frame.finishX
+			yDiff = -(1 - percent)/0.2 * frame.finishY
+		end
+		
+		local vert, horiz = (";"):split(direction)
+		if vert == "UP" then
+			yDiff = -yDiff
+		end
+		local point = "LEFT"
+		if horiz == "LEFT" or (horiz == "ALT" and uid%2 == 0) then
+			xDiff = -xDiff
+			point = "RIGHT"
+		end
+		local y = yOffset + yDiff
+		local x = xOffset + xDiff
+		frame:SetPoint(point, UIParent, "CENTER", x, y)
+	end,
+	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+		frame.nextSquiggle = nil
+		frame.squiggleX = nil
+		frame.squiggleY = nil
+		frame.finishX = nil
+		frame.finishY = nil
+	end,
+	overlap = false,
+	defaultDirection = "DOWN;ALT",
+	directions = {
+		["UP;LEFT"] = L["Up, left"],
+		["UP;RIGHT"] = L["Up, right"],
+		["UP;ALT"] = L["Up, alternating"],
+		["DOWN;LEFT"] = L["Down, left"],
+		["DOWN;RIGHT"] = L["Down, right"],
+		["DOWN;ALT"] = L["Down, alternating"],
+	},
+})
+
+Parrot:RegisterAnimationStyle({
+	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
 	name = "Sprinkler",
 	localName = L["Sprinkler"],
 	init = function(frame, xOffset, yOffset, size, direction, uid)
@@ -544,15 +598,10 @@ Parrot:RegisterAnimationStyle({
 		if percent < 0.3 then
 			xDiff = percent/0.3 * size/2 * cos(frame.angle)
 			yDiff = percent/0.3 * size/2 * sin(frame.angle)
--- 		elseif percent < 0.8 then
--- 			local now = GetTime()
--- 			if not frame.nextSquiggle or now > frame.nextSquiggle then
--- 				frame.nextSquiggle = now + 0.05
--- 				frame.squiggleX = math.random(-1, 1)
--- 				frame.squiggleY = math.random(-1, 1)
--- 			end
--- 			xDiff = size/2 * cos(frame.angle) + frame.squiggleX
--- 			yDiff = size/2 * sin(frame.angle) + frame.squiggleY
+		elseif percent < 0.8 then
+			local now = GetTime()
+			xDiff = size/2 * cos(frame.angle)
+			yDiff = size/2 * sin(frame.angle)
 		else
 			xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
 			yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
