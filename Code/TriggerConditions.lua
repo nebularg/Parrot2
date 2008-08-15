@@ -351,7 +351,7 @@ function Parrot_TriggerConditions:COMBAT_LOG_EVENT_UNFILTERED(_, _, timestamp, e
 			if arg == true then
 				local uid = srcGUID + dstGUID + timestamp
 				self:FirePrimaryTriggerCondition(v.name, nil, uid)
-			else if arg then
+			elseif arg then
 				local uid = srcGUID + dstGUID + timestamp
 				self:FirePrimaryTriggerCondition(v.name, arg, uid)
 			end

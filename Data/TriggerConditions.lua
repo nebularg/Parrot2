@@ -288,6 +288,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
+				
 				return true
 				
 			end,
@@ -298,6 +299,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
+				
 				return true
 				
 			end,
@@ -308,6 +310,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
+				
 				return true
 				
 			end,
