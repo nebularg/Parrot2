@@ -410,12 +410,6 @@ local function hexColorToTuple(color)
 	return math.floor(num / 256^2)/255, math.floor((num / 256)%256)/255, (num%256)/255
 end
 
-local oldIconName = {
-	["Backlash"] = 34939,
-	["Nightfall"] = 18095,
-	["Stormstrike"] = 17364,
-}
-
 -- to find the icon for old saved variables
 
 local oldIconName = {

@@ -338,10 +338,6 @@ function Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, arg)
 	end
 end
 
--- onEnableFuncs[#onEnableFuncs+1] = function()
--- 	self:AddEventListener("COMBAT_LOG_EVENT_UNFILTERED", "OnCombatEvent")
--- end
-
 function Parrot_TriggerConditions:COMBAT_LOG_EVENT_UNFILTERED(_, _, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
 	
 	if not Parrot:IsModuleActive(Parrot_TriggerConditions) then
@@ -351,15 +347,13 @@ function Parrot_TriggerConditions:COMBAT_LOG_EVENT_UNFILTERED(_, _, timestamp, e
 	local registeredHandlers = self.combatLogEvents[eventType]
 	if registeredHandlers then
 		for _, v in ipairs(registeredHandlers) do
-			if v.triggerData then
-				local arg1, arg2, arg3 = v.triggerData(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
-				if arg1 then
-					if not arg3 then
-						arg3 = srcGUID + dstGUID + GetTime()
-					end
-					
-					self:FirePrimaryTriggerCondition(arg1, arg2, arg3)
-				end
+			local arg = v.triggerData(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
+			if arg == true then
+				local uid = srcGUID + dstGUID + timestamp
+				self:FirePrimaryTriggerCondition(v.name, nil, uid)
+			else if arg then
+				local uid = srcGUID + dstGUID + timestamp
+				self:FirePrimaryTriggerCondition(v.name, arg, uid)
 			end
 		end
 	end

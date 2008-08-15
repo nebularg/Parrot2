@@ -181,7 +181,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Incoming Block"
+				return true
 			end,
 		}
 	}
@@ -198,7 +198,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Incoming crit"
+				return true
 				
 			end,
 		},
@@ -209,7 +209,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Incoming crit"
+				return true
 				
 			end,
 		},
@@ -220,7 +220,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Incoming crit"
+				return true
 				
 			end,
 			
@@ -239,7 +239,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Incoming Dodge"
+				return true
 			end,
 		}
 	}
@@ -256,7 +256,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Incoming Parry"
+				return true
 			end,
 		}
 	}
@@ -272,7 +272,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
 					return nil
 				end
-				return "Outgoing Block"
+				return true
 			end,
 		}
 	}
@@ -288,7 +288,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				return "Outgoing crit"
+				return true
 				
 			end,
 		},
@@ -298,7 +298,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				return "Outgoing crit"
+				return true
 				
 			end,
 		},
@@ -308,7 +308,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				return "Outgoing crit"
+				return true
 				
 			end,
 			
@@ -327,8 +327,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
 					return nil
 				end
-				
-				return "Outgoing Dodge"
+				return true
 			end,
 		}
 	}
@@ -345,8 +344,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
 					return nil
 				end
-				
-				return "Outgoing Parry"
+				return true
 			end,
 		}
 	}
@@ -363,7 +361,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Outgoing cast", spellName
+				return spellName
 				
 			end,
 			
@@ -375,7 +373,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Outgoing cast", spellName
+				return spellName
 				
 			end,
 			
@@ -398,7 +396,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Incoming cast", spellName
+				return spellName
 				
 			end,
 			
@@ -410,7 +408,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Incoming cast", spellName
+				return spellName
 				
 			end,
 			
