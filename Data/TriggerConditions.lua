@@ -16,8 +16,6 @@ function mod:OnEnable()
 	end
 end
 
--- local L = Parrot:L("Parrot_TriggerConditions_Data")
--- TODO make modular
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_TriggerConditions_Data")
 
 Parrot:RegisterPrimaryTriggerCondition {

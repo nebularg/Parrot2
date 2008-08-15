@@ -340,6 +340,8 @@ end
 
 function Parrot_TriggerConditions:COMBAT_LOG_EVENT_UNFILTERED(_, _, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
 	
+	local start = GetTime()
+	
 	if not Parrot:IsModuleActive(Parrot_TriggerConditions) then
 		return
 	end

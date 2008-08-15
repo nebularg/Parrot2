@@ -2456,6 +2456,9 @@ function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
 end
 
 function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
+	
+	local start = GetTime()
+	
 	if not Parrot:IsModuleActive(Parrot_CombatEvents) then
 		return
 	end
