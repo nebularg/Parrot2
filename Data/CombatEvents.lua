@@ -121,7 +121,6 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 				
 				return info
 			end,
@@ -190,7 +189,6 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceID = srcGUID
 				info.sourceName = srcName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			
 				return info
 			end,
@@ -225,7 +223,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+
 		
 			return info
 		end,
@@ -260,7 +258,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -295,7 +293,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -330,7 +328,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -365,7 +363,7 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceID = srcGUID
 				info.sourceName = srcName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 			
 				return info
 			end,
@@ -440,7 +438,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -525,7 +523,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
+			
 			info.isDoT = false
 			
 			return info
@@ -553,7 +552,6 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
 			info.isDoT = false
 			
 			return info
@@ -581,7 +579,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = false
 			
 			return info
@@ -668,7 +666,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = true
 			
 			return info
@@ -721,7 +719,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -740,7 +738,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -759,7 +757,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -797,7 +795,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -815,7 +813,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -834,7 +832,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -873,7 +871,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -892,7 +890,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -911,7 +909,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -950,7 +948,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -969,7 +967,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -988,7 +986,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1027,7 +1025,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1046,7 +1044,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1065,7 +1063,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1104,7 +1102,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1123,7 +1121,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1142,7 +1140,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1181,7 +1179,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1200,7 +1198,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1219,7 +1217,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1258,7 +1256,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1277,7 +1275,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1296,7 +1294,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -1339,7 +1337,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.extraAbilityName = extraSpellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = false
 			
 			return info
@@ -1396,7 +1394,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = false
 			info.overhealAmount = overHeal
 			
@@ -1485,7 +1483,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = false
 			info.overhealAmount = overHeal
 			
@@ -1574,7 +1572,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = true
 			info.overhealAmount = overHeal
 			
@@ -1639,7 +1637,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = true
 			info.overhealAmount = overHeal
 			
@@ -1698,7 +1696,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -1750,7 +1748,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -1827,7 +1825,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -1868,7 +1866,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -1909,7 +1907,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -1950,7 +1948,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -1991,7 +1989,7 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceID = srcGUID
 				info.sourceName = srcName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 			
 				return info
 			end,
@@ -2032,7 +2030,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -2081,7 +2079,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = false
 			
 			return info
@@ -2165,7 +2163,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = true
 			
 			return info
@@ -2226,7 +2224,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2252,7 +2250,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2298,7 +2296,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2324,7 +2322,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2370,7 +2368,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2396,7 +2394,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2442,7 +2440,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2468,7 +2466,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2514,7 +2512,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2540,7 +2538,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2586,7 +2584,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2612,7 +2610,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2658,7 +2656,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2683,7 +2681,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2730,7 +2728,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2756,7 +2754,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2803,7 +2801,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2829,7 +2827,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.abilityName = spellName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -2880,7 +2878,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = false
 			info.overhealAmount = overHeal
 			
@@ -2969,7 +2967,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = true
 			info.overhealAmount = overHeal
 			
@@ -3033,7 +3031,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3102,7 +3100,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -3136,7 +3134,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -3170,7 +3168,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -3204,7 +3202,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -3238,7 +3236,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -3271,7 +3269,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientID = dstGUID
 			info.recipientName = dstName
 			info.sourceID = srcGUID
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -3305,7 +3303,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -3349,7 +3347,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3435,7 +3433,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = false
 			
 			return info
@@ -3463,7 +3461,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = false
 			
 			return info
@@ -3542,7 +3540,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = true
 			
 			return info
@@ -3595,7 +3593,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3614,7 +3612,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3633,7 +3631,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3672,7 +3670,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3691,7 +3689,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3710,7 +3708,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3749,7 +3747,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3768,7 +3766,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3787,7 +3785,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3827,7 +3825,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3846,7 +3844,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3865,7 +3863,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3904,7 +3902,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3923,7 +3921,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3942,7 +3940,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -3981,7 +3979,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4000,7 +3998,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4019,7 +4017,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4058,7 +4056,7 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceID = srcGUID
 				info.sourceName = srcName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -4077,7 +4075,7 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceID = srcGUID
 				info.sourceName = srcName
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end,
@@ -4096,7 +4094,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4135,7 +4133,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4154,7 +4152,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4173,7 +4171,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4216,7 +4214,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.extraAbilityName = extraSpellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = false
 			
 			return info
@@ -4259,7 +4257,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4278,7 +4276,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4297,7 +4295,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4355,7 +4353,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = false
 			info.overhealAmount = overHeal
 			
@@ -4445,7 +4443,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = false
 			info.overhealAmount = overHeal
 			
@@ -4535,7 +4533,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = true
 			info.overhealAmount = overHeal
 			
@@ -4600,7 +4598,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = true
 			info.overhealAmount = overHeal
 			
@@ -4665,7 +4663,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -4740,7 +4738,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -4781,7 +4779,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -4822,7 +4820,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -4863,7 +4861,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -4904,7 +4902,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -4945,7 +4943,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -4986,7 +4984,7 @@ Parrot:RegisterCombatEvent{
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 		
 			return info
 		end,
@@ -5034,7 +5032,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = false
 			
 			return info
@@ -5117,7 +5115,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = true
 			
 			return info
@@ -5174,7 +5172,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5197,7 +5195,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5236,7 +5234,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5255,7 +5253,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5294,7 +5292,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5313,7 +5311,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5352,7 +5350,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5371,7 +5369,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5410,7 +5408,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5429,7 +5427,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5468,7 +5466,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5487,7 +5485,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5526,7 +5524,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5545,7 +5543,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5584,7 +5582,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5603,7 +5601,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5643,7 +5641,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5662,7 +5660,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.abilityName = spellName
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			
 			return info
 		end,
@@ -5713,7 +5711,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = false
 			info.overhealAmount = overHeal
 			
@@ -5801,7 +5799,7 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overHeal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isHoT = true
 			info.overhealAmount = overHeal
 			
@@ -5866,7 +5864,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				info.isDoT = false
 				
 				return info
@@ -5892,7 +5890,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				info.isDoT = false
 				
 				return info
@@ -5918,7 +5916,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				info.isDoT = false
 				
 				return info
@@ -5944,7 +5942,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				info.isDoT = false
 				
 				return info
@@ -6015,7 +6013,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+			
 			info.isDoT = false
 			
 			return info
@@ -6041,7 +6039,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				info.isDoT = false
 				
 				return info
@@ -6067,7 +6065,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				info.isDoT = false
 				
 				return info
@@ -6262,7 +6260,7 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceName = srcName
 				info.sourceID = srcGUID
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end
@@ -6298,7 +6296,7 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceName = srcName
 				info.sourceID = srcGUID
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 			end
@@ -6361,7 +6359,7 @@ Parrot:RegisterCombatEvent{
 				info.abilityName = spellName
 				info.damageType = SchoolParser[spellSchool]
 				info.amount = amount
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + GetTime()
+				
 				
 				return info
 				

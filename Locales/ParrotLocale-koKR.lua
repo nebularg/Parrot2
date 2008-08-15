@@ -1,4 +1,4 @@
--- $Rev: 78832 $
+-- $Rev: 80410 $
 
 -- Parrot localization information
 -- Translation by Next96, Fenlis, Omosiro, SayClub
@@ -136,6 +136,7 @@ L_Display:AddTranslations("koKR", function() return {
 		["Sticky font face."] = "접착성 글꼴체입니다.",
 		["Sticky font size"] = "접착성 글꼴 크기",
 		["Sticky outline"] = "접착성 외곽선",
+
 }end)
 
 local L_ScrollAreas = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_ScrollAreas")
@@ -289,6 +290,7 @@ L_Triggers:AddTranslations("koKR", function() return {
   	 	["Create"] = "생성",
   	 	["Remove"] = "제거",
   	 	["Are you sure?"] = "정말로 하시겠습니까?",
+
 }end)
 
 local L_AnimationStyles = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_AnimationStyles")
@@ -327,6 +329,7 @@ L_AnimationStyles:AddTranslations("koKR", function() return {
 		["Down, counter-clockwise"] = "아래로, 반시계방향",
 		["Left, counter-clockwise"] = "좌측, 반시계방향",
 		["Right, counter-clockwise"] = "우측, 반시계방향",
+
 }end)
 
 local L_Auras = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Auras")
@@ -338,14 +341,17 @@ L_Auras:AddTranslations("koKR", function() return {
 		["The name of the buff gained."] = "획득한 버프 이름",
 		["Item buff gains"] = "아이템 버프 획득",
 		["The name of the item buff gained."] = "획득한 아이템 버프 이름",
-		["The rank of the item buff gained."] = "획득한 아이템 버프 레벨",
+		["The name of the item, the buff has been applied to."] = "아이템, 버프의 이름 적용",
+		-- ["The rank of the item buff gained."] = "획득한 아이템 버프 레벨",
 		["Debuff fades"] = "디버프 사라짐",
 		["The name of the debuff lost."] = "사라진 디버프 이름",
 		["Buff fades"] = "버프 사라짐",
 		["The name of the buff lost."] = "사라진 버프 이름",
 		["Item buff fades"] = "아이템 버프 사라짐",
 		["The name of the item buff lost."] = "사라진 아이템 버프 이름",
-		["The rank of the item buff lost."] = "사라진 아이템 버프 레벨",
+		["The name of the item, the buff has faded from."] = "아이템, 버프의 이름 점점 사라짐" ,
+		-- ["The rank of the item buff lost."] = "사라진 아이템 버프 레벨",
+		
 		["Self buff gain"] = "자신 버프 획득",
 		["<Buff name>"] = "<버프 이름>",
 		["Self buff fade"] = "자신 버프 사라짐",
@@ -372,6 +378,7 @@ L_Auras:AddTranslations("koKR", function() return {
 		["The name of the unit that gained the buff."] = "버프를 획득한 유닛의 이름입니다.",
 		["Target buff stack gains"] = "대상 버프 중첩 획득",
 		["Target buff gains"] = "대상 버프 획득",
+
 }end)
 
 local L_CombatEvents_Data = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatEvents_Data")
@@ -408,6 +415,7 @@ L_CombatEvents_Data:AddTranslations("koKR", function() return {
 		["The spell or ability that the enemy attacked you with."] = "당신을 공격한 적의 주문 혹은 기술입니다.",
 		["DoTs and HoTs"] = "지속적인 피해/치유",
 		["Skill DoTs"] = "기술 주기적인 피해",
+		["Reactive skills"] = "기술 사용 가능 여부",
 		["Ability misses"] = "기술 빗맞힘",
 		["Ability dodges"] = "기술 피함",
 		["Ability parries"] = "기술 막음",
@@ -574,6 +582,7 @@ L_Loot:AddTranslations("koKR", function() return {
 		["Loot money"] = "골드 획득",
 		["Loot +[Amount]"] = "+[Amount] 획득",
 		["The amount of gold looted."] = "획득한 골드의 양",
+
 }end)
 
 local L_TriggerConditions_Data = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_TriggerConditions_Data")
@@ -584,6 +593,7 @@ L_TriggerConditions_Data:AddTranslations("koKR", function() return {
 		["Self health percent"] = "자신의 생명력 백분율",
 		["Self mana percent"] = "자신의 마나 백분율",
 		["Pet health percent"] = "소환수의 생명력 백분율",
+		["Pet mana percent"] = "소환수 마나 백분율",
 		["Incoming block"] = "들어오는 방어",
 		["Incoming crit"] = "들어오는 치명타",
 		["Incoming dodge"] = "들어오는 회피",
@@ -604,7 +614,6 @@ L_TriggerConditions_Data:AddTranslations("koKR", function() return {
 
 local L_CombatStatus = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatStatus")
 L_CombatStatus:AddTranslations("koKR", function() return {
-	-- Parrot_CombatStatus:
 		["Combat status"] = "전투 상황",
 		["Enter combat"] = "전투 시작",
 		["+Combat"] = "+전투",
