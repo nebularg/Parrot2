@@ -2456,6 +2456,7 @@ function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
 end
 
 function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
+	
 	if not Parrot:IsModuleActive(Parrot_CombatEvents) then
 		return
 	end
@@ -2464,6 +2465,7 @@ function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName,
 		for _, v in ipairs(registeredHandlers) do
 			local info = v.infofunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
 			if info then
+				info.uid = (srcGUID or 0) + (dstGUID or 0) + timestamp
 				self:TriggerCombatEvent(v.category, v.name, info)
 				info = del( info )
 			end

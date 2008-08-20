@@ -177,6 +177,13 @@ Parrot:RegisterCombatEvent{
 					return nil
 				end
 				
+				-- don't fire the event if the buff is still present
+				-- may just have been a refresh
+				-- TODO
+				if GetPlayerBuffName(spellName) then
+					return nil
+				end
+				
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
@@ -411,7 +418,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Self buff gain", spellName
+				return spellName
 				
 			end,
 		},
@@ -434,7 +441,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Self buff fade", spellName
+				return spellName
 				
 			end,
 		},
@@ -457,7 +464,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Self debuff gain", spellName
+				return spellName
 				
 			end,
 		},
@@ -480,7 +487,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Self debuff fade", spellName
+				return spellName
 				
 			end,
 		},
@@ -503,7 +510,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Self item buff gain", spellName
+				return spellName
 				
 			end,
 		}
@@ -526,7 +533,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Self item buff fade", spellName
+				return spellName
 				
 			end,
 		}
@@ -549,7 +556,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Target buff gain", spellName
+				return spellName
 				
 			end,
 		},
@@ -573,7 +580,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Target debuff gain", spellName
+				return spellName
 				
 			end,
 		},
@@ -597,7 +604,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Target buff fade", spellName
+				return spellName
 				
 			end,
 		},
@@ -621,7 +628,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Target debuff fade", spellName
+				return spellName
 				
 			end,
 		},
@@ -644,7 +651,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Focus buff gain", spellName
+				return spellName
 				
 			end,
 		},
@@ -668,7 +675,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Focus debuff gain", spellName
+				return spellName
 				
 			end,
 		},
@@ -693,7 +700,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Focus buff fade", spellName
+				return spellName
 				
 			end,
 		},
@@ -717,7 +724,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				
-				return "Focus debuff fade", spellName
+				return spellName
 				
 			end,
 		},

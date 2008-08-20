@@ -112,7 +112,7 @@ function Parrot_Triggers:OnEnable(first)
 				icon = 25236,
 				class = "WARRIOR",
 				conditions = {
-					["Enemy target health percent"] = 0.2,
+					["Enemy target health percent"] = 0.19,
 				},
 				secondaryConditions = {
 					["Spell ready"] = GetSpellInfo(25236),
@@ -410,12 +410,6 @@ local function hexColorToTuple(color)
 	local num = tonumber(color, 16)
 	return math.floor(num / 256^2)/255, math.floor((num / 256)%256)/255, (num%256)/255
 end
-
-local oldIconName = {
-	["Backlash"] = 34939,
-	["Nightfall"] = 18095,
-	["Stormstrike"] = 17364,
-}
 
 -- to find the icon for old saved variables
 
