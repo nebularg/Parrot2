@@ -566,7 +566,6 @@ L_Cooldowns:AddTranslations("enUS", function() return {
 		["Divine Shield"] = true,
 		["%s Tree"] = true,
 		["Spell ready"] = true,
-		["Spell usable"] = true,
 		["<Spell name>"] = true,
 }end)
 

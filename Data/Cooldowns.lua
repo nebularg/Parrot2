@@ -187,24 +187,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if(tonumber(param)) then
 			param = GetSpellInfo(param)
 		end
-		
-		return (GetSpellCooldown(param) == 0)
-	end,
-}
-
-Parrot:RegisterSecondaryTriggerCondition {
-	subCategory = L["Cooldowns"],
-	name = "Spell usable",
-	localName = L["Spell usable"],
-	param = {
-		type = 'string',
-		usage = L["<Spell name>"],
-	},
-	check = function(param)
-		if(tonumber(param)) then
-			param = GetSpellInfo(param)
-		end
-		
-		return IsUsableSpell(param)
+		return (GetSpellCooldown(param) == 0) and IsUsableSpell(param)
+		-- [old code]
+		-- return spellNameToID[param] and not cooldowns[param] and IsUsableSpell(param)
 	end,
 }
