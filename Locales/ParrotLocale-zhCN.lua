@@ -1,4 +1,4 @@
--- $Rev: 78856 $
+-- $Rev: 80942 $
 
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot")
 L:AddTranslations("zhCN", function() return {
@@ -358,9 +358,9 @@ L_Auras:AddTranslations("zhCN", function() return {
 		["Self debuff fade"] = "自身减益消退",
 		["Self item buff gain"] = "获得自身物品增益",
 		["<Item buff name>"] = "<物品增益名称>",
-		["Self item buff fade"] = "自身增益消退",
+		["Self item buff fade"] = "自身物品增益消退",
 		["Target buff gain"] = "目标获得增益",
-		["Target debuff gain"] = "目标增益消退",
+		["Target debuff gain"] = "目标获得减益",
 		["Buff inactive"] = "增益未激活",
 		["Buff active"] = "增益激活",
 		["Focus buff gain"] = "焦点目标获得增益",
