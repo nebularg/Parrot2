@@ -177,13 +177,6 @@ Parrot:RegisterCombatEvent{
 					return nil
 				end
 				
-				-- don't fire the event if the buff is still present
-				-- may just have been a refresh
-				-- TODO
-				if GetPlayerBuffName(spellName) then
-					return nil
-				end
-				
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
