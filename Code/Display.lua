@@ -1,8 +1,4 @@
-<<<<<<< HEAD:Code/Display.lua
-local VERSION = tonumber(("$Revision: 79518 $"):match("%d+"))
-=======
 local VERSION = tonumber(("$Revision: 330 $"):match("%d+"))
->>>>>>> master:Code/Display.lua
 
 local Parrot = Parrot
 local Parrot_Display = Parrot:NewModule("Display", "LibRockTimer-1.0", "LibRockHook-1.0")

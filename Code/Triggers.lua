@@ -1,8 +1,4 @@
-<<<<<<< HEAD:Code/Triggers.lua
-local VERSION = tonumber(("$Revision: 79518 $"):match("%d+"))
-=======
 local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
->>>>>>> master:Code/Triggers.lua
 
 local Parrot = Parrot
 local Parrot_Triggers = Parrot:NewModule("Triggers", "LibRockTimer-1.0")
