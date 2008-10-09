@@ -146,12 +146,12 @@ function Parrot_Triggers:OnEnable(first)
 				color = "ffff00",
 			},
 			{
-				-- Impact = 12360
-				name = L["%s!"]:format(GetSpellInfo(12360)),
-				icon = 12360,
+				-- Impact = 11103
+				name = L["%s!"]:format(GetSpellInfo(11103)),
+				icon = 11103,
 				class = "MAGE",
 				conditions = {
-					["Target debuff gain"] = GetSpellInfo(12360),
+					["Target debuff gain"] = GetSpellInfo(11103),
 				},
 				sticky = true,
 				color = "ff0000",
@@ -245,32 +245,31 @@ function Parrot_Triggers:OnEnable(first)
 				disabled = true,
 				color = "ff0000",
 			},
-			-- doesn't work in WotLK
--- 			{
--- 				-- Overpower = 11585
--- 				name = L["%s!"]:format(GetSpellInfo(11585)),
--- 				icon = 11585,
--- 				class = "WARRIOR",
--- 				conditions = {
--- 					["Outgoing dodge"] = true,
--- 				},
--- 				secondaryConditions = {
--- 					["Spell ready"] = GetSpellInfo(11585),
--- 				},
--- 				sticky = true,
--- 				color = "7f007f",
--- 			},
 			{
-				-- Rampage = 30033
-				name = L["%s!"]:format(GetSpellInfo(30033)),
-				icon = 30033,
+				-- Overpower = 11585
+				name = L["%s!"]:format(GetSpellInfo(11585)),
+				icon = 11585,
+				class = "WARRIOR",
+				conditions = {
+					["Outgoing dodge"] = true,
+				},
+				secondaryConditions = {
+					["Spell ready"] = GetSpellInfo(11585),
+				},
+				sticky = true,
+				color = "7f007f",
+			},
+			{
+				-- Rampage = 29801
+				name = L["%s!"]:format(GetSpellInfo(29801)),
+				icon = 29801,
 				class = "WARRIOR",
 				conditions = {
 					["Outgoing crit"] = true,
 				},
 				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(30033),
-					["Buff inactive"] = GetSpellInfo(30033),
+					["Spell ready"] = GetSpellInfo(29801),
+					["Buff inactive"] = GetSpellInfo(29801),
 					["Minimum power amount"] = 20,
 				},
 				sticky = true,

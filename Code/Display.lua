@@ -296,7 +296,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 		fs:SetParent(frame)
 	else
 		fontString_num = fontString_num + 1
-		fs = frame:CreateFontString("ParrotFrameFontString" .. fontString_num, "ARTWORK")
+		fs = frame:CreateFontString("ParrotFrameFontString" .. fontString_num, "ARTWORK", "SystemFont_Shadow_Small")
 	end
 	fs:SetFont(SharedMedia:Fetch('font', font), fontSize, outline)
 	if not fs:GetFont() then
