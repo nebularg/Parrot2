@@ -1,4 +1,4 @@
--- $Rev: 78847 $
+-- $Rev: 431 $
 
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot")
 L:AddTranslations("enUS", function() return {

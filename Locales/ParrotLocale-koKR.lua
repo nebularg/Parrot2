@@ -1,4 +1,4 @@
--- $Rev: 80410 $
+-- $Rev: 424 $
 
 -- Parrot localization information
 -- Translation by Next96, Fenlis, Omosiro, SayClub

@@ -1,10 +1,10 @@
-local VERSION = tonumber(("$Revision: 79434 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 431 $"):match("%d+"))
 
 local Parrot = Parrot
 if Parrot.revision < VERSION then
 	Parrot.version = "r" .. VERSION
 	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-07-30 02:18:37 +0200 (Wed, 30 Jul 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
+	Parrot.date = ("$Date: 2008-08-26 19:51:04 +0200 (Tue, 26 Aug 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
 end
 
 local mod = Parrot:NewModule("Cooldowns", "LibRockEvent-1.0", "LibRockTimer-1.0")

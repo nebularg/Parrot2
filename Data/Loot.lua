@@ -1,4 +1,4 @@
-local VERSION = tonumber(("$Revision: 73895 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 340 $"):match("%d+"))
 
 local Parrot = Parrot
 if Parrot.revision < VERSION then

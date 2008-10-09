@@ -1,11 +1,19 @@
+<<<<<<< HEAD:Code/Triggers.lua
 local VERSION = tonumber(("$Revision: 79518 $"):match("%d+"))
+=======
+local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
+>>>>>>> master:Code/Triggers.lua
 
 local Parrot = Parrot
 local Parrot_Triggers = Parrot:NewModule("Triggers", "LibRockTimer-1.0")
 if Parrot.revision < VERSION then
 	Parrot.version = "r" .. VERSION
 	Parrot.revision = VERSION
+<<<<<<< HEAD:Code/Triggers.lua
 	Parrot.date = ("$Date: 2008-07-30 20:06:38 +0200 (Wed, 30 Jul 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
+=======
+	Parrot.date = ("$Date: 2008-08-15 16:25:35 +0200 (Fri, 15 Aug 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
+>>>>>>> master:Code/Triggers.lua
 end
 
 -- local L = Parrot:L("Parrot_Triggers")
