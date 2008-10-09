@@ -1,4 +1,4 @@
--- $Rev: 80942 $
+-- $Rev: 433 $
 
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot")
 L:AddTranslations("zhCN", function() return {
@@ -565,7 +565,8 @@ L_Cooldowns:AddTranslations("zhCN", function() return {
 		["Shocks"] = "震击",
 		["Divine Shield"] = "圣盾",
 		["%s Tree"] = "%s系",
-		["Spell ready"] = "法术可用",
+		["Spell ready"] = "法术已准备好",
+		["Spell usable"] = "法术可用",
 		["<Spell name>"] = "<法术名称>",
 }end)
 

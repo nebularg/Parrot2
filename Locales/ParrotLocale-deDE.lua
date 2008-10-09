@@ -1,4 +1,4 @@
--- $Rev: 78832 $
+-- $Rev: 400 $
 
 -- german Locale by profalbert
 -- missing translations are commented out

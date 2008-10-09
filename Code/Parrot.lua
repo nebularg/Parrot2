@@ -1,4 +1,4 @@
-local VERSION = tonumber(("$Revision: 74959 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 373 $"):match("%d+"))
 
 Parrot = Rock:NewAddon("Parrot", "LibRockDB-1.0", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0", "LibRockConfig-1.0")
 local Parrot, self = Parrot, Parrot

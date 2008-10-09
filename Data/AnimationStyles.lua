@@ -1,10 +1,10 @@
-local VERSION = tonumber(("$Revision: 79532 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 422 $"):match("%d+"))
 
 local Parrot = Parrot
 if Parrot.revision < VERSION then
 	Parrot.version = "r" .. VERSION
 	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-07-31 00:33:48 +0200 (Thu, 31 Jul 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
+	Parrot.date = ("$Date: 2008-08-13 14:02:53 +0200 (Wed, 13 Aug 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
 end
 
 -- local L = Parrot:L("Parrot_AnimationStyles")

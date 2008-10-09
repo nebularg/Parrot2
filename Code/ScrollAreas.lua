@@ -1,4 +1,4 @@
-local VERSION = tonumber(("$Revision: 73474 $"):match("%d+"))
+local VERSION = tonumber(("$Revision: 330 $"):match("%d+"))
 
 local Parrot = Parrot
 local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "LibRockTimer-1.0")

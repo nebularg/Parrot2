@@ -1,4 +1,4 @@
--- $Rev: 80942 $
+-- $Rev: 433 $
 
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot")
 L:AddTranslations("zhTW", function() return {
@@ -565,7 +565,8 @@ L_Cooldowns:AddTranslations("zhTW", function() return {
 		["Shocks"] = "震擊",
 		["Divine Shield"] = "聖盾",
 		["%s Tree"] = "%s系",
-		["Spell ready"] = "法術可用",
+		["Spell ready"] = "法術已準備好",
+		["Spell usable"] = "法術可用",
 		["<Spell name>"] = "<法術名稱>",
 }end)
 
