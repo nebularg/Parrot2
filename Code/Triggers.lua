@@ -759,6 +759,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		PRIEST = L["Priest"],
 		WARRIOR = L["Warrior"],
 		HUNTER = L["Hunter"],
+		DEATHKNIGHT = L["Deathknight"],
 	}
 	
 	local function addPrimaryCondition(t, name, localName)

@@ -247,6 +247,7 @@ L_Triggers:AddTranslations("deDE", function() return {
 		["Warlock"] = "Hexenmeister",
 		["Priest"] = "Priester",
 		["Warrior"] = "Krieger",
+		["Deathknight"] = "Todesritter",
 		["Hunter"] = "Jäger",
 		["Output"] = "Ausgabe",
 		["The text that is shown"] = "Der angezeigte Text",

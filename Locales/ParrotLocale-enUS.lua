@@ -247,6 +247,7 @@ L_Triggers:AddTranslations("enUS", function() return {
 		["Warlock"] = true,
 		["Priest"] = true,
 		["Warrior"] = true,
+		["Deathknight"] = true,
 		["Hunter"] = true,
 		["Output"] = true,
 		["The text that is shown"] = true,
