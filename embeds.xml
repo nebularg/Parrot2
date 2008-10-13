@@ -13,7 +13,7 @@
 	<Include file="libs\LibRockLocale-1.0\lib.xml"/>
 	<Include file="libs\LibRockModuleCore-1.0\lib.xml"/>
 	<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
-	<Script file="libs\AceLibrary\AceLibrary.lua" />
-	<Script file="libs\Deformat-2.0\Deformat-2.0.lua"/>
+	<Script file="libs\Deformat\AceLibrary\AceLibrary.lua" />
+	<Script file="libs\Deformat\Deformat-2.0\Deformat-2.0.lua"/>
 
 </Ui>
