@@ -2,7 +2,7 @@ externals:
     libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/trunk
     libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
     libs/LibRock-1.0: svn://svn.wowace.com/wow/librock-1-0/mainline/trunk
-    libs/LibRockDB-1.0: svn://svn.wowace.com/wow/librocklocale-1-0/mainline/trunk
+    libs/LibRockDB-1.0: svn://svn.wowace.com/wow/librockdb-1-0/mainline/trunk
     libs/LibRockEvent-1.0: svn://svn.wowace.com/wow/librockevent-1-0/mainline/trunk
     libs/LibRockTimer-1.0: svn://svn.wowace.com/wow/librocktimer-1-0/mainline/trunk
     libs/LibRockHook-1.0: svn://svn.wowace.com/wow/librockhook-1-0/mainline/trunk
