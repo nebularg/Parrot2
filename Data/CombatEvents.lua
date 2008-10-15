@@ -22,6 +22,7 @@ local SchoolParser =
 	[4] = "Fire",
 	[8] = "Nature",
 	[16] = "Frost",
+	[20] = "FrostFire",
 	[32] = "Shadow",
 	[64] = "Arcane"
 }
@@ -41,6 +42,8 @@ local RAGE = _G.RAGE
 local FOCUS = _G.FOCUS
 local ENERGY = _G.ENERGY
 local HAPPINESS = _G.HAPPINESS
+local RUNES = _G.RUNES
+local RUNIC_POWER = _G.RUNIC_POWER
 
 local PowerTypeParser = {
 	[0] = MANA,
@@ -48,6 +51,8 @@ local PowerTypeParser = {
 	[2] = FOCUS,
 	[3] = ENERGY,
 	[4] = HAPPINESS,
+	[5] = RUNES,
+	[6] = RUNIC_POWER,
 }
 
 local onEnableFuncs = {}
