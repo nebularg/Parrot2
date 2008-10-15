@@ -102,7 +102,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SWING_DAMAGE",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			
 				if dstGUID ~= UnitGUID("player") then
 					return nil
@@ -421,7 +421,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "DAMAGE_SHIELD",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if dstGUID ~= UnitGUID("player") then
 				return nil
 			end
@@ -503,7 +503,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if dstGUID ~= UnitGUID("player") then
 				return nil
 			end
@@ -532,7 +532,7 @@ Parrot:RegisterCombatEvent{
 		},
 		{
 			eventType = "RANGE_DAMAGE",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 				if dstGUID ~= UnitGUID("player") then
 				return nil
 			end
@@ -559,7 +559,7 @@ Parrot:RegisterCombatEvent{
 		},
 		{
 			eventType = "DAMAGE_SPLIT",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 				if dstGUID ~= UnitGUID("player") then
 				return nil
 			end
@@ -646,7 +646,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, powerType, extraAmount )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, powerType, extraAmount )
 			
 			if dstGUID ~= UnitGUID("player") then
 				return nil
@@ -1648,7 +1648,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "ENVIRONMENTAL_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, enviromentalType, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, enviromentalType, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if dstGUID ~= UnitGUID("player") then
 				return nil
 			end
@@ -1696,7 +1696,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if checkFlags(dstFlags, GUARDIAN_FLAGS) then
 				if not Parrot.db.profile.totemDamage then
 					return nil
@@ -2024,7 +2024,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			
 			if checkFlags(dstFlags, GUARDIAN_FLAGS) then
 				if not Parrot.db.profile.totemDamage then
@@ -2114,7 +2114,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, powerType, extraAmount )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, powerType, extraAmount )
 			
 			if checkFlags(dstFlags, GUARDIAN_FLAGS) then
 				if not Parrot.db.profile.totemDamage then
@@ -2967,7 +2967,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
@@ -3366,7 +3366,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill,  school, resisted, blocked, absorbed, critical, glancing, crushing)
 			-- 2nd condition is to prevent self-damage shown as outgoing
 			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") then
 				return nil
@@ -3479,7 +3479,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, powerType, extraAmount )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill,  powerType, extraAmount )
 			
 			if srcGUID ~= UnitGUID("player") then
 				return nil
@@ -4558,7 +4558,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
 				if not Parrot.db.profile.totemDamage then
 					return nil
@@ -4925,7 +4925,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
 				if not Parrot.db.profile.totemDamage then
 					return nil
@@ -5014,7 +5014,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, powerType, extraAmount )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, powerType, extraAmount )
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
 				if not Parrot.db.profile.totemDamage then
 					return nil
