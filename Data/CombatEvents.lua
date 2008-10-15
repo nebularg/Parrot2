@@ -179,7 +179,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SWING_MISSED",
-			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 				if dstGUID ~= UnitGUID("player") or missType ~= "MISS" then
 					return nil
 				end
@@ -212,7 +212,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			
 			if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
 				return nil
@@ -247,7 +247,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			
 			if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
 				return nil
@@ -282,7 +282,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			
 			if dstGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
 				return nil
@@ -317,7 +317,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			
 			if dstGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
 				return nil
@@ -352,7 +352,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SWING_MISSED",
-			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 				
 				if dstGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
 					return nil
@@ -1779,7 +1779,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "MISS" then
 				return nil
 			elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
@@ -1819,7 +1819,7 @@ Parrot:RegisterCombatEvent{
 		combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "DODGE" then
 				return
 			end
@@ -1860,7 +1860,7 @@ Parrot:RegisterCombatEvent{
 		combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "PARRY" then
 				return
 			end
@@ -1901,7 +1901,7 @@ Parrot:RegisterCombatEvent{
 		combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "BLOCK" then
 				return
 			end
@@ -1942,7 +1942,7 @@ Parrot:RegisterCombatEvent{
 		combatLogEvents = {
 		{
 			eventType = "SWING_MISSED",
-			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 				if missType ~= "ABSORB" then
 					return
 				end
@@ -1983,7 +1983,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "IMMUNE" then
 				return
 			end
@@ -3044,7 +3044,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if srcGUID ~= UnitGUID("player") or missType ~= "MISS" then
 				return nil
 			end
@@ -3078,7 +3078,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
 				return nil
 			end
@@ -3112,7 +3112,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
 				return nil
 			end
@@ -3146,7 +3146,7 @@ Parrot:RegisterCombatEvent{
 		combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
 				return nil
 			end
@@ -3180,7 +3180,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if srcGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
 				return nil
 			end
@@ -3214,7 +3214,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if srcGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
 				return nil
 			end
@@ -3247,7 +3247,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if srcGUID ~= UnitGUID("player") or missType ~= "EVADE" then
 				return nil
 			end
@@ -4638,7 +4638,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "MISS" then
 				return
 			end
@@ -4679,7 +4679,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "DODGE" then
 				return
 			end
@@ -4720,7 +4720,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "PARRY" then
 				return
 			end
@@ -4761,7 +4761,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "BLOCK" then
 				return
 			end
@@ -4802,7 +4802,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "ABSORB" then
 				return
 			end
@@ -4843,7 +4843,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "IMMUNE" then
 				return
 			end
@@ -4884,7 +4884,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
 			if missType ~= "EVADE" then
 				return
 			end
