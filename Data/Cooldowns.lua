@@ -45,10 +45,10 @@ local spellNameToID = {}
 local spellNameToTree = {}
 
 function mod:ResetCooldownState()
-	--local GCD = 1.5 -- TODO global cooldown can be reduced with spell-haste
+	local GCD = 1.5
 	
 	-- 18 is melee ... as of WoW 3.0 this is the same value as for ranged and spell
-	local GCD = 1.5 / (1 + GetCombatRatingBonus(18) / 100);
+	-- local GCD = 1.5 / (1 + GetCombatRatingBonus(18) / 100);
 	
 	-- 3018 = ranged shoot
 	-- 5019 = wand shoot
