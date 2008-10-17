@@ -11,6 +11,16 @@ local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Auras")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 
+local current_player_auras = {}
+
+local function checkAura(spellId)
+  for i,v in ipairs(current_player_auras) do
+    if v == spellId then
+      return i
+    end 
+  end
+  return nil
+end
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",
@@ -24,6 +34,14 @@ Parrot:RegisterCombatEvent{
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
+				end
+				
+				auraid = checkAura(spellId)
+				
+				if auraid then
+				  return nil
+				else
+				  table.insert(current_player_auras, spellId)
 				end
 				
 				local info = newList()
@@ -62,6 +80,12 @@ Parrot:RegisterCombatEvent{
 					return nil
 				end
 				
+				if auraid then
+				  return nil
+				else
+				  table.insert(current_player_auras, spellId)
+				end
+				
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
@@ -98,6 +122,8 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
+				
+				
 				
 				local info = newList()
 				info.spellID = spellId
@@ -177,6 +203,12 @@ Parrot:RegisterCombatEvent{
 					return nil
 				end
 				
+				local auraid = checkAura(spellId)
+				
+				if auraid then
+				  table.remove(current_player_auras, auraid)
+				end
+				
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
@@ -212,6 +244,12 @@ Parrot:RegisterCombatEvent{
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
+				end
+				
+				local auraid = checkAura(spellId)
+				
+				if auraid then
+				  table.remove(current_player_auras, auraid)
 				end
 				
 				local info = newList()
@@ -421,6 +459,35 @@ Parrot:RegisterPrimaryTriggerCondition {
 		usage = L["<Buff name>"],
 	},
 }
+
+-- Parrot:RegisterPrimaryTriggerCondition {
+-- 	subCategory = L["Auras"],
+-- 	name = "Self buff stacks gain",
+-- 	localName = L["Self buff stacks gain"],
+-- 	combatLogEvents = {
+-- 		{
+-- 			eventType = "SPELL_AURA_APPLIED_DOSE",
+-- 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
+-- 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
+-- 					return nil
+-- 				end
+-- 				
+-- 				return spellName, amount
+-- 				
+-- 			end,
+-- 		},
+-- 	},
+-- 	param = {
+-- 		type = 'string',
+-- 		usage = L["<Buff name>,<Number of stacks>"],
+-- 	},
+-- 	check = function(param)
+-- 	  local a,b = string.find(param, ".*,")
+-- 	  local spellId = param:sub(a,b-1)
+-- 	  local amount = param:sub(b+1)
+-- 	  
+-- 	end
+-- }
 
 Parrot:RegisterPrimaryTriggerCondition {
 	subCategory = L["Auras"],
