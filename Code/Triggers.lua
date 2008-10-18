@@ -307,6 +307,67 @@ function Parrot_Triggers:OnEnable(first)
 				sticky = true,
 				color = "ffff00",
 			},
+			{
+				-- Maelstrom Weapon = 51532
+				name = L["%s!"]:format(GetSpellInfo(51532)),
+				icon = 51532,
+				class = "SHAMAN",
+				conditions = {
+				      ["Self buff stacks gain"] = string.format("%s,%s",GetSpellInfo(51532),"5"),
+				},
+				sticky = true,
+				color = "0000ff",
+			},
+			-- 4 Deathknight-triggers by waallen
+			{
+				-- Death Trance! = 50466
+				name = L["%s!"]:format(GetSpellInfo(50466)),
+				icon = 50466,
+				class = "DEATHKNIGHT",
+				conditions = {
+					-- 50466 = Death Trance!
+					["Self buff gain"] = GetSpellInfo(50466),
+				},
+				sticky = true,
+				color = "ff0000",
+			},
+			{
+				-- Freezing Fog = 59052
+				name = L["%s!"]:format(GetSpellInfo(59052)),
+				icon = 59052,
+				class = "DEATHKNIGHT",
+				conditions = {
+					-- 59052 = Freezing Fog
+					["Self buff gain"] = GetSpellInfo(59052),
+				},
+				sticky = true,
+				color = "0000ff",
+			},
+			{
+				-- Killing Machine	= 51130
+				name = L["%s!"]:format(GetSpellInfo(51130)),
+				icon = 51130,
+				class = "DEATHKNIGHT",
+				conditions = {
+					-- 51130 = Killing Machine
+					["Self buff gain"] = GetSpellInfo(51130),
+				},
+				sticky = true,
+				color = "0000ff",
+			},
+			{
+				-- Rune Strike = 56816
+				name = L["%s!"]:format(GetSpellInfo(56816)),
+				icon = 56816,
+				class = "DEATHKNIGHT",
+				conditions = {
+					["Incoming dodge"] = true,
+					["Incoming parry"] = true,
+				},
+				sticky = true,
+				color = "0000ff",
+				disabled = true,
+			},
 		}
 	end
 	self:AddRepeatingTimer(0.1, function()
