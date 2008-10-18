@@ -460,34 +460,41 @@ Parrot:RegisterPrimaryTriggerCondition {
 	},
 }
 
--- Parrot:RegisterPrimaryTriggerCondition {
--- 	subCategory = L["Auras"],
--- 	name = "Self buff stacks gain",
--- 	localName = L["Self buff stacks gain"],
--- 	combatLogEvents = {
--- 		{
--- 			eventType = "SPELL_AURA_APPLIED_DOSE",
--- 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
--- 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
--- 					return nil
--- 				end
--- 				
--- 				return spellName, amount
--- 				
--- 			end,
--- 		},
--- 	},
--- 	param = {
--- 		type = 'string',
--- 		usage = L["<Buff name>,<Number of stacks>"],
--- 	},
--- 	check = function(param)
--- 	  local a,b = string.find(param, ".*,")
--- 	  local spellId = param:sub(a,b-1)
--- 	  local amount = param:sub(b+1)
--- 	  
--- 	end
--- }
+Parrot:RegisterPrimaryTriggerCondition {
+	subCategory = L["Auras"],
+	name = "Self buff stacks gain",
+	localName = L["Self buff stacks gain"],
+	combatLogEvents = {
+		{
+			eventType = "SPELL_AURA_APPLIED_DOSE",
+			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
+				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
+					return nil
+				end
+				
+				return string.format("%s,%d",spellName,amount)
+				
+			end,
+		},
+	},
+	param = {
+		type = 'string',
+		usage = L["<Buff name>,<Number of stacks>"],
+	},
+	check = function(param)
+	  local a,b = string.find(param, ".*,")
+	  local spellId = param:sub(a,b-1)
+	  if type(spellId) == "number" then
+	    spellId = GetSpellInfo(spellId) or ""
+	  end
+	  local amount = param:sub(b+1)
+	  
+	  local name, _, _, cur_amount = UnitAura("player", spellId)
+	  
+	  return (amount == cur_amount)
+	  
+	end
+}
 
 Parrot:RegisterPrimaryTriggerCondition {
 	subCategory = L["Auras"],
@@ -806,6 +813,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 		usage = "<Buff name>",
 	},
 	check = function(param)
-		return not GetPlayerBuffName(param)
+		return not UnitAura("player",param)
 	end,
 }

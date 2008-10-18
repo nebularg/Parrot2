@@ -352,7 +352,9 @@ L_Auras:AddTranslations("enUS", function() return {
 		-- ["The rank of the item buff lost."] = true, -- not used anymore
 		
 		["Self buff gain"] = true,
+		["Self buff stacks gain"] = true,
 		["<Buff name>"] = true,
+		["<Buff name>,<Number of stacks>"] = true,
 		["Self buff fade"] = true,
 		["Self debuff gain"] = true,
 		["<Debuff name>"] = true,
