@@ -102,6 +102,8 @@ local groups = {
 	[GetSpellInfo(25457)] = L["Shocks"],
 	--[BSL["Earth Shock"]] 
 	[GetSpellInfo(25454)] = L["Shocks"],
+	-- Wind Shock
+	[GetSpellInfo(57994)] = L["Shocks"],
 }
 
 function mod:OnUpdate()
