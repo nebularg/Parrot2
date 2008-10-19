@@ -3400,7 +3400,7 @@ Parrot:RegisterCombatEvent{
 		},
 		{
 			eventType = "RANGE_DAMAGE",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 				if srcGUID ~= UnitGUID("player") then
 				return nil
 			end

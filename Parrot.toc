@@ -1,5 +1,5 @@
 ## Interface: 30000
-## Title: Parrot 1.0
+## Title: Parrot
 ## Notes: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-zhCN: 绝妙的浮动战斗记录指示器。
 ## Notes-zhTW: 絕妙的浮動戰鬥記錄指示器。
