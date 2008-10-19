@@ -29,6 +29,7 @@ L_CombatEvents:AddTranslations("enUS", function() return {
 		[" ([Amount] resisted)"] = true,
 		[" ([Amount] vulnerable)"] = true,
 		[" ([Amount] overheal)"] = true,
+		[" ([Amount] overkill)"] = true,
 		["Events"] = true,
 		["Change event settings"] = true,
 		["Incoming"] = true,
@@ -70,6 +71,7 @@ L_CombatEvents:AddTranslations("enUS", function() return {
 		["Partial resists"] = true,
 		["Vulnerability bonuses"] = true,
 		["Overheals"] = true,
+		["Overkills"] = true,
 		["<Text>"] = true,
 		["Enabled"] = true,
 		["Whether to enable showing this event modifier."] = true,
@@ -111,6 +113,7 @@ L_CombatEvents:AddTranslations("enUS", function() return {
 		["The amount of damage resisted."] = true,
 		["The amount of vulnerability bonus."] = true,
 		["The amount of overhealing."] = true,
+		["The amount of overkill."] = true,
 		["The normal text."] = true,
 }end)
 

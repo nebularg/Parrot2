@@ -120,6 +120,7 @@ Parrot:RegisterCombatEvent{
 				info.sourceID = srcGUID
 				info.sourceName = srcName
 				info.amount = amount
+				info.overkill = overkill
 				info.absorbAmount = absorbed or 0
 				info.blockAmount = blocked or 0
 				info.resistAmount = resisted or 0
@@ -440,6 +441,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -525,6 +527,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -554,6 +557,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -581,6 +585,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -671,7 +676,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
-			
+			info.overkill = overkill
 			info.isDoT = true
 			
 			return info
@@ -1668,6 +1673,7 @@ Parrot:RegisterCombatEvent{
 			info.resistAmount = resisted or 0
 			info.hazardTypeLocal = EnvironmentalParser[enviromentalType]
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -1717,6 +1723,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
+			info.overkill = overkill
 			info.absorbAmount = absorbed or 0
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
@@ -2051,6 +2058,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -2138,7 +2146,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
-			
+			info.overkill = overkill
 			info.isDoT = true
 			
 			return info
@@ -2984,6 +2992,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
+			info.overkill = overkill
 			info.absorbAmount = absorbed or 0
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
@@ -3389,6 +3398,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -3417,6 +3427,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -3499,7 +3510,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
-			
+			info.overkill = overkill
 			info.isDoT = true
 			
 			return info
@@ -4579,6 +4590,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.sourceName = srcName
 			info.amount = amount
+			info.overkill = overkill
 			info.absorbAmount = absorbed or 0
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
@@ -4951,6 +4963,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
@@ -5037,7 +5050,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
-			
+			info.overkill = overkill
 			info.isDoT = true
 			
 			return info
