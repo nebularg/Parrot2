@@ -239,7 +239,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 				
 				return true
 			end,
-		}
+		},
+		{
+			eventType = "SPELL_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+				if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
+					return nil
+				end
+				
+				return true
+			end,
+		},
 	}
 }
 
@@ -249,6 +259,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 	combatLogEvents = {
 		{
 			eventType = "SWING_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
+					return nil
+				end
+				
+				return true
+			end,
+		},
+		{
+			eventType = "SPELL_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
 				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
 					return nil
@@ -272,7 +292,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 				end
 				return true
 			end,
-		}
+		},
+		{
+			eventType = "SPELL_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+				if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
+					return nil
+				end
+				return true
+			end,
+		},
 	}
 }
 
@@ -330,7 +359,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 				end
 				return true
 			end,
-		}
+		},
+		{
+			eventType = "SPELL_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+				
+				if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
+					return nil
+				end
+				return true
+			end,
+		},
 	}
 }
 
@@ -347,7 +386,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 				end
 				return true
 			end,
-		}
+		},
+		{
+			eventType = "SPELL_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+				
+				if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
+					return nil
+				end
+				return true
+			end,
+		},
 	}
 }
 
