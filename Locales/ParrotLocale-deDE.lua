@@ -1,3 +1,4 @@
+-- last modified: @file-date-iso@ 
 -- german Locale by profalbert
 -- missing translations are commented out
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot")

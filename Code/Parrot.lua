@@ -2,7 +2,9 @@
 Parrot = Rock:NewAddon("Parrot", "LibRockDB-1.0", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0", "LibRockConfig-1.0")
 local Parrot, self = Parrot, Parrot
 Parrot.version = "@project-version@"
-Parrot.revision = "@project-revision@"
+Parrot.abbrhash = "@project-abbreviated-hash@"
+Parrot.hash = "@project-hash@"
+Parrot.revision = 0 -- DEPRICATED, not using svn anymore
 Parrot.date = "@project-date-iso@"
 
 local _G = _G

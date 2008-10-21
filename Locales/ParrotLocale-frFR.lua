@@ -1,3 +1,4 @@
+-- last modified: @file-date-iso@ 
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot")
 L:AddTranslations("frFR", function() return {
 		["Parrot"] = "Parrot",
