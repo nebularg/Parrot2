@@ -246,6 +246,7 @@ L_Triggers:AddTranslations("zhCN", function() return {
 		["Warlock"] = "术士",
 		["Priest"] = "牧师",
 		["Warrior"] = "战士",
+		["Deathknight"] = "死亡骑士",
 		["Hunter"] = "猎人",
 		["Output"] = "输出",
 		["The text that is shown"] = "想要显示的文本",
