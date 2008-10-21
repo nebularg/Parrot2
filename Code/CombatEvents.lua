@@ -1,13 +1,7 @@
-local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
-
 local Parrot = Parrot, Parrot
 local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "LibRockEvent-1.0", "LibRockTimer-1.0")
 local self = Parrot_CombatEvents
-if Parrot.revision < VERSION then
-	Parrot.version = "r" .. VERSION
-	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-08-15 16:25:35 +0200 (Fri, 15 Aug 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
-end
+
 
 -- to track XP and Honor-gains
 local currentXP

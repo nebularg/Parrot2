@@ -2,14 +2,7 @@ local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
 
 local Parrot = Parrot
 local Parrot_Triggers = Parrot:NewModule("Triggers", "LibRockTimer-1.0")
-if Parrot.revision < VERSION then
-	Parrot.version = "r" .. VERSION
-	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-08-15 16:25:35 +0200 (Fri, 15 Aug 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
-end
 
--- local L = Parrot:L("Parrot_Triggers")
--- TODO make modular
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Triggers")
 
 local newList, newSet, newDict, del, unpackDictAndDel = Rock:GetRecyclingFunctions("Parrot", "newList", "newSet", "newDict", "del", "unpackDictAndDel")

@@ -1,11 +1,4 @@
-local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
-
 local Parrot = Parrot
-if Parrot.revision < VERSION then
-	Parrot.version = "r" .. VERSION
-	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-08-15 16:25:35 +0200 (Fri, 15 Aug 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
-end
 
 local mod = Parrot:NewModule("CombatEventsData", "LibRockEvent-1.0")
 
@@ -3296,7 +3289,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "DAMAGE_SHIELD",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
@@ -3312,6 +3305,7 @@ Parrot:RegisterCombatEvent{
 			info.blockAmount = blocked or 0
 			info.resistAmount = resisted or 0
 			info.amount = amount
+			info.overkill = overkill
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)

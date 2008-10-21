@@ -1,12 +1,9 @@
-local VERSION = tonumber(("$Revision: 373 $"):match("%d+"))
 
 Parrot = Rock:NewAddon("Parrot", "LibRockDB-1.0", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0", "LibRockConfig-1.0")
 local Parrot, self = Parrot, Parrot
-Parrot.version = "1.0r" .. VERSION
-Parrot.revision = VERSION
-Parrot.date = ("$Date: 2008-05-23 20:44:33 +0200 (Fri, 23 May 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
-
--- #AUTODOC_NAMESPACE Parrot
+Parrot.version = "@project-version@"
+Parrot.revision = "@project-revision@"
+Parrot.date = "@project-date-iso@"
 
 local _G = _G
 

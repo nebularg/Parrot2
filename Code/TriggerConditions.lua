@@ -3,13 +3,6 @@ local VERSION = tonumber(("$Revision: 426 $"):match("%d+"))
 local Parrot = Parrot
 local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "LibRockEvent-1.0")
 local self = Parrot_TriggerConditions
-if Parrot.revision < VERSION then
-	Parrot.version = "r" .. VERSION
-	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-08-15 20:11:58 +0200 (Fri, 15 Aug 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
-end
-
--- #AUTODOC_NAMESPACE Parrot_TriggerConditions
 
 local RockEvent = Rock("LibRockEvent-1.0")
 local RockTimer = Rock("LibRockTimer-1.0")

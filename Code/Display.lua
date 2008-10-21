@@ -1,16 +1,6 @@
-local VERSION = tonumber(("$Revision: 330 $"):match("%d+"))
-
 local Parrot = Parrot
 local Parrot_Display = Parrot:NewModule("Display", "LibRockTimer-1.0", "LibRockHook-1.0")
-if Parrot.revision < VERSION then
-	Parrot.version = "r" .. VERSION
-	Parrot.revision = VERSION
-	Parrot.date = ("$Date: 2008-07-30 20:06:38 +0200 (Wed, 30 Jul 2008) $"):match("%d%d%d%d%-%d%d%-%d%d")
-end
 
-
---local L = Parrot:L("Parrot_Display")
--- TODO make modular
 local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Display")
 
 local SharedMedia = Rock("LibSharedMedia-3.0")
