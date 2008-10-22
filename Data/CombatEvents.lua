@@ -6042,7 +6042,7 @@ Parrot:RegisterCombatEvent{
 }
 
 onEnableFuncs[#onEnableFuncs+1] = function()
-	mod:AddEventListener("PLAYER_COMBO_POINTS", function()
+	mod:AddEventListener("UNIT_COMBO_POINTS", function()
 		local num = GetComboPoints()
 		if num == 0 then
 			return
