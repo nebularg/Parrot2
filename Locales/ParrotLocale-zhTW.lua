@@ -28,6 +28,7 @@ L_CombatEvents:AddTranslations("zhTW", function() return {
 		[" ([Amount] resisted)"] = "（抵抗 [Amount]）",
 		[" ([Amount] vulnerable)"] = "（易傷 [Amount]）",
 		[" ([Amount] overheal)"] = "（過量治療 [Amount]）",
+		[" ([Amount] overkill)"] = "（傷害溢出 [Amount]）",
 		["Events"] = "事件",
 		["Change event settings"] = "改變事件設置",
 		["Incoming"] = "承受",
@@ -69,6 +70,7 @@ L_CombatEvents:AddTranslations("zhTW", function() return {
 		["Partial resists"] = "部分抵抗",
 		["Vulnerability bonuses"] = "易傷加成",
 		["Overheals"] = "過量治療",
+		["Overkills"] = "傷害溢出",
 		["<Text>"] = "<文字>",
 		["Enabled"] = "啟用",
 		["Whether to enable showing this event modifier."] = "是否啟用事件修飾顯示。",
@@ -351,7 +353,9 @@ L_Auras:AddTranslations("zhTW", function() return {
 		--["The rank of the item buff lost."] = "消退物品增益的等級。",-- notused anymore
 		
 		["Self buff gain"] = "獲得自身增益",
+		["Self buff stacks gain"] = "獲得自身增益疊加",
 		["<Buff name>"] = "<增益名稱>",
+		["<Buff name>,<Number of stacks>"] = "<增益名稱>,<疊加層數>",
 		["Self buff fade"] = "自身增益消退",
 		["Self debuff gain"] = "獲得自身減益",
 		["<Debuff name>"] = "<減益名稱>",

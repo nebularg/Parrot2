@@ -28,6 +28,7 @@ L_CombatEvents:AddTranslations("zhCN", function() return {
 		[" ([Amount] resisted)"] = "（抵抗 [Amount]）",
 		[" ([Amount] vulnerable)"] = "（易伤 [Amount]）",
 		[" ([Amount] overheal)"] = "（过量治疗 [Amount]）",
+		[" ([Amount] overkill)"] = "（伤害溢出 [Amount]）",
 		["Events"] = "事件",
 		["Change event settings"] = "改变事件设置",
 		["Incoming"] = "承受",
@@ -69,6 +70,7 @@ L_CombatEvents:AddTranslations("zhCN", function() return {
 		["Partial resists"] = "部分抵抗",
 		["Vulnerability bonuses"] = "易伤加成",
 		["Overheals"] = "过量治疗",
+		["Overkills"] = "伤害溢出",
 		["<Text>"] = "<文本>",
 		["Enabled"] = "应用",
 		["Whether to enable showing this event modifier."] = "是否应用事件修饰显示。",
@@ -110,6 +112,7 @@ L_CombatEvents:AddTranslations("zhCN", function() return {
 		["The amount of damage resisted."] = "被抵抗的伤害量。",
 		["The amount of vulnerability bonus."] = "易伤加成量。",
 		["The amount of overhealing."] = "过量治疗量。",
+		["The amount of overkill."] = "伤害溢出量。",
 		["The normal text."] = "一般文本。",
 }end)
 
@@ -351,7 +354,9 @@ L_Auras:AddTranslations("zhCN", function() return {
 		--["The rank of the item buff lost."] = "消退物品增益的等级。",-- not used anymore
 		
 		["Self buff gain"] = "获得自身增益",
+		["Self buff stacks gain"] = "获得自身增益叠加",
 		["<Buff name>"] = "<增益名称>",
+		["<Buff name>,<Number of stacks>"] = "<增益名称>,<叠加层数>",
 		["Self buff fade"] = "自身增益消退",
 		["Self debuff gain"] = "获得自身减益",
 		["<Debuff name>"] = "<减益名称>",
