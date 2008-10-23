@@ -13,6 +13,7 @@
 ## X-WoWIPortal: ckknight
 ## X-License: GPL v2 or later
 ## X-Donate: PayPal:ckknight AT gmail DOT com
+## Version: @project-version@
 
 embeds.xml
 
