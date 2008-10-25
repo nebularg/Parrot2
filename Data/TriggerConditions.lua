@@ -547,3 +547,32 @@ Parrot:RegisterSecondaryTriggerCondition {
 		return false
 	end,
 }
+
+Parrot:RegisterSecondaryTriggerCondition {
+	name = "Deathknight presence",
+	--TODO experimental
+	localName = L["Deathknight presence"] .. " (experimental)",
+	notLocalName = L["Not Deathknight presence"] .. " (experimental)",
+	param = {
+		type = 'choice',
+		choices = {
+			["Blood Presence"] = GetSpellInfo(50475),
+			["Frost Presence"] = GetSpellInfo(61261),
+			["Unholy Presence"] = GetSpellInfo(55222),
+		}
+	},
+	check = function(param)
+		if select(2,UnitClass("player")) ~= "WARRIOR" then
+			return true
+		end
+		local form = GetShapeshiftForm(true)
+		if form == 1 then
+			return param == "Blood Presence"
+		elseif form == 2 then
+			return param == "Frost Presence"
+		elseif form == 3 then
+			return param == "Unholy Presence"
+		end
+		return false
+	end,
+}
