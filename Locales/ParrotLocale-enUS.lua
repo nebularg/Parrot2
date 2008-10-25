@@ -542,7 +542,6 @@ L_CombatEvents_Data:AddTranslations("enUS", function() return {
 		["Pet skill DoTs"] = true,
 		["Skill you were interrupted in casting"] = true,
 		["The spell you interrupted"] = true,
-		-- Schools
 		["Physical"] = true,
 		["Holy"] = true,
 		["Fire"] = true,
@@ -591,7 +590,6 @@ L_Loot:AddTranslations("enUS", function() return {
 
 local L_TriggerConditions_Data = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_TriggerConditions_Data")
 L_TriggerConditions_Data:AddTranslations("enUS", function() return {
-	-- Parrot_TriggerConditions_Data
 		["Enemy target health percent"] = true,
 		["Friendly target health percent"] = true,
 		["Self health percent"] = true,

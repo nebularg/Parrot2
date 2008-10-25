@@ -16,6 +16,9 @@ L:AddTranslations("deDE", function() return {
 		["Whether to show healing over the enemy's heads."] = "Ob die Heilung über den Köpfen der Feinde angezeigt werden soll",
 		["|cffffff00Left-Click|r to change settings with a nice GUI configuration."] = "|cffffff00Links-Klick|r, um die Einstellungen mit Hilfe einer netten GUI zu verändern.",
 		["|cffffff00Right-Click|r to change settings with a drop-down menu."] = "|cffffff00Rechts-Klick|r, um die Einstellungen mit deinem Drop-Down-Menü zu verändern.",
+		["Show guardian events"] = "Zeige Wächter-Ereignisse",
+		["Whether events involving your guardian(s) (totems, ...) should be displayed"] =  "Ob Ereignisse die eure Wächter (totems, ...) betreffen angezeigt werden sollen",
+
 }end)
 
 local L_CombatEvents = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatEvents")
@@ -28,6 +31,7 @@ L_CombatEvents:AddTranslations("deDE", function() return {
 		[" ([Amount] resisted)"] = " ([Amount] widerstanden)",
 		[" ([Amount] vulnerable)"] = " ([Amount] verwundbar)",
 		[" ([Amount] overheal)"] = " ([Amount] überheilt)",
+		[" ([Amount] overkill)"] = " ([Amount] überschaden)",
 		["Events"] = "Ereignisse",
 		["Change event settings"] = "Ereignis",
 		["Incoming"] = "Eingehend",
@@ -69,6 +73,7 @@ L_CombatEvents:AddTranslations("deDE", function() return {
 		["Partial resists"] = "Teilweise widerstanden",
 		["Vulnerability bonuses"] = "Verwundbarkeitsboni",
 		["Overheals"] = "Überheilungen",
+		["Overkills"] = "Überschaden",
 		["<Text>"] = "<Text>",
 		["Enabled"] = "Aktiviert",
 		["Whether to enable showing this event modifier."] = "Ob dieser Ereignismodifikator angezeigt werden soll",
@@ -110,6 +115,7 @@ L_CombatEvents:AddTranslations("deDE", function() return {
 		["The amount of damage resisted."] = "Der Betrag des widerstandenen Schadens",
 		["The amount of vulnerability bonus."] = "Der Betrag des Verwundbarbonuses",
 		["The amount of overhealing."] = "Der Betrag der Überheilung",
+		["The amount of overkill."] = "Der Betrag des Überschadens",
 		["The normal text."] = "Normaler Text",
 }end)
 
@@ -237,7 +243,6 @@ L_Triggers:AddTranslations("deDE", function() return {
 		["None"] = "Kein",
 		["Thin"] = "Dünn",
 		["Thick"] = "Dick",
-		-- TODO use LibBabbleClass
 		["Druid"] = "Druide",
 		["Rogue"] = "Schurke",
 		["Shaman"] = "Schamane",
@@ -338,14 +343,14 @@ L_Auras:AddTranslations("deDE", function() return {
 		["The name of the buff gained."] = "Der Name des erhaltenen Buffs",
 		["Item buff gains"] = "Gegenstandbuff erhalten",
 		["The name of the item buff gained."] = "Der Name des erhaltenen Gegenstandbuffs",
-		["The rank of the item buff gained."] = "Der Rang des erhaltenen Gegenstandbuffs",
+		-- ["The rank of the item buff gained."] = "Der Rang des erhaltenen Gegenstandbuffs",
 		["Debuff fades"] = "Debuff schwindet",
 		["The name of the debuff lost."] = "Der Name des verschwundenen Debuffs",
 		["Buff fades"] = "Buff schwindet",
 		["The name of the buff lost."] = "Der Name des verschwundenen Buffs",
 		["Item buff fades"] = "Gegenstandbuff schwindet",
 		["The name of the item buff lost."] = "Der Name des verschwundenen Gegenstandbuffs",
-		["The rank of the item buff lost."] = "Der Rang des verschwundenen Gegenstandbuffs",
+		-- ["The rank of the item buff lost."] = "Der Rang des verschwundenen Gegenstandbuffs",
 		["Self buff gain"] = "Eigenbuff erhalten",
 		["Self buff stacks gain"] = "Eigenbuff Stapel erhalten",
 		["<Buff name>"] = "<Name des Buffs>",
@@ -403,6 +408,7 @@ L_CombatEvents_Data:AddTranslations("deDE", function() return {
 		["The spell or ability that the enemy attacked you with."] = "Der Zauber oder die Fähigkeit, mit der du attackiert wurdest",
 		["DoTs and HoTs"] = "DoTs und HoTs",
 		["Skill DoTs"] = "Fähigkeiten DoTs",
+		["Reactive skills"] = "Reaktive Fähigkeiten",
 		["Ability misses"] = "Fähigkeit verfehlen",
 		["Ability dodges"] = "Fähigkeit ausweichen",
 		["Ability parries"] = "Fähigkeit parieren",
@@ -469,6 +475,7 @@ L_CombatEvents_Data:AddTranslations("deDE", function() return {
 		["Pet skill reflects"] = "Begleiter Zauber reflektieren",
 		["Pet Reflect!"] = "Begleiter Reflektieren!",
 		["Pet skill evades"] = "Begleiter Zauber entkommen",
+		["Pet heals over time"] = "Heilungen über Zeit auf Begleiter",
 		["Combat status"] = "Kampfstatus",
 		["Enter combat"] = "Kampfbeginn",
 		["Leave combat"] = "Kampfende",
@@ -508,6 +515,7 @@ L_CombatEvents_Data:AddTranslations("deDE", function() return {
 		["The skill which experienced a gain."] = "Der Zauber, der eine Verbesserung erhalten hat",
 		-- ["The amount of skill points currently."] = ,
 		["Experience gains"] = "Erfahrung erhalten",
+		["The name of the enemy slain."] = "Der Name des getöteten Feindes",
 		["The amount of experience points gained."] = "Betrag der erhaltenen Erfahrungspunkte",
 		["Killing blows"] = "Todesstöße",
 		["Player killing blows"] = "Spieler-Todesstöße",
@@ -531,6 +539,7 @@ L_CombatEvents_Data:AddTranslations("deDE", function() return {
 		["Frost"] = "Frost",
 		["Shadow"] = "Schatten",
 		["Arcane"] = "Arkan",
+		
 		["The name of the enemy that attacked your pet."] = "Der Name des Feindes der euren Begleiter angegriffen hat",
 		["The spell or ability that the enemy attacked your pet with."] = "Der Zauber mit dem der Feind euren Begleiter angegriffen hat",
 		["The name of the ally that healed your pet."] = "Der Name des Verbündeten der euren Begleiter geheilt hat",
@@ -552,6 +561,7 @@ L_Cooldowns:AddTranslations("deDE", function() return {
 		["Divine Shield"] = "Gottesschild",
 		["%s Tree"] = "%s-Baum",
 		["Spell ready"] = "Zauber bereit",
+		["Spell usable"] = "Zauber benutzbar",
 		["<Spell name>"] = "<Zaubername>",
 }end)
 
@@ -575,6 +585,7 @@ L_TriggerConditions_Data:AddTranslations("deDE", function() return {
 		["Self health percent"] = "Eigene Gesundheit (%)",
 		["Self mana percent"] = "Eigenes Mana (%)",
 		["Pet health percent"] = "Begleiter-Gesundheit (%)",
+		["Pet mana percent"] = "Begleiter-Mana (%)",
 		["Incoming block"] = "Eingehender Angriff geblockt",
 		["Incoming crit"] = "Eingehender kritischer Treffer",
 		["Incoming dodge"] = "Eingehendem Angriff ausgewichen",
