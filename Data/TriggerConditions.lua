@@ -562,7 +562,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		}
 	},
 	check = function(param)
-		if select(2,UnitClass("player")) ~= "WARRIOR" then
+		if select(2,UnitClass("player")) ~= "DEATHKNIGHT" then
 			return true
 		end
 		local form = GetShapeshiftForm(true)

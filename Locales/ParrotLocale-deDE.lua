@@ -602,6 +602,8 @@ L_TriggerConditions_Data:AddTranslations("deDE", function() return {
 		["Not in warrior stance"] = "Nicht in Kriegerhaltung",
 		["Druid Form"] = "Druidengestalt",
 		["Not in Druid Form"] = "Nicht in Druidengestalt",
+		["Deathknight presence"] = "Todesritterpräsenz",
+		["Not Deathknight presence"] = "Nicht Todesritterpräsenz",
 }end)
 
 local L_CombatStatus = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatStatus")

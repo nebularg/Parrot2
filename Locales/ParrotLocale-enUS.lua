@@ -612,6 +612,8 @@ L_TriggerConditions_Data:AddTranslations("enUS", function() return {
 		["Not in warrior stance"] = true,
 		["Druid Form"] = true,
 		["Not in Druid Form"] = true,
+		["Deathknight presence"] = true,
+		["Not Deathknight presence"] = true,
 }end)
 
 local L_CombatStatus = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatStatus")
