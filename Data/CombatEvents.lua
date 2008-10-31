@@ -6155,6 +6155,8 @@ Parrot:RegisterCombatEvent{
 	defaultDisabled = true,
 }
 
+Parrot:RegisterThrottleType("Killing blows", L["Killing blows"], 0.1, true)
+
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	subCategory = L["Killing blows"],
@@ -6189,6 +6191,17 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "5555ff", -- semi-light blue
 	sticky = true,
+	
+	throttle = { "Killing blows", 'sourceID', { 'throttleCount', function(info)
+		local numNorm = info.throttleCount or 0
+		if numNorm == 1 then
+			-- just one hit
+			return nil
+		else -- >= 2
+			 return string.format(" (%d)",format(numNorm))
+		end
+		
+	end }, recipientName = L["Multiple"] },
 }
 
 Parrot:RegisterCombatEvent{
@@ -6225,6 +6238,17 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "5555ff", -- semi-light blue
 	sticky = true,
+	throttle = { "Killing blows", 'sourceID', { 'throttleCount', function(info)
+	
+		local numNorm = info.throttleCount or 0
+		if numNorm == 1 then
+			-- just one hit
+			return nil
+		else -- >= 2
+			 return string.format(" (%d)",format(numNorm))
+		end
+		
+	end }, recipientName = L["Multiple"] },
 }
 
 if playerClass == "WARLOCK" then
