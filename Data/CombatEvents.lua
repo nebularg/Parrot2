@@ -5019,7 +5019,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
-	subCategory = L["Skills"],
+	subCategory = L["Pet skills"],
 	name = "Pet skill DoTs",
 	localName = L["Pet skill DoTs"],
 	defaultTag = PET .. "[Amount] ([Skill])",

@@ -23,6 +23,7 @@ Locales\ParrotLocale-frFR.lua
 Locales\ParrotLocale-koKR.lua
 Locales\ParrotLocale-zhCN.lua
 Locales\ParrotLocale-zhTW.lua
+Locales\ParrotLocale-ruRU.lua
 
 Code\Parrot.lua
 Code\AnimationStyles.lua
