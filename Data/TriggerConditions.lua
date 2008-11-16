@@ -565,7 +565,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if select(2,UnitClass("player")) ~= "DEATHKNIGHT" then
 			return true
 		end
-		local form = GetShapeshiftForm(true)
+		local form = GetShapeshiftForm(false)
 		if form == 1 then
 			return param == "Blood Presence"
 		elseif form == 2 then
