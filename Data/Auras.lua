@@ -4,6 +4,8 @@ local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Auras")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 
+local AURA_LATENCY_DELAY = 0.2
+
 local current_player_auras = {}
 
 local function checkAura(spellId)
@@ -32,6 +34,7 @@ Parrot:RegisterCombatEvent{
 				auraid = checkAura(spellId)
 				
 				if auraid then
+					ChatFrame4:AddMessage("skip spell_aura_applied because aura is already there")
 				  return nil
 				else
 				  table.insert(current_player_auras, spellId)
@@ -71,13 +74,7 @@ Parrot:RegisterCombatEvent{
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
-				end
-				
-				if auraid then
-				  return nil
-				else
-				  table.insert(current_player_auras, spellId)
-				end
+				end				
 				
 				local info = newList()
 				info.spellID = spellId
@@ -115,8 +112,6 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
-				
 				
 				local info = newList()
 				info.spellID = spellId
@@ -196,6 +191,11 @@ Parrot:RegisterCombatEvent{
 					return nil
 				end
 				
+				if UnitAura("player", spellName) then
+					ChatFrame4:AddMessage("skip spell_aura_removed because aura is still there")
+					return nil
+				end
+				
 				local auraid = checkAura(spellId)
 				
 				if auraid then
@@ -239,11 +239,11 @@ Parrot:RegisterCombatEvent{
 					return nil
 				end
 				
-				local auraid = checkAura(spellId)
-				
-				if auraid then
-				  table.remove(current_player_auras, auraid)
-				end
+--				local auraid = checkAura(spellId)
+--				
+--				if auraid then
+--				  table.remove(current_player_auras, auraid)
+--				end
 				
 				local info = newList()
 				info.spellID = spellId
