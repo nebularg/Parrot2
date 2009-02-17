@@ -4,12 +4,12 @@
 ## Notes-zhCN: 绝妙的浮动战斗记录指示器。
 ## Notes-zhTW: 絕妙的浮動戰鬥記錄指示器。
 ## Author: ckknight, profalbert
-## X-eMail: ckknight AT gmail DOT com
+## X-eMail: ckknight AT gmail DOT com, cedwani AT quantentunnel DOT de
 ## X-Website: http://www.wowace.com/
 ## X-Category: Combat
 ## SavedVariables: ParrotDB
 ## OptionalDeps: LibRock-1.0
-## X-Embeds: LibRock-1.0, LibRockDB-1.0, LibRockEvent-1.0, LibRockTimer-1.0, LibRockHook-1.0, LibRockConsole-1.0, LibRockConfig-1.0, LibRockLocale-1.0, LibRockModuleCore-1.0, LibSharedMedia-3.0, Deformat
+## X-Embeds: LibRock-1.0, LibRockDB-1.0, LibRockEvent-1.0, LibRockTimer-1.0, LibRockHook-1.0, LibRockConsole-1.0, LibRockConfig-1.0, LibRockLocale-1.0, LibRockModuleCore-1.0, LibSharedMedia-3.0, Deformat, LibBabble-Class-3.0
 ## X-WoWIPortal: ckknight
 ## X-License: GPL v2 or later
 ## X-Donate: PayPal:ckknight AT gmail DOT com
@@ -33,8 +33,6 @@ Code\ScrollAreas.lua
 Code\Suppressions.lua
 Code\TriggerConditions.lua
 Code\Triggers.lua
-
-
 
 Data\AnimationStyles.lua
 Data\CombatEvents.lua
