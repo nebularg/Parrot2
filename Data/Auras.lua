@@ -34,7 +34,7 @@ Parrot:RegisterCombatEvent{
 				auraid = checkAura(spellId)
 				
 				if auraid then
-					ChatFrame4:AddMessage("skip spell_aura_applied because aura is already there")
+					-- ChatFrame4:AddMessage("skip spell_aura_applied because aura is already there")
 				  return nil
 				else
 				  table.insert(current_player_auras, spellId)
@@ -192,7 +192,7 @@ Parrot:RegisterCombatEvent{
 				end
 				
 				if UnitAura("player", spellName) then
-					ChatFrame4:AddMessage("skip spell_aura_removed because aura is still there")
+					-- ChatFrame4:AddMessage("skip spell_aura_removed because aura is still there")
 					return nil
 				end
 				
