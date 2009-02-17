@@ -601,4 +601,4 @@ Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatEvents_Data"):Ad
 Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Cooldowns"):AddTranslations(locale, function() return L.Parrot_Cooldowns end)
 Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Loot"):AddTranslations(locale, function() return L.Parrot_Loot end)
 Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_TriggerConditions_Data"):AddTranslations(locale, function() return L.Parrot_TriggerConditions_Data end)
-Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatStatus"):AddTranslations(locale, function() return L.Parrot_CombatStatus end))
+Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatStatus"):AddTranslations(locale, function() return L.Parrot_CombatStatus end)
