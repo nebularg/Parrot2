@@ -537,13 +537,13 @@ L.Parrot_Triggers = {
 	["Check every XX seconds"] = "每過 XX 秒檢查一次",
 	Classes = "職業",
 	["Classes affected by this trigger."] = "本觸發條件所影響的職業。",
-	-- ["Cleanup Triggers"] = "",
+	["Cleanup Triggers"] = "刪除觸發條件",
 	Color = "顏色",
 	["Color of the text for this trigger."] = "這個觸發條件的顯示文字顏色。",
 	Create = "建立",
 	["Create a new trigger"] = "建立一個新的觸發條件",
 	["Custom font"] = "自訂字型",
-	-- ["Delete all Triggers that belong to a different locale"] = "",
+	["Delete all Triggers that belong to a different locale"] = "刪除所有不同本地化的觸發條件",
 	Enabled = "啟用",
 	["Font face"] = "字型",
 	["Font outline"] = "字型外框",
@@ -588,6 +588,7 @@ L.Parrot_Triggers = {
 	["Whether to show this trigger as a sticky."] = "是否將本觸發條件粘附顯示。",
 	["Which scroll area to output to."] = "選擇輸出的滾動區域。",
 }
+
 
 Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot"):AddTranslations(locale, function() return L.Parrot end)
 Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatEvents"):AddTranslations(locale,function() return L.Parrot_CombatEvents end)
