@@ -799,29 +799,29 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		self.db.profile[category][name].sound = value
 	end
 	local function resortOptions(category)
-		local args = events_opt.args[category].args
-		local subcats = newList()
-		for k,v in pairs(args) do
-			if v.type == "header" then
-				subcats[#subcats+1] = k:sub(8)
-			end
-		end
-		table.sort(subcats)
-		local num_subcats = #subcats
-		local subcatOrders = newList()
-		for i,v in ipairs(subcats) do
-			subcats[i] = nil
-			subcatOrders[v] = i*2-1
-		end
-		local data = combatEvents[category]
-		for k,v in pairs(args) do
-			if v.type == "header" then
-				v.order = subcatOrders[k:sub(8)]
-				v.hidden = num_subcats == 1 or nil
-			else
-				v.order = subcatOrders[data[k].subCategory]+1
-			end
-		end
+--		local args = events_opt.args[category].args
+--		local subcats = newList()
+--		for k,v in pairs(args) do
+--			if v.type == "header" then
+--				subcats[#subcats+1] = k:sub(8)
+--			end
+--		end
+--		table.sort(subcats)
+--		local num_subcats = #subcats
+--		local subcatOrders = newList()
+--		for i,v in ipairs(subcats) do
+--			subcats[i] = nil
+--			subcatOrders[v] = i*2-1
+--		end
+--		local data = combatEvents[category]
+--		for k,v in pairs(args) do
+--			if v.type == "header" then
+--				v.order = subcatOrders[k:sub(8)]
+--				v.hidden = num_subcats == 1 or nil
+--			else
+--				v.order = subcatOrders[data[k].subCategory]+1
+--			end
+--		end
 	end
 	function createOption(category, name)
 		local localName = combatEvents[category][name].localName
@@ -861,7 +861,46 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				desc = name,
 			}
 		end
-		events_opt.args[category].args[name] = {
+		
+		-- added so that options get sorted into subcategories
+		if not events_opt.args[category].args[subcat] then
+			ChatFrame4:AddMessage("not found")
+			events_opt.args[category].args[subcat] = {
+				type = 'group',
+				name = subcat,
+				desc = "",
+				args = {
+					enabled = {
+						name = L["Enabled"],
+						desc = "Whether all events in this category are enabled.",
+						type = 'boolean',
+						get = function()
+								local enabled_count = 0
+								local disabled_count = 0
+								for i,v in pairs(combatEvents[category]) do
+									if v.subCategory == subcat then
+										if self.db.profile[category][v.name].disabled then 
+											disabled_count = disabled_count + 1
+										else
+											enabled_count = enabled_count + 1
+										end
+									end
+								end
+								if disabled_count == 0 then
+									return true
+								else
+									return false
+								end
+							end,
+						set = function(value) end,
+						
+					}
+				},
+				order = 1,
+			}
+		end
+		
+		events_opt.args[category].args[subcat].args[name] = {
 			type = 'group',
 			name = localName,
 			desc = localName,
