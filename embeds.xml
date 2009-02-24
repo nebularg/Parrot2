@@ -18,6 +18,8 @@
 	<Script file="libs\Deformat\AceLibrary\AceLibrary.lua" />
 	<Script file="libs\Deformat\Deformat-2.0\Deformat-2.0.lua"/>
 	
+	<Script file="libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
+	
 
 
 </Ui>
