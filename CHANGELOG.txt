@@ -1,0 +1,5 @@
+changes to v1.6.4:
+
+    + make Scroll-areas configurable for all events in a subcategory with
+    one option
+    + sort CombatEvents-options into subcategories
