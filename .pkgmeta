@@ -13,5 +13,3 @@ externals:
     libs/Deformat: svn://svn.wowace.com/wow/deformat/mainline/trunk
     libs/LibBabble-Class-3.0: svn://svn.wowace.com/wow/libbabble-class-3-0/mainline/trunk
 
-manual-changelog: CHANGELOG.txt
-

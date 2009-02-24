@@ -33,6 +33,7 @@ Code\ScrollAreas.lua
 Code\Suppressions.lua
 Code\TriggerConditions.lua
 Code\Triggers.lua
+Code\Broker.lua
 
 Data\AnimationStyles.lua
 Data\CombatEvents.lua
