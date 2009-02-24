@@ -1,5 +1,7 @@
 changes to v1.6.4:
 
+    add LibDataBroker-1.1 to libs
+    add ldb-launcher
     + make Scroll-areas configurable for all events in a subcategory with
     one option
     + sort CombatEvents-options into subcategories

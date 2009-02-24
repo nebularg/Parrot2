@@ -13,7 +13,6 @@ local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot")
 
 local localeTables = {}
 
-
 local SharedMedia = Rock("LibSharedMedia-3.0")
 
 local newList, unpackListAndDel = Rock:GetRecyclingFunctions("Parrot", "newList", "unpackListAndDel")

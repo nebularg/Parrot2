@@ -26,6 +26,7 @@ Locales\ParrotLocale-zhTW.lua
 Locales\ParrotLocale-ruRU.lua
 
 Code\Parrot.lua
+Code\Broker.lua
 Code\AnimationStyles.lua
 Code\CombatEvents.lua
 Code\Display.lua
@@ -33,7 +34,7 @@ Code\ScrollAreas.lua
 Code\Suppressions.lua
 Code\TriggerConditions.lua
 Code\Triggers.lua
-Code\Broker.lua
+
 
 Data\AnimationStyles.lua
 Data\CombatEvents.lua

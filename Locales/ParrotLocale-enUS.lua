@@ -114,6 +114,8 @@ L_CombatEvents:AddTranslations("enUS", function() return {
 		["The amount of overhealing."] = true,
 		["The amount of overkill."] = true,
 		["The normal text."] = true,
+		["Whether all events in this category are enabled."] = true,
+		["Scoll area where all Events will be shown"] = true,
 }end)
 
 local L_Display = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Display")
@@ -243,17 +245,6 @@ L_Triggers:AddTranslations("enUS", function() return {
 		["None"] = true,
 		["Thin"] = true,
 		["Thick"] = true,
---	using lib-babble-class now
---		["Druid"] = true,
---		["Rogue"] = true,
---		["Shaman"] = true,
---		["Paladin"] = true,
---		["Mage"] = true,
---		["Warlock"] = true,
---		["Priest"] = true,
---		["Warrior"] = true,
---		["Deathknight"] = true,
---		["Hunter"] = true,
 		["Output"] = true,
 		["The text that is shown"] = true,
 		['<Text to show>'] = true,

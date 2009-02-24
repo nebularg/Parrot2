@@ -874,11 +874,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			events_opt.args[category].args[subcat] = {
 				type = 'group',
 				name = subcat,
-				desc = "",
+				desc = subcat,
 				args = {
 					enabled = {
 						name = L["Enabled"],
-						desc = "Whether all events in this category are enabled.",
+						desc = L["Whether all events in this category are enabled."],
 						type = 'boolean',
 						get = function()
 								local enabled_count = 0
@@ -888,6 +888,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 									if v.subCategory == subcat then
 										if self.db.profile[category][v.name].disabled then 
 											disabled_count = disabled_count + 1
+											break;
 										else
 											enabled_count = enabled_count + 1
 										end
@@ -923,9 +924,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						end,
 						
 					},
-					scrollarea = {
-						name = "Scrollarea",
-						desc = "Scollarea where all Events will be shown",
+					scrollArea = {
+						name = L["Scroll area"],
+						desc = L["Scoll area where all Events will be shown"],
 						type = 'choice',
 						choices = scrollarea_choices,
 						get = function()
