@@ -862,9 +862,15 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			}
 		end
 		
+		-- copy the choices
+		local scrollarea_choices = {}
+		for k,v in pairs(Parrot_ScrollAreas:GetScrollAreasChoices()) do
+			scrollarea_choices[k] = v
+		end
+		-- scrollarea_choices[" "] = " "
+		
 		-- added so that options get sorted into subcategories
 		if not events_opt.args[category].args[subcat] then
-			ChatFrame4:AddMessage("not found")
 			events_opt.args[category].args[subcat] = {
 				type = 'group',
 				name = subcat,
@@ -878,6 +884,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 								local enabled_count = 0
 								local disabled_count = 0
 								for i,v in pairs(combatEvents[category]) do
+									
 									if v.subCategory == subcat then
 										if self.db.profile[category][v.name].disabled then 
 											disabled_count = disabled_count + 1
@@ -885,16 +892,70 @@ function Parrot_CombatEvents:OnOptionsCreate()
 											enabled_count = enabled_count + 1
 										end
 									end
+									
 								end
+								
+								-- only if all events are enabled, this checkbox is checked.
 								if disabled_count == 0 then
 									return true
 								else
 									return false
 								end
 							end,
-						set = function(value) end,
+						set = function(value) 
+							if value then
+							
+								for i,v in pairs(combatEvents[category]) do									
+									if v.subCategory == subcat then
+										self.db.profile[category][v.name].disabled = false
+									end
+								end
+								
+							else
+							
+								for i,v in pairs(combatEvents[category]) do									
+									if v.subCategory == subcat then
+										self.db.profile[category][v.name].disabled = true
+									end
+								end
+							
+							end
+						end,
 						
-					}
+					},
+					scrollarea = {
+						name = "Scrollarea",
+						desc = "Scollarea where all Events will be shown",
+						type = 'choice',
+						choices = scrollarea_choices,
+						get = function()
+								local common_choice = nil
+								scrollarea_choices[" "] = nil
+								for i,v in pairs(combatEvents[category]) do
+									if v.subCategory == subcat then
+										if common_choice == nil then
+											common_choice = getScrollArea(category, v.name)
+										elseif common_choice ~= getScrollArea(category, v.name) then
+											scrollarea_choices[" "] = " "
+											common_choice = " "
+											break
+										end
+									end
+								end
+								return common_choice
+							end, -- getScrollArea(category, name)
+						set = function(value)
+								if value == " " then
+									return
+								else
+									for i,v in pairs(combatEvents[category]) do
+										if v.subCategory == subcat then
+											setScrollArea(category, v.name, value)
+										end
+									end
+								end
+							end, -- setScrollArea(category, name, value)
+					},
 				},
 				order = 1,
 			}
