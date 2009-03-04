@@ -1,17 +1,18 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "frFR")
-		L["Parrot"] = "Parrot"
-		L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."] = "Texte de combat flottant. Croac. Coco veut un gâteau."
-		L["Inherit"] = "Par héritage"
-		L["Parrot Configuration"] = "Configuration de Parrot"
-		L["Waterfall-1.0 is required to access the GUI."] = "Waterfall-1.0 est requis pour accéder au GUI."
-		L["General"] = "Général"
-		L["General settings"] = "Permet de configurer les paramètres généraux."
-		L["Game damage"] = "Dégâts du jeu"
-		L["Whether to show damage over the enemy's heads."] = "Affiche ou non les dégâts au dessus de la tête des ennemis."
-		L["Game healing"] = "Soins du jeu"
-		L["Whether to show healing over the enemy's heads."] = "Affiche ou non les soins au dessus de la tête des alliés."
-		L["|cffffff00Left-Click|r to change settings with a nice GUI configuration."] = "|cffffff00Clic-gauche|r pour modifier les paramètres via une fenêtre de configuration."
-		L["|cffffff00Right-Click|r to change settings with a drop-down menu."] = "|cffffff00Clic-droit|r pour modifier les paramètres via un menu déroulant."
+
+	L["Parrot"] = "Parrot"
+	L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."] = "Texte de combat flottant. Croac. Coco veut un gâteau."
+	L["Inherit"] = "Par héritage"
+	L["Parrot Configuration"] = "Configuration de Parrot"
+	L["Waterfall-1.0 is required to access the GUI."] = "Waterfall-1.0 est requis pour accéder au GUI."
+	L["General"] = "Général"
+	L["General settings"] = "Permet de configurer les paramètres généraux."
+	L["Game damage"] = "Dégâts du jeu"
+	L["Whether to show damage over the enemy's heads."] = "Affiche ou non les dégâts au dessus de la tête des ennemis."
+	L["Game healing"] = "Soins du jeu"
+	L["Whether to show healing over the enemy's heads."] = "Affiche ou non les soins au dessus de la tête des alliés."
+	L["|cffffff00Left-Click|r to change settings with a nice GUI configuration."] = "|cffffff00Clic-gauche|r pour modifier les paramètres via une fenêtre de configuration."
+	L["|cffffff00Right-Click|r to change settings with a drop-down menu."] = "|cffffff00Clic-droit|r pour modifier les paramètres via un menu déroulant."
 
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatEvents", "frFR")

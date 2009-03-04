@@ -1,7 +1,7 @@
 local Parrot = Parrot
 local Parrot_Suppressions = Parrot:NewModule("Suppressions")
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Suppressions")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Suppressions")
 
 local _G = _G
 

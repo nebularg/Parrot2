@@ -9,7 +9,7 @@ local currentHonor
 
 -- #AUTODOC_NAMESPACE Parrot_CombatEvents
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatEvents")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents")
 
 local RockEvent = Rock("LibRockEvent-1.0")
 local RockTimer = Rock("LibRockTimer-1.0")

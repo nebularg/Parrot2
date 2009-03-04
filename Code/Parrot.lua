@@ -9,7 +9,7 @@ Parrot.date = "@project-date-iso@"
 
 local _G = _G
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local localeTables = {}
 

@@ -1,6 +1,6 @@
 local Parrot = Parrot
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Auras")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 

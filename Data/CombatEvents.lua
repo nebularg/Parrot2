@@ -4,7 +4,7 @@ local mod = Parrot:NewModule("CombatEventsData", "LibRockEvent-1.0")
 
 local _, playerClass = _G.UnitClass("player")
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatEvents_Data")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 

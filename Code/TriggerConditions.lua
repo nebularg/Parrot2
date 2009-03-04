@@ -7,7 +7,7 @@ local self = Parrot_TriggerConditions
 local RockEvent = Rock("LibRockEvent-1.0")
 local RockTimer = Rock("LibRockTimer-1.0")
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_TriggerConditions")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions")
 
 local _,playerClass = UnitClass("player")
 

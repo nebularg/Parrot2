@@ -1,8 +1,8 @@
 local Parrot = Parrot
 local Parrot_Display = Parrot:NewModule("Display", "LibRockTimer-1.0", "LibRockHook-1.0")
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Display")
 
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Display")
 local SharedMedia = Rock("LibSharedMedia-3.0")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")

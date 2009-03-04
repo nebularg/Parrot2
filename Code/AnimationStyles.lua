@@ -2,9 +2,6 @@
 local Parrot = Parrot
 local Parrot_AnimationStyles = Parrot:NewModule("AnimationStyles")
 
--- TODO make modular
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_AnimationStyles")
-
 local animationStyles = {}
 local animationStylesChoices = {}
 

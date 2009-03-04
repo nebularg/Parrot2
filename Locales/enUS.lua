@@ -1,8 +1,8 @@
 local debug = false
 
---@alpha@
+--@debug@
 debug = true
---@end-alpha@
+--@end-debug@
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)
 --@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot")@
@@ -21,6 +21,9 @@ L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Suppressions", "enUS", true, debu
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Triggers", "enUS", true, debug)
 --@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_Triggers")@
+
+L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions", "enUS", true, debug)
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_TriggerConditions")@
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_AnimationStyles", "enUS", true, debug)
 --@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_AnimationStyles")@

@@ -1,6 +1,6 @@
 local Parrot = Parrot
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_CombatStatus")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatStatus")
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",

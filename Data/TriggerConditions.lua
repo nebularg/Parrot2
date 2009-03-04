@@ -2,6 +2,8 @@ local Parrot = Parrot
 
 local mod = Parrot:NewModule("TriggerConditionsData")
 
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
+
 local onEnableFuncs = {}
 function mod:OnEnable()
 	for _,v in ipairs(onEnableFuncs) do
@@ -9,7 +11,6 @@ function mod:OnEnable()
 	end
 end
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_TriggerConditions_Data")
 
 Parrot:RegisterPrimaryTriggerCondition {
 	name = "Enemy target health percent",

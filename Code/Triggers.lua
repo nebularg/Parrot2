@@ -3,7 +3,7 @@ local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
 local Parrot = Parrot
 local Parrot_Triggers = Parrot:NewModule("Triggers", "LibRockTimer-1.0")
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_Triggers")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
 
 local BCL = LibStub("LibBabble-Class-3.0"):GetLookupTable()
 

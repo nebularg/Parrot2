@@ -1,7 +1,7 @@
 local Parrot = Parrot
 local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "LibRockTimer-1.0")
 
-local L = Rock("LibRockLocale-1.0"):GetTranslationNamespace("Parrot_ScrollAreas")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
 local scrollAreas
 
