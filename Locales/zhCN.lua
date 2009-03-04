@@ -36,7 +36,7 @@ L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Loot", "zhCN", true)
 --@localization(locale="zhCN", format="lua_additive_table", namespace="Parrot_Loot")@
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions_Data", "zhCN", true)
---@localization(locale="zhCN", format="lua_additive_table", namespace="Parrot_TriggerConditions_Data")@
+--@localization(locale="zhCN", format="lua_additive_table", namespace="Parrot_TC_Data")@
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatStatus", "zhCN", true)
 --@localization(locale="zhCN", format="lua_additive_table", namespace="Parrot_CombatStatus")@

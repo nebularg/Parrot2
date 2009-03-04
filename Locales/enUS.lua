@@ -1,5 +1,7 @@
+local debug = false
+
 --@alpha@
-local debug = true
+debug = true
 --@end-alpha@
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)
@@ -28,18 +30,18 @@ L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Auras", "enUS", true, debug)
 
 -- L["The rank of the item buff gained."] = true -- not used anymore
 -- L["The rank of the item buff lost."] = true -- not used anymore
-		
+
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatEvents_Data", "enUS", true, debug)
 --@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_CombatEvents_Data")@
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Cooldowns", "enUS", true, debug)
 --@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_Cooldowns")@
 
-L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Loot", "enUS", true)
+L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Loot", "enUS", true, debug)
 --@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_Loot")@
 
-L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions_Data", "enUS", true)
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_TriggerConditions_Data")@
+L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions_Data", "enUS", true, debug)
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_TC_Data")@
 
-L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatStatus", "enUS", true)
+L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatStatus", "enUS", true, debug)
 --@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="Parrot_CombatStatus")@
