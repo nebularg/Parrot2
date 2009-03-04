@@ -17,13 +17,7 @@
 
 embeds.xml
 
-Locales\ParrotLocale-enUS.lua
-Locales\ParrotLocale-deDE.lua
-Locales\ParrotLocale-frFR.lua
-Locales\ParrotLocale-koKR.lua
-Locales\ParrotLocale-zhCN.lua
-Locales\ParrotLocale-zhTW.lua
-Locales\ParrotLocale-ruRU.lua
+Locales\locale.xml
 
 Code\Parrot.lua
 Code\Broker.lua
