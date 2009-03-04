@@ -1,5 +1,5 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "frFR")
-
+if not L then return end
 	L["Parrot"] = "Parrot"
 	L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."] = "Texte de combat flottant. Croac. Coco veut un gâteau."
 	L["Inherit"] = "Par héritage"

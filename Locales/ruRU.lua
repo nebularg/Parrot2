@@ -1,7 +1,7 @@
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "ruRU")
 --@localization(locale="ruRU", format="lua_additive_table", namespace="Parrot")@
-
+if not L then return end
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatEvents", "ruRU")
 --@localization(locale="ruRU", format="lua_additive_table", namespace="Parrot_CombatEvents")@
 
