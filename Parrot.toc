@@ -17,7 +17,7 @@
 
 embeds.xml
 
-Locales\locale.xml
+Locales\locales.xml
 
 Code\Parrot.lua
 Code\Broker.lua
