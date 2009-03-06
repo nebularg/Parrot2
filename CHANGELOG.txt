@@ -1,7 +1,9 @@
-changes to v1.6.4:
+changes to v1.6.5:
 
-    add LibDataBroker-1.1 to libs
-    add ldb-launcher
-    + make Scroll-areas configurable for all events in a subcategory with
-    one option
-    + sort CombatEvents-options into subcategories
+    fix nil errors in locales
+    change everything to AceLocale-3.0
+    make debug @debug@
+    fix missing "s" in .toc
+    rename namespace in locale-system to TC
+    change locale-management to automatically use new translations from the
+    localization-system
