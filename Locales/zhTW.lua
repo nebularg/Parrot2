@@ -37,11 +37,11 @@ L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatEvents_Data", "zhTW")
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Cooldowns", "zhTW")
 --@localization(locale="zhTW", format="lua_additive_table", namespace="Parrot_Cooldowns")@
 
-L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Loot", "zhTW", true)
+L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Loot", "zhTW")
 --@localization(locale="zhTW", format="lua_additive_table", namespace="Parrot_Loot")@
 
-L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions_Data", "zhTW", true)
+L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions_Data", "zhTW")
 --@localization(locale="zhTW", format="lua_additive_table", namespace="Parrot_TC_Data")@
 
-L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatStatus", "zhTW", true)
+L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatStatus", "zhTW")
 --@localization(locale="zhTW", format="lua_additive_table", namespace="Parrot_CombatStatus")@
