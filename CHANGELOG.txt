@@ -1,9 +1,4 @@
 changes to v1.6.5:
 
-    fix nil errors in locales
     change everything to AceLocale-3.0
-    make debug @debug@
-    fix missing "s" in .toc
-    rename namespace in locale-system to TC
-    change locale-management to automatically use new translations from the
-    localization-system
+    change locale-management to automatically use new translations from the localization-system
