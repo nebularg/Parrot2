@@ -926,7 +926,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					},
 					scrollArea = {
 						name = L["Scroll area"],
-						desc = L["Scoll area where all Events will be shown"],
+						desc = L["Scoll area where all events will be shown"],
 						type = 'choice',
 						choices = scrollarea_choices,
 						get = function()

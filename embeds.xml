@@ -12,8 +12,9 @@
 	<Include file="libs\LibRockHook-1.0\lib.xml"/>
 	<Include file="libs\LibRockConsole-1.0\lib.xml"/>
 	<Include file="libs\LibRockConfig-1.0\lib.xml"/>
-	<Include file="libs\LibRockLocale-1.0\lib.xml"/>
 	<Include file="libs\LibRockModuleCore-1.0\lib.xml"/>
+	
+	<Include file="libs\AceLocale-3.0\AceLocale-3.0.xml" />
 	
 	<Script file="libs\Deformat\AceLibrary\AceLibrary.lua" />
 	<Script file="libs\Deformat\Deformat-2.0\Deformat-2.0.lua"/>
