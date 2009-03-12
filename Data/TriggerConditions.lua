@@ -577,3 +577,15 @@ Parrot:RegisterSecondaryTriggerCondition {
 		return false
 	end,
 }
+
+Parrot:RegisterSecondaryTriggerCondition {
+    name = "Grouped",
+    localName = L["In a Group or Raid"],
+    check = function()
+        if GetNumPartyMembers() > 0 or UnitInRaid("player") then
+            return true
+        else
+            return false
+        end
+    end,
+}
