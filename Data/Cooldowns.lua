@@ -95,6 +95,12 @@ local groups = {
 	[GetSpellInfo(25454)] = L["Shocks"],
 	-- Wind Shock
 	[GetSpellInfo(57994)] = L["Shocks"],
+	-- Judgement of Justice
+	[GetSpellInfo(53407)] = L["Judgements"],
+	-- Judgement of Light
+	[GetSpellInfo(20271)] = L["Judgements"],
+	-- Judgement of Wisdom
+	[GetSpellInfo(53408)] = L["Judgements"],
 }
 
 function mod:OnUpdate()
