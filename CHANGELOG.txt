@@ -1,7 +1,5 @@
-changes to v1.6.5:
+changes to v1.6.6:
 
-    add trigger-condition "is in group or raid"
-    change frFR to use the locale-system
-    change everything to AceLocale-3.0
-    change locale-management to automatically use new translations from the
-    localization-system
+     add Judgements to its own group, like shocks.
+     remove blackout-trigger from default-triggers.
+

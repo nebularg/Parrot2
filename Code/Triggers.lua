@@ -32,19 +32,6 @@ local default_triggers = {
 				locale = GetLocale(),
 			},
 			{
-				-- 15326 = Blackout
-				id = 2,
-				name = L["%s!"]:format(GetSpellInfo(15326)),
-				icon = 15326,
-				class = "PRIEST",
-				conditions = {
-					["Target debuff gain"] = GetSpellInfo(15326),
-				},
-				sticky = true,
-				color = "ff00ff",
-				locale = GetLocale(),
-			},
-			{
 				-- 34754 = Clearcasting (Priest) TODO
 				id = 3,
 				name = L["%s!"]:format(GetSpellInfo(34754)),
