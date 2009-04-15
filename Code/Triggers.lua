@@ -32,13 +32,13 @@ local default_triggers = {
 				locale = GetLocale(),
 			},
 			{
-				-- 34754 = Clearcasting (Priest) TODO
+				-- 16246 = Clearcasting (Priest) TODO
 				id = 3,
-				name = L["%s!"]:format(GetSpellInfo(34754)),
-				icon = 34754,
+				name = L["%s!"]:format(GetSpellInfo(16246)),
+				icon = 16246,
 				class = "MAGE;PRIEST;SHAMAN",
 				conditions = {
-					["Self buff gain"] = GetSpellInfo(34754),
+					["Self buff gain"] = GetSpellInfo(16246),
 				},
 				sticky = true,
 				color = "ffff00",
@@ -536,7 +536,7 @@ end
 local oldIconName = {
 	["Backlash"] = 34939,
 	["Blackout"] = 15326,
-	["Clearcasting"] = 34754,
+	["Clearcasting"] = 16246,
 	["Counterattack"] = 27067,
 	-- ["Execute"] = 25236, -- not needed
 	["Frostbite"] = 12497,
