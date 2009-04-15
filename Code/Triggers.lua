@@ -306,20 +306,6 @@ local default_triggers = {
 			},
 			-- 4 Deathknight-triggers by waallen
 			{
-				id = 21,
-				-- Death Trance! = 50466
-				name = L["%s!"]:format(GetSpellInfo(50466)),
-				icon = 50466,
-				class = "DEATHKNIGHT",
-				conditions = {
-					-- 50466 = Death Trance!
-					["Self buff gain"] = GetSpellInfo(50466),
-				},
-				sticky = true,
-				color = "ff0000",
-				locale = GetLocale(),
-			},
-			{
 				id = 22,
 				-- Freezing Fog = 59052
 				name = L["%s!"]:format(GetSpellInfo(59052)),
