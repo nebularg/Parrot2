@@ -12,7 +12,6 @@
 ## X-Embeds: LibRock-1.0, LibRockDB-1.0, LibRockEvent-1.0, LibRockTimer-1.0, LibRockHook-1.0, LibRockConsole-1.0, LibRockConfig-1.0, LibRockModuleCore-1.0, LibSharedMedia-3.0, Deformat, LibBabble-Class-3.0, AceLocale-3.0
 ## X-WoWIPortal: ckknight
 ## X-License: GPL v2 or later
-## X-Donate: PayPal:ckknight AT gmail DOT com
 ## Version: @project-version@
 
 embeds.xml
