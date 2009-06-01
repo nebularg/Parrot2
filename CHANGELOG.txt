@@ -1,5 +1,6 @@
 changed to v1.7.0:
-     make dot-crits show
+     make dot-crits show (does not work completely)
+     fix optdeps
 
 changes to v1.6.6:
 
