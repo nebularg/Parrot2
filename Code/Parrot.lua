@@ -137,7 +137,7 @@ function Parrot:OnOptionsCreate()
 					Parrot.db.profile.totemDamage = value
 				end,
 				default = true,
-			}
+			},
 		}
 	})
 end

@@ -1,4 +1,5 @@
-changed to v1.7.0:
+changes to v1.7.0:
+     add Options to disable CombatEvents when in a raid-instance.
      make dot-crits show (does not work completely)
      fix optdeps
 

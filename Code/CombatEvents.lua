@@ -44,6 +44,8 @@ Parrot:SetDatabaseNamespaceDefaults("CombatEvents", "profile", {
 	abbreviateStyle = "abbreviate",
 	abbreviateLength = 30,
 	stickyCrit = true,
+	disable_in_10man = false,
+	disable_in_25man = false,
 	damageTypes = {
 		color = true,
 		["Physical"] = "ffffff",
@@ -114,6 +116,8 @@ function Parrot_CombatEvents:OnInitialize()
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
+	
+		
 	if (disabled) then
 		
 		-- Combatlog
@@ -137,7 +141,6 @@ function Parrot_CombatEvents:OnInitialize()
 		
 	else
 		
-		-- Combatlog
 		self:AddEventListener("Blizzard", "COMBAT_LOG_EVENT_UNFILTERED", "OnEvent");
 		
 		--LootEvents
@@ -155,22 +158,76 @@ function Parrot_CombatEvents:OnInitialize()
 		
 		-- Reputationgains
 		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")
-		
 
-		
+	end
+
+end
+
+function Parrot_CombatEvents:MINIMAP_ZONE_CHANGED()
+	--@debug@
+	ChatFrame1:AddMessage("ZONE_CHANGED")	
+	--@end-debug@
+end
+local enabled = false
+local disabled_by_raid = false
+function Parrot_CombatEvents:check_raid_instance()
+
+	if (not enabled) and (not disabled_by_raid) then
+		--@debug@
+		ChatFrame1:AddMessage("doing nothing because disabled manually")
+		ChatFrame1:AddMessage(enabled .. "")
+		ChatFrame1:AddMessage(disabled_by_raid .. "")
+		--@end-debug@
+		return
+	end
+
+	--@debug@
+	ChatFrame1:AddMessage("NEW AREA?")
+	--@end-debug@
+	local is_she, instance_type = IsInInstance()
+		--@debug@
+	ChatFrame1:AddMessage("is_she: " .. (is_she or "nil"))
+	ChatFrame1:AddMessage("type: " .. (instance_type or "nil"))
+	--@end-debug@
+	if is_she then
+		if instance_type == "raid" then
+			if GetInstanceDifficulty() == 2 then
+				-- Heroic = 25man
+				self:ToggleActive(not self.db.profile.disable_in_25man)
+			else
+				-- Normal = 10man (or maybe some old raid-instance)
+				self:ToggleActive(not self.db.profile.disable_in_10man)				
+			end
+		end
+		if not self:IsActive() then
+			--@debug
+			ChatFrame1:AddMessage("disabled by raid")
+			--@end-debug@
+			disabled_by_raid = true
+		end
+	else
+		self:ToggleActive(true)
+		disabled_by_raid = false
 	end
 	
-	
-	
+	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
+	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
+	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
 	
 
 end
 
 local onEnableFuncs = {}
-local enabled = false
+
 function Parrot_CombatEvents:OnEnable(first)
 	enabled = true
-
+	--@debug@
+	ChatFrame1:AddMessage("enable combat-events")
+	--@end-debug@
+	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
+	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
+	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
+	
 	if first then
 		local tmp = newList("Notification", "Incoming", "Outgoing")
 		for _,category in ipairs(tmp) do
@@ -214,6 +271,29 @@ function Parrot_CombatEvents:OnEnable(first)
 	currentXP = UnitXP("player")
 
 end
+
+local function addEventListeners()
+	-- Combatlog
+		self:AddEventListener("Blizzard", "COMBAT_LOG_EVENT_UNFILTERED", "OnEvent");
+		
+		--LootEvents
+		self:AddEventListener("Blizzard", "CHAT_MSG_LOOT", "OnLootEvent")
+		self:AddEventListener("Blizzard", "CHAT_MSG_MONEY", "OnLootEvent")
+		
+		-- Experiencegains
+		self:AddEventListener("Blizzard", "PLAYER_XP_UPDATE", "OnXPgainEvent" )
+		
+		-- honorgains
+		self:AddEventListener("Blizzard", "HONOR_CURRENCY_UPDATE", "OnHonorgainEvent")
+		
+		-- Skillgains
+		self:AddEventListener("Blizzard", "CHAT_MSG_SKILL", "OnSkillgainEvent" )
+		
+		-- Reputationgains
+		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")
+end
+
+table.insert(onEnableFuncs, addEventListeners)
 
 local onDisableFuncs = {}
 function Parrot_CombatEvents:OnDisable()
@@ -394,10 +474,39 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		type = 'group',
 		name = L["Events"],
 		desc = L["Change event settings"],
-		disabled = function()
-			return not self:IsActive()
-		end,
+--		disabled = function()
+--			return not self:IsActive()
+--		end,
 		args = {
+			--[[enable_combat_events = {
+				type = 'boolean',
+				name = L["Enabled"],
+				desc = L["Whether this module is enabled"],
+				get = function() return self:GetModule("CombatEvents"):IsActive() end,
+				set = function(value) self:GetModule("CombatEvents"):ToggleActive(value) self.db.profile.disabled = value end,
+			},]]--
+			
+			disable_in_10man = {
+				type = 'boolean',
+				name = L["Disable in normal raids"],
+				desc = L["Disable CombatEvents when in a 10-man raid instance"],
+				get = function() return self.db.profile.disable_in_10man end,
+				set = function(value) 
+						self.db.profile.disable_in_10man = value
+						self:check_raid_instance();
+					end,
+			},
+			disable_in_25man = {
+				type = 'boolean',
+				name = L["Disable in heroic raids"],
+				desc = L["Disable CombatEvents when in a 25-man raid instance"],
+				get = function() return self.db.profile.disable_in_25man end,
+				set = function(value) 
+						self.db.profile.disable_in_25man = value 
+						self:check_raid_instance()
+					end,
+			},
+			
 			Incoming = {
 				type = 'group',
 				name = L["Incoming"],
