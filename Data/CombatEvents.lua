@@ -3497,6 +3497,7 @@ Parrot:RegisterCombatEvent{
 	name = "Skill DoTs",
 	localName = L["Skill DoTs"],
 	defaultTag = "[Amount] ([Skill])",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
@@ -3504,7 +3505,11 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
-			
+			--@debug@
+			if critical then
+				ChatFrame4:AddMessage("dot-crit detected")
+			end
+			--@end-debug@
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[spellSchool]
@@ -3515,13 +3520,13 @@ Parrot:RegisterCombatEvent{
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
 			info.overkill = overkill
-			info.critical = critical
+			info.isCrit = (critical ~= nil)
+			info.isCrushing = (crushing ~= nil)
+			info.isGlancing = (glancing ~= nil)
 			info.absorbed = absorbed
 			info.resisted = resisted
 			info.blocked = blocked
-			info.crushing = crushing
-			info.glancing = glancing
-			info.isDoT = true
+--			info.isDoT = true
 			
 			return info
 		end,
@@ -3540,15 +3545,37 @@ Parrot:RegisterCombatEvent{
 		Type = L["The type of damage done."],
 		Skill = L["The spell or ability that you used."],
 	},
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
+	--[[
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', function(info)
+		local numNorm = info.throttleCount_isCrit_false or 0
+		local numCrit = info.throttleCount_isCrit_true or 0
+		info.isCrit = numCrit > 0
 		if numNorm == 1 then
-			-- just one hit
-			return nil
-		else
-			return L[" (%d hits)"]:format(numNorm)
+			if numCrit == 1 then
+				return L[" (%d hit, %d crit)"]:format(1, 1)
+			elseif numCrit == 0 then
+				-- just one hit
+				return nil
+			else -- >= 2
+				return L[" (%d hit, %d crits)"]:format(1, numCrit)
+			end
+		elseif numNorm == 0 then
+			if numCrit == 1 then
+				-- just one crit
+				return nil
+			else -- >= 2
+				return L[" (%d crits)"]:format(numCrit)
+			end
+		else -- >= 2
+			if numCrit == 1 then
+				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
+			elseif numCrit == 0 then
+				return L[" (%d hits)"]:format(numNorm)
+			else -- >= 2
+				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
+			end
 		end
-	end }, recipientName = L["Multiple"] },
+	end }, recipientName = L["Multiple"] },--]]--
 	color = "ffff00", -- yellow
 }
 
