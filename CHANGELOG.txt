@@ -3,6 +3,7 @@ changes after v1.7.0:
      make dot-crits show
      fix optdeps
      add Options to disable CombatEvents when in a raid-instance.
+     add icon-override for mutilate
 
 v1.7.0:
 
