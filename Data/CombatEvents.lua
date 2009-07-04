@@ -411,6 +411,38 @@ end
 
 Parrot:RegisterThrottleType("Skill damage", L["Skill damage"], 0.1, true)
 
+local skillThrottleFunc = function(info)
+		local numNorm = info.throttleCount_isCrit_false or 0
+		local numCrit = info.throttleCount_isCrit_true or 0
+		info.isCrit = numCrit > 0
+		if numNorm == 1 then
+			if numCrit == 1 then
+				return L[" (%d hit, %d crit)"]:format(1, 1)
+			elseif numCrit == 0 then
+				-- just one hit
+				return nil
+			else -- >= 2
+				return L[" (%d hit, %d crits)"]:format(1, numCrit)
+			end
+		elseif numNorm == 0 then
+			if numCrit == 1 then
+				-- just one crit
+				return nil
+			else -- >= 2O
+				return L[" (%d crits)"]:format(numCrit)
+			end
+		else -- >= 2
+			if numCrit == 1 then
+				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
+			elseif numCrit == 0 then
+				-- just one hit
+				return L[" (%d hits)"]:format(numNorm)
+			else -- >= 2
+				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
+			end
+		end
+	end
+
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Skills"],
@@ -459,37 +491,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "ff0000", -- red
 	canCrit = true,
-	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d hit, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d hit, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2O
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d hits)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc}, sourceName = L["Multiple"] }, 
 	filterType = { "Incoming damage", 'amount' },
 	
 }
@@ -525,9 +527,6 @@ Parrot:RegisterCombatEvent{
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
 			
-			
-			info.isDoT = false
-			
 			return info
 		end,
 		},
@@ -554,7 +553,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			info.isDoT = false
+			
 			
 			return info
 			end,
@@ -582,9 +581,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			info.isDoT = false
-			
+
 			return info
 			end,
 		}
@@ -604,37 +601,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "ff0000", -- red
 	canCrit = true,
-	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d hit, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d hit, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d hits)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, sourceName = L["Multiple"] },
 	filterType = { "Incoming damage", 'amount' },
 }
 
@@ -646,6 +613,7 @@ Parrot:RegisterCombatEvent{
 	name = "Skill DoTs",
 	localName = L["Skill DoTs"],
 	defaultTag = "([Name]) -[Amount]",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
@@ -670,13 +638,13 @@ Parrot:RegisterCombatEvent{
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
 			info.overkill = overkill
-			info.critical = critical
+			info.isCrit = (critical ~= nil)
+			info.isCrushing = (crushing ~= nil)
+			info.isGlancing = (glancing ~= nil)
 			info.absorbed = absorbed
 			info.resisted = resisted
 			info.blocked = blocked
-			info.crushing = crushing
-			info.glancing = glancing
-			info.isDoT = true
+			
 			
 			return info
 		end,
@@ -696,15 +664,7 @@ Parrot:RegisterCombatEvent{
 		Skill = L["The spell or ability that the enemy attacked you with."],
 	},
 	color = "ff0000", -- red
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one hit
-			return nil
-		else -- >= 2
-			return L[" (%d hits)"]:format(numNorm)
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, sourceName = L["Multiple"] },
 }
 
 Parrot:RegisterCombatEvent{
@@ -1347,7 +1307,7 @@ Parrot:RegisterCombatEvent{
 			info.abilityName = spellName
 			info.extraAbilityName = extraSpellName
 			
-			info.isDoT = false
+			
 			
 			return info
 		end,
@@ -1369,6 +1329,38 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterFilterType("Incoming heals", L["Incoming heals"], 0)
 Parrot:RegisterThrottleType("Heals", L["Heals"], 0.1, true)
+
+local healThrottleFunc = function(info)
+		local numNorm = info.throttleCount_isCrit_false or 0
+		local numCrit = info.throttleCount_isCrit_true or 0
+		info.isCrit = numCrit > 0
+		if numNorm == 1 then
+			if numCrit == 1 then
+				return L[" (%d heal, %d crit)"]:format(1, 1)
+			elseif numCrit == 0 then
+				-- just one hit
+				return nil
+			else -- >= 2
+				return L[" (%d heal, %d crits)"]:format(1, numCrit)
+			end
+		elseif numNorm == 0 then
+			if numCrit == 1 then
+				-- just one crit
+				return nil
+			else -- >= 2
+				return L[" (%d crits)"]:format(numCrit)
+			end
+		else -- >= 2
+			if numCrit == 1 then
+				return L[" (%d heals, %d crit)"]:format(numNorm, 1)
+			elseif numCrit == 0 then
+				-- just one hit
+				return L[" (%d heals)"]:format(numNorm)
+			else -- >= 2
+				return L[" (%d heals, %d crits)"]:format(numNorm, numCrit)
+			end
+		end
+	end
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
@@ -1419,37 +1411,7 @@ Parrot:RegisterCombatEvent{
 	color = "00ff00", -- green
 	canCrit = true,
 	filterType = { "Incoming heals", 'realAmount' },
-	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d heal, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d heal, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d heals, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d heals)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d heals, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc}, sourceName = L["Multiple"] },
 }
 
 Parrot:RegisterCombatEvent{
@@ -1500,37 +1462,7 @@ Parrot:RegisterCombatEvent{
 	color = "00ff00", -- green
 	canCrit = true,
 	filterType = { "Incoming heals", 'realAmount' },
-	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d heal, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d heal, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d heals, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d heals)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d heals, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, sourceName = L["Multiple"] },
 }
 
 Parrot:RegisterCombatEvent{
@@ -1539,6 +1471,7 @@ Parrot:RegisterCombatEvent{
 	name = "Heals over time",
 	localName = L["Heals over time"],
 	defaultTag = "([Skill] - [Name]) +[Amount]",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
@@ -1577,15 +1510,7 @@ Parrot:RegisterCombatEvent{
 		Skill = L["The spell or ability that the ally healed you with."],
 		Amount = L["The amount of healing done."],
 	},
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one hit
-			return nil
-		else
-			return L[" (%d heals)"]:format(numNorm)
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc}, sourceName = L["Multiple"] },
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
 }
@@ -1596,6 +1521,7 @@ Parrot:RegisterCombatEvent{
 	name = "Self heals over time",
 	localName = L["Self heals over time"],
 	defaultTag = "([Skill]) +[Amount]",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
@@ -1636,15 +1562,7 @@ Parrot:RegisterCombatEvent{
 		Skill = L["The spell or ability that the ally healed you with."],
 		Amount = L["The amount of healing done."],
 	},
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one hit
-			return nil
-		else
-			return L[" (%d heals)"]:format(numNorm)
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, sourceName = L["Multiple"] },
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
 }
@@ -2062,7 +1980,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
 			
-			info.isDoT = false
+			
 			
 			return info
 		end,
@@ -2083,37 +2001,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "ff0000", -- red
 	canCrit = true,
-	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d hit, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d hit, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d hits)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, sourceName = L["Multiple"] },
 	filterType = { "Incoming damage", 'amount' },
 }
 
@@ -2123,6 +2011,7 @@ Parrot:RegisterCombatEvent{
 	name = "Pet skill DoTs",
 	localName = L["Pet skill DoTs"],
 	defaultTag = PET .. " -[Amount]",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
@@ -2145,13 +2034,12 @@ Parrot:RegisterCombatEvent{
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
 			info.overkill = overkill
-			info.critical = critical
 			info.absorbed = absorbed
 			info.resisted = resisted
 			info.blocked = blocked
-			info.crushing = crushing
-			info.glancing = glancing
-			info.isDoT = true
+			info.isCrit = (critical ~= nil)
+			info.isCrushing = (crushing ~= nil)
+			info.isGlancing = (glancing ~= nil)
 			
 			return info
 		end,
@@ -2171,15 +2059,7 @@ Parrot:RegisterCombatEvent{
 		Skill = L["The spell or ability that the enemy attacked your pet with."],
 	},
 	color = "ff0000", -- red
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one hit
-			return nil
-		else -- >= 2
-			return L[" (%d hits)"]:format(numNorm)
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, sourceName = L["Multiple"] },
 }
 
 
@@ -2880,37 +2760,7 @@ Parrot:RegisterCombatEvent{
 	color = "00ff00", -- green
 	canCrit = true,
 	filterType = { "Incoming heals", 'realAmount' },
-	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d heal, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d heal, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d heals, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d heals)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d heals, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, sourceName = L["Multiple"] },
 }
 
 Parrot:RegisterCombatEvent{
@@ -2919,6 +2769,7 @@ Parrot:RegisterCombatEvent{
 	name = "Pet heals over time",
 	localName = L["Pet heals over time"],
 	defaultTag = PET .. " ([Skill] - [Name]) +[Amount]",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
@@ -2957,15 +2808,7 @@ Parrot:RegisterCombatEvent{
 		Skill = L["The spell or ability that the ally healed your pet with."],
 		Amount = L["The amount of healing done."],
 	},
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one hit
-			return nil
-		else
-			return L[" (%d heals)"]:format(numNorm)
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, sourceName = L["Multiple"] },
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
 }
@@ -3341,37 +3184,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "ff0000", -- red
 	canCrit = true,
-	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d hit, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d hit, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d hits)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, sourceName = L["Multiple"] },
 	filterType = { "Outgoing damage", 'amount' },
 	
 }
@@ -3408,7 +3221,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
 			
-			info.isDoT = false
+			
 			
 			return info
 		end,
@@ -3437,7 +3250,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
 			
-			info.isDoT = false
+			
 			
 			return info
 			end,
@@ -3458,36 +3271,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "ffff00", -- yellow
 	canCrit = true,
-	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d hit, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d hit, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				return L[" (%d hits)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, recipientName = L["Multiple"] },
+	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, recipientName = L["Multiple"] },
 	filterType = { "Outgoing damage", 'amount' },
 }
 
@@ -3505,11 +3289,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
-			--@debug@
-			if critical then
-				ChatFrame4:AddMessage("dot-crit detected")
-			end
-			--@end-debug@
+			
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[spellSchool]
@@ -3526,7 +3306,7 @@ Parrot:RegisterCombatEvent{
 			info.absorbed = absorbed
 			info.resisted = resisted
 			info.blocked = blocked
---			info.isDoT = true
+--			
 			
 			return info
 		end,
@@ -3545,37 +3325,7 @@ Parrot:RegisterCombatEvent{
 		Type = L["The type of damage done."],
 		Skill = L["The spell or ability that you used."],
 	},
-	--[[
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d hit, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d hit, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				return L[" (%d hits)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, recipientName = L["Multiple"] },--]]--
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, recipientName = L["Multiple"] },
 	color = "ffff00", -- yellow
 }
 
@@ -4222,7 +3972,7 @@ Parrot:RegisterCombatEvent{
 			info.abilityName = spellName
 			info.extraAbilityName = extraSpellName
 			
-			info.isDoT = false
+			
 			
 			return info
 		end,
@@ -4370,37 +4120,7 @@ Parrot:RegisterCombatEvent{
 	color = "00ff00", -- green
 	canCrit = true,
 	filterType = { "Outgoing heals", 'realAmount' },
-	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d heal, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d heal, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d heals, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d heals)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d heals, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, sourceName = L["Multiple"] },
 }
 
 
@@ -4453,37 +4173,7 @@ Parrot:RegisterCombatEvent{
 	canCrit = true,
 	defaultDisabled = true,
 	filterType = { "Outgoing heals", 'realAmount' },
-	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d heal, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d heal, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d heals, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d heals)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d heals, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, sourceName = L["Multiple"] },
 }
 
 Parrot:RegisterCombatEvent{
@@ -4492,6 +4182,7 @@ Parrot:RegisterCombatEvent{
 	name = "Heals over time",
 	localName = L["Heals over time"],
 	defaultTag = "+[Amount] ([Skill] - [Name])",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
@@ -4530,15 +4221,7 @@ Parrot:RegisterCombatEvent{
 		Skill = L["The spell or ability that you used."],
 		Amount = L["The amount of healing done."],
 	},
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one heal
-			return nil
-		else -- >= 2
-			return L[" (%d heals)"]:format(numNorm)
-		end
-	end }, recipientName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, recipientName = L["Multiple"] },
 	color = "00ff00", -- green
 	filterType = { "Outgoing heals", 'realAmount' },
 }
@@ -4549,6 +4232,7 @@ Parrot:RegisterCombatEvent{
 	name = "Self heals over time",
 	localName = L["Self heals over time"],
 	defaultTag = "+[Amount] ([Skill])",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
@@ -4588,15 +4272,7 @@ Parrot:RegisterCombatEvent{
 		Skill = L["The spell or ability that you used."],
 		Amount = L["The amount of healing done."],
 	},
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one heal
-			return nil
-		else -- >= 2
-			return L[" (%d heals)"]:format(numNorm)
-		end
-	end }, recipientName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, recipientName = L["Multiple"] },
 	color = "00ff00", -- green
 	filterType = { "Outgoing heals", 'realAmount' },
 	defaultDisabled = true,
@@ -5005,7 +4681,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
 			
-			info.isDoT = false
+			
 			
 			return info
 		end,
@@ -5026,36 +4702,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "0000ff", -- blue
 	canCrit = true,
-	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d hit, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d hit, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d hits, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				return L[" (%d hits)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, recipientName = L["Multiple"] },
+	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, recipientName = L["Multiple"] },
 	filterType = { "Outgoing damage", 'amount' },
 	
 }
@@ -5066,6 +4713,7 @@ Parrot:RegisterCombatEvent{
 	name = "Pet skill DoTs",
 	localName = L["Pet skill DoTs"],
 	defaultTag = PET .. "[Amount] ([Skill])",
+	canCrit = true,
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
@@ -5088,13 +4736,13 @@ Parrot:RegisterCombatEvent{
 			info.abilityName = spellName
 			info.amount = amount + (extraAmount or 0)
 			info.overkill = overkill
-			info.critical = critical
 			info.absorbed = absorbed
 			info.resisted = resisted
 			info.blocked = blocked
-			info.crushing = crushing
-			info.glancing = glancing
-			info.isDoT = true
+			info.isCrit = (critical ~= nil)
+			info.isCrushing = (crushing ~= nil)
+			info.isGlancing = (glancing ~= nil)
+			
 			
 			return info
 		end,
@@ -5113,15 +4761,7 @@ Parrot:RegisterCombatEvent{
 		Type = L["The type of damage done."],
 		Skill = L["The spell or ability that your pet used."],
 	},
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one hit
-			return nil
-		else
-			return L[" (%d hits)"]:format(numNorm)
-		end
-	end }, recipientName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, recipientName = L["Multiple"] },
 	color = "ffff00", -- yellow
 }
 
@@ -5704,37 +5344,7 @@ Parrot:RegisterCombatEvent{
 	color = "00ff00", -- green
 	canCrit = true,
 	filterType = { "Outgoing heals", 'realAmount' },
-	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', function(info)
-		local numNorm = info.throttleCount_isCrit_false or 0
-		local numCrit = info.throttleCount_isCrit_true or 0
-		info.isCrit = numCrit > 0
-		if numNorm == 1 then
-			if numCrit == 1 then
-				return L[" (%d heal, %d crit)"]:format(1, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return nil
-			else -- >= 2
-				return L[" (%d heal, %d crits)"]:format(1, numCrit)
-			end
-		elseif numNorm == 0 then
-			if numCrit == 1 then
-				-- just one crit
-				return nil
-			else -- >= 2
-				return L[" (%d crits)"]:format(numCrit)
-			end
-		else -- >= 2
-			if numCrit == 1 then
-				return L[" (%d heals, %d crit)"]:format(numNorm, 1)
-			elseif numCrit == 0 then
-				-- just one hit
-				return L[" (%d heals)"]:format(numNorm)
-			else -- >= 2
-				return L[" (%d heals, %d crits)"]:format(numNorm, numCrit)
-			end
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "Heals", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, sourceName = L["Multiple"] },
 }
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
@@ -5742,6 +5352,7 @@ Parrot:RegisterCombatEvent{
 	name = "Pet heals over time",
 	localName = L["Pet heals over time"],
 	defaultTag = PET .. " ([Skill] - [Name]) +[Amount]",
+	canCrit = true, -- Pets cannot crit-heal (or can they?)
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
@@ -5780,15 +5391,7 @@ Parrot:RegisterCombatEvent{
 		Skill = L["The spell or ability that the pet used to heal."],
 		Amount = L["The amount of healing done."],
 	},
-	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', function(info)
-		local numNorm = info.throttleCount or 0
-		if numNorm == 1 then
-			-- just one hit
-			return nil
-		else
-			return L[" (%d heals)"]:format(numNorm)
-		end
-	end }, sourceName = L["Multiple"] },
+	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', healThrottleFunc }, sourceName = L["Multiple"] },
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
 }
@@ -5827,7 +5430,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
 				
-				info.isDoT = false
+				
 				
 				return info
 			
@@ -5853,7 +5456,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
 				
-				info.isDoT = false
+				
 				
 				return info
 			
@@ -5879,7 +5482,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
 				
-				info.isDoT = false
+				
 				
 				return info
 			
@@ -5905,7 +5508,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
 				
-				info.isDoT = false
+				
 				
 				return info
 			
@@ -5976,7 +5579,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
 			
-			info.isDoT = false
+			
 			
 			return info
 		
@@ -6002,7 +5605,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
 				
-				info.isDoT = false
+				
 				
 				return info
 			
@@ -6028,7 +5631,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
 				
-				info.isDoT = false
+				
 				
 				return info
 			
