@@ -1,4 +1,4 @@
-changes after v1.7.0:
+changes after v1.7.1:
  
      make dot-crits show
      fix optdeps
