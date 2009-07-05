@@ -324,6 +324,12 @@ local function utf8trunc(text, num)
 end
 
 function Parrot_CombatEvents:GetAbbreviatedSpell(name)
+	if not name then
+		--@debug@
+		Parrot:Print("name was nil")
+		--@end-debug@
+		return nil
+	end
 	local style = self.db.profile.abbreviateStyle
 	if style == "none" then
 		return name
