@@ -14,6 +14,9 @@
 ## X-License: GPL v2 or later
 ## Version: @project-version@
 
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
+
 embeds.xml
 
 Locales\locales.xml
