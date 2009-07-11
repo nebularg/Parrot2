@@ -1,9 +1,10 @@
-changes after v1.7.1:
+v1.7.1:
  
-     make dot-crits show
-     fix optdeps
+     make dot-crits show as sticky.
+     fix optdeps.
      add Options to disable CombatEvents when in a raid-instance.
-     add icon-override for mutilate
+     add icon-override for mutilate.
+     add support for AddonLoader (http://www.wowace.com/addons/addon-loader/).
 
 v1.7.0:
 
