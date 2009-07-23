@@ -17,6 +17,20 @@ local SharedMedia = Rock("LibSharedMedia-3.0")
 
 local newList, unpackListAndDel = Rock:GetRecyclingFunctions("Parrot", "newList", "unpackListAndDel")
 
+local function debug(text)
+	--@debug@
+	if type(text) == 'table' then
+		for k,v in pairs(text) do
+			debug(string.format("[\"%s\"] = \"%s\",",k,tostring(v)))
+		end
+	else
+		ChatFrame4:AddMessage(tostring(text))
+	end
+	--@end-debug@
+end
+
+Parrot.debug = debug
+
 Parrot:SetDatabase("ParrotDB")
 Parrot:SetDatabaseDefaults('profile', {
 	gameDamage = false,

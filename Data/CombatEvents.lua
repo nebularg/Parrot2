@@ -100,12 +100,11 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SWING_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return (dstGUID == UnitGUID("player"))
+				end,
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-			
-				if dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-					
+								
 				local info = {}
 				info.damageType = SchoolParser[school]
 				info.recipientID = dstGUID
@@ -169,6 +168,47 @@ Parrot:RegisterCombatEvent{
 	end }, sourceName = L["Multiple"] },
 }
 
+Parrot:RegisterThrottleType("Avoids", L["Avoids"], 1.0, true)
+
+local missThrottleFunc = function(info)
+		local num = info.throttleCount or 0
+		if num > 1 then
+			return (" (%dx)"):format(num)
+		else 
+			return ""
+		end
+	end
+
+local missThrottle = {
+	 "Avoids",
+	 'missType',
+	 { 'throttleCount', missThrottleFunc, },
+	 sourceName = L["Multiple"],
+}
+
+local parseMissInfo = function( srcGUID, srcName, _, dstGUID, dstName, _, missType, amountMissed )
+
+	local info = newList()
+	info.recipientID = dstGUID
+	info.recipientName = dstName
+	info.sourceID = srcGUID
+	info.sourceName = srcName
+	info.missType = missType
+	info.amount = amountMissed
+	return info
+	
+end
+
+local missTagTranslations = {
+	Name = "sourceName",
+	Amount = "amount",
+}
+
+local incMissTagTranslationHelp = {
+	Name = L["The name of the enemy that attacked you."],
+	Amount = L["Amount of the damage that was missed."],
+}
+
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Melee"],
@@ -178,27 +218,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SWING_MISSED",
-			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-				if dstGUID ~= UnitGUID("player") or missType ~= "MISS" then
-					return nil
-				end
-				
-				local info = newList()
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-			
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "MISS")
+				end,
+			func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = incMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -211,29 +239,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			
-			if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-
-		
-			return info
-		end,
+		check = function( _, _, _, dstGUID, _, _, missType)
+				return (dstGUID == UnitGUID("player") and missType == "DODGE")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = incMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -246,29 +260,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			
-			if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function( _, _, _, dstGUID, _, _, missType)
+				return (dstGUID == UnitGUID("player") and missType == "PARRY")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = incMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -281,29 +281,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			
-			if dstGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function( _, _, _, dstGUID, _, _, missType)
+				return (dstGUID == UnitGUID("player") and missType == "BLOCK")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = incMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -312,33 +298,19 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Melee"],
 	name = "Melee absorbs",
 	localName = L["Melee absorbs"],
-	defaultTag = ABSORB .. "!",
+	defaultTag = ABSORB .. " [Amount]!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			
-			if dstGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function( _, _, _, dstGUID, _, _, missType)
+				return (dstGUID == UnitGUID("player") and missType == "ABSORB")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = incMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -351,29 +323,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SWING_MISSED",
-			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-				
-				if dstGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
-					return nil
-				end
-				
-				local info = newList()
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				
-			
-				return info
+			check = function( _, _, _, dstGUID, _, _, missType)
+				return (dstGUID == UnitGUID("player") and missType == "IMMUNE")
 			end,
+			func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = incMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -402,7 +360,7 @@ local function retrieveIconFromAbilityName(info)
 
 	if(info.spellID) then
 		icon = dumbIconOverride[info.spellID] or select(3, GetSpellInfo(info.spellID))
-	else
+	elseif info.abilityName then
 		--shouldn't be needed though, but to be sure
 		icon = select(3, GetSpellInfo(info.abilityName))
 	end
@@ -454,10 +412,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "DAMAGE_SHIELD",
+			check = function( _, _, _, dstGUID)
+				return (dstGUID == UnitGUID("player"))
+			end,
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-			if dstGUID ~= UnitGUID("player") then
-				return nil
-			end
 			
 			local info = newList()
 			info.spellID = spellId
@@ -507,11 +465,11 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_DAMAGE",
+		check = function( _, _, _, dstGUID)
+				return (dstGUID == UnitGUID("player"))
+			end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-			if dstGUID ~= UnitGUID("player") then
-				return nil
-			end
-			
+						
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -534,11 +492,11 @@ Parrot:RegisterCombatEvent{
 		},
 		{
 			eventType = "RANGE_DAMAGE",
+			check = function( _, _, _, dstGUID)
+				return (dstGUID == UnitGUID("player"))
+			end,
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if dstGUID ~= UnitGUID("player") then
-				return nil
-			end
-			
+							
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -562,11 +520,11 @@ Parrot:RegisterCombatEvent{
 		},
 		{
 			eventType = "DAMAGE_SPLIT",
+			check = function( _, _, _, dstGUID)
+				return (dstGUID == UnitGUID("player"))
+			end,
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if dstGUID ~= UnitGUID("player") then
-				return nil
-			end
-			
+				
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -619,12 +577,11 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
+		check = function( _, _, _, dstGUID)
+				return (dstGUID == UnitGUID("player"))
+			end,
 		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing )
-		
-			if dstGUID ~= UnitGUID("player") then
-				return nil
-			end
-			
+					
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[spellSchool]
@@ -669,6 +626,35 @@ Parrot:RegisterCombatEvent{
 	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, sourceName = L["Multiple"] },
 }
 
+local parseSpellMissInfo = function(srcGUID, srcName, srcFlags, dstGUID,
+	dstName, dstFlags, spellId, spellName, spellSchool, missType, amountMissed)
+	
+	local info = newList()
+	info.spellID = spellId
+	info.recipientID = dstGUID
+	info.recipientName = dstName
+	info.sourceID = srcGUID
+	info.sourceName = srcName
+	info.abilityName = spellName
+	info.missType = missType
+	info.amount = amountMissed
+	
+	return info
+end
+
+local spellMissTagTranslations = {
+	Name = "sourceName",
+	Skill = retrieveAbilityName,
+	Icon = retrieveIconFromAbilityName,
+	Amount = "amount",
+}
+
+local spellMissTagTranslationsHelp = {
+	Name = L["The name of the enemy that attacked you."],
+	Skill = L["The spell or ability that the enemy attacked you with."],
+	Amount = L["Amount of the damage that was missed."],
+},
+
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Skills"],
@@ -678,71 +664,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if dstGUID ~= UnitGUID("player") or missType ~= "MISS" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+				return (dstGUID == UnitGUID("player") and missType == "MISS")
+			end,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if dstGUID ~= UnitGUID("player") or missType ~= "MISS" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+				return (dstGUID == UnitGUID("player") and missType == "MISS")
+			end,
+		func = parseSpellMissInfo,
 		},
 		{
 			eventType = "RANGE_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "MISS" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "MISS")
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-		Skill = L["The spell or ability that the enemy attacked you with."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = spellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -755,69 +699,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-					return nil
-				end
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "DODGE")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-					return nil
-				end
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "DODGE")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "RANGE_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "DODGE")
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-		Skill = L["The spell or ability that the enemy attacked you with."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = spellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -830,71 +734,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "PARRY")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "PARRY")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "RANGE_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "PARRY")
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-		Skill = L["The spell or ability that the enemy attacked you with."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = spellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -907,71 +769,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "BLOCK")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "BLOCK")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "RANGE_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "BLOCK")
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-		Skill = L["The spell or ability that the enemy attacked you with."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = spellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -984,71 +804,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "RESIST" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "RESIST")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "RESIST" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "RESIST")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "RANGE_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "RESIST" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "RESIST")
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-		Skill = L["The spell or ability that the enemy attacked you with."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = spellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f007f", -- purple
 }
 
@@ -1057,75 +835,33 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Skills"],
 	name = "Skill absorbs",
 	localName = L["Skill absorbs"],
-	defaultTag = "([Skill]) " .. ABSORB .. "!",
+	defaultTag = "([Skill]) " .. ABSORB .. " [Amount]!",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "ABSORB")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "RANGE_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "ABSORB")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "ABSORB")
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-		Skill = L["The spell or ability that the enemy attacked you with."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = spellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -1138,71 +874,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "IMMUNE")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "RANGE_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "IMMUNE")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "IMMUNE")
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-		Skill = L["The spell or ability that the enemy attacked you with."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = spellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -1215,73 +909,31 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "REFLECT" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "REFLECT")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "RANGE_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "REFLECT" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "REFLECT")
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if dstGUID ~= UnitGUID("player") or missType ~= "REFLECT" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+			check = function( _, _, _, dstGUID, _, _,_, _, _, missType)
+					return (dstGUID == UnitGUID("player") and missType == "REFLECT")
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked you."],
-		Skill = L["The spell or ability that the enemy attacked you with."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = spellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f007f", -- purple
-	canCrit = true,
+--	canCrit = true,
 }
 
 Parrot:RegisterCombatEvent{
@@ -1293,10 +945,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_INTERRUPT",
+		check = function( _, _, _, dstGUID)
+					return (dstGUID == UnitGUID("player"))
+				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellId, extraSpellName, extraSpellSchool)
-			if dstGUID ~= UnitGUID("player") then
-				return nil
-			end
 			
 			local info = newList()
 			info.spellID = spellId
@@ -1308,8 +960,6 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.extraAbilityName = extraSpellName
-			
-			
 			
 			return info
 		end,
@@ -1373,11 +1023,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
+		check = function(srcGUID, _, _, dstGUID)
+					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet"))
+				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if dstGUID ~= UnitGUID("player") or srcGUID == UnitGUID("player") or srcGUID == UnitGUID("pet") then
-				return nil
-			end
-			
 			
 			local info = newList()
 			info.damageType = SchoolParser[school]
@@ -1425,11 +1074,11 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
+		check = function(srcGUID, _, _, dstGUID)
+				return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player"))
+			end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if dstGUID ~= UnitGUID("player") or srcGUID ~= UnitGUID("player") then
-				return nil
-			end
-			
+						
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -1477,10 +1126,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
+		check = function(srcGUID, _, _, dstGUID)
+					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet"))
+				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if dstGUID ~= UnitGUID("player") or srcGUID == UnitGUID("player") or srcGUID == UnitGUID("pet") then
-				return nil
-			end
 			
 			local info = newList()
 			info.damageType = SchoolParser[school]
@@ -1527,11 +1176,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
+		check = function(srcGUID, _, _, dstGUID)
+					return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player"))
+				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if dstGUID ~= UnitGUID("player") or srcGUID ~= UnitGUID("player") then
-				return nil
-			end
-			
 			
 			local info = newList()
 			info.damageType = SchoolParser[school]
@@ -1577,10 +1225,11 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "ENVIRONMENTAL_DAMAGE",
+		check = function(_, _, _, dstGUID)
+					return (dstGUID == UnitGUID("player"))
+				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, enviromentalType, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-			if dstGUID ~= UnitGUID("player") then
-				return nil
-			end
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.recipientID = dstGUID
@@ -1626,14 +1275,16 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_DAMAGE",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-			if checkFlags(dstFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
-					return nil
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags)
+				if checkFlags(dstFlags, GUARDIAN_FLAGS) then
+					return Parrot.db.profile.totemDamage
+				elseif dstGUID == UnitGUID("pet") then
+					return true
+				else
+					return false
 				end
-			elseif dstGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
+			end,
+		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 				
 			local info = {}
 			info.damageType = SchoolParser[school]
@@ -1699,45 +1350,36 @@ Parrot:RegisterCombatEvent{
 	end }, sourceName = L["Multiple"] },
 }
 
-
+petIncMissTagTranslationsHelp = {
+	Name = L["The name of the enemy that attacked your pet."],
+	Amount = L["Amount of the damage that was missed."],
+},
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Pet melee"],
 	name = "Pet melee misses",
 	localName = L["Pet melee misses"],
-	defaultTag = string.format("%s %s!", PET, MISS),
+	defaultTag = PET .. " " .. MISS .. "!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if missType ~= "MISS" then
-				return nil
-			elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
-					return nil
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "MISS" then
+					if dstGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
 				end
-			elseif dstGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked your pet."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = petIncMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -1746,39 +1388,26 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee dodges",
 	localName = L["Pet melee dodges"],
-	defaultTag = string.format("%s %s!", PET, DODGE),
+	defaultTag = PET .. " " .. DODGE .. "!",
 		combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if missType ~= "DODGE" then
-				return
-			end
-			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
-					return nil
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "DODGE" then
+					if dstGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
 				end
-			elseif dstGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked your pet."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = petIncMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -1787,39 +1416,26 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee parries",
 	localName = L["Pet melee parries"],
-	defaultTag = string.format("%s %s!", PET, PARRY),
+	defaultTag = PET .. " " .. PARRY .. "!",
 		combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if missType ~= "PARRY" then
-				return
-			end
-			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
-					return nil
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "PARRY" then
+					if dstGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
 				end
-			elseif dstGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+				return false
+			end,
+			func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked your pet."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = petIncMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -1828,39 +1444,26 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee blocks",
 	localName = L["Pet melee blocks"],
-	defaultTag = string.format("%s %s!", PET, BLOCK),
+	defaultTag = PET .. " " .. BLOCK .. "!",
 		combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if missType ~= "BLOCK" then
-				return
-			end
-			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
-					return nil
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "BLOCK" then
+					if dstGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
 				end
-			elseif dstGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked your pet."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = petIncMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -1869,39 +1472,26 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee absorbs",
 	localName = L["Pet melee absorbs"],
-	defaultTag = string.format("%s %s!", PET, ABSORB),
+	defaultTag = PET .. " " .. ABSORB .. " [Amount]!",
 		combatLogEvents = {
 		{
 			eventType = "SWING_MISSED",
-			func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-				if missType ~= "ABSORB" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "ABSORB" then
+					if dstGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
 				end
-				
-				local info = newList()
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				
-			
-				return info
+				return false
 			end,
+			func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked your pet."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = petIncMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -1910,39 +1500,26 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee immunes",
 	localName = L["Pet melee immunes"],
-	defaultTag = string.format("%s %s!", PET, IMMUNE),
+	defaultTag = PET .. " " .. IMMUNE .. "!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if missType ~= "IMMUNE" then
-				return
-			end
-			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
-					return nil
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "IMMUNE" then
+					if dstGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
 				end
-			elseif dstGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy that attacked your pet."],
-	},
+	tagTranslations = missTagTranslations,
+	tagTranslationsHelp = petIncMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -2064,76 +1641,65 @@ Parrot:RegisterCombatEvent{
 	throttle = { "DoTs and HoTs", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, sourceName = L["Multiple"] },
 }
 
+local incPetSpellMissTagTranslationsHelp = {
+	Name = L["The name of the enemy that attacked you."],
+	Skill = L["The spell or ability that the enemy attacked you with."],
+	Amount = L["Amount of the damage that was missed."],
+},
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Pet skills"],
 	name = "Pet ability misses",
 	localName = L["Pet ability misses"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, MISS),
+	defaultTag = PET .. " " .. MISS .. "! ([Skill])",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "MISS" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "MISS" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "MISS" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "MISS" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "MISS" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -2142,70 +1708,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet ability dodges",
 	localName = L["Pet ability dodges"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, DODGE),
+	defaultTag = PET .. " " .. DODGE .. "! ([Skill])",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "DODGE" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "DODGE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "DODGE" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "DODGE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "DODGE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -2214,70 +1764,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet ability parries",
 	localName = L["Pet ability parries"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, PARRY),
+	defaultTag = PET .. " " .. PARRY .. "! ([Skill])",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "PARRY" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "PARRY" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "PARRY" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "PARRY" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "PARRY" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -2286,70 +1820,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet ability blocks",
 	localName = L["Pet ability blocks"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, BLOCK),
+	defaultTag = PET .. " " .. BLOCK .. "! ([Skill])",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "BLOCK" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "BLOCK" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "BLOCK" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "BLOCK" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "BLOCK" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -2358,70 +1876,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet spell resists",
 	localName = L["Pet spell resists"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, RESIST),
+	defaultTag = PET .. " " .. RESIST .. "! ([Skill])",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "RESIST" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "RESIST" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "RESIST" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "RESIST" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "RESIST" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fb2", -- blue-gray
 }
 
@@ -2430,70 +1932,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet skill absorbs",
 	localName = L["Pet skill"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, ABSORB),
+	defaultTag = PET .. " " .. ABSORB .. " [Amount]! ([Skill])",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "ABSORB" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "ABSORB" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "ABSORB" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "ABSORB" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "ABSORB" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fff", -- light blue
 }
 
@@ -2502,70 +1988,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet skill immunes",
 	localName = L["Pet skill immunes"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, IMMUNE),
+	defaultTag = PET .. " " .. IMMUNE .. "! ([Skill])",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "IMMUNE" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "IMMUNE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
-			{
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "IMMUNE" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "IMMUNE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "IMMUNE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fff", -- light blue
 }
 
@@ -2574,72 +2044,56 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet skill reflects",
 	localName = L["Pet skill reflects"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, REFLECT),
+	defaultTag = PET .. " " .. REFLECT .. "! ([Skill])",
 	combatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "REFLECT" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "REFLECT" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "REFLECT" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "REFLECT" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "REFLECT" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fff", -- light blue
-	canCrit = true,
+--	canCrit = true,
 }
 
 Parrot:RegisterCombatEvent{
@@ -2647,70 +2101,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet skill evades",
 	localName = L["Pet skill evades"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, EVADE),
-	combatLogEvents = {
+	defaultTag = PET .. " " .. EVADE .. "! ([Skill])",
+	ccombatLogEvents = {
 		{
 			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "EVADE" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "EVADE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 		{
 			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if missType ~= "EVADE" then
-					return
-				end
-				if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-					if not Parrot.db.profile.totemDamage then
-						return nil
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "EVADE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
 					end
-				elseif dstGUID ~= (UnitGUID("pet") or 0) then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				info.abilityName = spellName
-				
-				
-				return info
-			end,
+					return false
+				end,
+			func = parseSpellMissInfo,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			check = function(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
+					if missType == "EVADE" then
+						if dstGUID == UnitGUID("pet") then
+							return true
+						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
+							return Parrot.db.profile.totemDamage
+						end
+					end
+					return false
+				end,
+			func = parseSpellMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "sourceName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = spellMissTagTranslations,
+	tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ff7fff", -- pink
 }
 
@@ -2898,6 +2336,16 @@ Parrot:RegisterCombatEvent{
 	end }, recipientName = L["Multiple"] },
 }
 
+local outMissTagTranslations = {
+	Name = "recipientName",
+	Amount = "amount",
+}
+
+local outMissTagTranslationHelp = {
+	Name = L["The name of the enemy you attacked."],
+	Amount = L["Amount of the damage that was missed."],
+}
+
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
 	subCategory = L["Melee"],
@@ -2907,28 +2355,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if srcGUID ~= UnitGUID("player") or missType ~= "MISS" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function(srcGUID, _, _, _, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "MISS")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-	},
+	tagTranslations = outMissTagTranslations,
+	tagTranslationsHelp = outMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ffffff", -- white
 }
 
@@ -2941,28 +2376,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function(srcGUID, _, _, _, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "DODGE")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-	},
+	tagTranslations = outMissTagTranslations,
+	tagTranslationsHelp = outMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ffffff", -- white
 }
 
@@ -2975,28 +2397,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function(srcGUID, _, _, _, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "PARRY")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-	},
+	tagTranslations = outMissTagTranslations,
+	tagTranslationsHelp = outMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ffffff", -- white
 }
 
@@ -3009,28 +2418,15 @@ Parrot:RegisterCombatEvent{
 		combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function(srcGUID, _, _, _, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "BLOCK")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-	},
+	tagTranslations = outMissTagTranslations,
+	tagTranslationsHelp = outMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ffffff", -- white
 }
 
@@ -3039,32 +2435,19 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Melee"],
 	name = "Melee absorbs",
 	localName = L["Melee absorbs"],
-	defaultTag = ABSORB .. "!",
+	defaultTag = ABSORB .. " [Amount]!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if srcGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function(srcGUID, _, _, _, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "ABSORB")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-	},
+	tagTranslations = outMissTagTranslations,
+	tagTranslationsHelp = outMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -3077,27 +2460,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if srcGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			
-		
-			return info
-		end,
+		check = function(srcGUID, _, _, _, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "IMMUNE")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-	},
+	tagTranslations = outMissTagTranslations,
+	tagTranslationsHelp = outMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -3110,28 +2481,15 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType, amountMissed )
-			if srcGUID ~= UnitGUID("player") or missType ~= "EVADE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-		
-			return info
-		end,
+		check = function(srcGUID, _, _, _, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "EVADE")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-	},
+	tagTranslations = outMissTagTranslations,
+	tagTranslationsHelp = outMissTagTranslationHelp,
+	throttle = missThrottle,
 	color = "ff7f00", -- orange
 }
 
@@ -3331,6 +2689,18 @@ Parrot:RegisterCombatEvent{
 	color = "ffff00", -- yellow
 }
 
+local outSpellMissTagTranslations = {
+	Name = "recipientName",
+	Skill = retrieveAbilityName,
+	Icon = retrieveIconFromAbilityName,
+	Amount = "amount",
+}
+local outSpellMissTagTranslationsHelp = {
+	Name = L["The name of the enemy you attacked."],
+	Skill = L["The spell or ability that you used."],
+	Amount = L["Amount of the damage that was missed."],
+}
+	
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
 	subCategory = L["Skills"],
@@ -3340,71 +2710,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "MISS" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "MISS")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "MISS" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "MISS")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "MISS" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "MISS")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffffff", -- white
 }
 
@@ -3417,71 +2745,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "DODGE")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "DODGE")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "DODGE")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffffff", -- white
 }
 
@@ -3494,71 +2780,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "PARRY")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "PARRY")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "PARRY")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffffff", -- white
 }
 
@@ -3572,71 +2816,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "BLOCK")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "BLOCK")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "BLOCK")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffffff", -- white
 }
 
@@ -3649,71 +2851,29 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "RESIST" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "RESIST")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "RESIST" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "RESIST")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "RESIST" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "RESIST")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fb2", -- blue-gray
 }
 
@@ -3722,75 +2882,33 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Skills"],
 	name = "Skill absorbs",
 	localName = L["Skill absorbs"],
-	defaultTag = ABSORB .. "! ([Skill])",
+	defaultTag = ABSORB .. " [Amount]! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "ABSORB")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "ABSORB")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "ABSORB" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "ABSORB")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -3802,72 +2920,30 @@ Parrot:RegisterCombatEvent{
 	defaultTag = IMMUNE .. "! ([Skill])",
 	combatLogEvents = {
 		{
-			eventType = "SPELL_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if srcGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				
-				
-				return info
+		eventType = "SPELL_MISSED",
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "IMMUNE")
 			end,
+		func = parseMissInfo,
 		},
 		{
-			eventType = "SPELL_PERIODIC_MISSED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-				if srcGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
-					return nil
-				end
-				
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recipientName = dstName
-				info.sourceID = srcGUID
-				info.sourceName = srcName
-				
-				
-				return info
+		eventType = "SPELL_PERIODIC_MISSED",
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "IMMUNE")
 			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "IMMUNE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "IMMUNE")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -3880,73 +2956,66 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "REFLECT" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "REFLECT")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "REFLECT" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "REFLECT")
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "REFLECT" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "REFLECT")
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ffff00", -- yellow
-	canCrit = true,
+--	canCrit = true,
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	subCategory = L["Skills"],
+	name = "Skill evades",
+	localName = L["Skill evades"],
+	defaultTag = EVADE .. "! ([Skill])",
+	combatLogEvents = {
+		{
+		eventType = "SPELL_MISSED",
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "EVADE")
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "SPELL_PERIODIC_MISSED",
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "EVADE")
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
+				return (srcGUID == UnitGUID("player") and missType == "EVADE")
+			end,
+		func = parseMissInfo,
+		},
+	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
+	color = "ff7f00", -- orange
 }
 
 Parrot:RegisterCombatEvent{
@@ -3992,84 +3061,6 @@ Parrot:RegisterCombatEvent{
 		ExtraSkill = L["The spell you interrupted"]
 	},
 	color = "ffff00", -- yellow
-}
-
-
-Parrot:RegisterCombatEvent{
-	category = "Outgoing",
-	subCategory = L["Skills"],
-	name = "Skill evades",
-	localName = L["Skill evades"],
-	defaultTag = EVADE .. "! ([Skill])",
-	combatLogEvents = {
-		{
-		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "EVADE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
-		},
-		{
-		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "EVADE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
-		},
-		{
-		eventType = "RANGE_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= UnitGUID("player") or missType ~= "EVADE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.abilityName = spellName
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			
-			
-			return info
-		end,
-		},
-	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy you attacked."],
-		Skill = L["The spell or ability that you used."],
-	},
-	color = "ff7f00", -- orange
 }
 
 Parrot:RegisterFilterType("Outgoing heals", L["Outgoing heals"], 0)
@@ -4366,7 +3357,7 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee misses",
 	localName = L["Pet melee misses"],
-	defaultTag = string.format("%s %s!", PET, MISS),
+	defaultTag = PET .. " " .. MISS .. "!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
@@ -4407,7 +3398,7 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee dodges",
 	localName = L["Pet melee dodges"],
-	defaultTag = string.format("%s %s!", PET, DODGE),
+	defaultTag = PET .. " " .. DODGE .. "!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
@@ -4448,7 +3439,7 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee parries",
 	localName = L["Pet melee parries"],
-	defaultTag = string.format("%s %s!", PET, PARRY),
+	defaultTag = PET .. " " .. PARRY .. "!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
@@ -4489,7 +3480,7 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee blocks",
 	localName = L["Pet melee blocks"],
-	defaultTag = string.format("%s %s!", PET, BLOCK),
+	defaultTag = PET .. " " .. BLOCK .. "!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
@@ -4530,7 +3521,7 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee absorbs",
 	localName = L["Pet melee absorbs"],
-	defaultTag = string.format("%s %s!", PET, ABSORB),
+	defaultTag = PET .. " " .. ABSORB .. " [Amount]!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
@@ -4571,7 +3562,7 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee immunes",
 	localName = L["Pet melee immunes"],
-	defaultTag = string.format("%s %s!", PET, IMMUNE),
+	defaultTag = PET .. " " .. IMMUNE .. "!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
@@ -4612,7 +3603,7 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet melee"],
 	name = "Pet melee evades",
 	localName = L["Pet melee evades"],
-	defaultTag = string.format("%s %s!", PET, EVADE),
+	defaultTag = PET .. " " .. EVADE .. "!",
 	combatLogEvents = {
 		{
 		eventType = "SWING_MISSED",
@@ -4767,69 +3758,67 @@ Parrot:RegisterCombatEvent{
 	color = "ffff00", -- yellow
 }
 
+
+--##
+local petOutSpellMissTagTranslationsHelp = {
+	Name = L["The name of the enemy your pet attacked."],
+	Skill = L["The ability or spell your pet used."],
+	Amount = L["Amount of the damage that was missed."],
+},
+
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
 	subCategory = L["Pet skills"],
 	name = "Pet ability misses",
 	localName = L["Pet ability misses"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, MISS),
+	defaultTag = PET .. " " .. MISS .. "! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage or missType ~= "MISS" then
-					return nil
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "MISS" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
 				end
-			elseif srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "MISS" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage or missType ~= "MISS" then
-					return nil
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "MISS" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
 				end
-			elseif srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "MISS" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "MISS" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -4838,56 +3827,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet ability dodges",
 	localName = L["Pet ability dodges"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, DODGE),
+	defaultTag = PET .. " " .. DODGE .. "! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "DODGE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "DODGE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "DODGE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "DODGE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "DODGE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -4896,56 +3883,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet ability parries",
 	localName = L["Pet ability parries"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, PARRY),
+	defaultTag = PET .. " " .. PARRY .. "! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "PARRY" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "PARRY" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "PARRY" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "PARRY" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "PARRY" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -4954,56 +3939,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet ability blocks",
 	localName = L["Pet ability blocks"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, BLOCK),
+	defaultTag = PET .. " " .. BLOCK .. "! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "BLOCK" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "BLOCK" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "BLOCK" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "BLOCK" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "BLOCK" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "0000ff", -- blue
 }
 
@@ -5012,56 +3995,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet spell resists",
 	localName = L["Pet spell resists"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, RESIST),
+	defaultTag = PET .. " " .. RESIST .. "! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "RESIST" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "RESIST" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "RESIST" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "RESIST" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "RESIST" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fb2", -- blue-gray
 }
 
@@ -5070,56 +4051,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet skill absorbs",
 	localName = L["Pet skill"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, ABSORB),
+	defaultTag = PET .. " " .. ABSORB .. " [Amount]! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "ABSORB" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "ABSORB" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "ABSORB" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "ABSORB" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "ABSORB" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fff", -- light blue
 }
 
@@ -5128,56 +4107,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet skill immunes",
 	localName = L["Pet skill immunes"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, IMMUNE),
+	defaultTag = PET .. " " .. IMMUNE .. "! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "IMMUNE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "IMMUNE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "IMMUNE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "IMMUNE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "IMMUNE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fff", -- light blue
 }
 
@@ -5186,58 +4163,56 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet skill reflects",
 	localName = L["Pet skill reflects"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, REFLECT),
+	defaultTag = PET .. " " .. REFLECT .. "! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "REFLECT" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "REFLECT" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "REFLECT" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "REFLECT" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "REFLECT" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "7f7fff", -- light blue
-	canCrit = true,
+--	canCrit = true,
 }
 
 Parrot:RegisterCombatEvent{
@@ -5245,56 +4220,54 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Pet skills"],
 	name = "Pet skill evades",
 	localName = L["Pet skill evades"],
-	defaultTag = string.format("%s %s! ([Skill])", PET, EVADE),
+	defaultTag = PET .. " " .. EVADE .. "! ([Skill])",
 	combatLogEvents = {
 		{
 		eventType = "SPELL_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "EVADE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "EVADE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, missType)
-			if srcGUID ~= (UnitGUID("pet") or 0) or missType ~= "EVADE" then
-				return nil
-			end
-			
-			local info = newList()
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.abilityName = spellName
-			
-			
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "EVADE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
+		},
+		{
+		eventType = "RANGE_MISSED",
+		check = function(srcGUID, _, _, dstGUID, _, dstFlags, missType)
+				if missType == "EVADE" then
+					if srcGUID == UnitGUID("pet") then
+						return true
+					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
+						return Parrot.db.profile.totemDamage
+					end
+				end
+				return false
+			end,
+		func = parseMissInfo,
 		},
 	},
-	tagTranslations = {
-		Name = "recipientName",
-		Skill = retrieveAbilityName,
-		Icon = retrieveIconFromAbilityName,
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the enemy your pet attacked."],
-		Skill = L["The ability or spell your pet used."],
-	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
 	color = "ff7fff", -- pink
 }
 

@@ -26,6 +26,8 @@ end
 local _,playerClass = _G.UnitClass("player")
 local newList, del, newDict = Rock:GetRecyclingFunctions("Parrot", "newList", "del", "newDict")
 
+local debug = Parrot.debug
+
 local bit_bor	= bit.bor
 local bit_band  = bit.band
 
@@ -163,32 +165,15 @@ function Parrot_CombatEvents:OnInitialize()
 
 end
 
-function Parrot_CombatEvents:MINIMAP_ZONE_CHANGED()
-	--@debug@
-	ChatFrame1:AddMessage("ZONE_CHANGED")	
-	--@end-debug@
-end
 local enabled = false
 local disabled_by_raid = false
 function Parrot_CombatEvents:check_raid_instance()
 
 	if (not enabled) and (not disabled_by_raid) then
-		--@debug@
-		ChatFrame1:AddMessage("doing nothing because disabled manually")
-		ChatFrame1:AddMessage(enabled .. "")
-		ChatFrame1:AddMessage(disabled_by_raid .. "")
-		--@end-debug@
 		return
 	end
 
-	--@debug@
-	ChatFrame1:AddMessage("NEW AREA?")
-	--@end-debug@
 	local is_she, instance_type = IsInInstance()
-		--@debug@
-	ChatFrame1:AddMessage("is_she: " .. (is_she or "nil"))
-	ChatFrame1:AddMessage("type: " .. (instance_type or "nil"))
-	--@end-debug@
 	if is_she then
 		if instance_type == "raid" then
 			if GetInstanceDifficulty() == 2 then
@@ -200,9 +185,6 @@ function Parrot_CombatEvents:check_raid_instance()
 			end
 		end
 		if not self:IsActive() then
-			--@debug
-			ChatFrame1:AddMessage("disabled by raid")
-			--@end-debug@
 			disabled_by_raid = true
 		end
 	else
@@ -221,9 +203,7 @@ local onEnableFuncs = {}
 
 function Parrot_CombatEvents:OnEnable(first)
 	enabled = true
-	--@debug@
-	ChatFrame1:AddMessage("enable combat-events")
-	--@end-debug@
+
 	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
@@ -1380,6 +1360,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 	if type(color) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. color must be a %q, got %q."):format("string", type(color)), 2)
 	end
+	
 	if not combatEvents[category] then
 		combatEvents[category] = newList()
 	end
@@ -1394,7 +1375,15 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			if not self.combatLogEvents[eventType] then
 				self.combatLogEvents[eventType] = {}
 			end
-			table.insert(self.combatLogEvents[eventType], { category = data.category, name = data.name, infofunc = v.func })
+			local check = v.check
+			if not check then
+				--fallback when no check-function is present
+				check = function() return true end
+			end
+			if type(check) ~= "function" then
+				error(("Bad argument #2 to `RegisterCombatEvent'. check must be a %q or nil, got %q."):format("function", type(check)), 2)
+			end
+			table.insert(self.combatLogEvents[eventType], { category = data.category, name = data.name, infofunc = v.func, checkfunc = check })
 		end
 		
 	end
@@ -2129,11 +2118,14 @@ function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName,
 	local registeredHandlers = self.combatLogEvents[eventtype]
 	if registeredHandlers then
 		for _, v in ipairs(registeredHandlers) do
-			local info = v.infofunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
-			if info then
-				info.uid = (srcGUID or 0) + (dstGUID or 0) + timestamp
-				self:TriggerCombatEvent(v.category, v.name, info)
-				info = del( info )
+			
+			if v.checkfunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...) then
+				local info = v.infofunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
+				if info then
+					info.uid = (srcGUID or 0) + (dstGUID or 0) + timestamp
+					self:TriggerCombatEvent(v.category, v.name, info)
+					info = del( info )
+				end
 			end
 			
 		end
