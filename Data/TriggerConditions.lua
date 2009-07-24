@@ -488,6 +488,25 @@ Parrot:RegisterSecondaryTriggerCondition {
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
+	name = "Minimum power percent",
+	localName = L["Minimum power percent"],
+	param = {
+		type = 'number',
+		min = 0,
+		max = 1,
+		step = 0.01,
+		bigStep = 0.05,
+		isPercent = true,
+	},
+	check = function(param)
+		if UnitIsDeadOrGhost("player") then
+			return false
+		end
+		return UnitMana("player")/UnitManaMax("player") >= param
+	end,
+}
+
+Parrot:RegisterSecondaryTriggerCondition {
 	name = "Warrior stance",
 	localName = L["Warrior stance"],
 	notLocalName = L["Not in warrior stance"],
