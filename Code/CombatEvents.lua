@@ -304,9 +304,9 @@ local function utf8trunc(text, num)
 end
 
 function Parrot_CombatEvents:GetAbbreviatedSpell(name)
-	if not name then
+	if type(name) ~= 'string' then
 		--@debug@
-		Parrot:Print("name was nil")
+		Parrot:Print("name was a " .. type(name))
 		--@end-debug@
 		return nil
 	end
