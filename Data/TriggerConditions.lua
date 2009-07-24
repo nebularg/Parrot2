@@ -608,3 +608,21 @@ Parrot:RegisterSecondaryTriggerCondition {
         end
     end,
 }
+
+Parrot:RegisterSecondaryTriggerCondition {
+    name = "Mounted",
+    localName = L["Mounted"],
+    notLocalName = L["Not mounted"],
+    check = function()
+        return IsMounted()
+    end,
+}
+
+Parrot:RegisterSecondaryTriggerCondition {
+    name = "InVehicle",
+    localName = L["In vehicle"],
+    notLocalName = L["Not in vehicle"],
+    check = function()
+        return UnitInVehicle("player")
+    end,
+}
