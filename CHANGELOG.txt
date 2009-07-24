@@ -1,5 +1,6 @@
 v1.7.2:
      add support for throttling miss-events (avoids like parry, block, etc.)
+     add "minimum power percent"-secondary trigger condition
 
 v1.7.1:
  
