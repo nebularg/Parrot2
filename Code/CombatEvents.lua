@@ -304,12 +304,14 @@ local function utf8trunc(text, num)
 end
 
 function Parrot_CombatEvents:GetAbbreviatedSpell(name)
+
 	if type(name) ~= 'string' then
 		--@debug@
 		Parrot:Print("name was a " .. type(name))
 		--@end-debug@
 		return nil
 	end
+	
 	local style = self.db.profile.abbreviateStyle
 	if style == "none" then
 		return name
@@ -454,6 +456,16 @@ local function hexColorToTuple(color)
 	return math.floor(num / 256^2)/255, math.floor((num / 256)%256)/255, (num%256)/255
 end
 
+
+local function getSoundChoices()
+	local t = {}
+	for _,v in ipairs(SharedMedia:List("sound")) do
+		t[v] = v
+	end
+	return t
+end
+		
+
 function Parrot_CombatEvents:OnOptionsCreate()
 	local events_opt
 	events_opt = {
@@ -465,7 +477,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 --		end,
 		args = {
 			--[[enable_combat_events = {
-				type = 'boolean',
+				type = 'toggle',
 				name = L["Enabled"],
 				desc = L["Whether this module is enabled"],
 				get = function() return self:GetModule("CombatEvents"):IsActive() end,
@@ -473,21 +485,21 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			},]]--
 			
 			disable_in_10man = {
-				type = 'boolean',
+				type = 'toggle',
 				name = L["Disable in normal raids"],
 				desc = L["Disable CombatEvents when in a 10-man raid instance"],
 				get = function() return self.db.profile.disable_in_10man end,
-				set = function(value) 
+				set = function(info, value) 
 						self.db.profile.disable_in_10man = value
 						self:check_raid_instance();
 					end,
 			},
 			disable_in_25man = {
-				type = 'boolean',
+				type = 'toggle',
 				name = L["Disable in heroic raids"],
 				desc = L["Disable CombatEvents when in a 25-man raid instance"],
 				get = function() return self.db.profile.disable_in_25man end,
-				set = function(value) 
+				set = function(info, value) 
 						self.db.profile.disable_in_25man = value 
 						self:check_raid_instance()
 					end,
@@ -525,13 +537,13 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				args = {
 					color = {
 						order = 1,
-						type = 'boolean',
+						type = 'toggle',
 						name = L["Color"],
 						desc = L["Whether to color event modifiers or not."],
 						get = function()
 							return self.db.profile.modifier.color
 						end,
-						set = function(value)
+						set = function(info, value)
 							self.db.profile.modifier.color = value
 						end
 					}
@@ -544,26 +556,26 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				args = {
 					color = {
 						order = 1,
-						type = 'boolean',
+						type = 'toggle',
 						name = L["Color"],
 						desc = L["Whether to color damage types or not."],
 						get = function()
 							return self.db.profile.damageTypes.color
 						end,
-						set = function(value)
+						set = function(info, value)
 							self.db.profile.damageTypes.color = value
 						end
 					}
 				}
 			},
 			stickyCrit = {
-				type = 'boolean',
+				type = 'toggle',
 				name = L["Sticky crits"],
 				desc = L["Enable to show crits in the sticky style."],
 				get = function()
 					return self.db.profile.stickyCrit
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.db.profile.stickyCrit = value
 				end,
 			},
@@ -591,34 +603,34 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				desc = L["How or whether to shorten spell names."],
 				args = {
 					style = {
-						type = 'choice',
+						type = 'select',
 						name = L["Style"],
 						desc = L["How or whether to shorten spell names."],
 						get = function()
 							return self.db.profile.abbreviateStyle
 						end,
-						set = function(value)
+						set = function(info, value)
 							self.db.profile.abbreviateStyle = value
 						end,
-						choices = {
+						values = {
 							none = L["None"],
 							abbreviate = L["Abbreviate"],
 							truncate = L["Truncate"],
 						},
-						choiceDescs = {
+--[[						choiceDescs = {
 							none = L["Do not shorten spell names."],
 							abbreviate = L["Gift of the Wild => GotW."],
 							truncate = L["Gift of the Wild => Gift of t..."],
-						},
+						},--]]
 					},
 					length = {
-						type = 'number',
+						type = 'range',
 						name = L["Length"],
 						desc = L["The length at which to shorten spell names."],
 						get = function()
 							return self.db.profile.abbreviateLength
 						end,
-						set = function(value)
+						set = function(info, value)
 							self.db.profile.abbreviateLength = value
 						end,
 						disabled = function()
@@ -644,17 +656,17 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		'overheal', L["Overheals"],
 		'overkill', L["Overkills"]
 	)
-	local function getEnabled(passValue)
-		return self.db.profile.modifier[passValue].enabled
+	local function getEnabled(info)
+		return self.db.profile.modifier[info.arg].enabled
 	end
-	local function setEnabled(passValue, value)
-		self.db.profile.modifier[passValue].enabled = value
+	local function setEnabled(info, value)
+		self.db.profile.modifier[info.arg].enabled = value
 	end
 	local function tupleToHexColor(r, g, b)
 		return ("%02x%02x%02x"):format(r * 255, g * 255, b * 255)
 	end
-	local function getTag(passValue)
-		return self.db.profile.modifier[passValue].tag
+	local function getTag(info)
+		return self.db.profile.modifier[info.arg].tag
 	end
 
 	local handler__tagTranslations
@@ -671,16 +683,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		end
 		return "[" .. inner:gsub("(%b[])", handler) .. "]"
 	end
-	local function setTag(passValue, value)
-		handler__tagTranslations = modifierTranslationHelps[passValue]
-		self.db.profile.modifier[passValue].tag = value:gsub("(%b[])", handler)
+	local function setTag(info, value)
+		handler__tagTranslations = modifierTranslationHelps[info.arg]
+		self.db.profile.modifier[info.arg].tag = value:gsub("(%b[])", handler)
 		handler__tagTranslations = nil
 	end
-	local function getColor(passValue)
-		return hexColorToTuple(self.db.profile.modifier[passValue].color)
+	local function getColor(info)
+		return hexColorToTuple(self.db.profile.modifier[info.arg].color)
 	end
-	local function setColor(passValue, r, g, b)
-		self.db.profile.modifier[passValue].color = tupleToHexColor(r, g, b)
+	local function setColor(info, r, g, b)
+		self.db.profile.modifier[info.arg].color = tupleToHexColor(r, g, b)
 	end
 	for k,v in pairs(tmp) do
 		local usageT = newList(L["<Text>"])
@@ -708,13 +720,13 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			desc = v,
 			args = {
 				enabled = {
-					type = 'boolean',
+					type = 'toggle',
 					name = L["Enabled"],
 					desc = L["Whether to enable showing this event modifier."],
 					get = getEnabled,
 					set = setEnabled,
 					order = -1,
-					passValue = k,
+					arg = k,
 				},
 				color = {
 					type = 'color',
@@ -722,16 +734,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					desc = L["What color this event modifier takes on."],
 					get = getColor,
 					set = setColor,
-					passValue = k,
+					arg = k,
 				},
 				tag = {
-					type = 'string',
+					type = 'input',
 					name = L["Text"],
 					desc = L["What text this event modifier shows."],
 					usage = usage,
 					get = getTag,
 					set = setTag,
-					passValue = k,
+					arg = k,
 				},
 			}
 		}
@@ -747,11 +759,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		"Shadow", L["Shadow"],
 		"Arcane", L["Arcane"]
 	)
-	local function getColor(passValue)
-		return hexColorToTuple(self.db.profile.damageTypes[passValue])
+	local function getColor(info)
+		return hexColorToTuple(self.db.profile.damageTypes[info.arg])
 	end
-	local function setColor(passValue, r, g, b)
-		self.db.profile.damageTypes[passValue] = tupleToHexColor(r, g, b)
+	local function setColor(info, r, g, b)
+		self.db.profile.damageTypes[info.arg] = tupleToHexColor(r, g, b)
 	end
 	for k,v in pairs(tmp) do
 		events_opt.args.damageTypes.args[k] = {
@@ -760,14 +772,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			desc = L["What color this damage type takes on."],
 			get = getColor,
 			set = setColor,
-			passValue = k,
+			arg = k,
 		}
 	end
 	tmp = del(tmp)
-	local function getTag(category, name)
+	local function getTag(info)
+		local category, name = info.arg[1], info.arg[2]
 		return self.db.profile[category][name].tag or combatEvents[category][name].defaultTag
 	end
-	local function setTag(category, name, value)
+	local function setTag(info, value)
+		local category, name = info.arg[1], info.arg[2]
 		handler__tagTranslations = combatEvents[category][name].tagTranslations
 		value = value:gsub("(%b[])", handler)
 		handler__tagTranslations = nil
@@ -777,10 +791,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		self.db.profile[category][name].tag = value
 	end
 	
-	local function getColor(category, name)
+	local function getColor(info)
+		local category, name = info.arg[1], info.arg[2]
 		return hexColorToTuple(self.db.profile[category][name].color or combatEvents[category][name].color)
 	end
-	local function setColor(category, name, r, g, b)
+	local function setColor(info, r, g, b)
+		local category, name = info.arg[1], info.arg[2]
 		local color = tupleToHexColor(r, g, b)
 		local combatEvent = combatEvents[category][name]
 		if combatEvent.color == color then
@@ -789,7 +805,8 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		self.db.profile[category][name].color = color
 	end
 
-	local function getSticky(category, name)
+	local function getSticky(info)
+		local category, name = info.arg[1], info.arg[2]
 		local sticky = self.db.profile[category][name].sticky
 		if sticky ~= nil then
 			return sticky
@@ -797,44 +814,52 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			return combatEvents[category][name].sticky
 		end
 	end
-	local function setSticky(category, name, value)
+	local function setSticky(info, value)
+		local category, name = info.arg[1], info.arg[2]
 		if (not not combatEvents[category][name].sticky) == value then
 			value = nil
 		end
 		self.db.profile[category][name].sticky = value
 	end
 
-	local function getFontFace(category, name)
+	local function getFontFace(info)
+		local category, name = info.arg[1], info.arg[2]
 		local font = self.db.profile[category][name].font
 		if font == nil then
-			return L["Inherit"]
+			return "1"
 		else
 			return font
 		end
 	end
-	local function setFontFace(category, name, value)
-		if value == L["Inherit"] then
+	local function setFontFace(info, value)
+		local category, name = info.arg[1], info.arg[2]
+		if value == "1" then
 			value = nil
 		end
 		self.db.profile[category][name].font = value
 	end
-	local function getFontSize(category, name)
+	local function getFontSize(info)
+		local category, name = info.arg[1], info.arg[2]
 		return self.db.profile[category][name].fontSize
 	end
-	local function setFontSize(category, name, value)
+	local function setFontSize(info, value)
+		local category, name = info.arg[1], info.arg[2]
 		self.db.profile[category][name].fontSize = value
 	end
-	local function getFontSizeInherit(category, name)
+	local function getFontSizeInherit(info)
+		local category, name = info.arg[1], info.arg[2]
 		return self.db.profile[category][name].fontSize == nil
 	end
-	local function setFontSizeInherit(category, name, value)
+	local function setFontSizeInherit(info, value)
+		local category, name = info.arg[1], info.arg[2]
 		if value then
 			self.db.profile[category][name].fontSize = nil
 		else
 			self.db.profile[category][name].fontSize = 18
 		end
 	end
-	local function getFontOutline(category, name)
+	local function getFontOutline(info)
+		local category, name = info.arg[1], info.arg[2]
 		local outline = self.db.profile[category][name].fontOutline
 		if outline == nil then
 			return L["Inherit"]
@@ -842,7 +867,8 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			return outline
 		end
 	end
-	local function setFontOutline(category, name, value)
+	local function setFontOutline(info, value)
+		local category, name = info.arg[1], info.arg[2]
 		if value == L["Inherit"] then
 			value = nil
 		end
@@ -854,14 +880,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		THICKOUTLINE = L["Thick"],
 		[L["Inherit"]] = L["Inherit"],
 	}
-	local function getEnable(category, name)
+	local function getEnable(info)
+		local category, name = info.arg[1], info.arg[2]
 		local disabled = self.db.profile[category][name].disabled
 		if disabled == nil then
 			disabled = combatEvents[category][name].defaultDisabled
 		end
 		return not disabled
 	end
-	local function setEnable(category, name, value)
+	local function setEnable(info, value)
+		local category, name = info.arg[1], info.arg[2]
 		local disabled = not value
 		if (not not combatEvents[category][name].defaultDisabled) == disabled then
 			disabled = nil
@@ -870,29 +898,98 @@ function Parrot_CombatEvents:OnOptionsCreate()
 
 		refreshEventRegistration(category, name)
 	end
-	local function getScrollArea(category, name)
+	local function getScrollArea(info)
+		local category, name = info.arg[1], info.arg[2]
 		local scrollArea = self.db.profile[category][name].scrollArea
 		if scrollArea == nil then
 			scrollArea = category
 		end
 		return scrollArea
 	end
-	local function setScrollArea(category, name, value)
+	local function setScrollArea(info, value)
+		local category, name = info.arg[1], info.arg[2]
 		if value == category then
 			value = nil
 		end
 		self.db.profile[category][name].scrollArea = value
 	end
-	local function getSound(category, name)
+	local function getSound(info)
+		local category, name = info.arg[1], info.arg[2]
 		return self.db.profile[category][name].sound or "None"
 	end
-	local function setSound(category, name, value)
+	local function setSound(info, value)
+		local category, name = info.arg[1], info.arg[2]
 		PlaySoundFile(SharedMedia:Fetch('sound', value))
 		if value == "None" then
 			value = nil
 		end
 		self.db.profile[category][name].sound = value
 	end
+	
+	local function getCommonEnabled(info)
+		local category, subcat = info.arg[1], info.arg[2]
+		
+		local one_enabled, one_disabled = false, false
+		for k,v in pairs(combatEvents[category]) do
+			if v.subCategory == subcat then
+				if getEnable( { arg = {category, v.name} } ) then
+					one_enabled = true
+				else
+					one_disabled = true
+				end
+			end
+		end
+		
+		if one_disabled and one_enabled then
+			return nil
+		elseif one_disabled then
+			return false
+		else
+			return true
+		end	
+	end
+	
+	local function setCommonEnabled(info, value)
+		local category, subcat = info.arg[1], info.arg[2]
+		for k,v in pairs(combatEvents[category]) do
+			if v.subCategory == subcat then
+				self.db.profile[category][v.name].disabled = not value
+			end
+		end
+		
+	end
+	
+	local function getCommonScrollArea(info)
+		local category, subcat = info.arg[1], info.arg[2]
+		local common_choice
+		for k,v in pairs(combatEvents[category]) do
+			if v.subCategory == subcat then
+				local choice = getScrollArea( { arg = {category, v.name} } )
+				if common_choice then
+					if choice ~= common_choice then
+						common_choice = nil
+						break
+					end
+				else
+					common_choice = choice
+				end
+			end
+		end
+		return common_choice
+	end
+	
+	local function setCommonScrollArea(info, value)
+		local category, subcat = info.arg[1], info.arg[2]
+
+		for k,v in pairs(combatEvents[category]) do
+			if v.subCategory == subcat then
+				setScrollArea( { arg = {category, v.name} }, value )
+			end
+		end
+		
+		
+	end
+	
 	local function resortOptions(category)
 --		local args = events_opt.args[category].args
 --		local subcats = newList()
@@ -948,14 +1045,15 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			}
 		end
 		local subcat = combatEvents[category][name].subCategory
-		if not events_opt.args[category].args['subcat_' .. subcat] then
+
+--[[		if not events_opt.args[category].args['subcat_' .. subcat] then
 			local name = subcat ~= L["Uncategorized"] and subcat or nil
 			events_opt.args[category].args['subcat_' .. subcat] = {
 				type = 'header',
-				name = name,
-				desc = name,
+				name = name or L["Uncategorized"],
+				desc = name or L["Uncategorized"],
 			}
-		end
+		end--]]
 		
 		-- copy the choices
 		local scrollarea_choices = {}
@@ -965,6 +1063,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		-- scrollarea_choices[" "] = " "
 		
 		-- added so that options get sorted into subcategories
+
 		if not events_opt.args[category].args[subcat] then
 			events_opt.args[category].args[subcat] = {
 				type = 'group',
@@ -974,83 +1073,20 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					enabled = {
 						name = L["Enabled"],
 						desc = L["Whether all events in this category are enabled."],
-						type = 'boolean',
-						get = function()
-								local enabled_count = 0
-								local disabled_count = 0
-								for i,v in pairs(combatEvents[category]) do
-									
-									if v.subCategory == subcat then
-										if self.db.profile[category][v.name].disabled then 
-											disabled_count = disabled_count + 1
-											break;
-										else
-											enabled_count = enabled_count + 1
-										end
-									end
-									
-								end
-								
-								-- only if all events are enabled, this checkbox is checked.
-								if disabled_count == 0 then
-									return true
-								else
-									return false
-								end
-							end,
-						set = function(value) 
-							if value then
-							
-								for i,v in pairs(combatEvents[category]) do									
-									if v.subCategory == subcat then
-										self.db.profile[category][v.name].disabled = false
-									end
-								end
-								
-							else
-							
-								for i,v in pairs(combatEvents[category]) do									
-									if v.subCategory == subcat then
-										self.db.profile[category][v.name].disabled = true
-									end
-								end
-							
-							end
-						end,
-						
+						type = 'toggle',
+						tristate = true,
+						get = getCommonEnabled,
+						set = setCommonEnabled,
+						arg = {category, subcat},
 					},
-					scrollArea = {
+					scrollarea = {
 						name = L["Scroll area"],
 						desc = L["Scoll area where all events will be shown"],
-						type = 'choice',
-						choices = scrollarea_choices,
-						get = function()
-								local common_choice = nil
-								scrollarea_choices[" "] = nil
-								for i,v in pairs(combatEvents[category]) do
-									if v.subCategory == subcat then
-										if common_choice == nil then
-											common_choice = getScrollArea(category, v.name)
-										elseif common_choice ~= getScrollArea(category, v.name) then
-											scrollarea_choices[" "] = " "
-											common_choice = " "
-											break
-										end
-									end
-								end
-								return common_choice
-							end, -- getScrollArea(category, name)
-						set = function(value)
-								if value == " " then
-									return
-								else
-									for i,v in pairs(combatEvents[category]) do
-										if v.subCategory == subcat then
-											setScrollArea(category, v.name, value)
-										end
-									end
-								end
-							end, -- setScrollArea(category, name, value)
+						type = 'select',
+						values = function() return Parrot_ScrollAreas:GetScrollAreasChoices() end,
+						get = getCommonScrollArea,
+						set = setCommonScrollArea,
+						arg = {category, subcat},
 					},
 				},
 				order = 1,
@@ -1065,12 +1101,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				tag = {
 					name = L["Tag"],
 					desc = L["Tag to show for the current event."],
-					type = 'string',
+					type = 'input',
 					usage = usage,
 					get = getTag,
 					set = setTag,
-					passValue = category,
-					passValue2 = name,
+					arg = {category, name},
 					order = 1,
 				},
 				color = {
@@ -1079,58 +1114,53 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					type = 'color',
 					get = getColor,
 					set = setColor,
-					passValue = category,
-					passValue2 = name,
+					arg = {category, name},
 				},
 				sound = {
-					type = 'choice',
-					choices = SharedMedia:List("sound"),
+					type = 'select',
+					values = getSoundChoices,
 					name = L["Sound"],
 					desc = L["What sound to play when the current event occurs."],
 					get = getSound,
 					set = setSound,
-					passValue = category,
-					passValue2 = name,
+					arg = {category, name},
 				},
 				sticky = {
 					name = L["Sticky"],
 					desc = L["Whether the current event should be classified as \"Sticky\""],
-					type = 'boolean',
+					type = 'toggle',
 					get = getSticky,
 					set = setSticky,
-					passValue = category,
-					passValue2 = name,
+					arg = {category, name},
 				},
 				font = {
 					type = 'group',
-					groupType = 'inline',
+					inline = true,
 					name = L["Custom font"],
 					desc = L["Custom font"],
 					args = {
 						fontface = {
-							type = 'choice',
+							type = 'select',
 							name = L["Font face"],
 							desc = L["Font face"],
-							choices = Parrot.inheritFontChoices,
-							choiceFonts = SharedMedia:HashTable("font"),
+							values = Parrot.inheritFontChoices,
+--							choiceFonts = SharedMedia:HashTable("font"),
 							get = getFontFace,
 							set = setFontFace,
-							passValue = category,
-							passValue2 = name,
+							arg = {category, name},
 							order = 1,
 						},
 						fontSizeInherit = {
-							type = 'boolean',
+							type = 'toggle',
 							name = L["Inherit font size"],
 							desc = L["Inherit font size"],
 							get = getFontSizeInherit,
 							set = setFontSizeInherit,
-							passValue = category,
-							passValue2 = name,
+							arg = {category, name},
 							order = 2,
 						},
 						fontSize = {
-							type = 'number',
+							type = 'range',
 							name = L["Font size"],
 							desc = L["Font size"],
 							min = 12,
@@ -1139,42 +1169,38 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							get = getFontSize,
 							set = setFontSize,
 							disabled = getFontSizeInherit,
-							passValue = category,
-							passValue2 = name,
+							arg = {category, name},
 							order = 3,
 						},
 						fontOutline = {
-							type = 'choice',
+							type = 'select',
 							name = L["Font outline"],
 							desc = L["Font outline"],
 							get = getFontOutline,
 							set = setFontOutline,
-							choices = fontOutlineChoices,
-							passValue = category,
-							passValue2 = name,
+							values = fontOutlineChoices,
+							arg = {category, name},
 							order = 4,
 						},
 					}
 				},
 				enable = {
 					order = -1,
-					type = 'boolean',
+					type = 'toggle',
 					name = L["Enabled"],
 					desc = L["Enable the current event."],
 					get = getEnable,
 					set = setEnable,
-					passValue = category,
-					passValue2 = name,
+					arg = {category, name},
 				},
 				scrollArea = {
-					type = 'choice',
+					type = 'select',
 					name = L["Scroll area"],
 					desc = L["Which scroll area to use."],
-					choices = Parrot_ScrollAreas:GetScrollAreasChoices(),
+					values = Parrot_ScrollAreas:GetScrollAreasChoices(),
 					get = getScrollArea,
 					set = setScrollArea,
-					passValue = category,
-					passValue2 = name,
+					arg = {category, name},
 				},
 			}
 		}
@@ -1193,7 +1219,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	function createThrottleOption(throttleType)
 		local localName = throttleTypes[throttleType]
 		events_opt.args.throttle.args[throttleType] = {
-			type = 'number',
+			type = 'range',
 			name = localName,
 			desc = L["What timespan to merge events within.\nNote: a time of 0s means no throttling will occur."],
 			min = 0,
@@ -1202,7 +1228,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			bigStep = 1,
 			get = getTimespan,
 			set = setTimespan,
-			passValue = throttleType
+			arg = throttleType
 		}
 	end
 
@@ -1218,7 +1244,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	function createFilterOption(filterType)
 		local localName = filterTypes[filterType]
 		events_opt.args.filters.args[filterType] = {
-			type = 'number',
+			type = 'range',
 			name = localName,
 			desc = L["What amount to filter out. Any amount below this will be filtered.\nNote: a value of 0 will mean no filtering takes place."],
 			min = 0,
@@ -1227,7 +1253,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			bigStep = 20,
 			get = getAmount,
 			set = setAmount,
-			passValue = filterType
+			arg = filterType
 		}
 	end
 	

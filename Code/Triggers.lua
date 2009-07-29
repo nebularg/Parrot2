@@ -1,17 +1,18 @@
-local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
+-- local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
 
 local Parrot = Parrot
 local Parrot_Triggers = Parrot:NewModule("Triggers", "LibRockTimer-1.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
-
 local BCL = LibStub("LibBabble-Class-3.0"):GetLookupTable()
 
 local newList, newSet, newDict, del, unpackDictAndDel = Rock:GetRecyclingFunctions("Parrot", "newList", "newSet", "newDict", "del", "unpackDictAndDel")
 
+local debug = Parrot.debug
+
 local _,playerClass = UnitClass("player")
 
-local SharedMedia = Rock("LibSharedMedia-3.0")
+local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 Parrot_Triggers.db = Parrot:GetDatabaseNamespace("Triggers")
 
@@ -425,7 +426,7 @@ function Parrot_Triggers:OnEnable(first)
 			localName = L["Trigger cooldown"],
 			defaultParam = 3,
 			param = {
-				type = "number",
+				type = 'number',
 				min = 0,
 				max = 60,
 				step = 0.1,
@@ -650,7 +651,22 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid)
 	end
 end
 
+local function getSoundChoices()
+	local t = {}
+	for _,v in ipairs(SharedMedia:List("sound")) do
+		t[v] = v
+	end
+	return t
+end
+
 function Parrot_Triggers:OnOptionsCreate()
+	
+	local acetype = {
+		['number'] = 'range',
+		['string'] = 'input',
+		['boolean'] = 'toggle',
+	}	
+		
 	local makeOption
 	local remove
 	local triggers_opt = {
@@ -661,9 +677,9 @@ function Parrot_Triggers:OnOptionsCreate()
 			return not self:IsActive()
 		end,
 		args = {
-			{
+			new = {
 				type = 'execute',
-				buttonText = L["Create"],
+--				buttonText = L["Create"],
 				name = L["New trigger"],
 				desc = L["Create a new trigger"],
 				func = function()
@@ -689,11 +705,11 @@ function Parrot_Triggers:OnOptionsCreate()
 					return false
 				end
 			},
-			{
+			cleanup = {
 				type = 'execute',
 				order = 21,
 				name = L["Cleanup Triggers"],
-				buttonText = L["Cleanup Triggers"],
+				-- buttonText = L["Cleanup Triggers"],
 				desc = L["Delete all Triggers that belong to a different locale"],
 				func = function()
 
@@ -712,37 +728,38 @@ function Parrot_Triggers:OnOptionsCreate()
 	Parrot:AddOption('triggers', triggers_opt)
 	
 	local function getFontFace(t)
-		local font = t.font
+		local font = t.arg.font
 		if font == nil then
-			return L["Inherit"]
+--			return L["Inherit"]
+			return "1"
 		else
 			return font
 		end
 	end
 	local function setFontFace(t, value)
-		if value == L["Inherit"] then
+		if value == "1" then
 			value = nil
 		end
-		t.font = value
+		t.arg.font = value
 	end
 	local function getFontSize(t)
-		return t.fontSize
+		return t.arg.fontSize
 	end
 	local function setFontSize(t, value)
-		t.fontSize = value
+		t.arg.fontSize = value
 	end
 	local function getFontSizeInherit(t)
-		return t.fontSize == nil
+		return t.arg.fontSize == nil
 	end
 	local function setFontSizeInherit(t, value)
 		if value then
-			t.fontSize = nil
+			t.arg.fontSize = nil
 		else
-			t.fontSize = 18
+			t.arg.fontSize = 18
 		end
 	end
 	local function getFontOutline(t)
-		local outline = t.fontOutline
+		local outline = t.arg.fontOutline
 		if outline == nil then
 			return L["Inherit"]
 		else
@@ -753,7 +770,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		if value == L["Inherit"] then
 			value = nil
 		end
-		t.fontOutline = value
+		t.arg.fontOutline = value
 	end
 	local fontOutlineChoices = {
 		NONE = L["None"],
@@ -762,26 +779,26 @@ function Parrot_Triggers:OnOptionsCreate()
 		[L["Inherit"]] = L["Inherit"],
 	}
 	local function getEnabled(t)
-		return not t.disabled
+		return not t.arg.disabled
 	end
 	local function setEnabled(t, value)
-		t.disabled = not value or nil
+		t.arg.disabled = not value or nil
 		rebuildEffectiveRegistry()
 	end
 	local function getScrollArea(t)
-		return t.scrollArea or "Notification"
+		return t.arg.scrollArea or "Notification"
 	end
 	local function setScrollArea(t, value)
 		if value == "Notification" then
 			value = nil
 		end
-		t.scrollArea = value
+		t.arg.scrollArea = value
 	end
 	-- not local, declared above
 	function remove(t)
-		triggers_opt.args[tostring(t)] = nil
+		triggers_opt.args[tostring(t.arg)] = nil
 		for i,v in ipairs(self.db.profile.triggers) do
-			if v == t then
+			if v == t.arg then
 				table.remove(self.db.profile.triggers, i)
 				break
 			end
@@ -789,30 +806,30 @@ function Parrot_Triggers:OnOptionsCreate()
 		rebuildEffectiveRegistry()
 	end
 	local function getSticky(t)
-		return t.sticky
+		return t.arg.sticky
 	end
 	local function setSticky(t, value)
-		t.sticky = value or nil
+		t.arg.sticky = value or nil
 	end
 	local function getName(t)
-		return t.name
+		return t.arg.name
 	end
 	local function setName(t, value)
-		t.name = value
-		local opt = triggers_opt.args[tostring(t)]
+		t.arg.name = value
+		local opt = triggers_opt.args[tostring(t.arg)]
 		opt.name = value
 		opt.desc = value
 		opt.order = value == L["New trigger"] and -110 or -100
 	end
 	
 	local function getIcon(t)
-		return t.icon or ''
+		return tostring(t.arg.icon) or ''
 	end
 	local function setIcon(t, value)
 		if value == '' then
 			value = nil
 		end
-		t.icon = value
+		t.arg.icon = tonumber(value) or value
 	end
 	
 	local function tupleToHexColor(r, g, b)
@@ -820,32 +837,32 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 	
 	local function getColor(t)
-		return hexColorToTuple(t.color or "ffffff")
+		return hexColorToTuple(t.arg.color or "ffffff")
 	end
 	local function setColor(t, r, g, b)
 		local color = tupleToHexColor(r, g, b)
 		if color == "ffffff" then
 			color = nil
 		end
-		t.color = color
+		t.arg.color = color
 	end
 	
 	local function getClass(t, class)
-		local tmp = newSet((";"):split(t.class))
+		local tmp = newSet((";"):split(t.arg.class))
 		local value = tmp[class]
 		tmp = del(tmp)
 		return value
 	end
 	
 	local function setClass(t, class, value)
-		local tmp = newSet((";"):split(t.class))
+		local tmp = newSet((";"):split(t.arg.class))
 		tmp[class] = value or nil
 		local tmp2 = newList()
 		for k in pairs(tmp) do
 			tmp2[#tmp2+1] = k
 		end
 		tmp = del(tmp)
-		t.class = table.concat(tmp2, ";")
+		t.arg.class = table.concat(tmp2, ";")
 		tmp2 = del(tmp2)
 		if class == playerClass then
 			rebuildEffectiveRegistry()
@@ -853,7 +870,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 	
 	local function getSound(t)
-		return t.sound or "None"
+		return t.arg.sound or "None"
 	end
 	
 	local function setSound(t, value)
@@ -861,10 +878,14 @@ function Parrot_Triggers:OnOptionsCreate()
 		if value == "None" then
 			value = nil
 		end
-		t.sound = value
+		t.arg.sound = value
 	end
 	
 	local function test(t)
+		local t = t
+		if t.arg then
+			t = t.arg
+		end
 		local r, g, b = hexColorToTuple(t.color or 'ffffff')
 		--TODO
 		Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, figureIconPath(t.icon))
@@ -895,7 +916,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		if not param then
 			opt.args[name] = newDict(
 				'type', 'execute',
-				'buttonText', "---",
+				-- 'buttonText', "---",
 				'name', localName,
 				'desc', localName,
 				'func', function() end,
@@ -909,13 +930,18 @@ function Parrot_Triggers:OnOptionsCreate()
 				'get', function()
 					return t.conditions[name]
 				end,
-				'set', function(value)
+				'set', function(info, value)
 					t.conditions[name] = value
 				end,
 				'order', -100
 			)
 			for k, v in pairs(param) do
-				tmp[k] = v
+				if k == "type" then
+					tmp[k] = acetype[v] or v
+				else
+					tmp[k] = v
+				end
+				
 			end
 			opt.args[name] = tmp
 			if default then
@@ -928,21 +954,23 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 	end
 	local function newPrimaryCondition(t, name)
+		local t = t.arg
 		local opt = triggers_opt.args[tostring(t)].args.primary
 		local localName = Parrot_TriggerConditions:GetPrimaryConditionChoices()[name]
 		t.conditions[name] = addPrimaryCondition(t, name, localName)
 	end
 	local function removePrimaryCondition(t, name)
+		local t = t.arg
 		local opt = triggers_opt.args[tostring(t)].args.primary
 		opt.args[name] = del(opt.args[name])
 		t.conditions[name] = nil
 	end
 	local function hasNoPrimaryConditions(t)
-		return next(t.conditions) == nil
+		return next(t.arg.conditions) == nil
 	end
 	local function hasAllPrimaryConditions(t)
 		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
-			if t.conditions[k] == nil then
+			if t.arg.conditions[k] == nil then
 				return false
 			end
 		end
@@ -951,20 +979,20 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function getAvailablePrimaryConditions(t)
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
-			if not t.conditions[k] then
+			if not t.arg.conditions[k] then
 				tmp[k] = v
 			end
 		end
-		return "@dict", unpackDictAndDel(tmp)
+		return tmp
 	end
 	local function getUsedPrimaryConditions(t)
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
-			if t.conditions[k] then
+			if t.arg.conditions[k] then
 				tmp[k] = v
 			end
 		end
-		return "@dict", unpackDictAndDel(tmp)
+		return tmp
 	end
 	
 	local function addSecondaryCondition(t, name, localName)
@@ -973,7 +1001,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		if not param then
 			opt.args[name] = newDict(
 				'type', 'execute',
-				'buttonText', "---",
+				-- 'buttonText', "---",
 				'name', localName,
 				'desc', localName,
 				'func', function() end,
@@ -987,13 +1015,23 @@ function Parrot_Triggers:OnOptionsCreate()
 				'get', function()
 					return t.secondaryConditions[name]
 				end,
-				'set', function(value)
+				'set', function(info, value)
 					t.secondaryConditions[name] = value
 				end,
 				'order', -100
 			)
 			for k, v in pairs(param) do
-				tmp[k] = v
+				-- TODO remove
+				if k ~= "usage" then
+					
+			
+				if k == "type" then
+					tmp[k] = acetype[v] or v
+				else
+					tmp[k] = v
+				end
+				
+				end
 			end
 			opt.args[name] = tmp
 			if default then
@@ -1006,6 +1044,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 	end
 	local function newSecondaryCondition(t, name)
+		local t = t.arg
 		local opt = triggers_opt.args[tostring(t)].args.secondary
 		local localName = Parrot_TriggerConditions:GetSecondaryConditionChoices()[name]
 		if not t.secondaryConditions then
@@ -1014,6 +1053,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		t.secondaryConditions[name] = addSecondaryCondition(t, name, localName)
 	end
 	local function removeSecondaryCondition(t, name)
+		local t = t.arg
 		local opt = triggers_opt.args[tostring(t)].args.secondary
 		opt.args[name] = del(opt.args[name])
 		t.secondaryConditions[name] = nil
@@ -1022,9 +1062,10 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 	end
 	local function hasNoSecondaryConditions(t)
-		return not t.secondaryConditions
+		return not t.arg.secondaryConditions
 	end
 	local function hasAllSecondaryConditions(t)
+		local t = t.arg
 		if not t.secondaryConditions then
 			return false
 		end
@@ -1036,22 +1077,24 @@ function Parrot_Triggers:OnOptionsCreate()
 		return true
 	end
 	local function getAvailableSecondaryConditions(t)
+		local t = t.arg
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do
 			if not t.secondaryConditions or not t.secondaryConditions[k] then
 				tmp[k] = v
 			end
 		end
-		return "@dict", unpackDictAndDel(tmp)
+		return tmp
 	end
 	local function getUsedSecondaryConditions(t)
+		local t = t.arg
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do
 			if t.secondaryConditions and t.secondaryConditions[k] then
 				tmp[k] = v
 			end
 		end
-		return "@dict", unpackDictAndDel(tmp)
+		return tmp
 	end
 	
 	function makeOption(t)
@@ -1062,41 +1105,42 @@ function Parrot_Triggers:OnOptionsCreate()
 			order = t.name == L["New trigger"] and -110 or -100,
 			args = {
 				output = {
-					type = 'string',
+					type = 'input',
 					name = L["Output"],
 					desc = L["The text that is shown"],
 					usage = L['<Text to show>'],
 					get = getName,
 					set = setName,
-					passValue = t,
+					arg = t,
 					order = 1,
 				},
 				icon = {
-					type = 'string',
+					type = 'input',
 					name = L["Icon"],
 					desc = L["The icon that is shown"],--Note: Spells that are not in the Spellbook (i.e. some Talents) can only be identified by SpellId (retrievable at www.wowhead.com, looking at the URL)
 					usage = L['<Spell name> or <Item name> or <Path> or <SpellId>'],
 					get = getIcon,
 					set = setIcon,
-					passValue = t,
+					arg = t,
 				},
 				enabled = {
-					type = 'boolean',
+					type = 'toggle',
 					name = L["Enabled"],
 					desc = L["Whether the trigger is enabled or not."],
 					get = getEnabled,
 					set = setEnabled,
-					passValue = t,
+					arg = t,
 					order = -1,
 				},
 				remove = {
 					type = 'execute',
-					buttonText = L["Remove"],
+					-- buttonText = L["Remove"],
 					name = L["Remove trigger"],
 					desc = L["Remove this trigger completely."],
 					func = remove,
-					passValue = t,
-					confirm = L["Are you sure?"],
+					arg = t,
+					-- TODO confirm
+--					confirm = L["Are you sure?"],
 					order = -2,
 				},
 				color = {
@@ -1105,79 +1149,79 @@ function Parrot_Triggers:OnOptionsCreate()
 					type = 'color',
 					get = getColor,
 					set = setColor,
-					passValue = t,
+					arg = t,
 				},
 				sticky = {
-					type = 'boolean',
+					type = 'toggle',
 					name = L["Sticky"],
 					desc = L["Whether to show this trigger as a sticky."],
 					get = getSticky,
 					set = setSticky,
-					passValue = t,
+					arg = t,
 				},
 				classes = {
-					type = 'multichoice',
-					choices = classChoices,
+					type = 'multiselect',
+					values = classChoices,
 					name = L["Classes"],
 					desc = L["Classes affected by this trigger."],
 					get = getClass,
 					set = setClass,
-					passValue = t,
+					arg = t,
 				},
 				scrollArea = {
-					type = 'choice',
-					choices = Parrot_ScrollAreas:GetScrollAreasChoices(),
+					type = 'select',
+					values = Parrot_ScrollAreas:GetScrollAreasChoices(),
 					name = L["Scroll area"],
 					desc = L["Which scroll area to output to."],
 					get = getScrollArea,
 					set = setScrollArea,
-					passValue = t,
+					arg = t,
 				},
 				sound = {
-					type = 'choice',
-					choices = SharedMedia:List("sound"),
+					type = 'select',
+					values = getSoundChoices,
 					name = L["Sound"],
 					desc = L["What sound to play when the trigger is shown."],
 					get = getSound,
 					set = setSound,
-					passValue = t,
+					arg = t,
 				},
 				test = {
 					type = 'execute',
-					buttonText = L["Test"],
+					-- buttonText = L["Test"],
 					name = L["Test"],
 					desc = L["Test how the trigger will look and act."],
 					func = test,
-					passValue = t,
+					arg = t,
 				},
 				font = {
 					type = 'group',
-					groupType = 'inline',
+					inline = true,
 					name = L["Custom font"],
 					desc = L["Custom font"],
 					args = {
 						fontface = {
-							type = 'choice',
+							type = 'select',
 							name = L["Font face"],
 							desc = L["Font face"],
-							choices = Parrot.inheritFontChoices,
-							choiceFonts = SharedMedia:HashTable('font'),
+							values = Parrot.inheritFontChoices,
+--							choiceFonts = SharedMedia:HashTable('font'),
 							get = getFontFace,
 							set = setFontFace,
-							passValue = t,
+							arg = t,
 							order = 1,
 						},
 						fontSizeInherit = {
-							type = 'boolean',
+							type = 'toggle',
 							name = L["Inherit font size"],
 							desc = L["Inherit font size"],
 							get = getFontSizeInherit,
 							set = setFontSizeInherit,
-							passValue = t,
+							arg = t,
 							order = 2,
 						},
 						fontSize = {
-							type = 'number',
+							type = 'range',
 							name = L["Font size"],
 							desc = L["Font size"],
 							min = 12,
@@ -1186,77 +1230,77 @@ function Parrot_Triggers:OnOptionsCreate()
 							get = getFontSize,
 							set = setFontSize,
 							disabled = getFontSizeInherit,
-							passValue = t,
+							arg = t,
 							order = 3,
 						},
 						fontOutline = {
-							type = 'choice',
+							type = 'select',
 							name = L["Font outline"],
 							desc = L["Font outline"],
 							get = getFontOutline,
 							set = setFontOutline,
-							choices = fontOutlineChoices,
-							passValue = t,
+							values = fontOutlineChoices,
+							arg = t,
 							order = 4,
 						},
 					},
 				},
 				primary = {
 					type = 'group',
-					groupType = 'inline',
+--					inline = true,
 					name = L["Primary conditions"],
 					desc = L["When any of these conditions apply, the secondary conditions are checked."],
 					args = {
-						{
-							type = 'choice',
+						new = {
+							type = 'select',
 							name = L["New condition"],
 							desc = L["Add a new primary condition"],
-							choices = getAvailablePrimaryConditions,
+							values = getAvailablePrimaryConditions,
 							get = false,
 							set = newPrimaryCondition,
 							disabled = hasAllPrimaryConditions,
-							passValue = t,
+							arg = t,
 							order = 1,
 						},
-						{
-							type = 'choice',
+						remove = {
+							type = 'select',
 							name = L["Remove condition"],
 							desc = L["Remove a primary condition"],
-							choices = getUsedPrimaryConditions,
+							values = getUsedPrimaryConditions,
 							get = false,
 							set = removePrimaryCondition,
 							disabled = hasNoPrimaryConditions,
-							passValue = t,
+							arg = t,
 							order = 2,
 						}
 					}
 				},
 				secondary = {
 					type = 'group',
-					groupType = 'inline',
+--					inline = true,
 					name = L["Secondary conditions"],
 					desc = L["When all of these conditions apply, the trigger will be shown."],
 					args = {
-						{
-							type = 'choice',
+						new = {
+							type = 'select',
 							name = L["New condition"],
 							desc = L["Add a new secondary condition"],
-							choices = getAvailableSecondaryConditions,
+							values = getAvailableSecondaryConditions,
 							get = false,
 							set = newSecondaryCondition,
 							disabled = hasAllSecondaryConditions,
-							passValue = t,
+							arg = t,
 							order = 1,
 						},
-						{
-							type = 'choice',
+						remove = {
+							type = 'select',
 							name = L["Remove condition"],
 							desc = L["Remove a secondary condition"],
-							choices = getUsedSecondaryConditions,
+							values = getUsedSecondaryConditions,
 							get = false,
 							set = removeSecondaryCondition,
 							disabled = hasNoSecondaryConditions,
-							passValue = t,
+							arg = t,
 							order = 2,
 						}
 					}

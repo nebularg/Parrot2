@@ -425,7 +425,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	},
 	param = {
 		type = 'string',
-		usage = L["<Skill name>"],
+		-- usage = L["<Skill name>"],
 	},
 }
 
@@ -460,9 +460,13 @@ Parrot:RegisterPrimaryTriggerCondition {
 	},
 	param = {
 		type = 'string',
-		usage = L["<Skill name>"],
+		-- usage = L["<Skill name>"],
 	},
 }
+
+local function manastep()
+	return math.min(50, UnitManaMax("player")/10)
+end
 
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Minimum power amount",
@@ -471,13 +475,9 @@ Parrot:RegisterSecondaryTriggerCondition {
 	param = {
 		type = 'number',
 		min = 0,
-		max = function()
-			return UnitManaMax("player")
-		end,
+		max = UnitManaMax("player"),
 		step = 1,
-		bigStep = function()
-			return math.min(50, UnitManaMax("player")/10)
-		end,
+		bigStep = manastep(),
 	},
 	check = function(param)
 		if UnitIsDeadOrGhost("player") then
@@ -511,8 +511,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 	localName = L["Warrior stance"],
 	notLocalName = L["Not in warrior stance"],
 	param = {
-		type = 'choice',
-		choices = {
+		type = 'select',
+		values = {
 			["Battle Stance"] = GetSpellInfo(2457),
 			["Defensive Stance"] = GetSpellInfo(71),
 			["Berserker Stance"] = GetSpellInfo(2458),
@@ -539,8 +539,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 	localName = L["Druid Form"],
 	notLocalName = L["Not in Druid Form"],
 	param = {
-		type = 'choice',
-		choices = {
+		type = 'select',
+		values = {
 			["Bear Form"] = GetSpellInfo(5487),
 			["Aquatic Form"] = GetSpellInfo(1066),
 			["Cat Form"] = GetSpellInfo(768),
@@ -574,8 +574,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 	localName = L["Deathknight presence"] .. " (experimental)",
 	notLocalName = L["Not Deathknight presence"] .. " (experimental)",
 	param = {
-		type = 'choice',
-		choices = {
+		type = 'select',
+		values = {
 			["Blood Presence"] = GetSpellInfo(50475),
 			["Frost Presence"] = GetSpellInfo(61261),
 			["Unholy Presence"] = GetSpellInfo(55222),

@@ -8,10 +8,16 @@ local _G = _G
 local string_find = _G.string.find
 local pcall = _G.pcall
 
+local debug = Parrot.debug
+
 Parrot_Suppressions.db = Parrot:GetDatabaseNamespace("Suppressions")
 Parrot:SetDatabaseNamespaceDefaults("Suppressions", 'profile', {
 	suppressions = {}
 })
+
+local function optkey(table)
+	return tostring(table):gsub("table: ","")
+end
 
 function Parrot_Suppressions:OnOptionsCreate()
 	local suppressions_opt = {
@@ -23,9 +29,9 @@ function Parrot_Suppressions:OnOptionsCreate()
 		end,
 		args = {}
 	}
-	local function ret(...)
-		return ...
-	end
+--	local function ret(...)
+--		return ...
+--	end
 	local function makeValidateString(key)
 		return function(value)
 			if key == value then
@@ -42,47 +48,39 @@ function Parrot_Suppressions:OnOptionsCreate()
 			return success
 		end
 	end
-	local function setString(old, new)
+	local function setString(info, new)
 		if Parrot_Suppressions.db.profile.suppressions[new] ~= nil then
 			return
 		end
+		debug(info)
+		local old = info.arg
 		Parrot_Suppressions.db.profile.suppressions[new] = Parrot_Suppressions.db.profile.suppressions[old]
 		Parrot_Suppressions.db.profile.suppressions[old] = nil
-		local opt
-		for k,v in pairs(suppressions_opt.args) do
+		local opt = suppressions_opt.args[info[#info-1]]
+--[[		for k,v in pairs(suppressions_opt.args) do
 			if v.k == old then
 				opt = v
 			end
-		end
+		end--]]
 		local name = new == '' and L["New suppression"] or new
-		opt.k = new
+
 		opt.order = new == '' and -110 or -100
 		opt.name = name
 		opt.desc = name
-		opt.args.edit.passValue = new
+		opt.args.edit.arg = new
 		opt.args.edit.validate = makeValidateString(new)
-		opt.args.escape.passValue = new
-		opt.args.delete.passValue = new
---		AceLibrary("Dewdrop-2.0"):Refresh()
---		local waterfall = AceLibrary:HasInstance("Waterfall-1.0") and AceLibrary("Waterfall-1.0")
---		if waterfall and waterfall:IsRegistered("Parrot") then
---			waterfall:Refresh("Parrot")
---		end
+		opt.args.escape.arg = new
+		opt.args.delete.arg = new
 	end
-	local function getEscape(key)
-		return not Parrot_Suppressions.db.profile.suppressions[key]
+	local function getEscape(info)
+		return not Parrot_Suppressions.db.profile.suppressions[info.arg]
 	end
-	local function setEscape(key, value)
-		Parrot_Suppressions.db.profile.suppressions[key] = not value
+	local function setEscape(info, value)
+		Parrot_Suppressions.db.profile.suppressions[info.arg] = not value
 	end
-	local function remove(key)
-		Parrot_Suppressions.db.profile.suppressions[key] = nil
-		for k, v in pairs(suppressions_opt.args) do
-			if v.k == key then
-				suppressions_opt.args[k] = nil
-				break
-			end
-		end
+	local function remove(info)
+		Parrot_Suppressions.db.profile.suppressions[info.arg] = nil
+		suppressions_opt.args[info[#info-1]] = nil
 	end
 	local function makeTable(k)
 		local name = k == '' and L["New suppression"] or k
@@ -90,53 +88,53 @@ function Parrot_Suppressions:OnOptionsCreate()
 			type = 'group',
 			name = name,
 			desc = name,
-			order = k == '' and -110 or -100,
-			k = k,
+--			order = k == '' and -110 or -100,
+--			k = k,
 			args = {
 				edit = {
-					type = 'string',
+					type = 'input',
 					name = L["Edit"],
 					desc = L["Edit search string"],
-					get = ret,
+					get = function(info) return info.arg end,
 					set = setString,
 					validate = makeValidateString(k),
 					usage = L["<Any text> or <Lua search expression>"],
-					passValue = k,
+					arg = k,
 					order = 1,
 				},
 				escape = {
-					type = 'boolean',
+					type = 'toggle',
 					name = L["Lua search expression"],
 					desc = L["Whether the search string is a lua search expression or not."],
 					get = getEscape,
 					set = setEscape,
-					passValue = k,
+					arg = k,
 					order = 2,
 				},
 				delete = {
 					type = 'execute',
-					confirmText = L["Are you sure?"],
-					buttonText = L["Remove"],
+--					confirmText = L["Are you sure?"],
+--					buttonText = L["Remove"],
 					name = L["Remove"],
 					desc = L["Remove suppression"],
 					func = remove,
-					passValue = k,
+					arg = k,
 					order = -1,
 				}
 			}
 		}
 	end
 	Parrot:AddOption('suppressions', suppressions_opt)
-	suppressions_opt.args[1] = {
+	suppressions_opt.args.new = {
 		order = 1,
 		type = 'execute',
-		buttonText = L["Create"],
+--		buttonText = L["Create"],
 		name = L["New suppression"],
 		desc = L["Add a new suppression."],
 		func = function()
 			self.db.profile.suppressions[''] = true
 			local t = makeTable('')
-			suppressions_opt.args[tostring(t)] = t
+			suppressions_opt.args[optkey(t)] = t
 		end,
 		disabled = function()
 			return not self.db.profile.suppressions or self.db.profile.suppressions[''] ~= nil
@@ -144,7 +142,7 @@ function Parrot_Suppressions:OnOptionsCreate()
 	}
 	for k in pairs(self.db.profile.suppressions) do
 		local t = makeTable(k)
-		suppressions_opt.args[tostring(t)] = t
+		suppressions_opt.args[optkey(t)] = t
 	end
 end
 

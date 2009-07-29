@@ -1,10 +1,9 @@
 
-Parrot = Rock:NewAddon("Parrot", "LibRockDB-1.0", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0", "LibRockConfig-1.0")
+Parrot = Rock:NewAddon("Parrot", "LibRockDB-1.0", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0")
 local Parrot, self = Parrot, Parrot
 Parrot.version = "@project-version@"
 Parrot.abbrhash = "@project-abbreviated-hash@"
 Parrot.hash = "@project-hash@"
-Parrot.revision = 0 -- DEPRICATED, not using svn anymore
 Parrot.date = "@project-date-iso@"
 
 local _G = _G
@@ -13,9 +12,13 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local localeTables = {}
 
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+
 local SharedMedia = Rock("LibSharedMedia-3.0")
 
 local newList, unpackListAndDel = Rock:GetRecyclingFunctions("Parrot", "newList", "unpackListAndDel")
+
+local del = Rock:GetRecyclingFunctions("Parrot", "del")
 
 local function debug(text)
 	--@debug@
@@ -38,8 +41,56 @@ Parrot:SetDatabaseDefaults('profile', {
 	totemDamage = true,
 })
 
+local function initOptions()
+	debug("init options")
+	if Parrot.options.args.general then
+		return
+	end
+
+	Parrot:OnOptionsCreate()
+
+	for k, v in Parrot:IterateModules() do
+		if type(v.OnOptionsCreate) == "function" then
+			v:OnOptionsCreate()
+		end
+	end
+
+	Parrot.options.args.load = del(Parrot.options.args.load)
+	debug("optins initialized")
+end
+
 function Parrot:OnInitialize()
-	self:SetConfigSlashCommand("/Parrot", "/Par")
+	self:AddSlashCommand("ShowConfig", {"/par", "/parrot"})
+	--self:SetConfigSlashCommand("/Parrot", "/Par")
+
+--TODO AceDB-3.0	self.db = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults)
+	
+	Parrot.options = {
+		name = L["Parrot"],
+		desc = L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."],
+		type = 'group',
+		icon = [[Interface\Icons\Spell_Nature_ForceOfNature]],
+		args = {
+			load = {
+				name = L["Load config"],
+				desc = L["Load configuration options"],
+				type = 'execute',
+				func = initOptions,
+			},
+-- should it be implemented?
+--			alwaysLoad = {
+--				name = L["always load options"],
+--				desc = L["always load all configuration options when loading Parrot."],
+--				type = 'toggle',
+--				get = function() return end,
+--				set = function(info, value) return end,
+--			},
+		},
+	}
+	
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("Parrot", Parrot.options, {"/Parrot", "/Par"})
+	
+	AceConfigDialog:AddToBlizOptions("Parrot", "Parrot")
 
 	if not self.db.account.firstTimeWoW21 then
 		self.db.account.firstTimeWoW21 = true
@@ -48,13 +99,15 @@ function Parrot:OnInitialize()
 end
 
 function Parrot.inheritFontChoices()
+
 	local t = newList()
 	for _,v in ipairs(SharedMedia:List('font')) do
-		t[#t+1] = v
+		t[v] = v
 	end
-	table.sort(t)
-	table.insert(t, 1, L["Inherit"])
-	return "@list", unpackListAndDel(t)
+--	table.sort(t)
+	t["1"] = L["Inherit"]
+--	table.insert(t, 1, L["Inherit"])
+	return t
 end
 function Parrot:OnEnable()
 	_G.SHOW_COMBAT_TEXT = "0"
@@ -97,14 +150,10 @@ function Parrot:OnProfileEnable()
 	end
 end
 
-local function initOptions()
-	Parrot:OnOptionsCreate()
 
-	for k, v in Parrot:IterateModules() do
-		if type(v.OnOptionsCreate) == "function" then
-			v:OnOptionsCreate()
-		end
-	end
+function Parrot:ShowConfig()
+	initOptions()
+	AceConfigDialog:Open("Parrot")
 end
 
 function Parrot:OnOptionsCreate()
@@ -115,50 +164,51 @@ function Parrot:OnOptionsCreate()
 		disabled = function()
 			return not self:IsActive()
 		end,
+		order = 1,
 		args = {
 			gameDamage = {
-				type = 'boolean',
+				type = 'toggle',
 				name = L["Game damage"],
 				desc = L["Whether to show damage over the enemy's heads."],
 				get = function()
 					return Parrot.db.profile.gameDamage
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot.db.profile.gameDamage = value
 					SetCVar("CombatDamage", value and "1" or "0")
 				end,
 			},
 			gameHealing = {
-				type = 'boolean',
+				type = 'toggle',
 				name = L["Game healing"],
 				desc = L["Whether to show healing over the enemy's heads."],
 				get = function()
 					return Parrot.db.profile.gameHealing
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot.db.profile.gameHealing = value
 					SetCVar("CombatHealing", value and "1" or "0")
 				end,
 			},
 			totemDamage = {
-				type = 'boolean',
+				type = 'toggle',
 				name = L["Show guardian events"],
 				desc = L["Whether events involving your guardian(s) (totems, ...) should be displayed"],
 				get = function()
 					return Parrot.db.profile.totemDamage
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot.db.profile.totemDamage = value
 				end,
-				default = true,
 			},
 		}
 	})
 end
 
-local addedOptions
+--local addedOptions = {}
 function Parrot:AddOption(key, table)
-	addedOptions[key] = table
+--	addedOptions[key] = table
+	self.options.args[key] = table
 end
 
 Parrot.options = {
@@ -166,15 +216,7 @@ Parrot.options = {
 	desc = L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."],
 	type = 'group',
 	icon = [[Interface\Icons\Spell_Nature_ForceOfNature]],
-	args = function()
-		addedOptions = {}
-		Parrot.addedOptions = addedOptions
-		initOptions()
-		Parrot.addedOptions = nil
-		local tmp = addedOptions
-		addedOptions = nil
-		return "@cache", tmp
-	end,
+	args = {},
 }
 
-Parrot:SetConfigTable(Parrot.options)
+--Parrot:SetConfigTable(Parrot.options)

@@ -3,6 +3,8 @@ local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "LibRockTimer-1.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
+local debug = Parrot.debug
+
 local scrollAreas
 
 local choices = {}
@@ -270,14 +272,17 @@ end
 Parrot.GetScrollAreasChoices = Parrot_ScrollAreas.GetScrollAreasChoices
 
 function Parrot_ScrollAreas:OnOptionsCreate()
+	
 	local scrollAreas_opt
-	local function getName(name)
+	local function getName(info)
+		local name = info.arg
 		if name == "Notification" or name == "Incoming" or name == "Outgoing" then
 			name = L[name]
 		end
 		return name
 	end
-	local function setName(old, new)
+	local function setName(info, new)
+		local old = info.arg
 		if old == new or scrollAreas[new] then
 			return
 		end
@@ -301,42 +306,49 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			opt.order = -100
 		end
 		opt.name = name
-		opt.args.name.passValue = new
-		opt.args.remove.passValue = new
-		opt.args.size.passValue = new
-		opt.args.test.args.normal.passValue2 = new
-		opt.args.test.args.sticky.passValue2 = new
-		opt.args.direction.args.normal.passValue2 = new
-		opt.args.direction.args.sticky.passValue2 = new
-		opt.args.animationStyle.args.normal.passValue2 = new
-		opt.args.animationStyle.args.sticky.passValue2 = new
-		opt.args.speed.args.normal.passValue2 = new
-		opt.args.speed.args.sticky.passValue2 = new
-		opt.args.icon.passValue = new
-		opt.args.positionX.passValue = new
-		opt.args.positionY.passValue = new
-		opt.args.font.args.fontface.passValue2 = new
-		opt.args.font.args.fontSizeInherit.passValue2 = new
-		opt.args.font.args.fontSize.passValue2 = new
-		opt.args.font.args.fontOutline.passValue2 = new
-		opt.args.font.args.stickyfontface.passValue2 = new
-		opt.args.font.args.stickyfontSizeInherit.passValue2 = new
-		opt.args.font.args.stickyfontSize.passValue2 = new
-		opt.args.font.args.stickyfontOutline.passValue2 = new
+		opt.args.name.arg = new
+		opt.args.remove.arg = new
+		opt.args.size.arg = new
+		opt.args.test.args.normal.arg[2] = new
+		opt.args.test.args.sticky.arg[2] = new
+		opt.args.direction.args.normal.arg[2] = new
+		opt.args.direction.args.sticky.arg[2] = new
+		opt.args.animationStyle.args.normal.arg[2] = new
+		opt.args.animationStyle.args.sticky.arg[2] = new
+		opt.args.speed.args.normal.arg[2] = new
+		opt.args.speed.args.sticky.arg[2] = new
+		opt.args.icon.arg = new
+		opt.args.positionX.arg = new
+		opt.args.positionY.arg = new
+		opt.args.font.args.fontface.arg[2] = new
+		opt.args.font.args.fontSizeInherit.arg[2] = new
+		opt.args.font.args.fontSize.arg[2] = new
+		opt.args.font.args.fontOutline.arg[2] = new
+		opt.args.font.args.stickyfontface.arg[2] = new
+		opt.args.font.args.stickyfontSizeInherit.arg[2] = new
+		opt.args.font.args.stickyfontSize.arg[2] = new
+		opt.args.font.args.stickyfontOutline.arg[2] = new
 		if shouldConfig then
 			setConfigMode(true)
 		end
 	end
-	local function getFontFace(kind, k)
+	local function getFontFace(info)
+		local kind, k = info.arg[1], info.arg[2]
+		debug("kind " .. kind)
+		debug("k " .. k)
+		debug(info.arg)
 		local font = scrollAreas[k][kind == "normal" and "font" or "stickyFont"]
+		debug(font or "nil")
 		if font == nil then
-			return L["Inherit"]
+--			return L["Inherit"]
+			return "1"
 		else
 			return font
 		end
 	end
-	local function setFontFace(kind, k, value)
-		if value == L["Inherit"] then
+	local function setFontFace(info, value)
+		local kind, k = info.arg[1], info.arg[2]
+		if value == "1" then
 			value = nil
 		end
 		scrollAreas[k][kind == "normal" and "font" or "stickyFont"] = value
@@ -344,19 +356,23 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			test(kind, k)
 		end
 	end
-	local function getFontSize(kind, k)
+	local function getFontSize(info)
+		local kind, k = info.arg[1], info.arg[2]
 		return scrollAreas[k][kind == "normal" and "fontSize" or "stickyFontSize"]
 	end
-	local function setFontSize(kind, k, value)
+	local function setFontSize(info, value)
+		local kind, k = info.arg[1], info.arg[2]
 		scrollAreas[k][kind == "normal" and "fontSize" or "stickyFontSize"] = value
 		if not configMode then
 			test(kind, k)
 		end
 	end
-	local function getFontSizeInherit(kind, k)
+	local function getFontSizeInherit(info)
+		local kind, k = info.arg[1], info.arg[2]
 		return scrollAreas[k][kind == "normal" and "fontSize" or "stickyFontSize"] == nil
 	end
-	local function setFontSizeInherit(kind, k, value)
+	local function setFontSizeInherit(info, value)
+		local kind, k = info.arg[1], info.arg[2]
 		if value then
 			scrollAreas[k][kind == "normal" and "fontSize" or "stickyFontSize"] = nil
 		else
@@ -366,7 +382,8 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			test(kind, k)
 		end
 	end
-	local function getFontOutline(kind, k)
+	local function getFontOutline(info)
+		local kind, k = info.arg[1], info.arg[2]
 		local outline = scrollAreas[k][kind == "normal" and "fontOutline" or "stickyFontOutline"]
 		if outline == nil then
 			return L["Inherit"]
@@ -389,10 +406,12 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		THICKOUTLINE = L["Thick"],
 		[L["Inherit"]] = L["Inherit"],
 	}
-	local function getAnimationStyle(kind, k)
+	local function getAnimationStyle(info)
+		local kind, k = info.arg[1], info.arg[2]
 		return scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"]
 	end
-	local function setAnimationStyle(kind, k, value)
+	local function setAnimationStyle(info, value)
+		local kind, k = info.arg[1], info.arg[2]
 		scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"] = value
 		local opt = scrollAreas_opt.args[tostring(scrollAreas[k])]
 		local choices = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(value)
@@ -406,10 +425,12 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			test(kind, k)
 		end
 	end
-	local function getSpeed(kind, k)
+	local function getSpeed(info)
+		local kind, k = info.arg[1], info.arg[2]
 		return scrollAreas[k][kind == "normal" and "speed" or "stickySpeed"] or 3
 	end
-	local function setSpeed(kind, k, value)
+	local function setSpeed(info, value)
+		local kind, k = info.arg[1], info.arg[2]
 		if value == 3 then
 			value = nil
 		end
@@ -418,10 +439,12 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			test(kind, k)
 		end
 	end
-	local function getDirection(kind, k)
+	local function getDirection(info)
+		local kind, k = info.arg[1], info.arg[2]
 		return scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"] or Parrot:GetModule("AnimationStyles"):GetAnimationStyleDefaultDirection(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"])
 	end
-	local function setDirection(kind, k, value)
+	local function setDirection(info, value)
+		local kind, k = info.arg[1], info.arg[2]
 		if value == Parrot:GetModule("AnimationStyles"):GetAnimationStyleDefaultDirection(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"]) then
 			value = nil
 		end
@@ -432,13 +455,15 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			test(kind, k)
 		end
 	end
-	local function directionDisabled(kind, k)
+	local function directionDisabled(info)
+		local kind, k = info.arg[1], info.arg[2]
 		return not Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"])
 	end
-	local function getPositionX(k)
-		return scrollAreas[k].xOffset
+	local function getPositionX(info)
+		return scrollAreas[info.arg].xOffset
 	end
-	local function setPositionX(k, value)
+	local function setPositionX(info, value)
+		local k = info.arg
 		if value > 0 then
 			if value > GetScreenWidth()/2 then
 				value = GetScreenWidth()/2
@@ -454,10 +479,11 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			test("sticky", k)
 		end
 	end
-	local function getPositionY(k)
-		return scrollAreas[k].yOffset
+	local function getPositionY(info)
+		return scrollAreas[info.arg].yOffset
 	end
-	local function setPositionY(k, value)
+	local function setPositionY(info, value)
+		local k = info.arg
 		if value > 0 then
 			if value > GetScreenHeight()/2 then
 				value = GetScreenHeight()/2
@@ -473,17 +499,19 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			test("sticky", k)
 		end
 	end
-	local function getSize(k)
-		return scrollAreas[k].size
+	local function getSize(info)
+		return scrollAreas[info.arg].size
 	end
-	local function setSize(k, value)
+	local function setSize(info, value)
+		local k = info.arg
 		scrollAreas[k].size = value
 		if not configMode then
 			test("normal", k)
 			test("sticky", k)
 		end
 	end
-	local function remove(k)
+	local function remove(info)
+		local k = info.arg
 		local shouldConfig = configMode
 		if shouldConfig then
 			setConfigMode(false)
@@ -495,13 +523,14 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			setConfigMode(true)
 		end
 	end
-	local function disableRemove(k)
+	local function disableRemove(info)
 		return not next(scrollAreas, next(scrollAreas))
 	end
-	local function getIconSide(k)
-		return scrollAreas[k].iconSide or "LEFT"
+	local function getIconSide(info)
+		return scrollAreas[info.arg].iconSide or "LEFT"
 	end
-	local function setIconSide(k, value)
+	local function setIconSide(info, value)
+		local k = info.arg
 		if value == "LEFT" then
 			value = nil
 		end
@@ -518,8 +547,9 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		EDGE = L["Edge of screen"],
 		DISABLE = L["Disable"],
 	}
+	
 	local function makeOption(k)
-		local SharedMedia = Rock("LibSharedMedia-3.0")
+		local SharedMedia = LibStub("LibSharedMedia-3.0")
 		local v = scrollAreas[k]
 		local name = k
 		if name == "Notification" or name == "Incoming" or name == "Outgoing" then
@@ -531,13 +561,13 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			desc = L["Options for this scroll area."],
 			args = {
 				name = {
-					type = 'string',
+					type = 'input',
 					name = L["Name"],
 					desc = L["Name of the scroll area."],
 					get = getName,
 					set = setName,
 					usage = L["<Name>"],
-					passValue = k,
+					arg = k,
 					order = 1,
 				},
 				remove = {
@@ -546,107 +576,101 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 					desc = L["Remove this scroll area."],
 					func = remove,
 					disabled = disableRemove,
-					passValue = k,
+					arg = k,
 					order = -1,
 					confirmText = L["Are you sure?"],
-					buttonText = L["Remove"],
+					-- -- buttonText = L["Remove"],
 				},
 				icon = {
-					type = 'choice',
+					type = 'select',
 					name = L["Icon side"],
 					desc = L["Set the icon side for this scroll area or whether to disable icons entirely."],
 					get = getIconSide,
 					set = setIconSide,
-					choices = iconSideChoices,
-					passValue = k,
+					values = iconSideChoices,
+					arg = k,
 				},
 				test = {
 					type = 'group',
-					groupType = 'inline',
+					inline = true,
 					name = L["Test"],
 					desc = L["Send a test message through this scroll area."],
 					args = {
 						normal = {
 							type = 'execute',
 							name = L["Normal"],
-							buttonText = L["Send"],
+							-- -- buttonText = L["Send"],
 							desc = L["Send a normal test message."],
-							func = test,
-							passValue = "normal",
-							passValue2 = k,
+							func = function(info) test(info.arg[1], info.arg[2]) end,
+							arg = {"normal", k},
 						},
 						sticky = {
 							type = 'execute',
 							name = L["Sticky"],
-							buttonText = L["Send"],
+							-- -- buttonText = L["Send"],
 							desc = L["Send a sticky test message."],
-							func = test,
-							passValue = "sticky",
-							passValue2 = k,
+							func = function(info) test(info.arg[1], info.arg[2]) end,
+							arg = {"sticky", k},
 						},
 					},
 					disabled = function() return configMode end
 				},
 				direction = {
 					type = 'group',
-					groupType = 'inline',
+					inline = true,
 					name = L["Direction"],
 					desc = L["Which direction the animations should follow."],
 					args = {
 						normal = {
-							type = 'choice',
+							type = 'select',
 							name = L["Normal"],
 							desc = L["Direction for normal texts."],
 							get = getDirection,
 							set = setDirection,
 							disabled = directionDisabled,
-							choices = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(scrollAreas[k].animationStyle) or {},
-							passValue = "normal",
-							passValue2 = k,
+							values = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(scrollAreas[k].animationStyle) or {},
+							arg = {"normal", k},
 						},
 						sticky = {
-							type = 'choice',
+							type = 'select',
 							name = L["Sticky"],
 							desc = L["Direction for sticky texts."],
 							get = getDirection,
 							set = setDirection,
 							disabled = directionDisabled,
-							choices = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(scrollAreas[k].stickyAnimationStyle) or {},
-							passValue = "sticky",
-							passValue2 = k,
+							values = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(scrollAreas[k].stickyAnimationStyle) or {},
+							arg = {"sticky", k},
 						},
 					}
 				},
 				animationStyle = {
 					type = 'group',
-					groupType = 'inline',
+					inline = true,
 					name = L["Animation style"],
 					desc = L["Which animation style to use."],
 					args = {
 						normal = {
-							type = 'choice',
+							type = 'select',
 							name = L["Normal"],
 							desc = L["Animation style for normal texts."],
 							get = getAnimationStyle,
 							set = setAnimationStyle,
-							choices = Parrot:GetModule("AnimationStyles"):GetAnimationStylesChoices(),
-							passValue = "normal",
-							passValue2 = k,
+							values = Parrot:GetModule("AnimationStyles"):GetAnimationStylesChoices(),
+							arg = {"normal", k},
 						},
 						sticky = {
-							type = 'choice',
+							type = 'select',
 							name = L["Sticky"],
 							desc = L["Animation style for sticky texts."],
 							get = getAnimationStyle,
 							set = setAnimationStyle,
-							choices = Parrot:GetModule("AnimationStyles"):GetAnimationStylesChoices(),
-							passValue = "sticky",
-							passValue2 = k,
+							values = Parrot:GetModule("AnimationStyles"):GetAnimationStylesChoices(),
+							arg = {"sticky", k},
 						},
 					}
 				},
 				positionX = {
-					type = 'number',
+					type = 'range',
 					name = L["Position: horizontal"],
 					desc = L["The position of the box across the screen"],
 					get = getPositionX,
@@ -655,10 +679,10 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 					max = math.ceil(GetScreenWidth()/GetScreenHeight()*768 / 0.64 / 2 / 10) * 10,
 					step = 1,
 					bigStep = 10,
-					passValue = k,
+					arg = k,
 				},
 				positionY = {
-					type = 'number',
+					type = 'range',
 					name = L["Position: vertical"],
 					desc = L["The position of the box up-and-down the screen"],
 					get = getPositionY,
@@ -667,10 +691,10 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 					max = math.ceil(768 / 0.64 / 2 / 10) * 10,
 					step = 1,
 					bigStep = 10,
-					passValue = k,
+					arg = k,
 				},
 				size = {
-					type = 'number',
+					type = 'range',
 					name = L["Size"],
 					desc = L["How large of an area to scroll."],
 					get = getSize,
@@ -679,16 +703,16 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 					max = 800,
 					step = 1,
 					bigStep = 10,
-					passValue = k,
+					arg = k,
 				},
 				speed = {
 					type = 'group',
-					groupType = 'inline',
+					inline = true,
 					name = L["Scrolling speed"],
 					desc = L["How fast the text scrolls by."],
 					args = {
 						normal = {
-							type = 'number',
+							type = 'range',
 							name = L["Normal"],
 							desc = L["Seconds for the text to complete the whole cycle, i.e. larger numbers means slower."],
 							min = 1,
@@ -697,11 +721,10 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							bigStep = 1,
 							get = getSpeed,
 							set = setSpeed,
-							passValue = "normal",
-							passValue2 = k,
+							arg = {"normal", k},
 						},
 						sticky = {
-							type = 'number',
+							type = 'range',
 							name = L["Sticky"],
 							desc = L["Seconds for the text to complete the whole cycle, i.e. larger numbers means slower."],
 							min = 1,
@@ -710,41 +733,39 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							bigStep = 1,
 							get = getSpeed,
 							set = setSpeed,
-							passValue = "sticky",
-							passValue2 = k,
+							arg = {"sticky", k},
 						},
 					}
 				},
 				font = {
 					type = 'group',
-					groupType = 'inline',
+					inline = true,
 					name = L["Custom font"],
 					desc = L["Custom font"],
 					args = {
 						fontface = {
-							type = 'choice',
+							type = 'select',
 							name = L["Normal font face"],
 							desc = L["Normal font face"],
-							choices = Parrot.inheritFontChoices,
-							choiceFonts = SharedMedia:HashTable('font'),
+							values = Parrot.inheritFontChoices(),
+							--choiceFonts = SharedMedia:HashTable('font'),
 							get = getFontFace,
 							set = setFontFace,
-							passValue = "normal",
-							passValue2 = k,
+							arg = {"normal", k},
+							
 							order = 1,
 						},
 						fontSizeInherit = {
-							type = 'boolean',
+							type = 'toggle',
 							name = L["Normal inherit font size"],
 							desc = L["Normal inherit font size"],
 							get = getFontSizeInherit,
 							set = setFontSizeInherit,
-							passValue = "normal",
-							passValue2 = k,
+							arg = {"normal", k},
 							order = 2,
 						},
 						fontSize = {
-							type = 'number',
+							type = 'range',
 							name = L["Normal font size"],
 							desc = L["Normal font size"],
 							min = 12,
@@ -753,45 +774,45 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							get = getFontSize,
 							set = setFontSize,
 							disabled = getFontSizeInherit,
-							passValue = "normal",
-							passValue2 = k,
+							arg = {"normal", k},
+							
 							order = 3,
 						},
 						fontOutline = {
-							type = 'choice',
+							type = 'select',
 							name = L["Normal font outline"],
 							desc = L["Normal font outline"],
 							get = getFontOutline,
 							set = setFontOutline,
-							choices = fontOutlineChoices,
-							passValue = "normal",
-							passValue2 = k,
+							values = fontOutlineChoices,
+							arg = {"normal", k},
+							
 							order = 4,
 						},
 						stickyfontface = {
-							type = 'choice',
+							type = 'select',
 							name = L["Sticky font face"],
 							desc = L["Sticky font face"],
-							choices = Parrot.inheritFontChoices,
-							choiceFonts = SharedMedia:HashTable('font'),
+							values = Parrot.inheritFontChoices,
+--							choiceFonts = SharedMedia:HashTable('font'),
 							get = getFontFace,
 							set = setFontFace,
-							passValue = "sticky",
-							passValue2 = k,
+							arg = {"sticky", k},
+							
 							order = 5,
 						},
 						stickyfontSizeInherit = {
-							type = 'boolean',
+							type = 'toggle',
 							name = L["Sticky inherit font size"],
 							desc = L["Sticky inherit font size"],
 							get = getFontSizeInherit,
 							set = setFontSizeInherit,
-							passValue = "sticky",
-							passValue2 = k,
+							arg = {"sticky", k},
+							
 							order = 6,
 						},
 						stickyfontSize = {
-							type = 'number',
+							type = 'range',
 							name = L["Sticky font size"],
 							desc = L["Sticky font size"],
 							min = 12,
@@ -800,19 +821,19 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							get = getFontSize,
 							set = setFontSize,
 							disabled = getFontSizeInherit,
-							passValue = "sticky",
-							passValue2 = k,
+							arg = {"sticky", k},
+							
 							order = 7,
 						},
 						stickyfontOutline = {
-							type = 'choice',
+							type = 'select',
 							name = L["Sticky font outline"],
 							desc = L["Sticky font outline"],
 							get = getFontOutline,
 							set = setFontOutline,
-							choices = fontOutlineChoices,
-							passValue = "sticky",
-							passValue2 = k,
+							values = fontOutlineChoices,
+							arg = {"sticky", k},
+							
 							order = 8,
 						},
 					}
@@ -832,18 +853,18 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		end,
 		args = {
 			config = {
-				type = 'boolean',
+				type = 'toggle',
 				name = L["Configuration mode"],
 				desc = L["Enter configuration mode, allowing you to move around the scroll areas and see them in action."],
 				get = function()
 					return configMode
 				end,
-				set = setConfigMode
+				set = function(info, value) setConfigMode(value) end,
 			},
 			new = {
 				type = 'execute',
 				name = L["New scroll area"],
-				buttonText = L["Create"],
+				-- -- buttonText = L["Create"],
 				desc = L["Add a new scroll area."],
 				func = function()
 					local shouldConfig = configMode

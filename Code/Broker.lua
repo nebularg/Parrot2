@@ -5,7 +5,7 @@ local ldbdata = {
 	icon = "Interface\\Icons\\Spell_Nature_ForceOfNature", 
 	OnClick = function(_, msg)
 			if msg == "LeftButton" then
-				Parrot:OpenConfigMenu()
+				Parrot:ShowConfig()
  --			elseif msg == "RightButton" then
 			end
 		end,

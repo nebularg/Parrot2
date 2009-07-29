@@ -61,6 +61,14 @@ function Parrot_Display:CombatText_AddMessage(message, scrollFunction, r, g, b, 
 	self:ShowMessage(message, "Notification", displayType == "crit", r, g, b, nil, nil, nil)
 end
 
+local function getFontChoices()
+	local result = {}
+	for _,v in ipairs(SharedMedia:List('font')) do
+		result[v] = v
+	end
+	return result
+end
+
 function Parrot_Display:OnOptionsCreate()
 	local outlineChoices = {
 		NONE = L["None"],
@@ -68,8 +76,8 @@ function Parrot_Display:OnOptionsCreate()
 		THICKOUTLINE = L["Thick"],
 	}
 	
-	Parrot.addedOptions.general.args.alpha = {
-		type = 'number',
+	Parrot.options.args.general.args.alpha = {
+		type = 'range',
 		name = L["Text transparency"],
 		desc = L["How opaque/transparent the text should be."],
 		min = 0.25,
@@ -84,8 +92,8 @@ function Parrot_Display:OnOptionsCreate()
 			self.db.profile.alpha = value
 		end
 	}
-	Parrot.addedOptions.general.args.iconAlpha = {
-		type = 'number',
+	Parrot.options.args.general.args.iconAlpha = {
+		type = 'range',
 		name = L["Icon transparency"],
 		desc = L["How opaque/transparent icons should be."],
 		min = 0.25,
@@ -100,8 +108,8 @@ function Parrot_Display:OnOptionsCreate()
 			self.db.profile.iconAlpha = value
 		end
 	}
-	Parrot.addedOptions.general.args.enableIcons = {
-		type = 'boolean',
+	Parrot.options.args.general.args.enableIcons = {
+		type = 'toggle',
 		name = L["Enable icons"],
 		desc = L["Set whether icons should be enabled or disabled altogether."],
 		get = function()
@@ -111,26 +119,26 @@ function Parrot_Display:OnOptionsCreate()
 			self.db.profile.iconsEnabled = value
 		end
 	}
-	Parrot.addedOptions.general.args.font = {
+	Parrot.options.args.general.args.font = {
 		type = 'group',
 		name = L["Master font settings"],
 		desc = L["Master font settings"],
 		args = {
 			normalFace = {
-				type = 'choice',
+				type = 'select',
 				name = L["Normal font"],
 				desc = L["Normal font face."],
 				get = function()
 					return Parrot_Display.db.profile.font
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot_Display.db.profile.font = value
 				end,
-				choices = SharedMedia:List("font"),
-				choiceFonts = SharedMedia:HashTable("font"),
+				values = getFontChoices(),
+--				choiceFonts = SharedMedia:HashTable("font"),
 			},
 			normalSize = {
-				type = 'number',
+				type = 'range',
 				name = L["Normal font size"],
 				desc = L["Normal font size"],
 				min = 12,
@@ -139,37 +147,36 @@ function Parrot_Display:OnOptionsCreate()
 				get = function()
 					return Parrot_Display.db.profile.fontSize
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot_Display.db.profile.fontSize = value
 				end,
 			},
 			normalBorder = {
-				type = 'choice',
+				type = 'select',
 				name = L["Normal outline"],
 				desc = L["Normal outline"],
-				choices = outlineChoices,
+				values = outlineChoices,
 				get = function()
 					return Parrot_Display.db.profile.fontOutline
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot_Display.db.profile.fontOutline = value
 				end,
 			},
 			stickyFace = {
-				type = 'choice',
+				type = 'select',
 				name = L["Sticky font"],
 				desc = L["Sticky font face."],
 				get = function()
 					return Parrot_Display.db.profile.stickyFont
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot_Display.db.profile.stickyFont = value
 				end,
-				choices = SharedMedia:List("font"),
-				choiceFonts = SharedMedia:HashTable("font"),
+				values = getFontChoices(),
 			},
 			stickySize = {
-				type = 'number',
+				type = 'range',
 				name = L["Sticky font size"],
 				desc = L["Sticky font size"],
 				min = 12,
@@ -178,19 +185,19 @@ function Parrot_Display:OnOptionsCreate()
 				get = function()
 					return Parrot_Display.db.profile.stickyFontSize
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot_Display.db.profile.stickyFontSize = value
 				end,
 			},
 			stickyBorder = {
-				type = 'choice',
+				type = 'select',
 				name = L["Sticky outline"],
 				desc = L["Sticky outline"],
-				choices = outlineChoices,
+				values = outlineChoices,
 				get = function()
 					return Parrot_Display.db.profile.stickyFontOutline
 				end,
-				set = function(value)
+				set = function(info, value)
 					Parrot_Display.db.profile.stickyFontOutline = value
 				end,
 			},
