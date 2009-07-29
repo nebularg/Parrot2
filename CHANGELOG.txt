@@ -1,3 +1,7 @@
+v1.8.0:
+     use ace3 for config-stuff
+     add Parrot to the Blizzard-Addon-Options     
+
 v1.7.2:
      add support for throttling miss-events (avoids like parry, block, etc.)
      add "minimum power percent"-secondary trigger condition
