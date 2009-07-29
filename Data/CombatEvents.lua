@@ -8,6 +8,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 
+local debug = Parrot.debug
+
 local SchoolParser =
 {
 	[1] = "Physical",
@@ -628,7 +630,7 @@ Parrot:RegisterCombatEvent{
 
 local parseSpellMissInfo = function(srcGUID, srcName, srcFlags, dstGUID,
 	dstName, dstFlags, spellId, spellName, spellSchool, missType, amountMissed)
-	
+		
 	local info = newList()
 	info.spellID = spellId
 	info.recipientID = dstGUID
@@ -2713,21 +2715,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "MISS")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "MISS")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "MISS")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
@@ -2748,21 +2750,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "DODGE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "DODGE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "DODGE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
@@ -2783,21 +2785,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "PARRY")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "PARRY")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "PARRY")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
@@ -2819,21 +2821,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "BLOCK")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "BLOCK")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "BLOCK")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
@@ -2854,21 +2856,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "RESIST")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "RESIST")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "RESIST")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
@@ -2889,21 +2891,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "ABSORB")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "ABSORB")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "ABSORB")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
@@ -2924,21 +2926,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "IMMUNE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "IMMUNE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "IMMUNE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
@@ -2959,21 +2961,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "REFLECT")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "REFLECT")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "REFLECT")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
@@ -2995,21 +2997,21 @@ Parrot:RegisterCombatEvent{
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "EVADE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "SPELL_PERIODIC_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "EVADE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 		{
 		eventType = "RANGE_MISSED",
 		check = function( srcGUID, _, _, _, _, _,_, _, _, missType)
 				return (srcGUID == UnitGUID("player") and missType == "EVADE")
 			end,
-		func = parseMissInfo,
+		func = parseSpellMissInfo,
 		},
 	},
 	tagTranslations = outSpellMissTagTranslations,
