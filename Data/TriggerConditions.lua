@@ -643,3 +643,41 @@ Parrot:RegisterPrimaryTriggerCondition {
 		usage = L["<Sourcename>,<Destinationname>,<Spellname>"],
 	},
 }
+
+Parrot:RegisterSecondaryTriggerCondition {
+	name = "Minimum target health percent",
+	localName = L["Minimum target health percent"],
+	param = {
+		type = 'number',
+		min = 0,
+		max = 1,
+		step = 0.01,
+		bigStep = 0.05,
+		isPercent = true,
+	},
+	check = function(param)
+		if UnitIsDeadOrGhost("target") then
+			return false
+		end
+		return UnitHealth("target")/UnitHealthMax("target") >= param
+	end,
+}
+
+Parrot:RegisterSecondaryTriggerCondition {
+	name = "Maximum target health percent",
+	localName = L["Maximum target health percent"],
+	param = {
+		type = 'number',
+		min = 0,
+		max = 1,
+		step = 0.01,
+		bigStep = 0.05,
+		isPercent = true,
+	},
+	check = function(param)
+		if UnitIsDeadOrGhost("target") then
+			return false
+		end
+		return UnitHealth("target")/UnitHealthMax("target") <= param
+	end,
+}
