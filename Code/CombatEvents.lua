@@ -1207,10 +1207,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		resortOptions(category)
 	end
 
-	local function getTimespan(throttleType)
+	local function getTimespan(info)
+		local throttleType = info.arg
 		return self.db.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]
 	end
-	local function setTimespan(throttleType, value)
+	local function setTimespan(info, value)
+		local throttleType = info.arg
 		if value == throttleDefaultTimes[throttleType] then
 			value = nil
 		end
@@ -1232,10 +1234,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		}
 	end
 
-	local function getAmount(filterType)
+	local function getAmount(info)
+		local filterType = info.arg
 		return self.db.profile.filters[filterType] or filterDefaults[filterType]
 	end
-	local function setAmount(filterType, value)
+	local function setAmount(info, value)
+		local filterType = info.arg
 		if value == filterDefaults[filterType] then
 			value = nil
 		end
