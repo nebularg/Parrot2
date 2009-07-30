@@ -209,7 +209,7 @@ local default_triggers = {
 			},
 			{
 				id = 15,
-				-- Smite = 25364 
+				-- Smite = 25364
 				name = L["Free %s!"]:format(GetSpellInfo(25364)),
 				icon = 25364,
 				class = "PRIEST",

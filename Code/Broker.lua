@@ -1,8 +1,8 @@
 local Parrot = Parrot
 
 local ldbdata = {
-	type = "launcher", 
-	icon = "Interface\\Icons\\Spell_Nature_ForceOfNature", 
+	type = "launcher",
+	icon = "Interface\\Icons\\Spell_Nature_ForceOfNature",
 	OnClick = function(_, msg)
 			if msg == "LeftButton" then
 				Parrot:ShowConfig()

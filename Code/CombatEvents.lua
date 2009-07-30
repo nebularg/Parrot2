@@ -489,7 +489,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				name = L["Disable in normal raids"],
 				desc = L["Disable CombatEvents when in a 10-man raid instance"],
 				get = function() return self.db.profile.disable_in_10man end,
-				set = function(info, value) 
+				set = function(info, value)
 						self.db.profile.disable_in_10man = value
 						self:check_raid_instance();
 					end,
@@ -499,8 +499,8 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				name = L["Disable in heroic raids"],
 				desc = L["Disable CombatEvents when in a 25-man raid instance"],
 				get = function() return self.db.profile.disable_in_25man end,
-				set = function(info, value) 
-						self.db.profile.disable_in_25man = value 
+				set = function(info, value)
+						self.db.profile.disable_in_25man = value
 						self:check_raid_instance()
 					end,
 			},

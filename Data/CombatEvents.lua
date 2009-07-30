@@ -176,7 +176,7 @@ local missThrottleFunc = function(info)
 		local num = info.throttleCount or 0
 		if num > 1 then
 			return (" (%dx)"):format(num)
-		else 
+		else
 			return ""
 		end
 	end
@@ -346,7 +346,7 @@ local function retrieveExtraAbilityName(info)
 end
 
 
--- this table is needed because some spells emit Spellids 
+-- this table is needed because some spells emit Spellids
 -- to the combatlog that have wrong icons
 -- maps the spellid emitted by the comabat log to the spellID from the spell with the icon
 local dumbIconOverride = {
@@ -453,7 +453,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "ff0000", -- red
 	canCrit = true,
-	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc}, sourceName = L["Multiple"] }, 
+	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc}, sourceName = L["Multiple"] },
 	filterType = { "Incoming damage", 'amount' },
 	
 }

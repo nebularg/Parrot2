@@ -12,7 +12,7 @@ local function checkAura(spellId)
   for i,v in ipairs(current_player_auras) do
     if v == spellId then
       return i
-    end 
+    end
   end
   return nil
 end
@@ -481,11 +481,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 	    spellId = GetSpellInfo(spellId) or ""
 	  end
 	  local amount = param:sub(b+1)
-	  
+	
 	  local name, _, _, cur_amount = UnitAura("player", spellId)
-	  
+	
 	  return (amount == cur_amount)
-	  
+	
 	end
 }
 

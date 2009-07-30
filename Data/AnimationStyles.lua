@@ -16,7 +16,7 @@ local validPoints = {
 
 Parrot:RegisterAnimationStyle {
 	-- simple vertical
-	name = "Straight", 
+	name = "Straight",
 	localName = L["Straight"],
 	func = function(frame, xOffset, yOffset, size, percent, direction)
 		local vert, align = (";"):split(direction)

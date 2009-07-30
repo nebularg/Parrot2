@@ -56,7 +56,7 @@ Notes:
 Example:
 	Parrot:RegisterAnimationStyle {
 		-- simple vertical
-		name = "Straight", 
+		name = "Straight",
 		localName = L["Straight"],
 		func = function(frame, xOffset, yOffset, size, percent, direction)
 			if direction == "DOWN" then

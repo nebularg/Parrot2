@@ -409,7 +409,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				
 			end,
 			
-		}, 
+		},
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
@@ -444,7 +444,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				
 			end,
 			
-		}, 
+		},
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)

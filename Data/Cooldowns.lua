@@ -81,17 +81,17 @@ local groups = {
 	[GetSpellInfo(14311)] = L["Traps"],
 	--[BSL["Frost Trap"]]
 	[GetSpellInfo(13809)] = L["Traps"],
-	--[BSL["Immolation Trap"]] 
+	--[BSL["Immolation Trap"]]
 	[GetSpellInfo(27023)] = L["Traps"],
--- 	[BSL["Snake Trap"]] 
+-- 	[BSL["Snake Trap"]]
 	[GetSpellInfo(34600)] = L["Traps"],
--- 	[BSL["Explosive Trap"]] 
+-- 	[BSL["Explosive Trap"]]
 	[GetSpellInfo(27025)] = L["Traps"],
--- 	[BSL["Frost Shock"]] 
+-- 	[BSL["Frost Shock"]]
 	[GetSpellInfo(25464)] = L["Shocks"],
--- 	[BSL["Flame Shock"]] 
+-- 	[BSL["Flame Shock"]]
 	[GetSpellInfo(25457)] = L["Shocks"],
-	--[BSL["Earth Shock"]] 
+	--[BSL["Earth Shock"]]
 	[GetSpellInfo(25454)] = L["Shocks"],
 	-- Wind Shock
 	[GetSpellInfo(57994)] = L["Shocks"],
