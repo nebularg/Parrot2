@@ -571,8 +571,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Deathknight presence",
 	--TODO experimental
-	localName = L["Deathknight presence"] .. " (experimental)",
-	notLocalName = L["Not Deathknight presence"] .. " (experimental)",
+	localName = L["Deathknight presence"],
+	notLocalName = L["Not Deathknight presence"],
 	param = {
 		type = 'select',
 		values = {
@@ -625,4 +625,21 @@ Parrot:RegisterSecondaryTriggerCondition {
     check = function()
         return UnitInVehicle("player")
     end,
+}
+
+Parrot:RegisterPrimaryTriggerCondition {
+	name = "Successful spell cast",
+	localName = L["Successful spell cast"],
+	combatLogEvents = {
+		{
+			eventType = "SPELL_CAST_SUCCESS",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName )
+				return ("%s,%s,%s"):format(srcName, dstName or "", spellName)
+			end,
+		},
+	},
+	param = {
+		type = 'string',
+		usage = L["<Sourcename>,<Destinationname>,<Spellname>"],
+	},
 }
