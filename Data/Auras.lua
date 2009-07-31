@@ -30,25 +30,25 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				auraid = checkAura(spellId)
-				
+
 				if auraid then
 					-- ChatFrame4:AddMessage("skip spell_aura_applied because aura is already there")
 				  return nil
 				else
 				  table.insert(current_player_auras, spellId)
 				end
-				
+
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
 				info.recipientID = dstGUID
 				info.recepientName = dstName
 				info.icon = select(3, GetSpellInfo(spellId))
-				
+
 				return info
-				
+
 			end,
 		},
 	},
@@ -74,17 +74,17 @@ Parrot:RegisterCombatEvent{
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
-				end				
-				
+				end
+
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
 				info.recipientID = dstGUID
 				info.recepientName = dstName
 				info.icon = select(3, GetSpellInfo(spellId))
-				
+
 				return info
-				
+
 			end,
 		},
 	},
@@ -112,7 +112,7 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
@@ -120,9 +120,9 @@ Parrot:RegisterCombatEvent{
 				info.recepientName = dstName
 				info.icon = select(3, GetSpellInfo(spellId))
 				info.amount = amount
-				
+
 				return info
-				
+
 			end,
 		}
 	},
@@ -151,7 +151,7 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
@@ -159,9 +159,9 @@ Parrot:RegisterCombatEvent{
 				info.recepientName = dstName
 				info.icon = select(3, GetSpellInfo(spellId))
 				info.amount = amount
-				
+
 				return info
-				
+
 			end,
 		}
 	},
@@ -190,27 +190,27 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				if UnitAura("player", spellName) then
 					-- ChatFrame4:AddMessage("skip spell_aura_removed because aura is still there")
 					return nil
 				end
-				
+
 				local auraid = checkAura(spellId)
-				
+
 				if auraid then
 				  table.remove(current_player_auras, auraid)
 				end
-				
+
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
 				info.recipientID = dstGUID
 				info.recepientName = dstName
 				info.icon = select(3, GetSpellInfo(spellId))
-				
+
 				return info
-				
+
 			end,
 		},
 	},
@@ -238,22 +238,22 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 --				local auraid = checkAura(spellId)
---				
+--
 --				if auraid then
 --				  table.remove(current_player_auras, auraid)
 --				end
-				
+
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
 				info.recipientID = dstGUID
 				info.recepientName = dstName
 				info.icon = select(3, GetSpellInfo(spellId))
-				
+
 				return info
-				
+
 			end,
 		},
 	},
@@ -281,16 +281,16 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("target") then
 					return nil
 				end
-				
+
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
 				info.recipientID = dstGUID
 				info.recepientName = dstName
 				info.icon = select(3, GetSpellInfo(spellId))
-				
+
 				return info
-				
+
 			end,
 		}
 	},
@@ -320,7 +320,7 @@ Parrot:RegisterCombatEvent{
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("target") then
 					return nil
 				end
-				
+
 				local info = newList()
 				info.spellID = spellId
 				info.abilityName = spellName
@@ -328,9 +328,9 @@ Parrot:RegisterCombatEvent{
 				info.recepientName = dstName
 				info.icon = select(3, GetSpellInfo(spellId))
 				info.amount = amount
-				
+
 				return info
-				
+
 			end,
 		}
 	},
@@ -363,14 +363,14 @@ Parrot:RegisterCombatEvent{
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				local info = newList()
 				info.itemId = itemId
 				info.abilityName = spellName
 				info.itemName = itemName
-				
+
 				return info
-				
+
 			end,
 		},
 	},
@@ -403,14 +403,14 @@ Parrot:RegisterCombatEvent{
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				local info = newList()
 				info.itemId = itemId
 				info.abilityName = spellName
 				info.itemName = itemName
-				
+
 				return info
-				
+
 			end,
 		},
 	},
@@ -441,9 +441,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -464,9 +464,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return string.format("%s,%d",spellName,amount)
-				
+
 			end,
 		},
 	},
@@ -481,11 +481,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 	    spellId = GetSpellInfo(spellId) or ""
 	  end
 	  local amount = param:sub(b+1)
-	
+
 	  local name, _, _, cur_amount = UnitAura("player", spellId)
-	
+
 	  return (amount == cur_amount)
-	
+
 	end
 }
 
@@ -500,9 +500,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -523,9 +523,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -546,9 +546,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -569,9 +569,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		}
 	},
@@ -592,9 +592,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		}
 	},
@@ -615,9 +615,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("target") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -639,9 +639,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("target") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -663,9 +663,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("target") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -687,9 +687,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("target") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -710,9 +710,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("focus") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -734,9 +734,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("focus") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -759,9 +759,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("focus") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},
@@ -783,9 +783,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("focus") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
 		},
 	},

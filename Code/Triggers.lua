@@ -350,7 +350,7 @@ local default_triggers = {
 				locale = GetLocale(),
 			},
 	}
-	
+
 
 local effectiveRegistry = {}
 local function rebuildEffectiveRegistry()
@@ -365,7 +365,7 @@ local function rebuildEffectiveRegistry()
 			end
 			classes = del(classes)
 		end
-	end	
+	end
 end
 
 -- so triggers can be enabled/disabled from outside
@@ -388,35 +388,35 @@ function Parrot_Triggers:OnInitialize()
 end
 
 
-	
+
 
 function Parrot_Triggers:OnEnable(first)
 	if not self.db.profile.triggers then
 		self.db.profile.triggers = default_triggers
 	else
-	
+
 		-- so that newly introduced triggers always get added.
 		-- this also adds previously removed default-triggers
-		
+
 		for i,v in ipairs(default_triggers) do
-		
+
 			local found = false
-			
+
 			for i2, v2 in ipairs(self.db.profile.triggers) do
 				if v2.name == v.name then
 					found = true
 					break
 				end
 			end
-			
+
 			if not found then
 				table.insert(self.db.profile.triggers,v)
 			end
-			
+
 		end
-	
+
 	end
-	
+
 	self:AddRepeatingTimer(0.1, function()
 		Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
 	end)
@@ -440,7 +440,7 @@ function Parrot_Triggers:OnEnable(first)
 				return now - cooldowns[currentTrigger] > param
 			end,
 		}
-		
+
 		Parrot:RegisterPrimaryTriggerCondition {
 			name = "Check every XX seconds",
 			localName = L["Check every XX seconds"],
@@ -453,7 +453,7 @@ function Parrot_Triggers:OnEnable(first)
 				bigStep = 1,
 			},
 		}
-		
+
 		for _,data in ipairs(self.db.profile.triggers) do
 			local t = newList()
 			for k,v in pairs(data.conditions) do
@@ -509,7 +509,7 @@ function Parrot_Triggers:OnEnable(first)
 			end
 		end
 	end
-	
+
 	rebuildEffectiveRegistry()
 end
 
@@ -536,7 +536,7 @@ local oldIconName = {
 	["Rampage"] = 30033,
 	["Revenge"] = 30357,
 	["Riposte"] = 14251,
-	
+
 }
 
 local function figureIconPath(icon)
@@ -545,20 +545,20 @@ local function figureIconPath(icon)
 	end
 
 	local path
-	
+
 	-- if the icon is a number, it's most likly a spellid
 	local spellId = tonumber(icon)
 	if spellId then
 		path = select(3,GetSpellInfo(spellId))
 		return path
 	end
-	
+
 	-- if the spell is in the spellbook, the icon can be retrieved that way
 	path = select(3, GetSpellInfo(icon))
 	if path then
 		return path
 	end
-	
+
 	-- the last chance is, that it's an option saved by an old parrot version
 	-- the strings from the default-options can be resolved by the table provided above
 	local oldIcon = oldIconName[icon]
@@ -568,7 +568,7 @@ local function figureIconPath(icon)
 			return path
 		end
 	end
-	
+
 	-- perhaps it's an item
 	local _, _, _, _, _, _, _, _, _, texture = GetItemInfo(icon)
 	if texture then
@@ -632,9 +632,9 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid)
 						local r, g, b = hexColorToTuple(v.color or 'ffffff')
 						local icon = figureIconPath(v.icon)
 						-- getIconById(v.iconSpellId) or figureIconPath(v.icon)
-						
+
 						Parrot_Display:ShowMessage(v.name, v.scrollArea or "Notification", v.sticky, r, g, b, v.font, v.fontSize, v.outline, icon)
-						
+
 						if v.sound then
 							local sound = SharedMedia:Fetch('sound', v.sound)
 							if sound then
@@ -660,13 +660,13 @@ local function getSoundChoices()
 end
 
 function Parrot_Triggers:OnOptionsCreate()
-	
+
 	local acetype = {
 		['number'] = 'range',
 		['string'] = 'input',
 		['boolean'] = 'toggle',
-	}	
-		
+	}
+
 	local makeOption
 	local remove
 	local triggers_opt = {
@@ -713,12 +713,12 @@ function Parrot_Triggers:OnOptionsCreate()
 				desc = L["Delete all Triggers that belong to a different locale"],
 				func = function()
 
-					for _,v in ipairs(self.db.profile.triggers) do					
+					for _,v in ipairs(self.db.profile.triggers) do
 						if v.locale and v.locale ~= GetLocale() then
 
 							Parrot:Print(string.format("Deleting Trigger \"%s\" because it is \'%s\'", v.name, v.locale))
 							remove(v)
-							
+
 						end
 					end
 				end,
@@ -726,7 +726,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		}
 	}
 	Parrot:AddOption('triggers', triggers_opt)
-	
+
 	local function getFontFace(t)
 		local font = t.arg.font
 		if font == nil then
@@ -821,7 +821,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		opt.desc = value
 		opt.order = value == L["New trigger"] and -110 or -100
 	end
-	
+
 	local function getIcon(t)
 		return tostring(t.arg.icon) or ''
 	end
@@ -831,11 +831,11 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		t.arg.icon = tonumber(value) or value
 	end
-	
+
 	local function tupleToHexColor(r, g, b)
 		return ("%02x%02x%02x"):format(r * 255, g * 255, b * 255)
 	end
-	
+
 	local function getColor(t)
 		return hexColorToTuple(t.arg.color or "ffffff")
 	end
@@ -846,14 +846,14 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		t.arg.color = color
 	end
-	
+
 	local function getClass(t, class)
 		local tmp = newSet((";"):split(t.arg.class))
 		local value = tmp[class]
 		tmp = del(tmp)
 		return value
 	end
-	
+
 	local function setClass(t, class, value)
 		local tmp = newSet((";"):split(t.arg.class))
 		tmp[class] = value or nil
@@ -868,11 +868,11 @@ function Parrot_Triggers:OnOptionsCreate()
 			rebuildEffectiveRegistry()
 		end
 	end
-	
+
 	local function getSound(t)
 		return t.arg.sound or "None"
 	end
-	
+
 	local function setSound(t, value)
 		PlaySoundFile(SharedMedia:Fetch('sound', value))
 		if value == "None" then
@@ -880,7 +880,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		t.arg.sound = value
 	end
-	
+
 	local function test(t)
 		local t = t
 		if t.arg then
@@ -896,7 +896,7 @@ function Parrot_Triggers:OnOptionsCreate()
 			end
 		end
 	end
-	
+
 	local classChoices = {
 		DRUID = BCL["Druid"],
 		ROGUE = BCL["Rogue"],
@@ -909,7 +909,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		HUNTER = BCL["Hunter"],
 		DEATHKNIGHT = BCL["Deathknight"],
 	}
-	
+
 	local function addPrimaryCondition(t, name, localName)
 		local opt = triggers_opt.args[tostring(t)].args.primary
 		local param, default = Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
@@ -941,7 +941,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				else
 					tmp[k] = v
 				end
-				
+
 			end
 			opt.args[name] = tmp
 			if default then
@@ -994,7 +994,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		return tmp
 	end
-	
+
 	local function addSecondaryCondition(t, name, localName)
 		local opt = triggers_opt.args[tostring(t)].args.secondary
 		local param, default = Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
@@ -1023,14 +1023,14 @@ function Parrot_Triggers:OnOptionsCreate()
 			for k, v in pairs(param) do
 				-- TODO remove
 				if k ~= "usage" then
-					
-			
+
+
 				if k == "type" then
 					tmp[k] = acetype[v] or v
 				else
 					tmp[k] = v
 				end
-				
+
 				end
 			end
 			opt.args[name] = tmp
@@ -1096,7 +1096,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		return tmp
 	end
-	
+
 	function makeOption(t)
 		local opt = {
 			type = 'group',
@@ -1319,7 +1319,7 @@ function Parrot_Triggers:OnOptionsCreate()
 			end
 		end
 	end
-	
+
 	for _,t in ipairs(self.db.profile.triggers) do
 		makeOption(t)
 	end

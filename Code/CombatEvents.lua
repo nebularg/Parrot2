@@ -118,46 +118,46 @@ function Parrot_CombatEvents:OnInitialize()
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
-	
-		
+
+
 	if (disabled) then
-		
+
 		-- Combatlog
 		self:RemoveEventListener("Blizzard", "COMBAT_LOG_EVENT_UNFILTERED");
-		
+
 		-- loot
 		self:RemoveEventListener("Blizzard", "CHAT_MSG_LOOT")
 		self:RemoveEventListener("Blizzard", "CHAT_MSG_MONEY")
-		
+
 		-- XP-gains
 		self:RemoveEventListener("Blizzard", "PLAYER_XP_UPDATE")
-		
+
 		-- honorgains
 		self:RemoveEventListener("Blizzard", "HONOR_CURRENCY_UPDATE")
-		
+
 		-- Skillgains
 		self:RemoveEventListener("Blizzard", "CHAT_MSG_SKILL")
-		
+
 		-- Reputationgains
 		self:RemoveEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE")
-		
+
 	else
-		
+
 		self:AddEventListener("Blizzard", "COMBAT_LOG_EVENT_UNFILTERED", "OnEvent");
-		
+
 		--LootEvents
 		self:AddEventListener("Blizzard", "CHAT_MSG_LOOT", "OnLootEvent")
 		self:AddEventListener("Blizzard", "CHAT_MSG_MONEY", "OnLootEvent")
-		
+
 		-- Experiencegains
 		self:AddEventListener("Blizzard", "PLAYER_XP_UPDATE", "OnXPgainEvent" )
-		
+
 		-- honorgains
 		self:AddEventListener("Blizzard", "HONOR_CURRENCY_UPDATE", "OnHonorgainEvent")
-		
+
 		-- Skillgains
 		self:AddEventListener("Blizzard", "CHAT_MSG_SKILL", "OnSkillgainEvent" )
-		
+
 		-- Reputationgains
 		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")
 
@@ -181,7 +181,7 @@ function Parrot_CombatEvents:check_raid_instance()
 				self:ToggleActive(not self.db.profile.disable_in_25man)
 			else
 				-- Normal = 10man (or maybe some old raid-instance)
-				self:ToggleActive(not self.db.profile.disable_in_10man)				
+				self:ToggleActive(not self.db.profile.disable_in_10man)
 			end
 		end
 		if not self:IsActive() then
@@ -191,11 +191,11 @@ function Parrot_CombatEvents:check_raid_instance()
 		self:ToggleActive(true)
 		disabled_by_raid = false
 	end
-	
+
 	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
-	
+
 
 end
 
@@ -207,7 +207,7 @@ function Parrot_CombatEvents:OnEnable(first)
 	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
-	
+
 	if first then
 		local tmp = newList("Notification", "Incoming", "Outgoing")
 		for _,category in ipairs(tmp) do
@@ -238,15 +238,15 @@ function Parrot_CombatEvents:OnEnable(first)
 		end
 		tmp = del(tmp)
 	end
-	
+
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
-	
-		
+
+
 	Parrot_CombatEvents.PlayerGUID = UnitGUID("player")
 	Parrot_CombatEvents.PlayerName = UnitName("player")
-	
+
 	currentHonor = GetHonorCurrency()
 	currentXP = UnitXP("player")
 
@@ -255,20 +255,20 @@ end
 local function addEventListeners()
 	-- Combatlog
 		self:AddEventListener("Blizzard", "COMBAT_LOG_EVENT_UNFILTERED", "OnEvent");
-		
+
 		--LootEvents
 		self:AddEventListener("Blizzard", "CHAT_MSG_LOOT", "OnLootEvent")
 		self:AddEventListener("Blizzard", "CHAT_MSG_MONEY", "OnLootEvent")
-		
+
 		-- Experiencegains
 		self:AddEventListener("Blizzard", "PLAYER_XP_UPDATE", "OnXPgainEvent" )
-		
+
 		-- honorgains
 		self:AddEventListener("Blizzard", "HONOR_CURRENCY_UPDATE", "OnHonorgainEvent")
-		
+
 		-- Skillgains
 		self:AddEventListener("Blizzard", "CHAT_MSG_SKILL", "OnSkillgainEvent" )
-		
+
 		-- Reputationgains
 		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")
 end
@@ -311,7 +311,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 		--@end-debug@
 		return nil
 	end
-	
+
 	local style = self.db.profile.abbreviateStyle
 	if style == "none" then
 		return name
@@ -464,7 +464,7 @@ local function getSoundChoices()
 	end
 	return t
 end
-		
+
 
 function Parrot_CombatEvents:OnOptionsCreate()
 	local events_opt
@@ -483,7 +483,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				get = function() return self:GetModule("CombatEvents"):IsActive() end,
 				set = function(value) self:GetModule("CombatEvents"):ToggleActive(value) self.db.profile.disabled = value end,
 			},]]--
-			
+
 			disable_in_10man = {
 				type = 'toggle',
 				name = L["Disable in normal raids"],
@@ -504,7 +504,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						self:check_raid_instance()
 					end,
 			},
-			
+
 			Incoming = {
 				type = 'group',
 				name = L["Incoming"],
@@ -749,7 +749,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		}
 	end
 	tmp = del(tmp)
-	
+
 	local tmp = newDict(
 		"Physical", L["Physical"],
 		"Holy", L["Holy"],
@@ -790,7 +790,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		end
 		self.db.profile[category][name].tag = value
 	end
-	
+
 	local function getColor(info)
 		local category, name = info.arg[1], info.arg[2]
 		return hexColorToTuple(self.db.profile[category][name].color or combatEvents[category][name].color)
@@ -925,10 +925,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		end
 		self.db.profile[category][name].sound = value
 	end
-	
+
 	local function getCommonEnabled(info)
 		local category, subcat = info.arg[1], info.arg[2]
-		
+
 		local one_enabled, one_disabled = false, false
 		for k,v in pairs(combatEvents[category]) do
 			if v.subCategory == subcat then
@@ -939,16 +939,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				end
 			end
 		end
-		
+
 		if one_disabled and one_enabled then
 			return nil
 		elseif one_disabled then
 			return false
 		else
 			return true
-		end	
+		end
 	end
-	
+
 	local function setCommonEnabled(info, value)
 		local category, subcat = info.arg[1], info.arg[2]
 		for k,v in pairs(combatEvents[category]) do
@@ -956,9 +956,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				self.db.profile[category][v.name].disabled = not value
 			end
 		end
-		
+
 	end
-	
+
 	local function getCommonScrollArea(info)
 		local category, subcat = info.arg[1], info.arg[2]
 		local common_choice
@@ -977,7 +977,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		end
 		return common_choice
 	end
-	
+
 	local function setCommonScrollArea(info, value)
 		local category, subcat = info.arg[1], info.arg[2]
 
@@ -986,10 +986,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				setScrollArea( { arg = {category, v.name} }, value )
 			end
 		end
-		
-		
+
+
 	end
-	
+
 	local function resortOptions(category)
 --		local args = events_opt.args[category].args
 --		local subcats = newList()
@@ -1054,14 +1054,14 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				desc = name or L["Uncategorized"],
 			}
 		end--]]
-		
+
 		-- copy the choices
 		local scrollarea_choices = {}
 		for k,v in pairs(Parrot_ScrollAreas:GetScrollAreasChoices()) do
 			scrollarea_choices[k] = v
 		end
 		-- scrollarea_choices[" "] = " "
-		
+
 		-- added so that options get sorted into subcategories
 
 		if not events_opt.args[category].args[subcat] then
@@ -1092,7 +1092,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				order = 1,
 			}
 		end
-		
+
 		events_opt.args[category].args[subcat].args[name] = {
 			type = 'group',
 			name = localName,
@@ -1260,7 +1260,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			arg = filterType
 		}
 	end
-	
+
 	for category, q in pairs(combatEvents) do
 		for name, data in pairs(q) do
 			createOption(category, name)
@@ -1390,17 +1390,17 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 	if type(color) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. color must be a %q, got %q."):format("string", type(color)), 2)
 	end
-	
+
 	if not combatEvents[category] then
 		combatEvents[category] = newList()
 	end
 	combatEvents[category][name] = data
 	refreshEventRegistration(category, name)
-	
+
 	local combatLogEvents = data.combatLogEvents
 	if combatLogEvents then
 		for _, v in ipairs(combatLogEvents) do
-		
+
 			local eventType = v.eventType
 			if not self.combatLogEvents[eventType] then
 				self.combatLogEvents[eventType] = {}
@@ -1415,9 +1415,9 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			end
 			table.insert(self.combatLogEvents[eventType], { category = data.category, name = data.name, infofunc = v.func, checkfunc = check })
 		end
-		
+
 	end
-	
+
 	createOption(category, name)
 end
 Parrot.RegisterCombatEvent = Parrot_CombatEvents.RegisterCombatEvent
@@ -1435,7 +1435,7 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:RegisterThrottleType(name, localName, duration, waitStyle)
 	self = Parrot_CombatEvents -- for people who want to Parrot:RegisterThrottleType
-	
+
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterThrottleType'. Expected %q, got %q."):format("string", type(name)), 2)
 	end
@@ -1445,11 +1445,11 @@ function Parrot_CombatEvents:RegisterThrottleType(name, localName, duration, wai
 	if type(duration) ~= "number" then
 		error(("Bad argument #4 to `RegisterThrottleType'. Expected %q, got %q."):format("number", type(duration)), 2)
 	end
-	
+
 	throttleTypes[name] = localName
 	throttleDefaultTimes[name] = duration
 	throttleWaitStyles[name] = not not waitStyle
-	
+
 	createThrottleOption(name)
 end
 Parrot.RegisterThrottleType = Parrot_CombatEvents.RegisterThrottleType
@@ -1467,7 +1467,7 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:RegisterFilterType(name, localName, default)
 	self = Parrot_CombatEvents -- for people who want to Parrot:RegisterFilterType
-	
+
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterFilterType'. Expected %q, got %q."):format("string", type(name)), 2)
 	end
@@ -1477,7 +1477,7 @@ function Parrot_CombatEvents:RegisterFilterType(name, localName, default)
 	if type(default) ~= "number" then
 		error(("Bad argument #4 to `RegisterFilterType'. Expected %q, got %q."):format("number", type(default)), 2)
 	end
-	
+
 	filterTypes[name] = localName
 	filterDefaults[name] = default
 
@@ -2010,13 +2010,13 @@ local COPPER_AMOUNT_inv = COPPER_AMOUNT:gsub("%%d", "%%d+")
 
 local function parseGoldLoot(chatmsg)
 	local gold, silver, copper
-	
+
 	gold = (deformat(chatmsg:match(GOLD_AMOUNT_inv) or "", GOLD_AMOUNT)) or 0
 	silver = (deformat(chatmsg:match(SILVER_AMOUNT_inv) or "", SILVER_AMOUNT)) or 0
 	copper = (deformat(chatmsg:match(COPPER_AMOUNT_inv) or "", COPPER_AMOUNT)) or 0
-	
+
 	return tonumber(gold), tonumber(silver), tonumber(copper)
-	
+
 end
 
 local YOU_LOOT_MONEY = _G.YOU_LOOT_MONEY
@@ -2026,37 +2026,37 @@ local LOOT_ITEM_SELF = _G.LOOT_ITEM_SELF
 local LOOT_ITEM_CREATED_SELF = _G.LOOT_ITEM_CREATED_SELF
 
 function Parrot_CombatEvents:OnLootEvent(_, eventName, chatmsg)
-	
+
 	-- parse the money loot
 	if eventName == "CHAT_MSG_MONEY" then
-		
+
 		local moneystring = deformat(chatmsg, LOOT_MONEY_SPLIT) or deformat(chatmsg, YOU_LOOT_MONEY)
-		
+
 		if moneystring then
-			local gold, silver, copper = parseGoldLoot(chatmsg)	
+			local gold, silver, copper = parseGoldLoot(chatmsg)
 			local info = newList()
 			info.amount = 10000*gold + 100 * silver + copper
 			self:TriggerCombatEvent("Notification", "Loot money", info)
 		end
-		
+
 	end
-	
+
 	if eventName == "CHAT_MSG_LOOT" then
-		
+
 		-- check for multiple-item-loot
 		local itemLink, amount = deformat(chatmsg, LOOT_ITEM_SELF_MULTIPLE)
 		if not itemLink then
 			-- check for single-itemloot
 			itemLink = deformat(chatmsg, LOOT_ITEM_SELF)
 		end
-		
+
 		-- if something has been looted
 		if itemLink then
-			
+
 			if not amount then
 				amount = 1
 			end
-			
+
 			local info = newList()
 			info.itemLink = itemLink
 			info.amount = amount
@@ -2072,9 +2072,9 @@ function Parrot_CombatEvents:OnLootEvent(_, eventName, chatmsg)
 				self:TriggerCombatEvent("Notification", "Soul shard gains", info)
 			end
 		end
-		
+
 	end
-	
+
 end
 
 local FACTION_STANDING_INCREASED = _G.FACTION_STANDING_INCREASED
@@ -2083,40 +2083,40 @@ local FACTION_STANDING_DECREASED = _G.FACTION_STANDING_DECREASED
 function Parrot_CombatEvents:OnRepgainEvent(_, eventName, chatmsg )
 
 	local faction, amount
-	
+
 	-- try increase:
 	faction, amount = deformat(chatmsg, FACTION_STANDING_INCREASED)
-	
+
 	if faction and amount then
 		local info = newList()
 		info.amount = amount
 		info.faction = faction
 		self:TriggerCombatEvent("Notification", "Reputation gains", info)
 	end
-	
+
 	-- try decrease
 	faction, amount = deformat(chatmsg, FACTION_STANDING_DECREASED)
-	
+
 	if faction and amount then
 		local info = newList()
 		info.amount = amount
 		info.faction = faction
 		self:TriggerCombatEvent("Notification", "Reputation losses", info)
 	end
-	
+
 end
 
 
 
 function Parrot_CombatEvents:OnHonorgainEvent(_, eventName)
-	
+
 	local newHonor = GetHonorCurrency()
 	if newHonor > currentHonor then
 		info = newList()
 		info.amount = newHonor - currentHonor
 		self:TriggerCombatEvent("Notification", "Honor gains", info)
 	end
-	
+
 	currentHonor = newHonor
 end
 
@@ -2141,14 +2141,14 @@ function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
 end
 
 function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
-	
+
 	if not Parrot:IsModuleActive(Parrot_CombatEvents) then
 		return
 	end
 	local registeredHandlers = self.combatLogEvents[eventtype]
 	if registeredHandlers then
 		for _, v in ipairs(registeredHandlers) do
-			
+
 			if v.checkfunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...) then
 				local info = v.infofunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
 				if info then
@@ -2157,8 +2157,8 @@ function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName,
 					info = del( info )
 				end
 			end
-			
+
 		end
 	end
-	
+
 end

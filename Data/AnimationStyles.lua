@@ -128,18 +128,18 @@ Parrot:RegisterAnimationStyle {
 				frame.icon:SetWidth(fsHeight)
 				frame.icon:SetHeight(fsHeight)
 			end
-			
+
 			-- now for squiggle
 			local now = GetTime()
 			if not frame.nextSquiggle or frame.nextSquiggle < now then
 				frame.nextSquiggle = now + 0.05
 				frame.squiggleX = math.random(-1, 1)
 				frame.squiggleY = math.random(-1, 1)
-			end	
+			end
 			x = x + frame.squiggleX
 			y = y + frame.squiggleY
 		end
-	
+
 		frame:SetPoint(validPoints[align] or "CENTER", UIParent, "CENTER", x, y)
 	end,
 	cleanup = function(frame, scrollArea)
@@ -186,9 +186,9 @@ Parrot:RegisterAnimationStyle {
 				frame.icon:SetWidth(fsHeight)
 				frame.icon:SetHeight(fsHeight)
 			end
-			
+
 		end
-	
+
 		frame:SetPoint(validPoints[align] or "CENTER", UIParent, "CENTER", x, y)
 	end,
 	cleanup = function(frame, scrollArea)
@@ -400,7 +400,7 @@ Parrot:RegisterAnimationStyle({
 			xDiff = ((percent - 0.8)/0.2 + 1) * frame.finishX
 			yDiff = -(1 - percent)/0.2 * frame.finishY
 		end
-		
+
 		local vert, horiz = (";"):split(direction)
 		if vert == "UP" then
 			yDiff = -yDiff
@@ -454,7 +454,7 @@ Parrot:RegisterAnimationStyle({
 			xDiff = ((percent - 0.8)/0.2 + 1) * frame.finishX
 			yDiff = -(1 - percent)/0.2 * frame.finishY
 		end
-		
+
 		local vert, horiz = (";"):split(direction)
 		if vert == "UP" then
 			yDiff = -yDiff
@@ -528,7 +528,7 @@ Parrot:RegisterAnimationStyle({
 			xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
 			yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
 		end
-		
+
 		local y = yOffset + yDiff
 		local x = xOffset + xDiff
 		local dir, clock = (";"):split(direction)
@@ -597,7 +597,7 @@ Parrot:RegisterAnimationStyle({
 			xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
 			yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
 		end
-		
+
 		local y = yOffset + yDiff
 		local x = xOffset + xDiff
 		local dir, clock = (";"):split(direction)

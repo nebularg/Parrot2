@@ -21,7 +21,7 @@
 	<Include file="libs\AceConfig-3.0\AceConfig-3.0.xml" />
 	
 	<Script file="libs\Deformat\AceLibrary\AceLibrary.lua" />
-	<Script file="libs\Deformat\Deformat-2.0\Deformat-2.0.lua"/>
+	<Script file="libs\Deformat-2.0\Deformat-2.0.lua"/>
 	
 	<!--@end-no-lib-strip@-->
 	

@@ -64,7 +64,7 @@ function Parrot:OnInitialize()
 	--self:SetConfigSlashCommand("/Parrot", "/Par")
 
 --TODO AceDB-3.0	self.db = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults)
-	
+
 	Parrot.options = {
 		name = L["Parrot"],
 		desc = L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."],
@@ -87,9 +87,9 @@ function Parrot:OnInitialize()
 --			},
 		},
 	}
-	
+
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Parrot", Parrot.options, {"/Parrot", "/Par"})
-	
+
 	AceConfigDialog:AddToBlizOptions("Parrot", "Parrot")
 
 	if not self.db.account.firstTimeWoW21 then

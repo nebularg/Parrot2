@@ -8,7 +8,7 @@ local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 
 function mod:OnEnable()
 	self:ResetSpells()
-	
+
 	self:AddRepeatingTimer(0.1, "OnUpdate")
 	self:AddEventListener("SPELLS_CHANGED", "ResetSpells")
 	self:AddEventListener("SPELL_UPDATE_COOLDOWN", "ResetCooldownState")
@@ -37,10 +37,10 @@ local spellNameToTree = {}
 
 function mod:ResetCooldownState()
 	local GCD = 1.5
-	
+
 	-- 18 is melee ... as of WoW 3.0 this is the same value as for ranged and spell
 	-- local GCD = 1.5 / (1 + GetCombatRatingBonus(18) / 100);
-	
+
 	-- 3018 = ranged shoot
 	-- 5019 = wand shoot
 	if spellNameToID[GetSpellInfo(3018)] then
@@ -49,12 +49,12 @@ function mod:ResetCooldownState()
 			GCD = shootCooldown
 		end
 	end
-	
+
 	for name, id in pairs(spellNameToID) do
 		local start, duration = GetSpellCooldown(id, "spell")
 		cooldowns[name] = start > 0 and duration > GCD
 	end
-	
+
 end
 function mod:ResetSpells()
 	for k in pairs(spellNameToID) do
@@ -72,7 +72,7 @@ function mod:ResetSpells()
 			spellNameToTree[spell] = i
 		end
 	end
-	
+
 	self:ResetCooldownState()
 end
 
@@ -186,7 +186,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if(tonumber(param)) then
 			param = GetSpellInfo(param)
 		end
-		
+
 		return (GetSpellCooldown(param) == 0)
 	end,
 }
@@ -203,7 +203,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if(tonumber(param)) then
 			param = GetSpellInfo(param)
 		end
-		
+
 		return IsUsableSpell(param)
 	end,
 }

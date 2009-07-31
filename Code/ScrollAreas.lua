@@ -43,7 +43,7 @@ function Parrot_ScrollAreas:OnEnable()
 				yOffset = -30,
 			},
 		}
-	end	
+	end
 	scrollAreas = self.db.profile.areas
 	for k, v in pairs(scrollAreas) do
 		if k == "Notification" or k == "Incoming" or k == "Outgoing" then
@@ -108,11 +108,11 @@ local function showOffsetBox(k)
 		offsetBox:SetWidth(300)
 		offsetBox:SetHeight(100)
 		offsetBox:SetFrameStrata("MEDIUM")
-		
+
 		local bg = offsetBox:CreateTexture("Parrot_ScrollAreas_OffsetBox_" .. k .. "_Background", "BACKGROUND")
 		bg:SetTexture(0.7, 0.4, 0, 0.5) -- orange
 		bg:SetAllPoints(offsetBox)
-		
+
 		local text = offsetBox:CreateFontString("Parrot_ScrollAreas_Offset_" .. k .. "_BoxText", "ARTWORK", "GameFontHighlight")
 		offsetBox.text = text
 		text:SetText(L["Click and drag to the position you want."])
@@ -124,18 +124,18 @@ local function showOffsetBox(k)
 		local bottomText = offsetBox:CreateFontString("Parrot_ScrollAreas_Offset_" .. k .. "_BoxBottomText", "ARTWORK", "GameFontHighlight")
 		offsetBox.bottomText = bottomText
 		bottomText:SetPoint("TOP", offsetBox, "BOTTOM", 0, -5)
-		
+
 		offsetBox:SetScript("OnDragStart", function(this)
 			midPoint:StartMoving()
 			this.moving = true
 		end)
-		
+
 		offsetBox:SetScript("OnDragStop", function(this)
 			this:GetScript("OnUpdate")(this)
 			this.moving = nil
 			midPoint:StopMovingOrSizing()
 		end)
-		
+
 		offsetBox:SetScript("OnUpdate", function(this)
 			if this.moving then
 				local x, y = this:GetCenter()
@@ -146,18 +146,18 @@ local function showOffsetBox(k)
 				this.bottomText:SetText(L["Position: %d, %d"]:format(x, y))
 			end
 		end)
-		
+
 		offsetBox:SetMovable(true)
 		offsetBox:RegisterForDrag("LeftButton")
 		midPoint:SetMovable(true)
 		midPoint:RegisterForDrag("LeftButton")
 		offsetBox:Hide()
-		
+
 		midPoint:SetClampedToScreen(true)
 	end
 
 	offsetBox:Show()
-	
+
 	local offsetX, offsetY = scrollAreas[k].xOffset, scrollAreas[k].yOffset
 	offsetBox.midPoint:SetPoint("CENTER", UIParent, "CENTER", offsetX, offsetY)
 	offsetBox.bottomText:SetText(L["Position: %d, %d"]:format(offsetX, offsetY))
@@ -272,7 +272,7 @@ end
 Parrot.GetScrollAreasChoices = Parrot_ScrollAreas.GetScrollAreasChoices
 
 function Parrot_ScrollAreas:OnOptionsCreate()
-	
+
 	local scrollAreas_opt
 	local function getName(info)
 		local name = info.arg
@@ -547,7 +547,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		EDGE = L["Edge of screen"],
 		DISABLE = L["Disable"],
 	}
-	
+
 	local function makeOption(k)
 		local SharedMedia = LibStub("LibSharedMedia-3.0")
 		local v = scrollAreas[k]
@@ -752,7 +752,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							get = getFontFace,
 							set = setFontFace,
 							arg = {"normal", k},
-							
+
 							order = 1,
 						},
 						fontSizeInherit = {
@@ -775,7 +775,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							set = setFontSize,
 							disabled = getFontSizeInherit,
 							arg = {"normal", k},
-							
+
 							order = 3,
 						},
 						fontOutline = {
@@ -786,7 +786,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							set = setFontOutline,
 							values = fontOutlineChoices,
 							arg = {"normal", k},
-							
+
 							order = 4,
 						},
 						stickyfontface = {
@@ -798,7 +798,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							get = getFontFace,
 							set = setFontFace,
 							arg = {"sticky", k},
-							
+
 							order = 5,
 						},
 						stickyfontSizeInherit = {
@@ -808,7 +808,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							get = getFontSizeInherit,
 							set = setFontSizeInherit,
 							arg = {"sticky", k},
-							
+
 							order = 6,
 						},
 						stickyfontSize = {
@@ -822,7 +822,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							set = setFontSize,
 							disabled = getFontSizeInherit,
 							arg = {"sticky", k},
-							
+
 							order = 7,
 						},
 						stickyfontOutline = {
@@ -833,7 +833,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							set = setFontOutline,
 							values = fontOutlineChoices,
 							arg = {"sticky", k},
-							
+
 							order = 8,
 						},
 					}
@@ -843,7 +843,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		}
 		scrollAreas_opt.args[tostring(v)] = opt
 	end
-	
+
 	scrollAreas_opt = {
 		type = 'group',
 		name = L["Scroll areas"],

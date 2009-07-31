@@ -106,7 +106,7 @@ Parrot:RegisterCombatEvent{
 					return (dstGUID == UnitGUID("player"))
 				end,
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-								
+
 				local info = {}
 				info.damageType = SchoolParser[school]
 				info.recipientID = dstGUID
@@ -121,7 +121,7 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				
+
 				return info
 			end,
 		},
@@ -198,7 +198,7 @@ local parseMissInfo = function( srcGUID, srcName, _, dstGUID, dstName, _, missTy
 	info.missType = missType
 	info.amount = amountMissed
 	return info
-	
+
 end
 
 local missTagTranslations = {
@@ -357,7 +357,7 @@ local dumbIconOverride = {
 }
 
 local function retrieveIconFromAbilityName(info)
-	
+
 	local icon
 
 	if(info.spellID) then
@@ -418,7 +418,7 @@ Parrot:RegisterCombatEvent{
 				return (dstGUID == UnitGUID("player"))
 			end,
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -432,8 +432,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
+
+
 			return info
 		end,
 		},
@@ -455,7 +455,7 @@ Parrot:RegisterCombatEvent{
 	canCrit = true,
 	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc}, sourceName = L["Multiple"] },
 	filterType = { "Incoming damage", 'amount' },
-	
+
 }
 
 Parrot:RegisterCombatEvent{
@@ -471,7 +471,7 @@ Parrot:RegisterCombatEvent{
 				return (dstGUID == UnitGUID("player"))
 			end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-						
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -488,7 +488,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
+
 			return info
 		end,
 		},
@@ -498,7 +498,7 @@ Parrot:RegisterCombatEvent{
 				return (dstGUID == UnitGUID("player"))
 			end,
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-							
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -515,8 +515,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
+
+
 			return info
 			end,
 		},
@@ -526,7 +526,7 @@ Parrot:RegisterCombatEvent{
 				return (dstGUID == UnitGUID("player"))
 			end,
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -583,7 +583,7 @@ Parrot:RegisterCombatEvent{
 				return (dstGUID == UnitGUID("player"))
 			end,
 		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing )
-					
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[spellSchool]
@@ -605,8 +605,8 @@ Parrot:RegisterCombatEvent{
 			info.absorbed = absorbed
 			info.resisted = resisted
 			info.blocked = blocked
-			
-			
+
+
 			return info
 		end,
 		},
@@ -630,7 +630,7 @@ Parrot:RegisterCombatEvent{
 
 local parseSpellMissInfo = function(srcGUID, srcName, srcFlags, dstGUID,
 	dstName, dstFlags, spellId, spellName, spellSchool, missType, amountMissed)
-		
+
 	local info = newList()
 	info.spellID = spellId
 	info.recipientID = dstGUID
@@ -640,7 +640,7 @@ local parseSpellMissInfo = function(srcGUID, srcName, srcFlags, dstGUID,
 	info.abilityName = spellName
 	info.missType = missType
 	info.amount = amountMissed
-	
+
 	return info
 end
 
@@ -951,7 +951,7 @@ Parrot:RegisterCombatEvent{
 					return (dstGUID == UnitGUID("player"))
 				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellId, extraSpellName, extraSpellSchool)
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.extraSpellID = extraSpellId
@@ -962,7 +962,7 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.extraAbilityName = extraSpellName
-			
+
 			return info
 		end,
 		},
@@ -1029,7 +1029,7 @@ Parrot:RegisterCombatEvent{
 					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet"))
 				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -1041,12 +1041,12 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = false
 			info.overhealAmount = overheal
-			
+
 			return info
-			
+
 		end,
 		},
 	},
@@ -1080,7 +1080,7 @@ Parrot:RegisterCombatEvent{
 				return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player"))
 			end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-						
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -1092,12 +1092,12 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = false
 			info.overhealAmount = overheal
-			
+
 			return info
-			
+
 		end,
 		},
 	},
@@ -1132,7 +1132,7 @@ Parrot:RegisterCombatEvent{
 					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet"))
 				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -1144,10 +1144,10 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = true
 			info.overhealAmount = overheal
-			
+
 			return info
 		end,
 		},
@@ -1182,7 +1182,7 @@ Parrot:RegisterCombatEvent{
 					return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player"))
 				end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -1194,12 +1194,12 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = true
 			info.overhealAmount = overheal
-			
+
 			return info
-			
+
 		end,
 		},
 	},
@@ -1247,8 +1247,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
+
+
 			return info
 		end,
 		},
@@ -1287,7 +1287,7 @@ Parrot:RegisterCombatEvent{
 				end
 			end,
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				
+
 			local info = {}
 			info.damageType = SchoolParser[school]
 			info.recipientID = dstGUID
@@ -1302,8 +1302,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
+
+
 			return info
 		end,
 		},
@@ -1535,7 +1535,7 @@ Parrot:RegisterCombatEvent{
 		{
 		eventType = "SPELL_DAMAGE",
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
-			
+
 			if checkFlags(dstFlags, GUARDIAN_FLAGS) then
 				if not Parrot.db.profile.totemDamage then
 					return nil
@@ -1543,7 +1543,7 @@ Parrot:RegisterCombatEvent{
 			elseif dstGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -1560,9 +1560,9 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
-			
+
+
+
 			return info
 		end,
 		},
@@ -1604,7 +1604,7 @@ Parrot:RegisterCombatEvent{
 			elseif dstGUID ~= UnitGUID("pet") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[spellSchool]
@@ -1621,7 +1621,7 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
+
 			return info
 		end,
 		},
@@ -2167,7 +2167,7 @@ Parrot:RegisterCombatEvent{
 			if dstGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -2179,12 +2179,12 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = false
 			info.overhealAmount = overheal
-			
+
 			return info
-			
+
 		end,
 		},
 	},
@@ -2219,7 +2219,7 @@ Parrot:RegisterCombatEvent{
 			if dstGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -2231,10 +2231,10 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = true
 			info.overhealAmount = overheal
-			
+
 			return info
 		end,
 		},
@@ -2273,7 +2273,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
-				
+
 			local info = {}
 			info.damageType = SchoolParser[school]
 			info.recipientID = dstGUID
@@ -2288,8 +2288,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
+
+
 			return info
 		end,
 		},
@@ -2509,7 +2509,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -2525,8 +2525,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
+
+
 			return info
 		end,
 		},
@@ -2548,7 +2548,7 @@ Parrot:RegisterCombatEvent{
 	canCrit = true,
 	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, sourceName = L["Multiple"] },
 	filterType = { "Outgoing damage", 'amount' },
-	
+
 }
 
 Parrot:RegisterCombatEvent{
@@ -2565,7 +2565,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -2582,9 +2582,9 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
-			
+
+
+
 			return info
 		end,
 		},
@@ -2594,7 +2594,7 @@ Parrot:RegisterCombatEvent{
 				if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -2611,9 +2611,9 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
-			
+
+
+
 			return info
 			end,
 		},
@@ -2647,11 +2647,11 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_DAMAGE",
-		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing )			
+		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing )
 			if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[spellSchool]
@@ -2668,8 +2668,8 @@ Parrot:RegisterCombatEvent{
 			info.absorbed = absorbed
 			info.resisted = resisted
 			info.blocked = blocked
---			
-			
+--
+
 			return info
 		end,
 		},
@@ -2702,7 +2702,7 @@ local outSpellMissTagTranslationsHelp = {
 	Skill = L["The spell or ability that you used."],
 	Amount = L["Amount of the damage that was missed."],
 }
-	
+
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
 	subCategory = L["Skills"],
@@ -3033,7 +3033,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.extraSpellID = extraSpellId
@@ -3044,9 +3044,9 @@ Parrot:RegisterCombatEvent{
 			info.sourceID = srcGUID
 			info.abilityName = spellName
 			info.extraAbilityName = extraSpellName
-			
-			
-			
+
+
+
 			return info
 		end,
 		},
@@ -3080,7 +3080,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") or dstGUID == UnitGUID("pet") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -3092,12 +3092,12 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = false
 			info.overhealAmount = overheal
-			
+
 			return info
-			
+
 		end,
 		},
 	},
@@ -3132,7 +3132,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") or dstGUID ~= UnitGUID("player") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -3144,12 +3144,12 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = false
 			info.overhealAmount = overheal
-			
+
 			return info
-			
+
 		end,
 		},
 	},
@@ -3185,7 +3185,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") or dstGUID == UnitGUID("pet") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -3197,10 +3197,10 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = true
 			info.overhealAmount = overheal
-			
+
 			return info
 		end,
 		},
@@ -3235,7 +3235,7 @@ Parrot:RegisterCombatEvent{
 			if dstGUID ~= UnitGUID("player") or srcGUID ~= UnitGUID("player") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -3247,12 +3247,12 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = true
 			info.overhealAmount = overheal
-			
+
 			return info
-			
+
 		end,
 		},
 	},
@@ -3290,7 +3290,7 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-				
+
 			local info = {}
 			info.damageType = SchoolParser[school]
 			info.recipientID = dstGUID
@@ -3305,8 +3305,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
+
+
 			return info
 		end,
 		},
@@ -3374,14 +3374,14 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.recipientID = dstGUID
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			
-		
+
+
 			return info
 		end,
 		},
@@ -3415,14 +3415,14 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.recipientID = dstGUID
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			
-		
+
+
 			return info
 		end,
 		},
@@ -3456,14 +3456,14 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.recipientID = dstGUID
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			
-		
+
+
 			return info
 		end,
 		},
@@ -3497,14 +3497,14 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.recipientID = dstGUID
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			
-		
+
+
 			return info
 		end,
 		},
@@ -3538,14 +3538,14 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.recipientID = dstGUID
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			
-		
+
+
 			return info
 		end,
 		},
@@ -3579,14 +3579,14 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.recipientID = dstGUID
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			
-		
+
+
 			return info
 		end,
 		},
@@ -3620,14 +3620,14 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.recipientID = dstGUID
 			info.recipientName = dstName
 			info.sourceID = srcGUID
 			info.sourceName = srcName
-			
-		
+
+
 			return info
 		end,
 		},
@@ -3658,7 +3658,7 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[school] or SchoolParser[spellSchool]
@@ -3675,9 +3675,9 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
-			
+
+
+
 			return info
 		end,
 		},
@@ -3699,7 +3699,7 @@ Parrot:RegisterCombatEvent{
 	canCrit = true,
 	throttle = { "Skill damage", 'abilityName', { 'throttleCount', 'isCrit', skillThrottleFunc }, recipientName = L["Multiple"] },
 	filterType = { "Outgoing damage", 'amount' },
-	
+
 }
 
 Parrot:RegisterCombatEvent{
@@ -3720,7 +3720,7 @@ Parrot:RegisterCombatEvent{
 			elseif srcGUID ~= UnitGUID("pet") then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[spellSchool]
@@ -3737,8 +3737,8 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
+
+
 			return info
 		end,
 		},
@@ -4286,7 +4286,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -4298,12 +4298,12 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = false
 			info.overhealAmount = overheal
-			
+
 			return info
-			
+
 		end,
 		},
 	},
@@ -4337,7 +4337,7 @@ Parrot:RegisterCombatEvent{
 			if srcGUID ~= (UnitGUID("pet") or 0) then
 				return nil
 			end
-			
+
 			local info = newList()
 			info.damageType = SchoolParser[school]
 			info.spellID = spellId
@@ -4349,10 +4349,10 @@ Parrot:RegisterCombatEvent{
 			info.realAmount = amount-overheal
 			info.abilityName = spellName
 			info.isCrit = (critical ~= nil)
-			
+
 			info.isHoT = true
 			info.overhealAmount = overheal
-			
+
 			return info
 		end,
 		},
@@ -4393,7 +4393,7 @@ Parrot:RegisterCombatEvent{
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-					
+
 				local info = newList()
 				info.spellID = spellId
 				info.damageType = SchoolParser[spellSchool]
@@ -4406,11 +4406,11 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				
-				
-				
+
+
+
 				return info
-			
+
 			end,
 		},
 		{
@@ -4419,7 +4419,7 @@ Parrot:RegisterCombatEvent{
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-					
+
 				local info = newList()
 				info.spellID = spellId
 				info.damageType = SchoolParser[spellSchool]
@@ -4432,11 +4432,11 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				
-				
-				
+
+
+
 				return info
-			
+
 			end,
 		},
 		{
@@ -4445,7 +4445,7 @@ Parrot:RegisterCombatEvent{
 				if srcGUID ~= UnitGUID("player") then
 					return nil
 				end
-					
+
 				local info = newList()
 				info.spellID = spellId
 				info.damageType = SchoolParser[spellSchool]
@@ -4458,11 +4458,11 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				
-				
-				
+
+
+
 				return info
-			
+
 			end,
 		},
 		{
@@ -4471,7 +4471,7 @@ Parrot:RegisterCombatEvent{
 				if srcGUID ~= UnitGUID("player") then
 					return nil
 				end
-					
+
 				local info = newList()
 				info.spellID = spellId
 				info.damageType = SchoolParser[spellSchool]
@@ -4484,11 +4484,11 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				
-				
-				
+
+
+
 				return info
-			
+
 			end,
 		},
 	},
@@ -4496,16 +4496,16 @@ Parrot:RegisterCombatEvent{
 		Amount = function(info)
 			return info.amountGained or info.amount
 		end,
-		
+
 		Type = function(info)
 			return info.attributeGainedLocal or info.attributeLocal
 		end,
-		
+
 		Skill = retrieveAbilityName,
 		Name = function(info)
 			return info.sourceGainedName and info.recipientName or info.sourceName
 		end,
-		
+
 		Icon = retrieveIconFromAbilityName,
 	},
 	tagTranslationsHelp = {
@@ -4542,7 +4542,7 @@ Parrot:RegisterCombatEvent{
 			if dstGUID ~= UnitGUID("player") then
 				return nil
 			end
-				
+
 			local info = newList()
 			info.spellID = spellId
 			info.damageType = SchoolParser[spellSchool]
@@ -4555,11 +4555,11 @@ Parrot:RegisterCombatEvent{
 			info.isCrit = (critical ~= nil)
 			info.isCrushing = (crushing ~= nil)
 			info.isGlancing = (glancing ~= nil)
-			
-			
-			
+
+
+
 			return info
-		
+
 		end,
 		},
 		{
@@ -4568,7 +4568,7 @@ Parrot:RegisterCombatEvent{
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-					
+
 				local info = newList()
 				info.spellID = spellId
 				info.damageType = SchoolParser[spellSchool]
@@ -4581,11 +4581,11 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				
-				
-				
+
+
+
 				return info
-			
+
 			end,
 		},
 		{
@@ -4594,7 +4594,7 @@ Parrot:RegisterCombatEvent{
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-					
+
 				local info = newList()
 				info.spellID = spellId
 				info.damageType = SchoolParser[spellSchool]
@@ -4607,11 +4607,11 @@ Parrot:RegisterCombatEvent{
 				info.isCrit = (critical ~= nil)
 				info.isCrushing = (crushing ~= nil)
 				info.isGlancing = (glancing ~= nil)
-				
-				
-				
+
+
+
 				return info
-			
+
 			end,
 		},
 	},
@@ -4687,7 +4687,7 @@ Parrot:RegisterCombatEvent{
 	name = "Honor gains",
 	localName = L["Honor gains"],
 	defaultTag = "+[Amount] " .. HONOR_CONTRIBUTION_POINTS,
-	
+
 	tagTranslations = {
 		Amount = "amount",
 -- 		Name = "sourceName", -- not supported anymore
@@ -4804,8 +4804,8 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceName = srcName
 				info.sourceID = srcGUID
-				
-				
+
+
 				return info
 			end
 		}
@@ -4820,7 +4820,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "5555ff", -- semi-light blue
 	sticky = true,
-	
+
 	throttle = { "Killing blows", 'sourceID', { 'throttleCount', function(info)
 		local numNorm = info.throttleCount or 0
 		if numNorm == 1 then
@@ -4829,7 +4829,7 @@ Parrot:RegisterCombatEvent{
 		else -- >= 2
 			 return string.format(" (%d)",format(numNorm))
 		end
-		
+
 	end }, recipientName = L["Multiple"] },
 }
 
@@ -4851,8 +4851,8 @@ Parrot:RegisterCombatEvent{
 				info.recipientName = dstName
 				info.sourceName = srcName
 				info.sourceID = srcGUID
-				
-				
+
+
 				return info
 			end
 		}
@@ -4868,7 +4868,7 @@ Parrot:RegisterCombatEvent{
 	color = "5555ff", -- semi-light blue
 	sticky = true,
 	throttle = { "Killing blows", 'sourceID', { 'throttleCount', function(info)
-	
+
 		local numNorm = info.throttleCount or 0
 		if numNorm == 1 then
 			-- just one hit
@@ -4876,7 +4876,7 @@ Parrot:RegisterCombatEvent{
 		else -- >= 2
 			 return string.format(" (%d)",format(numNorm))
 		end
-		
+
 	end }, recipientName = L["Multiple"] },
 }
 
@@ -4925,10 +4925,10 @@ Parrot:RegisterCombatEvent{
 				info.abilityName = spellName
 				info.damageType = SchoolParser[spellSchool]
 				info.amount = amount
-				
-				
+
+
 				return info
-				
+
 			end,
 		},
 	},

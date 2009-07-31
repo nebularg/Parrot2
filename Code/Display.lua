@@ -37,7 +37,7 @@ function Parrot_Display:OnEnable()
 		ParrotFrame:SetWidth(0.0001)
 		ParrotFrame:SetHeight(0.0001)
 	end
-	
+
 	if _G.CombatText_AddMessage then
 		self:AddHook("CombatText_AddMessage")
 	else
@@ -75,7 +75,7 @@ function Parrot_Display:OnOptionsCreate()
 		OUTLINE = L["Thin"],
 		THICKOUTLINE = L["Thick"],
 	}
-	
+
 	Parrot.options.args.general.args.alpha = {
 		type = 'range',
 		name = L["Text transparency"],
@@ -250,7 +250,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 			end
 		end
 	end
-	
+
 	scrollArea = Parrot_ScrollAreas:GetScrollArea(scrollArea)
 	if not sticky then
 		if not font then
@@ -276,7 +276,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	if outline == "NONE" then
 		outline = ""
 	end
-	
+
 	local frame = next(freeFrames)
 	if frame then
 		frame:ClearAllPoints()
@@ -285,7 +285,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 		frame_num = frame_num + 1
 		frame = CreateFrame("Frame", "ParrotFrameFrame" .. frame_num, ParrotFrame)
 	end
-	
+
 	local fs = next(freeFontStrings)
 	if fs then
 		fs:ClearAllPoints()
@@ -299,11 +299,11 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	if not fs:GetFont() then
 		fs:SetFont([[Fonts\FRIZQT__.TTF]], fontSize, outline)
 	end
-	
+
 	frame.fs = fs
-	
-	
-	
+
+
+
 	local tex
 	if type(icon) == "string" and icon ~= "Interface\\Icons\\Temp" and scrollArea.iconSide ~= "DISABLE" and self.db.profile.iconsEnabled then
 		tex = next(freeTextures)
@@ -332,10 +332,10 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 			tex:SetHeight(fontSize)
 		end
 	end
-	
+
 	if tex then
 		if scrollArea.iconSide == "CENTER" then
-			
+
 		elseif scrollArea.iconSide == "RIGHT" then
 			tex:SetPoint("LEFT", fs, "RIGHT", 3, 0)
 			fs:SetPoint("LEFT", frame, "LEFT")
@@ -343,10 +343,10 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 			tex:SetPoint("RIGHT", fs, "LEFT", -3, 0)
 			fs:SetPoint("RIGHT", frame, "RIGHT")
 		end
-	else	
+	else
 		fs:SetPoint("LEFT", frame, "LEFT")
 	end
-	
+
 	if r and g and b then
 		fs:SetTextColor(r, g, b)
 	else
@@ -356,13 +356,13 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	frame.start = GetTime()
 	frame.scrollArea = scrollArea
 	frame.sticky = sticky
-	
+
 	if(sticky) then
 		frame:SetFrameLevel(1)
 	else
 		frame:SetFrameLevel(0)
 	end
-	
+
 	local animationStyle
 	if sticky then
 		animationStyle = scrollArea.stickyAnimationStyle
@@ -383,7 +383,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	if not wildFrames_scrollArea_aniStyle then
 		wildFrames_scrollArea_aniStyle = newList()
 		wildFrames_scrollArea[aniStyle] = wildFrames_scrollArea_aniStyle
-	end	
+	end
 	wildFrames_scrollArea_aniStyle.length = scrollArea[sticky and "stickySpeed" or "speed"] or 3
 	local frameIDs_scrollArea = frameIDs[scrollArea]
 	if not frameIDs_scrollArea then
@@ -398,7 +398,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	end
 	frameIDs_scrollArea[aniStyle] = frameIDs_scrollArea_aniStyle
 	frame.id = frameIDs_scrollArea_aniStyle
-	
+
 	table.insert(wildFrames_scrollArea_aniStyle, 1, frame)
 	fs:Show()
 	frame:Show()
@@ -463,12 +463,12 @@ function Parrot_Display:OnUpdate()
 						frame.icon:SetAlpha(alpha * self.db.profile.iconAlpha)
 					end
 				end
-				
+
 				frame:ClearAllPoints()
 				animationStyle.func(frame, scrollArea.xOffset, scrollArea.yOffset, scrollArea.size, percent, scrollArea[frame.sticky and "stickyDirection" or "direction"] or animationStyle.defaultDirection, i, t_len, frame.id)
 				frame:SetWidth(frame.fs:GetWidth() + (frame.icon and (frame.icon:GetWidth() + 3) or 0))
 				frame:SetHeight(math.max(frame.fs:GetHeight(), frame.icon and frame.icon:GetHeight() or 0))
-				
+
 				if animationStyle.overlap then
 					for h = #lastFrame, 1, -1 do
 						if isOverlapping(lastFrame[h], frame) then

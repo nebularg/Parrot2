@@ -172,7 +172,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
 					return nil
 				end
-				
+
 				return true
 			end,
 		}
@@ -189,9 +189,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				
+
 				return true
-				
+
 			end,
 		},
 		{
@@ -200,9 +200,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				
+
 				return true
-				
+
 			end,
 		},
 		{
@@ -211,11 +211,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				
+
 				return true
-				
+
 			end,
-			
+
 		},
 	},
 }
@@ -230,7 +230,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
 					return nil
 				end
-				
+
 				return true
 			end,
 		},
@@ -240,7 +240,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
 					return nil
 				end
-				
+
 				return true
 			end,
 		},
@@ -257,7 +257,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
 					return nil
 				end
-				
+
 				return true
 			end,
 		},
@@ -267,7 +267,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
 					return nil
 				end
-				
+
 				return true
 			end,
 		}
@@ -309,9 +309,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				
+
 				return true
-				
+
 			end,
 		},
 		{
@@ -320,9 +320,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				
+
 				return true
-				
+
 			end,
 		},
 		{
@@ -331,11 +331,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") or not critical then
 					return nil
 				end
-				
+
 				return true
-				
+
 			end,
-			
+
 		},
 	},
 }
@@ -347,7 +347,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				
+
 				if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
 					return nil
 				end
@@ -357,7 +357,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				
+
 				if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
 					return nil
 				end
@@ -374,7 +374,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				
+
 				if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
 					return nil
 				end
@@ -384,7 +384,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				
+
 				if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
 					return nil
 				end
@@ -404,11 +404,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
-			
+
 		},
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
@@ -416,11 +416,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if srcGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
-			
+
 		},
 	},
 	param = {
@@ -439,11 +439,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
-			
+
 		},
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
@@ -451,11 +451,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-				
+
 				return spellName
-				
+
 			end,
-			
+
 		},
 	},
 	param = {
@@ -548,11 +548,11 @@ Parrot:RegisterSecondaryTriggerCondition {
 		}
 	},
 	check = function(param)
-		
+
 		if select(2,UnitClass("player")) ~= "DRUID" then
 			return true
 		end
-		
+
 		local form = GetShapeshiftForm(true)
 		if form == 1 then
 			return param == "Bear Form"

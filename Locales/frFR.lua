@@ -28,7 +28,7 @@ L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Auras", "frFR")
 
 -- L["The rank of the item buff gained."] = true -- not used anymore
 -- L["The rank of the item buff lost."] = true -- not used anymore
-		
+
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatEvents_Data", "frFR")
 --@localization(locale="frFR", format="lua_additive_table", namespace="Parrot_CombatEvents_Data")@
 
