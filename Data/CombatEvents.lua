@@ -4948,6 +4948,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
+	subCategory = L["Dispel"],
 	name = "Dispel",
 	localName = L["Dispel"],
 	defaultTag = "[Skill] -[ExtraSkill]",
@@ -4987,6 +4988,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
+	subCategory = L["Dispel"],
 	name = "Dispel fail",
 	localName = L["Dispel fail"],
 	defaultTag = L["%s failed"]:format("[Skill]"),
@@ -5027,6 +5029,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
+	subCategory = L["Dispel"],
 	name = "Spell steal",
 	localName = L["Spell steal"],
 	defaultTag = L["%s stole %s"]:format("[Skill]", "[ExtraSkill]"),
@@ -5068,6 +5071,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
+	subCategory = L["Dispel"],
 	name = "Dispel",
 	localName = L["Dispel"],
 	defaultTag = "[Skill] -[ExtraSkill]",
@@ -5108,6 +5112,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
+	subCategory = L["Dispel"],
 	name = "Dispel fail",
 	localName = L["Dispel fail"],
 	defaultTag = L["%s failed"]:format("[Skill]"),
@@ -5147,6 +5152,7 @@ Parrot:RegisterCombatEvent{
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
+	subCategory = L["Dispel"],
 	name = "Spell steal",
 	localName = L["Spell steal"],
 	defaultTag = L["%s stole %s"]:format("[Skill]", "[ExtraSkill]"),
