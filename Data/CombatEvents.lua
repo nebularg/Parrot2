@@ -18,7 +18,9 @@ local SchoolParser =
 	[8] = "Nature",
 	[16] = "Frost",
 	[20] = "FrostFire",
+	[24] = "Froststorm",
 	[32] = "Shadow",
+	[40] = "Shadowstorm",
 	[64] = "Arcane"
 }
 
@@ -41,6 +43,7 @@ local RUNES = _G.RUNES
 local RUNIC_POWER = _G.RUNIC_POWER
 
 local PowerTypeParser = {
+	[-2] = HEALTH,
 	[0] = MANA,
 	[1] = RAGE,
 	[2] = FOCUS,
@@ -4941,4 +4944,242 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "ffff00", -- yellow
 	sticky = true,
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	name = "Dispel",
+	localName = L["Dispel"],
+	defaultTag = "[Skill] -[ExtraSkill]",
+	combatLogEvents = {
+		{
+			eventType = "SPELL_DISPEL",
+			check = function(srcGUID)
+					return srcGUID == UnitGUID("player")
+				end,
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellID, extraSpellName, extraSchool, auraType)
+					local info = {
+						spellID = spellId,
+						sourceID = srcGUID,
+						sourceName = srcName,
+						recipientID = dstGUID,
+						recpientName = dstName,
+						abilityName = spellName,
+						extraAbilityName = extraSpellName,
+						damageType = SchoolParser[school] or SchoolParser[spellSchool],
+					}
+					return info
+				end,
+		},
+	},
+	tagTranslations = {
+		Skill = retrieveAbilityName,
+		Icon = retrieveIconFromAbilityName,
+		ExtraSkill = "extraAbilityName",
+	},
+	tagTranslationHelp = {
+		Skill = L["The name of the spell that has been used for dispelling"],
+		ExtraSkill = L["The name of the spell that has been dispelled."],
+	},
+	defaultDisabled = true,
+	color = "ffffff" -- white
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	name = "Dispel fail",
+	localName = L["Dispel fail"],
+	defaultTag = L["%s failed"]:format("[Skill]"),
+	combatLogEvents = {
+		{
+			eventType = "SPELL_DISPEL_FAILED",
+			check = function(srcGUID)
+					return srcGUID == UnitGUID("player")
+				end,
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellID, extraSpellName, extraSchool)
+					local info = {
+						spellID = spellId,
+						sourceID = srcGUID,
+						sourceName = srcName,
+						recipientID = dstGUID,
+						recpientName = dstName,
+						abilityName = spellName,
+						extraAbilityName = extraSpellName,
+						damageType = SchoolParser[school] or SchoolParser[spellSchool]
+					}
+					return info
+				end,
+		},
+	},
+	tagTranslations = {
+		Skill = retrieveAbilityName,
+		Icon = retrieveIconFromAbilityName,
+		ExtraSkill = "extraAbilityName",
+	},
+	tagTranslationHelp = {
+		Skill = L["The name of the spell that has been used for dispelling"],
+		ExtraSkill = L["The name of the spell that has not been dispelled."],
+	},
+	defaultDisabled = true,
+	sticky = true,
+	color = "ffffff" -- white
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	name = "Spell steal",
+	localName = L["Spell steal"],
+	defaultTag = L["%s stole %s"]:format("[Skill]", "[ExtraSkill]"),
+	combatLogEvents = {
+		{
+			eventType = "SPELL_STOLEN",
+			check = function(srcGUID)
+					return srcGUID == UnitGUID("player")
+				end,
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellID, extraSpellName, extraSchool, auraType)
+					local info = {
+						spellID = spellId,
+						sourceID = srcGUID,
+						sourceName = srcName,
+						recipientID = dstGUID,
+						recpientName = dstName,
+						abilityName = spellName,
+						extraAbilityName = extraSpellName,
+						damageType = SchoolParser[school] or SchoolParser[spellSchool]
+					}
+					return info
+				end,
+		},
+	},
+	tagTranslations = {
+		Skill = retrieveAbilityName,
+		Icon = retrieveIconFromAbilityName,
+		ExtraSkill = "extraAbilityName",
+	},
+	tagTranslationHelp = {
+		Skill = L["The name of the spell that has been used for stealing"],
+		ExtraSkill = L["The name of the spell that has been stolen."],
+	},
+	defaultDisabled = true,
+	color = "ffffff" -- white
+}
+
+
+
+Parrot:RegisterCombatEvent{
+	category = "Incoming",
+	name = "Dispel",
+	localName = L["Dispel"],
+	defaultTag = "[Skill] -[ExtraSkill]",
+	combatLogEvents = {
+		{
+			eventType = "SPELL_DISPEL",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellID, extraSpellName, extraSchool, auraType)
+					local info = {
+						spellID = spellId,
+						sourceID = srcGUID,
+						sourceName = srcName,
+						recipientID = dstGUID,
+						recpientName = dstName,
+						abilityName = spellName,
+						extraAbilityName = extraSpellName,
+						damageType = SchoolParser[school] or SchoolParser[spellSchool]
+					}
+					return info
+				end,
+		},
+	},
+	tagTranslations = {
+		Skill = retrieveAbilityName,
+		Icon = retrieveIconFromAbilityName,
+		ExtraSkill = "extraAbilityName",
+	},
+	tagTranslationHelp = {
+		Skill = L["The name of the spell that has been used for dispelling"],
+		ExtraSkill = L["The name of the spell that has been dispelled."],
+	},
+	defaultDisabled = true,
+	sticky = true,
+	color = "ffffff" -- white
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Incoming",
+	name = "Dispel fail",
+	localName = L["Dispel fail"],
+	defaultTag = L["%s failed"]:format("[Skill]"),
+	combatLogEvents = {
+		{
+			eventType = "SPELL_DISPEL_FAILED",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellID, extraSpellName, extraSchool)
+					local info = {
+						spellID = spellId,
+						sourceID = srcGUID,
+						sourceName = srcName,
+						recipientID = dstGUID,
+						recpientName = dstName,
+						abilityName = spellName,
+						extraAbilityName = extraSpellName,
+						damageType = SchoolParser[school] or SchoolParser[spellSchool]
+					}
+					return info
+				end,
+		},
+	},
+	tagTranslations = {
+		Skill = retrieveAbilityName,
+		Icon = retrieveIconFromAbilityName,
+		ExtraSkill = "extraAbilityName",
+	},
+	tagTranslationHelp = {
+		Skill = L["The name of the spell that has been used for dispelling"],
+		ExtraSkill = L["The name of the spell that has not been dispelled."],
+	},
+	defaultDisabled = true,
+	color = "ffffff" -- white
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Incoming",
+	name = "Spell steal",
+	localName = L["Spell steal"],
+	defaultTag = L["%s stole %s"]:format("[Skill]", "[ExtraSkill]"),
+	combatLogEvents = {
+		{
+			eventType = "SPELL_STOLEN",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellID, extraSpellName, extraSchool, auraType)
+					local info = {
+						spellID = spellId,
+						sourceID = srcGUID,
+						sourceName = srcName,
+						recipientID = dstGUID,
+						recpientName = dstName,
+						abilityName = spellName,
+						extraAbilityName = extraSpellName,
+						damageType = SchoolParser[school] or SchoolParser[spellSchool]
+					}
+					return info
+				end,
+		},
+	},
+	tagTranslations = {
+		Skill = retrieveAbilityName,
+		Icon = retrieveIconFromAbilityName,
+		ExtraSkill = "extraAbilityName",
+	},
+	tagTranslationHelp = {
+		Skill = L["The name of the spell that has been used for stealing"],
+		ExtraSkill = L["The name of the spell that has been stolen."],
+	},
+	defaultDisabled = true,
+	color = "ffffff" -- white
 }
