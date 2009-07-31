@@ -4978,7 +4978,7 @@ Parrot:RegisterCombatEvent{
 		ExtraSkill = "extraAbilityName",
 	},
 	tagTranslationHelp = {
-		Skill = L["The name of the spell that has been used for dispelling"],
+		Skill = L["The name of the spell that has been used for dispelling."],
 		ExtraSkill = L["The name of the spell that has been dispelled."],
 	},
 	defaultDisabled = true,
@@ -5017,7 +5017,7 @@ Parrot:RegisterCombatEvent{
 		ExtraSkill = "extraAbilityName",
 	},
 	tagTranslationHelp = {
-		Skill = L["The name of the spell that has been used for dispelling"],
+		Skill = L["The name of the spell that has been used for dispelling."],
 		ExtraSkill = L["The name of the spell that has not been dispelled."],
 	},
 	defaultDisabled = true,
@@ -5057,7 +5057,7 @@ Parrot:RegisterCombatEvent{
 		ExtraSkill = "extraAbilityName",
 	},
 	tagTranslationHelp = {
-		Skill = L["The name of the spell that has been used for stealing"],
+		Skill = L["The name of the spell that has been used for stealing."],
 		ExtraSkill = L["The name of the spell that has been stolen."],
 	},
 	defaultDisabled = true,
@@ -5098,7 +5098,7 @@ Parrot:RegisterCombatEvent{
 		ExtraSkill = "extraAbilityName",
 	},
 	tagTranslationHelp = {
-		Skill = L["The name of the spell that has been used for dispelling"],
+		Skill = L["The name of the spell that has been used for dispelling."],
 		ExtraSkill = L["The name of the spell that has been dispelled."],
 	},
 	defaultDisabled = true,
@@ -5138,7 +5138,7 @@ Parrot:RegisterCombatEvent{
 		ExtraSkill = "extraAbilityName",
 	},
 	tagTranslationHelp = {
-		Skill = L["The name of the spell that has been used for dispelling"],
+		Skill = L["The name of the spell that has been used for dispelling."],
 		ExtraSkill = L["The name of the spell that has not been dispelled."],
 	},
 	defaultDisabled = true,
@@ -5177,7 +5177,7 @@ Parrot:RegisterCombatEvent{
 		ExtraSkill = "extraAbilityName",
 	},
 	tagTranslationHelp = {
-		Skill = L["The name of the spell that has been used for stealing"],
+		Skill = L["The name of the spell that has been used for stealing."],
 		ExtraSkill = L["The name of the spell that has been stolen."],
 	},
 	defaultDisabled = true,

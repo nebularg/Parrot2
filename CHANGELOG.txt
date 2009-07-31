@@ -4,6 +4,7 @@ v1.8.0:
      add new Primary TriggerCondition: Successful Spell Cast (Ticket #65)
      add secondary Trigger Conditions (Minimum/Maximum Target Health Percent)
          (Ticket #55)
+     add Dispel- and Spellsteal CombetEvents (Ticket #74)
 
 v1.7.2:
      add support for throttling miss-events (avoids like parry, block, etc.)
