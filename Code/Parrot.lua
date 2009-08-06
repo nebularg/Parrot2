@@ -1,5 +1,4 @@
-
-Parrot = Rock:NewAddon("Parrot", "LibRockDB-1.0", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0")
+Parrot = Rock:NewAddon("Parrot", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0")
 local Parrot, self = Parrot, Parrot
 Parrot.version = "@project-version@"
 Parrot.abbrhash = "@project-abbreviated-hash@"
@@ -34,13 +33,6 @@ end
 
 Parrot.debug = debug
 
-Parrot:SetDatabase("ParrotDB")
-Parrot:SetDatabaseDefaults('profile', {
-	gameDamage = false,
-	gameHealing = false,
-	totemDamage = true,
-})
-
 local function initOptions()
 	debug("init options")
 	if Parrot.options.args.general then
@@ -59,11 +51,20 @@ local function initOptions()
 	debug("optins initialized")
 end
 
+local dbDefaults = {
+	profile = {
+		gameDamage = false,
+		gameHealing = false,
+		totemDamage = true,
+	}
+}
+
 function Parrot:OnInitialize()
 	self:AddSlashCommand("ShowConfig", {"/par", "/parrot"})
-	--self:SetConfigSlashCommand("/Parrot", "/Par")
 
---TODO AceDB-3.0	self.db = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults)
+	-- use db1 to fool LibRock-1.0
+	-- even without the RockDB-mixin, LibRock operates on self.db
+	self.db1 = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults)
 
 	Parrot.options = {
 		name = L["Parrot"],
@@ -92,10 +93,10 @@ function Parrot:OnInitialize()
 
 	AceConfigDialog:AddToBlizOptions("Parrot", "Parrot")
 
-	if not self.db.account.firstTimeWoW21 then
-		self.db.account.firstTimeWoW21 = true
+--[[	if not self.db1.account.firstTimeWoW21 then
+		self.db1.account.firstTimeWoW21 = true
 		SetCVar("scriptErrors", "1")
-	end
+	end--]]
 end
 
 function Parrot.inheritFontChoices()
@@ -110,6 +111,9 @@ function Parrot.inheritFontChoices()
 	return t
 end
 function Parrot:OnEnable()
+
+	debug("enable Parrot")
+
 	_G.SHOW_COMBAT_TEXT = "0"
 	if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
 	   _G.CombatText_UpdateDisplayedMessages()
@@ -124,13 +128,15 @@ function Parrot:OnEnable()
 		end)
 	end
 
-	SetCVar("CombatDamage", self.db.profile.gameDamage and "1" or "0")
-	SetCVar("CombatHealing", self.db.profile.gameHealing and "1" or "0")
+	SetCVar("CombatDamage", self.db1.profile.gameDamage and "1" or "0")
+	SetCVar("CombatHealing", self.db1.profile.gameHealing and "1" or "0")
 
 	SetCVar("CombatLogPeriodicSpells", 1)
 	SetCVar("PetMeleeDamage", 1)
 
+	debug("iterating moduels")
 	for name, module in self:IterateModules() do
+		debug("enable module " .. name)
 		self:ToggleModuleActive(module, true)
 	end
 end
@@ -157,6 +163,8 @@ function Parrot:ShowConfig()
 end
 
 function Parrot:OnOptionsCreate()
+	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
+	self.options.args.profiles.order = -1
 	self:AddOption('general', {
 		type = 'group',
 		name = L["General"],
@@ -171,10 +179,10 @@ function Parrot:OnOptionsCreate()
 				name = L["Game damage"],
 				desc = L["Whether to show damage over the enemy's heads."],
 				get = function()
-					return Parrot.db.profile.gameDamage
+					return Parrot.db1.profile.gameDamage
 				end,
 				set = function(info, value)
-					Parrot.db.profile.gameDamage = value
+					Parrot.db1.profile.gameDamage = value
 					SetCVar("CombatDamage", value and "1" or "0")
 				end,
 			},
@@ -183,10 +191,10 @@ function Parrot:OnOptionsCreate()
 				name = L["Game healing"],
 				desc = L["Whether to show healing over the enemy's heads."],
 				get = function()
-					return Parrot.db.profile.gameHealing
+					return Parrot.db1.profile.gameHealing
 				end,
 				set = function(info, value)
-					Parrot.db.profile.gameHealing = value
+					Parrot.db1.profile.gameHealing = value
 					SetCVar("CombatHealing", value and "1" or "0")
 				end,
 			},
@@ -195,10 +203,10 @@ function Parrot:OnOptionsCreate()
 				name = L["Show guardian events"],
 				desc = L["Whether events involving your guardian(s) (totems, ...) should be displayed"],
 				get = function()
-					return Parrot.db.profile.totemDamage
+					return Parrot.db1.profile.totemDamage
 				end,
 				set = function(info, value)
-					Parrot.db.profile.totemDamage = value
+					Parrot.db1.profile.totemDamage = value
 				end,
 			},
 		}

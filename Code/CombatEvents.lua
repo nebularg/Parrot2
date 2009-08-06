@@ -36,77 +36,78 @@ Parrot_CombatEvents.PlayerName = nil
 Parrot_CombatEvents.PetGUID = nil
 Parrot_CombatEvents.PetName = nil
 
-Parrot_CombatEvents.db = Parrot:GetDatabaseNamespace("CombatEvents")
-Parrot:SetDatabaseNamespaceDefaults("CombatEvents", "profile", {
-	['*'] = {
-		['*'] = {}
+local dbDefaults = {
+	profile = {
+		['*'] = {
+			['*'] = {}
+		},
+		filters = {},
+		throttles = {},
+		abbreviateStyle = "abbreviate",
+		abbreviateLength = 30,
+		stickyCrit = true,
+		disable_in_10man = false,
+		disable_in_25man = false,
+		damageTypes = {
+			color = true,
+			["Physical"] = "ffffff",
+			["Holy"] = "ffff7f",
+			["Fire"] = "ff7f7f",
+			["Nature"] = "7fff7f",
+			["Frost"] = "7f7fff",
+			["Shadow"] = "7f007f",
+			["Arcane"] = "ff7fff",
+		},
+		modifier = {
+			color = true,
+			crit = {
+				enabled = false,
+				color = "ffffff",
+				tag = L["[Text] (crit)"],
+			},
+			crushing = {
+				enabled = true,
+				color = "7f0000",
+				tag = L["[Text] (crushing)"],
+			},
+			glancing = {
+				enabled = true,
+				color = "ff0000",
+				tag = L["[Text] (glancing)"],
+			},
+			absorb = {
+				enabled = true,
+				color = "ffff00",
+				tag = L[" ([Amount] absorbed)"],
+			},
+			block = {
+				enabled = true,
+				color = "7f00ff",
+				tag = L[" ([Amount] blocked)"],
+			},
+			resist = {
+				enabled = true,
+				color = "7f007f",
+				tag = L[" ([Amount] resisted)"],
+			},
+			vulnerable = {
+				enabled = true,
+				color = "7f7fff",
+				tag = L[" ([Amount] vulnerable)"],
+			},
+			overheal = {
+				enabled = true,
+				color = "00af7f",
+				tag = L[" ([Amount] overheal)"],
+			},
+			overkill = {
+				enabled = true,
+				color = "00af7f",
+				tag = L[" ([Amount] overkill)"],
+			},
+		},
 	},
-	filters = {},
-	throttles = {},
-	abbreviateStyle = "abbreviate",
-	abbreviateLength = 30,
-	stickyCrit = true,
-	disable_in_10man = false,
-	disable_in_25man = false,
-	damageTypes = {
-		color = true,
-		["Physical"] = "ffffff",
-		["Holy"] = "ffff7f",
-		["Fire"] = "ff7f7f",
-		["Nature"] = "7fff7f",
-		["Frost"] = "7f7fff",
-		["Shadow"] = "7f007f",
-		["Arcane"] = "ff7fff",
-	},
-	modifier = {
-		color = true,
-		crit = {
-			enabled = false,
-			color = "ffffff",
-			tag = L["[Text] (crit)"],
-		},
-		crushing = {
-			enabled = true,
-			color = "7f0000",
-			tag = L["[Text] (crushing)"],
-		},
-		glancing = {
-			enabled = true,
-			color = "ff0000",
-			tag = L["[Text] (glancing)"],
-		},
-		absorb = {
-			enabled = true,
-			color = "ffff00",
-			tag = L[" ([Amount] absorbed)"],
-		},
-		block = {
-			enabled = true,
-			color = "7f00ff",
-			tag = L[" ([Amount] blocked)"],
-		},
-		resist = {
-			enabled = true,
-			color = "7f007f",
-			tag = L[" ([Amount] resisted)"],
-		},
-		vulnerable = {
-			enabled = true,
-			color = "7f7fff",
-			tag = L[" ([Amount] vulnerable)"],
-		},
-		overheal = {
-			enabled = true,
-			color = "00af7f",
-			tag = L[" ([Amount] overheal)"],
-		},
-		overkill = {
-			enabled = true,
-			color = "00af7f",
-			tag = L[" ([Amount] overkill)"],
-		},
-	},
-})
+}
 
 local combatEvents = {}
 
@@ -115,7 +116,12 @@ local Parrot_ScrollAreas
 local Parrot_TriggerConditions
 
 function Parrot_CombatEvents:OnInitialize()
+
+	debug("init CombatEvents")
+	Parrot_CombatEvents.db1 = Parrot.db1:RegisterNamespace("CombatEvents", dbDefaults)
+
 	Parrot_Display = Parrot:GetModule("Display")
+
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
 
@@ -178,10 +184,10 @@ function Parrot_CombatEvents:check_raid_instance()
 		if instance_type == "raid" then
 			if GetInstanceDifficulty() == 2 then
 				-- Heroic = 25man
-				self:ToggleActive(not self.db.profile.disable_in_25man)
+				self:ToggleActive(not self.db1.profile.disable_in_25man)
 			else
 				-- Normal = 10man (or maybe some old raid-instance)
-				self:ToggleActive(not self.db.profile.disable_in_10man)
+				self:ToggleActive(not self.db1.profile.disable_in_10man)
 			end
 		end
 		if not self:IsActive() then
@@ -204,6 +210,8 @@ local onEnableFuncs = {}
 function Parrot_CombatEvents:OnEnable(first)
 	enabled = true
 
+	debug("enable CombatEvents")
+
 	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
@@ -212,25 +220,25 @@ function Parrot_CombatEvents:OnEnable(first)
 		local tmp = newList("Notification", "Incoming", "Outgoing")
 		for _,category in ipairs(tmp) do
 			local t = newList()
-			for name, data in pairs(self.db.profile[category]) do
+			for name, data in pairs(self.db1.profile[category]) do
 				t[name] = data
-				self.db.profile[category][name] = nil
+				self.db1.profile[category][name] = nil
 			end
 			for name, data in pairs(t) do
 				if combatEvents[name] then
-					self.db.profile[category][name] = data
+					self.db1.profile[category][name] = data
 					t[name] = nil
 				else
 					local name_lower = name:lower()
 					for k,v in pairs(combatEvents[category]) do
 						if k:lower() == name_lower then
-							self.db.profile[category][k] = data
+							self.db1.profile[category][k] = data
 							t[name] = nil
 							break
 						end
 					end
 					if not t[name] then
-						self.db.profile[category][name] = data
+						self.db1.profile[category][name] = data
 					end
 				end
 			end
@@ -312,7 +320,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 		return nil
 	end
 
-	local style = self.db.profile.abbreviateStyle
+	local style = self.db1.profile.abbreviateStyle
 	if style == "none" then
 		return name
 	end
@@ -332,7 +340,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 			i = i + 4
 		end
 	end
-	local neededLen = self.db.profile.abbreviateLength
+	local neededLen = self.db1.profile.abbreviateLength
 	if len < neededLen then
 		return name
 	end
@@ -398,7 +406,7 @@ local function refreshEventRegistration(category, name)
 		return
 	end
 	local data = combatEvents[category][name]
-	local db = Parrot_CombatEvents.db.profile[category][name]
+	local db = Parrot_CombatEvents.db1.profile[category][name]
 	local disabled = db.disabled
 	if disabled == nil then
 		disabled = data.defaultDisabled
@@ -481,16 +489,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				name = L["Enabled"],
 				desc = L["Whether this module is enabled"],
 				get = function() return self:GetModule("CombatEvents"):IsActive() end,
-				set = function(value) self:GetModule("CombatEvents"):ToggleActive(value) self.db.profile.disabled = value end,
+				set = function(value) self:GetModule("CombatEvents"):ToggleActive(value) self.db1.profile.disabled = value end,
 			},]]--
 
 			disable_in_10man = {
 				type = 'toggle',
 				name = L["Disable in normal raids"],
 				desc = L["Disable CombatEvents when in a 10-man raid instance"],
-				get = function() return self.db.profile.disable_in_10man end,
+				get = function() return self.db1.profile.disable_in_10man end,
 				set = function(info, value)
-						self.db.profile.disable_in_10man = value
+						self.db1.profile.disable_in_10man = value
 						self:check_raid_instance();
 					end,
 			},
@@ -498,9 +506,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				type = 'toggle',
 				name = L["Disable in heroic raids"],
 				desc = L["Disable CombatEvents when in a 25-man raid instance"],
-				get = function() return self.db.profile.disable_in_25man end,
+				get = function() return self.db1.profile.disable_in_25man end,
 				set = function(info, value)
-						self.db.profile.disable_in_25man = value
+						self.db1.profile.disable_in_25man = value
 						self:check_raid_instance()
 					end,
 			},
@@ -541,10 +549,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						name = L["Color"],
 						desc = L["Whether to color event modifiers or not."],
 						get = function()
-							return self.db.profile.modifier.color
+							return self.db1.profile.modifier.color
 						end,
 						set = function(info, value)
-							self.db.profile.modifier.color = value
+							self.db1.profile.modifier.color = value
 						end
 					}
 				}
@@ -560,10 +568,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						name = L["Color"],
 						desc = L["Whether to color damage types or not."],
 						get = function()
-							return self.db.profile.damageTypes.color
+							return self.db1.profile.damageTypes.color
 						end,
 						set = function(info, value)
-							self.db.profile.damageTypes.color = value
+							self.db1.profile.damageTypes.color = value
 						end
 					}
 				}
@@ -573,10 +581,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				name = L["Sticky crits"],
 				desc = L["Enable to show crits in the sticky style."],
 				get = function()
-					return self.db.profile.stickyCrit
+					return self.db1.profile.stickyCrit
 				end,
 				set = function(info, value)
-					self.db.profile.stickyCrit = value
+					self.db1.profile.stickyCrit = value
 				end,
 			},
 			throttle = {
@@ -607,10 +615,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						name = L["Style"],
 						desc = L["How or whether to shorten spell names."],
 						get = function()
-							return self.db.profile.abbreviateStyle
+							return self.db1.profile.abbreviateStyle
 						end,
 						set = function(info, value)
-							self.db.profile.abbreviateStyle = value
+							self.db1.profile.abbreviateStyle = value
 						end,
 						values = {
 							none = L["None"],
@@ -628,13 +636,13 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						name = L["Length"],
 						desc = L["The length at which to shorten spell names."],
 						get = function()
-							return self.db.profile.abbreviateLength
+							return self.db1.profile.abbreviateLength
 						end,
 						set = function(info, value)
-							self.db.profile.abbreviateLength = value
+							self.db1.profile.abbreviateLength = value
 						end,
 						disabled = function()
-							return self.db.profile.abbreviateStyle == "none"
+							return self.db1.profile.abbreviateStyle == "none"
 						end,
 						min = 1,
 						max = 30,
@@ -657,16 +665,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		'overkill', L["Overkills"]
 	)
 	local function getEnabled(info)
-		return self.db.profile.modifier[info.arg].enabled
+		return self.db1.profile.modifier[info.arg].enabled
 	end
 	local function setEnabled(info, value)
-		self.db.profile.modifier[info.arg].enabled = value
+		self.db1.profile.modifier[info.arg].enabled = value
 	end
 	local function tupleToHexColor(r, g, b)
 		return ("%02x%02x%02x"):format(r * 255, g * 255, b * 255)
 	end
 	local function getTag(info)
-		return self.db.profile.modifier[info.arg].tag
+		return self.db1.profile.modifier[info.arg].tag
 	end
 
 	local handler__tagTranslations
@@ -685,14 +693,14 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	end
 	local function setTag(info, value)
 		handler__tagTranslations = modifierTranslationHelps[info.arg]
-		self.db.profile.modifier[info.arg].tag = value:gsub("(%b[])", handler)
+		self.db1.profile.modifier[info.arg].tag = value:gsub("(%b[])", handler)
 		handler__tagTranslations = nil
 	end
 	local function getColor(info)
-		return hexColorToTuple(self.db.profile.modifier[info.arg].color)
+		return hexColorToTuple(self.db1.profile.modifier[info.arg].color)
 	end
 	local function setColor(info, r, g, b)
-		self.db.profile.modifier[info.arg].color = tupleToHexColor(r, g, b)
+		self.db1.profile.modifier[info.arg].color = tupleToHexColor(r, g, b)
 	end
 	for k,v in pairs(tmp) do
 		local usageT = newList(L["<Text>"])
@@ -760,10 +768,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		"Arcane", L["Arcane"]
 	)
 	local function getColor(info)
-		return hexColorToTuple(self.db.profile.damageTypes[info.arg])
+		return hexColorToTuple(self.db1.profile.damageTypes[info.arg])
 	end
 	local function setColor(info, r, g, b)
-		self.db.profile.damageTypes[info.arg] = tupleToHexColor(r, g, b)
+		self.db1.profile.damageTypes[info.arg] = tupleToHexColor(r, g, b)
 	end
 	for k,v in pairs(tmp) do
 		events_opt.args.damageTypes.args[k] = {
@@ -778,7 +786,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	tmp = del(tmp)
 	local function getTag(info)
 		local category, name = info.arg[1], info.arg[2]
-		return self.db.profile[category][name].tag or combatEvents[category][name].defaultTag
+		return self.db1.profile[category][name].tag or combatEvents[category][name].defaultTag
 	end
 	local function setTag(info, value)
 		local category, name = info.arg[1], info.arg[2]
@@ -788,12 +796,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		if combatEvents[category][name].defaultTag == value then
 			value = nil
 		end
-		self.db.profile[category][name].tag = value
+		self.db1.profile[category][name].tag = value
 	end
 
 	local function getColor(info)
 		local category, name = info.arg[1], info.arg[2]
-		return hexColorToTuple(self.db.profile[category][name].color or combatEvents[category][name].color)
+		return hexColorToTuple(self.db1.profile[category][name].color or combatEvents[category][name].color)
 	end
 	local function setColor(info, r, g, b)
 		local category, name = info.arg[1], info.arg[2]
@@ -802,12 +810,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		if combatEvent.color == color then
 			color = nil
 		end
-		self.db.profile[category][name].color = color
+		self.db1.profile[category][name].color = color
 	end
 
 	local function getSticky(info)
 		local category, name = info.arg[1], info.arg[2]
-		local sticky = self.db.profile[category][name].sticky
+		local sticky = self.db1.profile[category][name].sticky
 		if sticky ~= nil then
 			return sticky
 		else
@@ -819,12 +827,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		if (not not combatEvents[category][name].sticky) == value then
 			value = nil
 		end
-		self.db.profile[category][name].sticky = value
+		self.db1.profile[category][name].sticky = value
 	end
 
 	local function getFontFace(info)
 		local category, name = info.arg[1], info.arg[2]
-		local font = self.db.profile[category][name].font
+		local font = self.db1.profile[category][name].font
 		if font == nil then
 			return "1"
 		else
@@ -836,31 +844,31 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		if value == "1" then
 			value = nil
 		end
-		self.db.profile[category][name].font = value
+		self.db1.profile[category][name].font = value
 	end
 	local function getFontSize(info)
 		local category, name = info.arg[1], info.arg[2]
-		return self.db.profile[category][name].fontSize
+		return self.db1.profile[category][name].fontSize
 	end
 	local function setFontSize(info, value)
 		local category, name = info.arg[1], info.arg[2]
-		self.db.profile[category][name].fontSize = value
+		self.db1.profile[category][name].fontSize = value
 	end
 	local function getFontSizeInherit(info)
 		local category, name = info.arg[1], info.arg[2]
-		return self.db.profile[category][name].fontSize == nil
+		return self.db1.profile[category][name].fontSize == nil
 	end
 	local function setFontSizeInherit(info, value)
 		local category, name = info.arg[1], info.arg[2]
 		if value then
-			self.db.profile[category][name].fontSize = nil
+			self.db1.profile[category][name].fontSize = nil
 		else
-			self.db.profile[category][name].fontSize = 18
+			self.db1.profile[category][name].fontSize = 18
 		end
 	end
 	local function getFontOutline(info)
 		local category, name = info.arg[1], info.arg[2]
-		local outline = self.db.profile[category][name].fontOutline
+		local outline = self.db1.profile[category][name].fontOutline
 		if outline == nil then
 			return L["Inherit"]
 		else
@@ -872,7 +880,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		if value == L["Inherit"] then
 			value = nil
 		end
-		self.db.profile[category][name].fontOutline = value
+		self.db1.profile[category][name].fontOutline = value
 	end
 	local fontOutlineChoices = {
 		NONE = L["None"],
@@ -882,7 +890,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	}
 	local function getEnable(info)
 		local category, name = info.arg[1], info.arg[2]
-		local disabled = self.db.profile[category][name].disabled
+		local disabled = self.db1.profile[category][name].disabled
 		if disabled == nil then
 			disabled = combatEvents[category][name].defaultDisabled
 		end
@@ -894,13 +902,13 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		if (not not combatEvents[category][name].defaultDisabled) == disabled then
 			disabled = nil
 		end
-		self.db.profile[category][name].disabled = disabled
+		self.db1.profile[category][name].disabled = disabled
 
 		refreshEventRegistration(category, name)
 	end
 	local function getScrollArea(info)
 		local category, name = info.arg[1], info.arg[2]
-		local scrollArea = self.db.profile[category][name].scrollArea
+		local scrollArea = self.db1.profile[category][name].scrollArea
 		if scrollArea == nil then
 			scrollArea = category
 		end
@@ -911,11 +919,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		if value == category then
 			value = nil
 		end
-		self.db.profile[category][name].scrollArea = value
+		self.db1.profile[category][name].scrollArea = value
 	end
 	local function getSound(info)
 		local category, name = info.arg[1], info.arg[2]
-		return self.db.profile[category][name].sound or "None"
+		return self.db1.profile[category][name].sound or "None"
 	end
 	local function setSound(info, value)
 		local category, name = info.arg[1], info.arg[2]
@@ -923,7 +931,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		if value == "None" then
 			value = nil
 		end
-		self.db.profile[category][name].sound = value
+		self.db1.profile[category][name].sound = value
 	end
 
 	local function getCommonEnabled(info)
@@ -953,7 +961,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		local category, subcat = info.arg[1], info.arg[2]
 		for k,v in pairs(combatEvents[category]) do
 			if v.subCategory == subcat then
-				self.db.profile[category][v.name].disabled = not value
+				self.db1.profile[category][v.name].disabled = not value
 			end
 		end
 
@@ -1209,14 +1217,14 @@ function Parrot_CombatEvents:OnOptionsCreate()
 
 	local function getTimespan(info)
 		local throttleType = info.arg
-		return self.db.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]
+		return self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]
 	end
 	local function setTimespan(info, value)
 		local throttleType = info.arg
 		if value == throttleDefaultTimes[throttleType] then
 			value = nil
 		end
-		self.db.profile.throttles[throttleType] = value
+		self.db1.profile.throttles[throttleType] = value
 	end
 	function createThrottleOption(throttleType)
 		local localName = throttleTypes[throttleType]
@@ -1236,14 +1244,14 @@ function Parrot_CombatEvents:OnOptionsCreate()
 
 	local function getAmount(info)
 		local filterType = info.arg
-		return self.db.profile.filters[filterType] or filterDefaults[filterType]
+		return self.db1.profile.filters[filterType] or filterDefaults[filterType]
 	end
 	local function setAmount(info, value)
 		local filterType = info.arg
 		if value == filterDefaults[filterType] then
 			value = nil
 		end
-		self.db.profile.filters[filterType] = value
+		self.db1.profile.filters[filterType] = value
 	end
 	function createFilterOption(filterType)
 		local localName = filterTypes[filterType]
@@ -1503,7 +1511,7 @@ end
 
 local modifierTranslations = {
 	absorb = { Amount = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|cff" .. db.absorb.color .. info.absorbAmount .. "|r"
 		else
@@ -1511,7 +1519,7 @@ local modifierTranslations = {
 		end
 	end },
 	block = { Amount = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|cff" .. db.block.color .. info.blockAmount .. "|r"
 		else
@@ -1519,7 +1527,7 @@ local modifierTranslations = {
 		end
 	end },
 	resist = { Amount = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|cff" .. db.resist.color .. info.resistAmount .. "|r"
 		else
@@ -1527,7 +1535,7 @@ local modifierTranslations = {
 		end
 	end },
 	vulnerable = { Amount = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|cff" .. db.vulnerable.color .. info.vulnerableAmount .. "|r"
 		else
@@ -1535,7 +1543,7 @@ local modifierTranslations = {
 		end
 	end },
 	overheal = { Amount = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|cff" .. db.overheal.color .. info.overhealAmount .. "|r"
 		else
@@ -1544,7 +1552,7 @@ local modifierTranslations = {
 	end },
 	--
 	overkill = { Amount = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|cff" .. db.overkill.color .. info.overkill .. "|r"
 		else
@@ -1553,7 +1561,7 @@ local modifierTranslations = {
 	end },
 	--
 	glancing = { Text = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|r" .. info[1] .. "|cff" .. db.glancing.color
 		else
@@ -1561,7 +1569,7 @@ local modifierTranslations = {
 		end
 	end },
 	crushing = { Text = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|r" .. info[1] .. "|cff" .. db.crushing.color
 		else
@@ -1569,7 +1577,7 @@ local modifierTranslations = {
 		end
 	end },
 	crit = { Text = function(info)
-		local db = Parrot_CombatEvents.db.profile.modifier
+		local db = Parrot_CombatEvents.db1.profile.modifier
 		if db.color then
 			return "|r" .. info[1] .. "|cff" .. db.crit.color
 		else
@@ -1605,7 +1613,7 @@ function Parrot_CombatEvents:RunThrottle(force)
 		local goodTime = now
 		local waitStyle = throttleWaitStyles[throttleType]
 		if not waitStyle then
-			local throttleTime = self.db.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]
+			local throttleTime = self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]
 			goodTime = now - throttleTime
 		end
 		for category,v in pairs(w) do
@@ -1698,7 +1706,7 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 		return
 	end
 
-	local db = self.db.profile[category][name]
+	local db = self.db1.profile[category][name]
 	local disabled = db.disabled
 	if disabled == nil then
 		disabled = data.defaultDisabled
@@ -1716,7 +1724,7 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	if filterType then
 		local actualType = filterType[1]
 		local filterKey = filterType[2]
-		local base = self.db.profile.filters[actualType] or filterDefaults[actualType]
+		local base = self.db1.profile.filters[actualType] or filterDefaults[actualType]
 		local info_filterKey
 		if type(filterKey) == "function" then
 			info_filterKey = filterKey(info)
@@ -1737,7 +1745,7 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	elseif data.throttle then
 		local throttle = data.throttle
 		local throttleType = throttle[1]
-		if (self.db.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]) > 0 then
+		if (self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]) > 0 then
 			if not throttleData[throttleType] then
 				throttleData[throttleType] = newList()
 			end
@@ -1783,7 +1791,7 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 			else
 				t = newList()
 				if throttleWaitStyles[throttleType] then
-					t[NEXT_TIME] = GetTime() + (self.db.profile.throttles[throttleType] or throttleDefaultTimes[throttleType])
+					t[NEXT_TIME] = GetTime() + (self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType])
 				else
 					t[LAST_TIME] = 0
 				end
@@ -1831,14 +1839,14 @@ end
 Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
 
 local function runEvent(category, name, info)
-	local db = Parrot_CombatEvents.db.profile[category][name]
+	local db = Parrot_CombatEvents.db1.profile[category][name]
 	local data = combatEvents[category][name]
 
 	local throttle = data.throttle
 	local throttleSuffix
 	if throttle then
 		local throttleType = throttle[1]
-		if (Parrot_CombatEvents.db.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]) > 0 then
+		if (Parrot_CombatEvents.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]) > 0 then
 			local throttleCountData = throttle[3]
 			if throttleCountData then
 				local func = throttleCountData[#throttleCountData]
@@ -1849,7 +1857,7 @@ local function runEvent(category, name, info)
 
 	local sticky = false
 	if data.canCrit then
-		sticky = info.isCrit and Parrot_CombatEvents.db.profile.stickyCrit
+		sticky = info.isCrit and Parrot_CombatEvents.db1.profile.stickyCrit
 	end
 	if not sticky then
 		sticky = db.sticky
@@ -1876,7 +1884,7 @@ local function runEvent(category, name, info)
 	local t = newList(text)
 	local overhealAmount = info.overhealAmount
 	local overkillAmount = info.overkill
-	local modifierDB = Parrot_CombatEvents.db.profile.modifier
+	local modifierDB = Parrot_CombatEvents.db1.profile.modifier
 	if overhealAmount and overhealAmount >= 1 then
 		if modifierDB.overheal.enabled then
 			handler__translation = modifierTranslations.overheal

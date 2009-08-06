@@ -7,25 +7,37 @@ local SharedMedia = Rock("LibSharedMedia-3.0")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 
+local debug = Parrot.debug
+
 local ParrotFrame
 
-Parrot_Display.db = Parrot:GetDatabaseNamespace("Display")
-Parrot:SetDatabaseNamespaceDefaults("Display", 'profile', {
-	alpha = 1,
-	iconAlpha = 1,
-	iconsEnabled = true,
-	font = "Friz Quadrata TT",
-	fontSize = 18,
-	fontOutline = "THICKOUTLINE",
-	stickyFont = "Friz Quadrata TT",
-	stickyFontSize = 26,
-	stickyFontOutline = "THICKOUTLINE",
-})
+-- Parrot_Display.db = Parrot:GetDatabaseNamespace("Display")
+dbDefaults = {
+	profile = {
+		alpha = 1,
+		iconAlpha = 1,
+		iconsEnabled = true,
+		font = "Friz Quadrata TT",
+		fontSize = 18,
+		fontOutline = "THICKOUTLINE",
+		stickyFont = "Friz Quadrata TT",
+		stickyFontSize = 26,
+		stickyFontOutline = "THICKOUTLINE",
+	},
+}
 
 local Parrot_AnimationStyles
 local Parrot_Suppressions
 local Parrot_ScrollAreas
+
+function Parrot_Display:OnInitialize()
+	debug("initialize Display")
+	self.db1 = Parrot.db1:RegisterNamespace("Display", dbDefaults)
+end
+
 function Parrot_Display:OnEnable()
+	debug("enable Display")
+
 	Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 	Parrot_Suppressions = Parrot:GetModule("Suppressions")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
@@ -86,10 +98,10 @@ function Parrot_Display:OnOptionsCreate()
 		bigStep = 0.05,
 		isPercent = true,
 		get = function()
-			return self.db.profile.alpha
+			return self.db1.profile.alpha
 		end,
 		set = function(value)
-			self.db.profile.alpha = value
+			self.db1.profile.alpha = value
 		end
 	}
 	Parrot.options.args.general.args.iconAlpha = {
@@ -102,10 +114,10 @@ function Parrot_Display:OnOptionsCreate()
 		bigStep = 0.05,
 		isPercent = true,
 		get = function()
-			return self.db.profile.iconAlpha
+			return self.db1.profile.iconAlpha
 		end,
 		set = function(value)
-			self.db.profile.iconAlpha = value
+			self.db1.profile.iconAlpha = value
 		end
 	}
 	Parrot.options.args.general.args.enableIcons = {
@@ -113,10 +125,10 @@ function Parrot_Display:OnOptionsCreate()
 		name = L["Enable icons"],
 		desc = L["Set whether icons should be enabled or disabled altogether."],
 		get = function()
-			return self.db.profile.iconsEnabled
+			return self.db1.profile.iconsEnabled
 		end,
 		set = function(value)
-			self.db.profile.iconsEnabled = value
+			self.db1.profile.iconsEnabled = value
 		end
 	}
 	Parrot.options.args.general.args.font = {
@@ -129,10 +141,10 @@ function Parrot_Display:OnOptionsCreate()
 				name = L["Normal font"],
 				desc = L["Normal font face."],
 				get = function()
-					return Parrot_Display.db.profile.font
+					return Parrot_Display.db1.profile.font
 				end,
 				set = function(info, value)
-					Parrot_Display.db.profile.font = value
+					Parrot_Display.db1.profile.font = value
 				end,
 				values = getFontChoices(),
 --				choiceFonts = SharedMedia:HashTable("font"),
@@ -145,10 +157,10 @@ function Parrot_Display:OnOptionsCreate()
 				max = 32,
 				step = 1,
 				get = function()
-					return Parrot_Display.db.profile.fontSize
+					return Parrot_Display.db1.profile.fontSize
 				end,
 				set = function(info, value)
-					Parrot_Display.db.profile.fontSize = value
+					Parrot_Display.db1.profile.fontSize = value
 				end,
 			},
 			normalBorder = {
@@ -157,10 +169,10 @@ function Parrot_Display:OnOptionsCreate()
 				desc = L["Normal outline"],
 				values = outlineChoices,
 				get = function()
-					return Parrot_Display.db.profile.fontOutline
+					return Parrot_Display.db1.profile.fontOutline
 				end,
 				set = function(info, value)
-					Parrot_Display.db.profile.fontOutline = value
+					Parrot_Display.db1.profile.fontOutline = value
 				end,
 			},
 			stickyFace = {
@@ -168,10 +180,10 @@ function Parrot_Display:OnOptionsCreate()
 				name = L["Sticky font"],
 				desc = L["Sticky font face."],
 				get = function()
-					return Parrot_Display.db.profile.stickyFont
+					return Parrot_Display.db1.profile.stickyFont
 				end,
 				set = function(info, value)
-					Parrot_Display.db.profile.stickyFont = value
+					Parrot_Display.db1.profile.stickyFont = value
 				end,
 				values = getFontChoices(),
 			},
@@ -183,10 +195,10 @@ function Parrot_Display:OnOptionsCreate()
 				max = 32,
 				step = 1,
 				get = function()
-					return Parrot_Display.db.profile.stickyFontSize
+					return Parrot_Display.db1.profile.stickyFontSize
 				end,
 				set = function(info, value)
-					Parrot_Display.db.profile.stickyFontSize = value
+					Parrot_Display.db1.profile.stickyFontSize = value
 				end,
 			},
 			stickyBorder = {
@@ -195,10 +207,10 @@ function Parrot_Display:OnOptionsCreate()
 				desc = L["Sticky outline"],
 				values = outlineChoices,
 				get = function()
-					return Parrot_Display.db.profile.stickyFontOutline
+					return Parrot_Display.db1.profile.stickyFontOutline
 				end,
 				set = function(info, value)
-					Parrot_Display.db.profile.stickyFontOutline = value
+					Parrot_Display.db1.profile.stickyFontOutline = value
 				end,
 			},
 		}
@@ -254,23 +266,23 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	scrollArea = Parrot_ScrollAreas:GetScrollArea(scrollArea)
 	if not sticky then
 		if not font then
-			font = scrollArea.font or self.db.profile.font
+			font = scrollArea.font or self.db1.profile.font
 		end
 		if not fontSize then
-			fontSize = scrollArea.fontSize or self.db.profile.fontSize
+			fontSize = scrollArea.fontSize or self.db1.profile.fontSize
 		end
 		if not outline then
-			outline = scrollArea.fontOutline or self.db.profile.fontOutline
+			outline = scrollArea.fontOutline or self.db1.profile.fontOutline
 		end
 	else
 		if not font then
-			font = scrollArea.stickyFont or self.db.profile.stickyFont
+			font = scrollArea.stickyFont or self.db1.profile.stickyFont
 		end
 		if not fontSize then
-			fontSize = scrollArea.stickyFontSize or self.db.profile.stickyFontSize
+			fontSize = scrollArea.stickyFontSize or self.db1.profile.stickyFontSize
 		end
 		if not outline then
-			outline = scrollArea.stickyFontOutline or self.db.profile.stickyFontOutline
+			outline = scrollArea.stickyFontOutline or self.db1.profile.stickyFontOutline
 		end
 	end
 	if outline == "NONE" then
@@ -305,7 +317,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 
 
 	local tex
-	if type(icon) == "string" and icon ~= "Interface\\Icons\\Temp" and scrollArea.iconSide ~= "DISABLE" and self.db.profile.iconsEnabled then
+	if type(icon) == "string" and icon ~= "Interface\\Icons\\Temp" and scrollArea.iconSide ~= "DISABLE" and self.db1.profile.iconsEnabled then
 		tex = next(freeTextures)
 		if tex then
 			tex:Show()
@@ -407,9 +419,9 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	if init then
 		init(frame, scrollArea.xOffset, scrollArea.yOffset, scrollArea.size, scrollArea[sticky and "stickyDirection" or "direction"] or aniStyle.defaultDirection, frameIDs_scrollArea_aniStyle)
 	end
-	fs:SetAlpha(self.db.profile.alpha)
+	fs:SetAlpha(self.db1.profile.alpha)
 	if tex then
-		tex:SetAlpha(self.db.profile.iconAlpha)
+		tex:SetAlpha(self.db1.profile.iconAlpha)
 	end
 	self:OnUpdate(scrollArea, aniStyle)
 end
@@ -458,9 +470,9 @@ function Parrot_Display:OnUpdate()
 				local percent = (now - start) / length
 				if percent >= 0.8 then
 					local alpha = (1-percent) * 5
-					frame.fs:SetAlpha(alpha * self.db.profile.alpha)
+					frame.fs:SetAlpha(alpha * self.db1.profile.alpha)
 					if frame.icon then
-						frame.icon:SetAlpha(alpha * self.db.profile.iconAlpha)
+						frame.icon:SetAlpha(alpha * self.db1.profile.iconAlpha)
 					end
 				end
 

@@ -1,19 +1,28 @@
 local Parrot = Parrot
 local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "LibRockTimer-1.0")
-
+local self = Parrot_ScrollAreas
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
 local debug = Parrot.debug
-
+--@debug@
+_G.Parrot_ScrollAreas = Parrot_ScrollAreas
+--@end-debug@--
 local scrollAreas
 
 local choices = {}
 
-Parrot_ScrollAreas.db = Parrot:GetDatabaseNamespace("ScrollAreas")
+-- Parrot_ScrollAreas.db = Parrot:GetDatabaseNamespace("ScrollAreas")
+
+function Parrot_ScrollAreas:OnInitialize()
+	debug("initialize ScrollAreas")
+	Parrot_ScrollAreas.db1 = Parrot.db1:RegisterNamespace("ScrollAreas")
+end
 
 function Parrot_ScrollAreas:OnEnable()
-	if not self.db.profile.areas then
-		self.db.profile.areas = {
+	debug("enable ScrollAreas")
+
+	if not self.db1.profile.areas then
+		self.db1.profile.areas = {
 			["Notification"] = {
 				animationStyle = "Straight",
 				direction = "UP;CENTER",
@@ -44,7 +53,7 @@ function Parrot_ScrollAreas:OnEnable()
 			},
 		}
 	end
-	scrollAreas = self.db.profile.areas
+	scrollAreas = self.db1.profile.areas
 	for k, v in pairs(scrollAreas) do
 		if k == "Notification" or k == "Incoming" or k == "Outgoing" then
 			choices[k] = L[k]
@@ -893,7 +902,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		},
 	}
 	Parrot:AddOption('scrollAreas', scrollAreas_opt)
-	scrollAreas = self.db.profile.areas
+	scrollAreas = self.db1.profile.areas
 	for k, v in pairs(scrollAreas) do
 		makeOption(k)
 		if k == L["New scroll area"] then

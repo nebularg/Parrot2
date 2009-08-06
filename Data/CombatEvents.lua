@@ -64,7 +64,7 @@ end
 -- Incoming events -----------------------------------------------------------
 ------------------------------------------------------------------------------
 local coloredDamageAmount = function(info)
-	local db = Parrot:GetModule("CombatEvents").db.profile.damageTypes
+	local db = Parrot:GetModule("CombatEvents").db1.profile.damageTypes
 	if db.color and db[info.damageType] then
 		return "|cff" .. db[info.damageType] .. info.amount .. "|r"
 	else
@@ -1019,6 +1019,32 @@ local healThrottleFunc = function(info)
 		end
 	end
 
+local function parseHeal(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, absorbed, critical)
+	local info = {
+		damageType = SchoolParser[school],
+		spellID = spellId,
+		recipientID = dstGUID,
+		recipientName = dstName,
+		sourceID = srcGUID,
+		sourceName = srcName,
+		amount = amount,
+		realAmount = amount - overheal,
+		abilityName = spellName,
+		isCrit = (critical ~= nil),
+		overhealAmount = overheal,
+		isHoT = false,
+		absorbAmount = absorbed or 0,
+	}
+
+	return info;
+end
+
+local function parseHoT(...)
+	local info = parseHeal(...)
+	info.isHoT = true
+	return info
+end
+
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Heals"],
@@ -1031,26 +1057,7 @@ Parrot:RegisterCombatEvent{
 		check = function(srcGUID, _, _, dstGUID)
 					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet"))
 				end,
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = false
-			info.overhealAmount = overheal
-
-			return info
-
-		end,
+		func = parseHeal,
 		},
 	},
 	tagTranslations = {
@@ -1082,26 +1089,7 @@ Parrot:RegisterCombatEvent{
 		check = function(srcGUID, _, _, dstGUID)
 				return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player"))
 			end,
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = false
-			info.overhealAmount = overheal
-
-			return info
-
-		end,
+		func = parseHeal,
 		},
 	},
 	tagTranslations = {
@@ -1134,25 +1122,7 @@ Parrot:RegisterCombatEvent{
 		check = function(srcGUID, _, _, dstGUID)
 					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet"))
 				end,
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = true
-			info.overhealAmount = overheal
-
-			return info
-		end,
+		func = parseHoT,
 		},
 	},
 	tagTranslations = {
@@ -1184,26 +1154,7 @@ Parrot:RegisterCombatEvent{
 		check = function(srcGUID, _, _, dstGUID)
 					return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player"))
 				end,
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = true
-			info.overhealAmount = overheal
-
-			return info
-
-		end,
+		func = parseHoT,
 		},
 	},
 	tagTranslations = {
@@ -1282,7 +1233,7 @@ Parrot:RegisterCombatEvent{
 		eventType = "SWING_DAMAGE",
 		check = function(srcGUID, _, _, dstGUID, _, dstFlags)
 				if checkFlags(dstFlags, GUARDIAN_FLAGS) then
-					return Parrot.db.profile.totemDamage
+					return Parrot.db1.profile.totemDamage
 				elseif dstGUID == UnitGUID("pet") then
 					return true
 				else
@@ -1374,7 +1325,7 @@ Parrot:RegisterCombatEvent{
 					if dstGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -1402,7 +1353,7 @@ Parrot:RegisterCombatEvent{
 					if dstGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -1430,7 +1381,7 @@ Parrot:RegisterCombatEvent{
 					if dstGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -1458,7 +1409,7 @@ Parrot:RegisterCombatEvent{
 					if dstGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -1486,7 +1437,7 @@ Parrot:RegisterCombatEvent{
 					if dstGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -1514,7 +1465,7 @@ Parrot:RegisterCombatEvent{
 					if dstGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -1540,7 +1491,7 @@ Parrot:RegisterCombatEvent{
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 
 			if checkFlags(dstFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif dstGUID ~= (UnitGUID("pet") or 0) then
@@ -1601,7 +1552,7 @@ Parrot:RegisterCombatEvent{
 		eventType = "SPELL_PERIODIC_DAMAGE",
 		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing )
 			if checkFlags(dstFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif dstGUID ~= UnitGUID("pet") then
@@ -1666,7 +1617,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1680,7 +1631,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1694,7 +1645,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1722,7 +1673,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1736,7 +1687,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1750,7 +1701,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1778,7 +1729,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1792,7 +1743,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1806,7 +1757,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1834,7 +1785,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1848,7 +1799,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1862,7 +1813,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1890,7 +1841,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1904,7 +1855,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1918,7 +1869,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1946,7 +1897,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1960,7 +1911,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -1974,7 +1925,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2002,7 +1953,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2016,7 +1967,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2030,7 +1981,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2058,7 +2009,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2072,7 +2023,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2086,7 +2037,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2115,7 +2066,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2129,7 +2080,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2143,7 +2094,7 @@ Parrot:RegisterCombatEvent{
 						if dstGUID == UnitGUID("pet") then
 							return true
 						elseif checkFlags(dstFlags, GUARDIAN_FLAGS) then
-							return Parrot.db.profile.totemDamage
+							return Parrot.db1.profile.totemDamage
 						end
 					end
 					return false
@@ -2166,29 +2117,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if dstGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = false
-			info.overhealAmount = overheal
-
-			return info
-
-		end,
+		check = function(_, _, _, dstGUID)
+				return dstGUID == UnitGUID("pet")
+			end,
+		func = parseHeal,
 		},
 	},
 	tagTranslations = {
@@ -2218,28 +2150,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if dstGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = true
-			info.overhealAmount = overheal
-
-			return info
-		end,
+		check = function(_, _, _, dstGUID)
+				return dstGUID == UnitGUID("pet")
+			end,
+		func = parseHoT,
 		},
 	},
 	tagTranslations = {
@@ -3079,29 +2993,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") or dstGUID == UnitGUID("pet") then
-				return nil
-			end
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = false
-			info.overhealAmount = overheal
-
-			return info
-
-		end,
+		check = function(srcGUID, _, _, dstGUID)
+				return srcGUID == UnitGUID("player") and dstGUID ~= UnitGUID("player")
+			end,
+		func = parseHeal,
 		},
 	},
 	tagTranslations = {
@@ -3131,29 +3026,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if srcGUID ~= UnitGUID("player") or dstGUID ~= UnitGUID("player") then
-				return nil
-			end
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = false
-			info.overhealAmount = overheal
-
-			return info
-
-		end,
+		check = function(srcGUID, _, _, dstGUID)
+				return dstGUID == srcGUID and srcGUID == UnitGUID("player")
+			end,
+		func = parseHeal,
 		},
 	},
 	tagTranslations = {
@@ -3184,28 +3060,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if srcGUID ~= UnitGUID("player") or dstGUID == UnitGUID("player") or dstGUID == UnitGUID("pet") then
-				return nil
-			end
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = true
-			info.overhealAmount = overheal
-
-			return info
-		end,
+		check = function(srcGUID, _, _, dstGUID)
+				return srcGUID == UnitGUID("player") and dstGUID ~= UnitGUID("player")
+			end,
+		func = parseHoT,
 		},
 	},
 	tagTranslations = {
@@ -3234,29 +3092,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if dstGUID ~= UnitGUID("player") or srcGUID ~= UnitGUID("player") then
-				return nil
-			end
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = true
-			info.overhealAmount = overheal
-
-			return info
-
-		end,
+		check = function(srcGUID, _, _, dstGUID)
+				return dstGUID == srcGUID and srcGUID == UnitGUID("player")
+			end,
+		func = parseHeal,
 		},
 	},
 	tagTranslations = {
@@ -3287,7 +3126,7 @@ Parrot:RegisterCombatEvent{
 		eventType = "SWING_DAMAGE",
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3371,7 +3210,7 @@ Parrot:RegisterCombatEvent{
 				return
 			end
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3412,7 +3251,7 @@ Parrot:RegisterCombatEvent{
 				return
 			end
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3453,7 +3292,7 @@ Parrot:RegisterCombatEvent{
 				return
 			end
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3494,7 +3333,7 @@ Parrot:RegisterCombatEvent{
 				return
 			end
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3535,7 +3374,7 @@ Parrot:RegisterCombatEvent{
 				return
 			end
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3576,7 +3415,7 @@ Parrot:RegisterCombatEvent{
 				return
 			end
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3617,7 +3456,7 @@ Parrot:RegisterCombatEvent{
 				return
 			end
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3655,7 +3494,7 @@ Parrot:RegisterCombatEvent{
 		eventType = "SPELL_DAMAGE",
 		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing)
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= (UnitGUID("pet") or 0) then
@@ -3717,7 +3556,7 @@ Parrot:RegisterCombatEvent{
 		eventType = "SPELL_PERIODIC_DAMAGE",
 		func = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing )
 			if checkFlags(srcFlags, GUARDIAN_FLAGS) then
-				if not Parrot.db.profile.totemDamage then
+				if not Parrot.db1.profile.totemDamage then
 					return nil
 				end
 			elseif srcGUID ~= UnitGUID("pet") then
@@ -3785,7 +3624,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3799,7 +3638,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3813,7 +3652,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3841,7 +3680,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3855,7 +3694,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3869,7 +3708,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3897,7 +3736,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3911,7 +3750,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3925,7 +3764,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3953,7 +3792,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3967,7 +3806,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -3981,7 +3820,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4009,7 +3848,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4023,7 +3862,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4037,7 +3876,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4065,7 +3904,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4079,7 +3918,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4093,7 +3932,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4121,7 +3960,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4135,7 +3974,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4149,7 +3988,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4177,7 +4016,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4191,7 +4030,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4205,7 +4044,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4234,7 +4073,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4248,7 +4087,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4262,7 +4101,7 @@ Parrot:RegisterCombatEvent{
 					if srcGUID == UnitGUID("pet") then
 						return true
 					elseif checkFlags(srcFlags, GUARDIAN_FLAGS) then
-						return Parrot.db.profile.totemDamage
+						return Parrot.db1.profile.totemDamage
 					end
 				end
 				return false
@@ -4284,30 +4123,11 @@ Parrot:RegisterCombatEvent{
 	defaultTag = PET .. " +[Amount]",
 	combatLogEvents = {
 		{
-		eventType = "SPELL_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if srcGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = false
-			info.overhealAmount = overheal
-
-			return info
-
-		end,
+			eventType = "SPELL_HEAL",
+			check = function(srcGUID, _, _, dstGUID)
+					return srcGUID ~= dstGUID and srcGUID == UnitGUID("pet")
+				end,
+			func = parseHeal,
 		},
 	},
 	tagTranslations = {
@@ -4335,29 +4155,11 @@ Parrot:RegisterCombatEvent{
 	canCrit = true, -- Pets cannot crit-heal (or can they?)
 	combatLogEvents = {
 		{
-		eventType = "SPELL_PERIODIC_HEAL",
-		func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,spellId, spellName, spellSchool, amount, overheal, critical)
-			if srcGUID ~= (UnitGUID("pet") or 0) then
-				return nil
-			end
-
-			local info = newList()
-			info.damageType = SchoolParser[school]
-			info.spellID = spellId
-			info.recipientID = dstGUID
-			info.recipientName = dstName
-			info.sourceID = srcGUID
-			info.sourceName = srcName
-			info.amount = amount
-			info.realAmount = amount-overheal
-			info.abilityName = spellName
-			info.isCrit = (critical ~= nil)
-
-			info.isHoT = true
-			info.overhealAmount = overheal
-
-			return info
-		end,
+			eventType = "SPELL_PERIODIC_HEAL",
+			check = function(srcGUID, _, _, dstGUID)
+					return srcGUID ~= dstGUID and srcGUID == UnitGUID("pet")
+				end,
+			func = parseHoT,
 		},
 	},
 	tagTranslations = {

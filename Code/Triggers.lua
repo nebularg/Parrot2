@@ -2,6 +2,11 @@
 
 local Parrot = Parrot
 local Parrot_Triggers = Parrot:NewModule("Triggers", "LibRockTimer-1.0")
+local self = Parrot_Triggers
+
+--@debug@
+_G.Parrot_Triggers = self
+--@end-debug@
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
 local BCL = LibStub("LibBabble-Class-3.0"):GetLookupTable()
@@ -14,9 +19,11 @@ local _,playerClass = UnitClass("player")
 
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
-Parrot_Triggers.db = Parrot:GetDatabaseNamespace("Triggers")
+-- Parrot_Triggers.db = Parrot:GetDatabaseNamespace("Triggers")
 
-Parrot:SetDatabaseNamespaceDefaults("Triggers", 'profile', {})
+-- Parrot:SetDatabaseNamespaceDefaults("Triggers", 'profile', {})
+
+local dbDefaults = { profile = {}, }
 
 local default_triggers = {
 			{
@@ -357,7 +364,7 @@ local function rebuildEffectiveRegistry()
 	for i = 1, #effectiveRegistry do
 		effectiveRegistry[i] = nil
 	end
-	for _,v in ipairs(Parrot_Triggers.db.profile.triggers) do
+	for _,v in ipairs(Parrot_Triggers.db1.profile.triggers) do
 		if not v.disabled then
 			local classes = newSet((';'):split(v.class))
 			if classes[playerClass] then
@@ -370,7 +377,7 @@ end
 
 -- so triggers can be enabled/disabled from outside
 function Parrot_Triggers:setTriggerEnabled(triggerindex, enabled)
-	self.db.profile.triggers[triggerindex].disabled = not enabled
+	self.db1.profile.triggers[triggerindex].disabled = not enabled
 	rebuildEffectiveRegistry()
 end
 
@@ -380,19 +387,24 @@ local Parrot_TriggerConditions
 local Parrot_Display
 local Parrot_ScrollAreas
 local Parrot_CombatEvents
+
 function Parrot_Triggers:OnInitialize()
+
+	debug("initialize Triggers")
+	Parrot_Triggers.db1 = Parrot.db1:RegisterNamespace("Triggers", dbDefaults)
+
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
 	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 end
 
-
-
-
 function Parrot_Triggers:OnEnable(first)
-	if not self.db.profile.triggers then
-		self.db.profile.triggers = default_triggers
+
+	debug("enable Triggers")
+
+	if not self.db1.profile.triggers then
+		self.db1.profile.triggers = default_triggers
 	else
 
 		-- so that newly introduced triggers always get added.
@@ -402,7 +414,7 @@ function Parrot_Triggers:OnEnable(first)
 
 			local found = false
 
-			for i2, v2 in ipairs(self.db.profile.triggers) do
+			for i2, v2 in ipairs(self.db1.profile.triggers) do
 				if v2.name == v.name then
 					found = true
 					break
@@ -410,7 +422,7 @@ function Parrot_Triggers:OnEnable(first)
 			end
 
 			if not found then
-				table.insert(self.db.profile.triggers,v)
+				table.insert(self.db1.profile.triggers,v)
 			end
 
 		end
@@ -454,7 +466,7 @@ function Parrot_Triggers:OnEnable(first)
 			},
 		}
 
-		for _,data in ipairs(self.db.profile.triggers) do
+		for _,data in ipairs(self.db1.profile.triggers) do
 			local t = newList()
 			for k,v in pairs(data.conditions) do
 				t[k] = v
@@ -688,16 +700,16 @@ function Parrot_Triggers:OnOptionsCreate()
 						class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT",
 						conditions = {},
 					}
-					local registry = self.db.profile.triggers
+					local registry = self.db1.profile.triggers
 					registry[#registry+1] = t
 					makeOption(t)
 					rebuildEffectiveRegistry()
 				end,
 				disabled = function()
-					if not self.db.profile.triggers then
+					if not self.db1.profile.triggers then
 						return true
 					end
-					for _,v in ipairs(self.db.profile.triggers) do
+					for _,v in ipairs(self.db1.profile.triggers) do
 						if v.name == L["New trigger"] then
 							return true
 						end
@@ -713,7 +725,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				desc = L["Delete all Triggers that belong to a different locale"],
 				func = function()
 
-					for _,v in ipairs(self.db.profile.triggers) do
+					for _,v in ipairs(self.db1.profile.triggers) do
 						if v.locale and v.locale ~= GetLocale() then
 
 							Parrot:Print(string.format("Deleting Trigger \"%s\" because it is \'%s\'", v.name, v.locale))
@@ -797,9 +809,9 @@ function Parrot_Triggers:OnOptionsCreate()
 	-- not local, declared above
 	function remove(t)
 		triggers_opt.args[tostring(t.arg)] = nil
-		for i,v in ipairs(self.db.profile.triggers) do
+		for i,v in ipairs(self.db1.profile.triggers) do
 			if v == t.arg then
-				table.remove(self.db.profile.triggers, i)
+				table.remove(self.db1.profile.triggers, i)
 				break
 			end
 		end
@@ -1320,7 +1332,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 	end
 
-	for _,t in ipairs(self.db.profile.triggers) do
+	for _,t in ipairs(self.db1.profile.triggers) do
 		makeOption(t)
 	end
 end
