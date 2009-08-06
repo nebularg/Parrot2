@@ -78,23 +78,27 @@ end
 
 local groups = {
 	--[BSL["Freezing Trap"]]
-	[GetSpellInfo(14311)] = L["Traps"],
+	[GetSpellInfo(14311)] = L["Frost traps"],
 	--[BSL["Frost Trap"]]
-	[GetSpellInfo(13809)] = L["Traps"],
-	--[BSL["Immolation Trap"]]
-	[GetSpellInfo(27023)] = L["Traps"],
+	[GetSpellInfo(13809)] = L["Frost traps"],
 -- 	[BSL["Snake Trap"]]
-	[GetSpellInfo(34600)] = L["Traps"],
+-- leave commented for now until another spell shares the CD
+--	[GetSpellInfo(34600)] = L["Nature Traps"],
+
+--  [BSL["Immolation Trap"]]
+	[GetSpellInfo(27023)] = L["Fire traps"],
 -- 	[BSL["Explosive Trap"]]
-	[GetSpellInfo(27025)] = L["Traps"],
+	[GetSpellInfo(27025)] = L["Fire traps"],
+-- Black Arrow
+	[GetSpellInfo(63668)] = L["Fire traps"],	
+
 -- 	[BSL["Frost Shock"]]
 	[GetSpellInfo(25464)] = L["Shocks"],
 -- 	[BSL["Flame Shock"]]
 	[GetSpellInfo(25457)] = L["Shocks"],
 	--[BSL["Earth Shock"]]
 	[GetSpellInfo(25454)] = L["Shocks"],
-	-- Wind Shock
-	[GetSpellInfo(57994)] = L["Shocks"],
+
 	-- Judgement of Justice
 	[GetSpellInfo(53407)] = L["Judgements"],
 	-- Judgement of Light
