@@ -400,7 +400,8 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			return outline
 		end
 	end
-	local function setFontOutline(kind, k, value)
+	local function setFontOutline(info, value)
+		local kind, k = info.arg[1], info.arg[2]
 		if value == L["Inherit"] then
 			value = nil
 		end
