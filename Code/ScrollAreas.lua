@@ -18,9 +18,7 @@ function Parrot_ScrollAreas:OnInitialize()
 	Parrot_ScrollAreas.db1 = Parrot.db1:RegisterNamespace("ScrollAreas")
 end
 
-function Parrot_ScrollAreas:OnEnable()
-	debug("enable ScrollAreas")
-
+local function initDB()
 	if not self.db1.profile.areas then
 		self.db1.profile.areas = {
 			["Notification"] = {
@@ -53,6 +51,19 @@ function Parrot_ScrollAreas:OnEnable()
 			},
 		}
 	end
+end
+
+
+function Parrot_ScrollAreas:ApplyConfig()
+	initDB()
+	Parrot.options.args.scrollAreas = nil
+	self:OnOptionsCreate()
+end
+
+function Parrot_ScrollAreas:OnEnable()
+	debug("enable ScrollAreas")
+
+	initDB()
 	scrollAreas = self.db1.profile.areas
 	for k, v in pairs(scrollAreas) do
 		if k == "Notification" or k == "Incoming" or k == "Outgoing" then

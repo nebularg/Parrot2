@@ -26,7 +26,7 @@ local SharedMedia = LibStub("LibSharedMedia-3.0")
 local dbDefaults = { profile = {}, }
 
 local default_triggers = {
-	["v1.8.0"] = {
+	[1] = {
 		{
 			id = 1,
 			-- 34939 = Backlash
@@ -341,7 +341,8 @@ local default_triggers = {
 			locale = GetLocale(),
 		},
 	},
-	["v1.8.1"] = {
+	[2] = {
+		remove = {},
 		{
 			id = 25,
 			-- Lock and Load = 56344
@@ -426,33 +427,24 @@ function Parrot_Triggers:OnInitialize()
 end
 
 local function insertDefaultTriggers()
-	--@debug@
-	if Parrot.version == "@project-version@" then
-		return
-	end
-	--@end-debug@
-	
-	
-	local dbVer = self.db1.profile.version
-	if dbVer == Parrot.version then
-		debug("dbVer == Parrot.version, exiting...")
-		return
-	end
+
 	if not self.db1.profile.triggers then
 		self.db1.profile.triggers = {}
+		self.db1.profile.version = 0
 	end
+	local dbVer = self.db1.profile.version
 	if not dbVer then
-		debug("no version found in db, reinitializing")
-		-- cleanup default-triggers and reinsert them all later
-		for i,v in ipairs(self.db1.profile.triggers) do
-			if v.id then
-				debug("delete trigger " .. v.id .. "-" .. v.name)
-				table.remove(self.db1.profile.triggers, i)
-			end
-		end
+		self.db1.profile.version = 1
+		dbVer = 1
 	end
+	
+	if dbVer == #default_triggers then
+		debug("nothing to do, returning...")
+		return
+	end
+	
 
-	for k,v in pairs(default_triggers) do
+	for k,v in ipairs(default_triggers) do
 		if not dbVer or k > dbVer then
 			debug(k .. ">" .. (dbVer or "nil"))
 			for _,t in ipairs(v) do
@@ -461,9 +453,16 @@ local function insertDefaultTriggers()
 			end
 		end
 	end
-	debug("set profile.version to " .. Parrot.version)
-	self.db1.profile.version = Parrot.version
+	debug("set profile.version to " .. #default_triggers)
+	self.db1.profile.version = #default_triggers
 
+end
+
+function Parrot_Triggers:ApplyConfig()
+	insertDefaultTriggers()
+	Parrot.options.args.triggers = nil
+	self:OnOptionsCreate()
+	rebuildEffectiveRegistry()	
 end
 
 function Parrot_Triggers:OnEnable(first)

@@ -67,6 +67,10 @@ function Parrot:OnInitialize()
 	-- use db1 to fool LibRock-1.0
 	-- even without the RockDB-mixin, LibRock operates on self.db
 	self.db1 = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults)
+	
+	self.db1.RegisterCallback(self, "OnProfileChanged", "UpdateModuleConfigs")
+	self.db1.RegisterCallback(self, "OnProfileCopied", "UpdateModuleConfigs")
+	self.db1.RegisterCallback(self, "OnProfileReset", "UpdateModuleConfigs")
 
 	Parrot.options = {
 		name = L["Parrot"],
@@ -99,6 +103,14 @@ function Parrot:OnInitialize()
 		self.db1.account.firstTimeWoW21 = true
 		SetCVar("scriptErrors", "1")
 	end--]]
+end
+
+function Parrot:UpdateModuleConfigs()
+	for k,v in Parrot:IterateModules() do
+		if type(v.ApplyConfig) == "function" then
+			v:ApplyConfig()
+		end
+	end
 end
 
 function Parrot.inheritFontChoices()

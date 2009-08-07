@@ -21,6 +21,10 @@ function Parrot_Suppressions:OnInitialize()
 	Parrot_Suppressions.db1 = Parrot.db1:RegisterNamespace("Suppressions", dbDefaults)
 end
 
+function Parrot_Suppressions:ApplyConfig()
+	Parrot.options.args.suppressions = nil
+	self:OnOptionsCreate()
+end
 
 local function optkey(table)
 	return tostring(table):gsub("table: ","")
