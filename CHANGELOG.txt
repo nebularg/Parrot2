@@ -1,4 +1,4 @@
-v1.8.2:
+v1.8.3:
      fix some issues with the Config when Ace3 is not installed seperatly
 
 v1.8.1:
