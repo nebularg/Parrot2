@@ -1,8 +1,11 @@
+v1.8.2:
+     fix some issues with the Config when Ace3 is not installed seperatly
+
 v1.8.1:
      fix new shared cooldowns of hunter traps
      remove windshock from shared cooldowns
      fix bugs in new ace-config (fixes Tickets #80 and #81)
-	 rewrite the db-import of default-triggers (uses a versioncheck now)
+     rewrite the db-import of default-triggers (uses a versioncheck now)
           This means default-triggers do not get recreated when deleting them.
      bugfixes in profile-switching
           profile-applying to submodules
