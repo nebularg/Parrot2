@@ -1,6 +1,8 @@
 Parrot = Rock:NewAddon("Parrot", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0")
 local Parrot, self = Parrot, Parrot
-Parrot.version = "@project-version@"
+--@debug@
+Parrot.version = "v1.8.1"
+--@end-debug@
 Parrot.abbrhash = "@project-abbreviated-hash@"
 Parrot.hash = "@project-hash@"
 Parrot.date = "@project-date-iso@"

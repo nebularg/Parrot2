@@ -26,337 +26,363 @@ local SharedMedia = LibStub("LibSharedMedia-3.0")
 local dbDefaults = { profile = {}, }
 
 local default_triggers = {
-			{
-				id = 1,
-				-- 34939 = Backlash
-				name = L["%s!"]:format(GetSpellInfo(34939)),
-				icon = 34939,
-				class = "WARLOCK",
-				conditions = {
-					["Self buff gain"] = GetSpellInfo(34939),
-				},
-				sticky = true,
-				color = "ff00ff",
-				locale = GetLocale(),
+	["v1.8.0"] = {
+		{
+			id = 1,
+			-- 34939 = Backlash
+			name = L["%s!"]:format(GetSpellInfo(34939)),
+			icon = 34939,
+			class = "WARLOCK",
+			conditions = {
+				["Self buff gain"] = GetSpellInfo(34939),
 			},
-			{
-				-- 16246 = Clearcasting (Priest) TODO
-				id = 3,
-				name = L["%s!"]:format(GetSpellInfo(16246)),
-				icon = 16246,
-				class = "MAGE;PRIEST;SHAMAN",
-				conditions = {
-					["Self buff gain"] = GetSpellInfo(16246),
-				},
-				sticky = true,
-				color = "ffff00",
-				locale = GetLocale(),
+			sticky = true,
+			color = "ff00ff",
+			locale = GetLocale(),
+		},
+		{
+			-- 16246 = Clearcasting (Priest) TODO
+			id = 3,
+			name = L["%s!"]:format(GetSpellInfo(16246)),
+			icon = 16246,
+			class = "MAGE;PRIEST;SHAMAN",
+			conditions = {
+				["Self buff gain"] = GetSpellInfo(16246),
 			},
-			{
-				id = 4,
-				-- 27067 = Counterattack
-				name = L["%s!"]:format(GetSpellInfo(27067)),
-				icon = 27067,
-				class = "HUNTER",
-				conditions = {
-					["Incoming parry"] = true,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(27067),
-				},
-				sticky = true,
-				color = "ffff00",
-				locale = GetLocale(),
+			sticky = true,
+			color = "ffff00",
+			locale = GetLocale(),
+		},
+		{
+			id = 4,
+			-- 27067 = Counterattack
+			name = L["%s!"]:format(GetSpellInfo(27067)),
+			icon = 27067,
+			class = "HUNTER",
+			conditions = {
+				["Incoming parry"] = true,
 			},
-			{
-				id = 5,
-				-- 25236 = Execute
-				name = L["%s!"]:format(GetSpellInfo(25236)),
-				icon = 25236,
-				class = "WARRIOR",
-				conditions = {
-					["Enemy target health percent"] = 0.19,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(25236),
-				},
-				sticky = true,
-				color = "ffff00",
-				locale = GetLocale(),
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(27067),
 			},
-			{
-				id = 6,
-				-- Frostbite = 12497
-				name = L["%s!"]:format(GetSpellInfo(12497)),
-				icon = 12497,
-				class = "MAGE",
-				conditions = {
-					["Target debuff gain"] = GetSpellInfo(12497),
-				},
-				sticky = true,
-				color = "0000ff",
-				locale = GetLocale(),
+			sticky = true,
+			color = "ffff00",
+			locale = GetLocale(),
+		},
+		{
+			id = 5,
+			-- 25236 = Execute
+			name = L["%s!"]:format(GetSpellInfo(25236)),
+			icon = 25236,
+			class = "WARRIOR",
+			conditions = {
+				["Enemy target health percent"] = 0.19,
 			},
-			{
-					id = 7,
-				-- 27180 - Hammer of Wrath
-				name = L["%s!"]:format(GetSpellInfo(27180)),
-				icon = 27180,
-				class = "PALADIN",
-				conditions = {
-					["Enemy target health percent"] = 0.2,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(27180),
-				},
-				sticky = true,
-				color = "ffff00",
-				locale = GetLocale(),
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(25236),
 			},
-			{
-				id = 8,
-				-- Impact = 11103
-				name = L["%s!"]:format(GetSpellInfo(11103)),
-				icon = 11103,
-				class = "MAGE",
-				conditions = {
-					["Target debuff gain"] = GetSpellInfo(11103),
-				},
-				sticky = true,
-				color = "ff0000",
-				locale = GetLocale(),
+			sticky = true,
+			color = "ffff00",
+			locale = GetLocale(),
+		},
+		{
+			id = 6,
+			-- Frostbite = 12497
+			name = L["%s!"]:format(GetSpellInfo(12497)),
+			icon = 12497,
+			class = "MAGE",
+			conditions = {
+				["Target debuff gain"] = GetSpellInfo(12497),
 			},
-			{
-				id = 9,
-				-- Kill Command = 34026
-				name = L["%s!"]:format(GetSpellInfo(34026)),
-				icon = 34026,
-				class = "HUNTER",
-				conditions = {
-					["Outgoing crit"] = true,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(34026),
-				},
-				sticky = true,
-				color = "ff0000",
-				disabled = true,
-				locale = GetLocale(),
+			sticky = true,
+			color = "0000ff",
+			locale = GetLocale(),
+		},
+		{
+				id = 7,
+			-- 27180 - Hammer of Wrath
+			name = L["%s!"]:format(GetSpellInfo(27180)),
+			icon = 27180,
+			class = "PALADIN",
+			conditions = {
+				["Enemy target health percent"] = 0.2,
 			},
-			{
-				id = 10,
-				name = L["Low Health!"],
-				class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT",
-				conditions = {
-					["Self health percent"] = 0.4,
-				},
-				secondaryConditions = {
-					["Trigger cooldown"] = 3,
-				},
-				sticky = true,
-				color = "ff7f7f",
-				locale = GetLocale(),
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(27180),
 			},
-			{
-				id = 11,
-				name = L["Low Mana!"],
-				class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
-				conditions = {
-					["Self mana percent"] = 0.35,
-				},
-				secondaryConditions = {
-					["Trigger cooldown"] = 3,
-				},
-				sticky = true,
-				color = "7f7fff",
-				locale = GetLocale(),
+			sticky = true,
+			color = "ffff00",
+			locale = GetLocale(),
+		},
+		{
+			id = 8,
+			-- Impact = 11103
+			name = L["%s!"]:format(GetSpellInfo(11103)),
+			icon = 11103,
+			class = "MAGE",
+			conditions = {
+				["Target debuff gain"] = GetSpellInfo(11103),
 			},
-			{
-				id = 12,
-				name = L["Low Pet Health!"],
-				class = "HUNTER;MAGE;WARLOCK;DEATHKNIGHT",
-				conditions = {
-					["Pet health percent"] = 0.4,
-				},
-				secondaryConditions = {
-					["Trigger cooldown"] = 3,
-				},
-				color = "ff7f7f",
-				locale = GetLocale(),
+			sticky = true,
+			color = "ff0000",
+			locale = GetLocale(),
+		},
+		{
+			id = 10,
+			name = L["Low Health!"],
+			class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT",
+			conditions = {
+				["Self health percent"] = 0.4,
 			},
-			{
-				id = 13,
-				-- Mongoose Bite = 36916
-				name = L["%s!"]:format(GetSpellInfo(36916)),
-				icon = 36916,
-				class = "HUNTER",
-				conditions = {
-					["Incoming dodge"] = true,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(36916),
-				},
-				sticky = true,
-				color = "ffff00",
-				locale = GetLocale(),
+			secondaryConditions = {
+				["Trigger cooldown"] = 3,
 			},
-			{
-				id = 14,
-				-- 18095 = Nightfall
-				name = L["%s!"]:format(GetSpellInfo(18095)),
-				icon = 18095,
-				class = "WARLOCK",
-				conditions = {
-					-- 17941 = Shadow Trance
-					["Self buff gain"] = GetSpellInfo(17941),
-				},
-				sticky = true,
-				color = "7f007f",
-				locale = GetLocale(),
+			sticky = true,
+			color = "ff7f7f",
+			locale = GetLocale(),
+		},
+		{
+			id = 11,
+			name = L["Low Mana!"],
+			class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
+			conditions = {
+				["Self mana percent"] = 0.35,
 			},
-			{
-				id = 15,
-				-- Smite = 25364
-				name = L["Free %s!"]:format(GetSpellInfo(25364)),
-				icon = 25364,
-				class = "PRIEST",
-				conditions = {
-					-- Surge of Light =33154
-					["Self buff gain"] = GetSpellInfo(33154),
-				},
-				sticky = true,
-				disabled = true,
-				color = "ff0000",
-				locale = GetLocale(),
+			secondaryConditions = {
+				["Trigger cooldown"] = 3,
 			},
-			{
-				id = 16,
-				-- Overpower = 11585
-				name = L["%s!"]:format(GetSpellInfo(11585)),
-				icon = 11585,
-				class = "WARRIOR",
-				conditions = {
-					["Outgoing dodge"] = true,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(11585),
-				},
-				sticky = true,
-				color = "7f007f",
-				locale = GetLocale(),
+			sticky = true,
+			color = "7f7fff",
+			locale = GetLocale(),
+		},
+		{
+			id = 12,
+			name = L["Low Pet Health!"],
+			class = "HUNTER;MAGE;WARLOCK;DEATHKNIGHT",
+			conditions = {
+				["Pet health percent"] = 0.4,
 			},
-			{
-				id = 17,
-				-- Rampage = 29801
-				name = L["%s!"]:format(GetSpellInfo(29801)),
-				icon = 29801,
-				class = "WARRIOR",
-				conditions = {
-					["Outgoing crit"] = true,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(29801),
-					["Buff inactive"] = GetSpellInfo(29801),
-					["Minimum power amount"] = 20,
-				},
-				sticky = true,
-				color = "ff0000",
-				locale = GetLocale(),
+			secondaryConditions = {
+				["Trigger cooldown"] = 3,
 			},
-			{
-				id = 18,
-				-- Revenge = 30357
-				name = L["%s!"]:format(GetSpellInfo(30357)),
-				icon = 30357,
-				class = "WARRIOR",
-				conditions = {
-					["Incoming block"] = true,
-					["Incoming dodge"] = true,
-					["Incoming parry"] = true,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(30357),
-					["Warrior stance"] = "Defensive Stance",
-				},
-				sticky = true,
-				color = "ffff00",
-				disabled = true,
-				locale = GetLocale(),
+			color = "ff7f7f",
+			locale = GetLocale(),
+		},
+		{
+			id = 13,
+			-- Mongoose Bite = 36916
+			name = L["%s!"]:format(GetSpellInfo(36916)),
+			icon = 36916,
+			class = "HUNTER",
+			conditions = {
+				["Incoming dodge"] = true,
 			},
-			{
-				id = 19,
-				-- Riposte = 14251
-				name = L["%s!"]:format(GetSpellInfo(14251)),
-				icon = 14251,
-				class = "ROGUE",
-				conditions = {
-					["Incoming parry"] = true,
-				},
-				secondaryConditions = {
-					["Spell ready"] = GetSpellInfo(14251),
-				},
-				sticky = true,
-				color = "ffff00",
-				locale = GetLocale(),
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(36916),
 			},
-			{
-				id = 20,
-				-- Maelstrom Weapon = 51532
-				name = L["%s!"]:format(GetSpellInfo(51532)),
-				icon = 51532,
-				class = "SHAMAN",
-				conditions = {
-				      ["Self buff stacks gain"] = string.format("%s,%s",GetSpellInfo(51532),"5"),
-				},
-				sticky = true,
-				color = "0000ff",
-				locale = GetLocale(),
+			sticky = true,
+			color = "ffff00",
+			locale = GetLocale(),
+		},
+		{
+			id = 14,
+			-- 18095 = Nightfall
+			name = L["%s!"]:format(GetSpellInfo(18095)),
+			icon = 18095,
+			class = "WARLOCK",
+			conditions = {
+				-- 17941 = Shadow Trance
+				["Self buff gain"] = GetSpellInfo(17941),
 			},
-			-- 4 Deathknight-triggers by waallen
-			{
-				id = 22,
-				-- Freezing Fog = 59052
-				name = L["%s!"]:format(GetSpellInfo(59052)),
-				icon = 59052,
-				class = "DEATHKNIGHT",
-				conditions = {
-					-- 59052 = Freezing Fog
-					["Self buff gain"] = GetSpellInfo(59052),
-				},
-				sticky = true,
-				color = "0000ff",
-				locale = GetLocale(),
+			sticky = true,
+			color = "7f007f",
+			locale = GetLocale(),
+		},
+		{
+			id = 15,
+			-- Smite = 25364
+			name = L["Free %s!"]:format(GetSpellInfo(25364)),
+			icon = 25364,
+			class = "PRIEST",
+			conditions = {
+				-- Surge of Light =33154
+				["Self buff gain"] = GetSpellInfo(33154),
 			},
-			{
-				id = 23,
-				-- Killing Machine	= 51130
-				name = L["%s!"]:format(GetSpellInfo(51130)),
-				icon = 51130,
-				class = "DEATHKNIGHT",
-				conditions = {
-					-- 51130 = Killing Machine
-					["Self buff gain"] = GetSpellInfo(51130),
-				},
-				sticky = true,
-				color = "0000ff",
-				locale = GetLocale(),
+			sticky = true,
+			disabled = true,
+			color = "ff0000",
+			locale = GetLocale(),
+		},
+		{
+			id = 16,
+			-- Overpower = 11585
+			name = L["%s!"]:format(GetSpellInfo(11585)),
+			icon = 11585,
+			class = "WARRIOR",
+			conditions = {
+				["Outgoing dodge"] = true,
 			},
-			{
-				id = 24,
-				-- Rune Strike = 56816
-				name = L["%s!"]:format(GetSpellInfo(56816)),
-				icon = 56816,
-				class = "DEATHKNIGHT",
-				conditions = {
-					["Incoming dodge"] = true,
-					["Incoming parry"] = true,
-				},
-				sticky = true,
-				color = "0000ff",
-				disabled = true,
-				locale = GetLocale(),
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(11585),
 			},
+			sticky = true,
+			color = "7f007f",
+			locale = GetLocale(),
+		},
+		{
+			id = 17,
+			-- Rampage = 29801
+			name = L["%s!"]:format(GetSpellInfo(29801)),
+			icon = 29801,
+			class = "WARRIOR",
+			conditions = {
+				["Outgoing crit"] = true,
+			},
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(29801),
+				["Buff inactive"] = GetSpellInfo(29801),
+				["Minimum power amount"] = 20,
+			},
+			sticky = true,
+			color = "ff0000",
+			locale = GetLocale(),
+		},
+		{
+			id = 18,
+			-- Revenge = 30357
+			name = L["%s!"]:format(GetSpellInfo(30357)),
+			icon = 30357,
+			class = "WARRIOR",
+			conditions = {
+				["Incoming block"] = true,
+				["Incoming dodge"] = true,
+				["Incoming parry"] = true,
+			},
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(30357),
+				["Warrior stance"] = "Defensive Stance",
+			},
+			sticky = true,
+			color = "ffff00",
+			disabled = true,
+			locale = GetLocale(),
+		},
+		{
+			id = 19,
+			-- Riposte = 14251
+			name = L["%s!"]:format(GetSpellInfo(14251)),
+			icon = 14251,
+			class = "ROGUE",
+			conditions = {
+				["Incoming parry"] = true,
+			},
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(14251),
+			},
+			sticky = true,
+			color = "ffff00",
+			locale = GetLocale(),
+		},
+		{
+			id = 20,
+			-- Maelstrom Weapon = 51532
+			name = L["%s!"]:format(GetSpellInfo(51532)),
+			icon = 51532,
+			class = "SHAMAN",
+			conditions = {
+				    ["Self buff stacks gain"] = string.format("%s,%s",GetSpellInfo(51532),"5"),
+			},
+			sticky = true,
+			color = "0000ff",
+			locale = GetLocale(),
+		},
+		-- 4 Deathknight-triggers by waallen
+		{
+			id = 22,
+			-- Freezing Fog = 59052
+			name = L["%s!"]:format(GetSpellInfo(59052)),
+			icon = 59052,
+			class = "DEATHKNIGHT",
+			conditions = {
+				-- 59052 = Freezing Fog
+				["Self buff gain"] = GetSpellInfo(59052),
+			},
+			sticky = true,
+			color = "0000ff",
+			locale = GetLocale(),
+		},
+		{
+			id = 23,
+			-- Killing Machine	= 51130
+			name = L["%s!"]:format(GetSpellInfo(51130)),
+			icon = 51130,
+			class = "DEATHKNIGHT",
+			conditions = {
+				-- 51130 = Killing Machine
+				["Self buff gain"] = GetSpellInfo(51130),
+			},
+			sticky = true,
+			color = "0000ff",
+			locale = GetLocale(),
+		},
+		{
+			id = 24,
+			-- Rune Strike = 56816
+			name = L["%s!"]:format(GetSpellInfo(56816)),
+			icon = 56816,
+			class = "DEATHKNIGHT",
+			conditions = {
+				["Incoming dodge"] = true,
+				["Incoming parry"] = true,
+			},
+			sticky = true,
+			color = "0000ff",
+			disabled = true,
+			locale = GetLocale(),
+		},
+	},
+	["v1.8.1"] = {
+		{
+			id = 25,
+			-- Lock and Load = 56344
+			name = L["%s!"]:format(GetSpellInfo(56344)),
+			icon = 56344,
+			class = "HUNTER",
+			conditions = {
+				["Self buff gain"] = GetSpellInfo(56344),
+			},
+			sticky = true,
+			color = "ff0000",
+			locale = GetLocale(),
+		},
+		{
+			id = 26,
+			-- Brain Freeze = 57761
+			name = L["%s!"]:format(GetSpellInfo(44549)),
+			icon = 57761,
+			class = "MAGE",
+			conditions = {
+				["Self buff gain"] = GetSpellInfo(57761),
+			},
+			sticky = true,
+			color = "0000ff",
+			locale = GetLocale(),
+		},
+		{
+			id = 27,
+			-- Sudden Death 52437
+			name = L["%s!"]:format(GetSpellInfo(52437)),
+			icon = 52437,
+			class = "WARRIOR",
+			conditions = {
+				["Self buff gain"] = GetSpellInfo(52437),
+			},
+			sticky = true,
+			color = "ff0000",
+			locale = GetLocale(),
+		},
 	}
+}
 
 
 local effectiveRegistry = {}
@@ -399,35 +425,52 @@ function Parrot_Triggers:OnInitialize()
 	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 end
 
+local function insertDefaultTriggers()
+	--@debug@
+	if Parrot.version == "@project-version@" then
+		return
+	end
+	--@end-debug@
+	
+	
+	local dbVer = self.db1.profile.version
+	if dbVer == Parrot.version then
+		debug("dbVer == Parrot.version, exiting...")
+		return
+	end
+	if not self.db1.profile.triggers then
+		self.db1.profile.triggers = {}
+	end
+	if not dbVer then
+		debug("no version found in db, reinitializing")
+		-- cleanup default-triggers and reinsert them all later
+		for i,v in ipairs(self.db1.profile.triggers) do
+			if v.id then
+				debug("delete trigger " .. v.id .. "-" .. v.name)
+				table.remove(self.db1.profile.triggers, i)
+			end
+		end
+	end
+
+	for k,v in pairs(default_triggers) do
+		if not dbVer or k > dbVer then
+			debug(k .. ">" .. (dbVer or "nil"))
+			for _,t in ipairs(v) do
+				debug("insert trigger " .. t.name .. "(" .. t.id .. ")")
+				table.insert(self.db1.profile.triggers, t)
+			end
+		end
+	end
+	debug("set profile.version to " .. Parrot.version)
+	self.db1.profile.version = Parrot.version
+
+end
+
 function Parrot_Triggers:OnEnable(first)
 
 	debug("enable Triggers")
 
-	if not self.db1.profile.triggers then
-		self.db1.profile.triggers = default_triggers
-	else
-
-		-- so that newly introduced triggers always get added.
-		-- this also adds previously removed default-triggers
-
-		for i,v in ipairs(default_triggers) do
-
-			local found = false
-
-			for i2, v2 in ipairs(self.db1.profile.triggers) do
-				if v2.name == v.name then
-					found = true
-					break
-				end
-			end
-
-			if not found then
-				table.insert(self.db1.profile.triggers,v)
-			end
-
-		end
-
-	end
+	insertDefaultTriggers()
 
 	self:AddRepeatingTimer(0.1, function()
 		Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
@@ -534,16 +577,13 @@ end
 
 local oldIconName = {
 	["Backlash"] = 34939,
-	["Blackout"] = 15326,
 	["Clearcasting"] = 16246,
 	["Counterattack"] = 27067,
-	-- ["Execute"] = 25236, -- not needed
 	["Frostbite"] = 12497,
 	["Impact"] = 12360,
 	["Kill Command"] = 34026,
 	["Mongoose Bite"] = 36916,
 	["Nightfall"] = 18095,
-	-- ["Smite"] = 25364, -- not needed
 	["Overpower"] = 11585,
 	["Rampage"] = 30033,
 	["Revenge"] = 30357,
