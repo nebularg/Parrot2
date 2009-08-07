@@ -100,7 +100,7 @@ function Parrot_Display:OnOptionsCreate()
 		get = function()
 			return self.db1.profile.alpha
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.db1.profile.alpha = value
 		end
 	}
@@ -116,7 +116,7 @@ function Parrot_Display:OnOptionsCreate()
 		get = function()
 			return self.db1.profile.iconAlpha
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.db1.profile.iconAlpha = value
 		end
 	}
@@ -127,7 +127,7 @@ function Parrot_Display:OnOptionsCreate()
 		get = function()
 			return self.db1.profile.iconsEnabled
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.db1.profile.iconsEnabled = value
 		end
 	}
