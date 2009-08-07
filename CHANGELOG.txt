@@ -1,12 +1,18 @@
 v1.8.1:
      fix new shared cooldowns of hunter traps
      remove windshock from shared cooldowns
-     fix bug in scrollarea-configuration
+     fix bugs in new ace-config (fixes Tickets #80 and #81)
+	 rewrite the db-import of default-triggers (uses a versioncheck now)
+          This means default-triggers do not get recreated when deleting them.
+     bugfixes in profile-switching
+          profile-applying to submodules
+          profile-copying and reseting
 
 v1.8.0:
      use ace3 for config-stuff
      make profile-switching work again (by using AceDB-3.0)
-         Note: This resets all saved Configurations
+         Note: The profile now defaults to your Character-profile instead of 
+         "Default". Try switching profiles to regain all saved settings.
      add Parrot to the Blizzard-Addon-Options
      add new Primary TriggerCondition: Successful Spell Cast (Ticket #65)
      add secondary Trigger Conditions (Minimum/Maximum Target Health Percent)
