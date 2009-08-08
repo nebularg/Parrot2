@@ -169,22 +169,6 @@ local default_triggers = {
 			locale = GetLocale(),
 		},
 		{
-			id = 13,
-			-- Mongoose Bite = 36916
-			name = L["%s!"]:format(GetSpellInfo(36916)),
-			icon = 36916,
-			class = "HUNTER",
-			conditions = {
-				["Incoming dodge"] = true,
-			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(36916),
-			},
-			sticky = true,
-			color = "ffff00",
-			locale = GetLocale(),
-		},
-		{
 			id = 14,
 			-- 18095 = Nightfall
 			name = L["%s!"]:format(GetSpellInfo(18095)),
@@ -342,7 +326,6 @@ local default_triggers = {
 		},
 	},
 	[2] = {
-		remove = {},
 		{
 			id = 25,
 			-- Lock and Load = 56344
@@ -382,7 +365,11 @@ local default_triggers = {
 			color = "ff0000",
 			locale = GetLocale(),
 		},
-	}
+	},
+	[3] = {
+		-- Kill command and mongoose bite
+		remove = { 9, 13 },
+	},
 }
 
 
@@ -450,6 +437,16 @@ local function insertDefaultTriggers()
 			for _,t in ipairs(v) do
 				debug("insert trigger " .. t.name .. "(" .. t.id .. ")")
 				table.insert(self.db1.profile.triggers, t)
+			end
+			if v.remove then
+				for _, r in ipairs(v.remove) do
+					for i,t in ipairs(self.db1.profile.triggers) do
+						if t.id == r then
+							-- remove deprecated triggers
+							table.remove(self.db1.profile.triggers, i)
+						end
+					end
+				end
 			end
 		end
 	end
