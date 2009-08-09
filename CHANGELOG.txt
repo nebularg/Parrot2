@@ -1,3 +1,6 @@
+++:
+     add support for per-spell-filtering (by name or ID)
+
 v1.8.3:
      fix some issues with the Config when Ace3 is not installed seperatly
 
