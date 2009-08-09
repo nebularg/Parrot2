@@ -1377,7 +1377,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	events_opt.args.sfilters.args.new = {
 		order = 1,
 		type = 'execute',
-		name = L["New Filter"],
+		name = L["New filter"],
 		desc = L["Add a new filter."],
 		func = function()
 			self.db1.profile.sfilters[''] = {}
