@@ -42,6 +42,7 @@ local dbDefaults = {
 			['*'] = {}
 		},
 		filters = {},
+		sfilters = {},
 		throttles = {},
 		abbreviateStyle = "abbreviate",
 		abbreviateLength = 30,
@@ -604,6 +605,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				hidden = function()
 					return not next(events_opt.args.filters.args)
 				end,
+			},
+			sfilters = {
+				type = 'group',
+				name = L["Spell filters"],
+				desc = L["Filters that are applied to a single spell"],
+				args = {},
 			},
 			abbreviate = {
 				type = 'group',
@@ -1269,6 +1276,116 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		}
 	end
 
+	local sfilters_opt = events_opt.args.sfilters
+
+	local function setSpellName(info, new)
+		if self.db1.profile.sfilters[new] ~= nil then
+			debug("already present, aborting...")
+			return
+		end
+
+		local old = info.arg
+
+		debug("moving db-entry")
+
+		self.db1.profile.sfilters[new] = self.db1.profile.sfilters[old]
+		self.db1.profile.sfilters[old] = nil
+
+		debug("opt: " .. info[#info-1])
+
+		local opt = sfilters_opt.args[info[#info-1]]
+
+		debug(opt)
+
+		local name = new == '' and L["New filter"] or new
+
+		opt.order = new == '' and -110 or -100
+		opt.name = name
+		opt.desc = name
+		for k,v in pairs(opt.args) do
+			v.arg = new
+		end
+--		opt.args.spell.arg = new
+--		opt.args.amount.arg = new
+--		opt.args.delete.arg = new
+	end
+
+	local function removeFilter(info)
+		self.db1.profile.sfilters[info.arg] = nil
+		sfilters_opt.args[info[#info-1]] = nil
+	end
+
+	local function setFilterAmount(info, value)
+		self.db1.profile.sfilters[info.arg].amount = tonumber(value)
+	end
+
+	local function makeFilter(k)
+		local name = k == '' and L["New filter"] or k
+		return {
+			type = 'group',
+			name = name,
+			desc = name,
+			args = {
+				spell = {
+					type = 'input',
+					name = L["Spell"],
+					desc = L["Name or ID of the spell"],
+					get = function(info) return info.arg end,
+					set = setSpellName,
+					arg = k,
+					order = 1,
+				},
+				amount = {
+					type = 'input',
+					name = L["Amount"],
+					desc = L["Filter when amount is lower than this value (leave blank to filter everything)"],
+					get = function(info) return tostring(self.db1.profile.sfilters[info.arg].amount or "") end,
+					set = setFilterAmount,
+					arg = k,
+					order = 2,
+				},
+				inc = {
+					type = 'toggle',
+					name = L["Incoming"],
+					desc = L["Filter incoming spells"],
+					get = function(info) return not not self.db1.profile.sfilters[info.arg].inc end,
+					set = function(info, value) self.db1.profile.sfilters[info.arg].inc = value end,
+					arg = k,
+					order = 3,
+				},
+				out = {
+					type = 'toggle',
+					name = L["Outgoing"],
+					desc = L["Filter outgoing spells"],
+					get = function(info) return not not self.db1.profile.sfilters[info.arg].out end,
+					set = function(info, value) self.db1.profile.sfilters[info.arg].out = value end,
+					arg = k,
+					order = 4,
+				},
+				delete = {
+					type = 'execute',
+					name = L["Remove"],
+					desc = L["Remove filter"],
+					func = removeFilter,
+					arg = k,
+					order = -1,
+				},
+			}
+		}
+	end
+
+	events_opt.args.sfilters.args.new = {
+		order = 1,
+		type = 'execute',
+		name = L["New Filter"],
+		desc = L["Add a new filter."],
+		func = function()
+			self.db1.profile.sfilters[''] = {}
+			local t = makeFilter('')
+			sfilters_opt.args[tostring(t)] = t
+		end,
+	}
+
 	for category, q in pairs(combatEvents) do
 		for name, data in pairs(q) do
 			createOption(category, name)
@@ -1279,6 +1396,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	end
 	for filterType in pairs(filterTypes) do
 		createFilterOption(filterType)
+	end
+	for spellFilter in pairs(self.db1.profile.sfilters) do
+		debug("making filter for " .. spellFilter)
+		local f = makeFilter(spellFilter)
+		sfilters_opt.args[tostring(f)] = f
 	end
 end
 
@@ -2148,6 +2270,27 @@ function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
 	end
 end
 
+local sfilters
+
+onEnableFuncs[#onEnableFuncs + 1] = function()
+	sfilters = self.db1.profile.sfilters
+end
+
+local function sfiltered(info)
+	local filter = sfilters[tostring(info.spellID)] or sfilters[info.abilityName]
+	if filter and (not filter.amount or (filter.amount > (info.amount or 0))) then
+		if (filter.inc and UnitGUID("player") ~= info.recipientID) or
+			(filter.out and UnitGUID("player") ~= info.sourceID) then
+
+			return false
+		end
+
+		debug(("Filtering %s (%d)"):format(info.abilityName, info.amount))
+		return true
+	end
+	return false
+end
+
 function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
 
 	if not Parrot:IsModuleActive(Parrot_CombatEvents) then
@@ -2160,6 +2303,10 @@ function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName,
 			if v.checkfunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...) then
 				local info = v.infofunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
 				if info then
+					if sfiltered(info) then
+						info = del(info)
+						return
+					end
 					info.uid = (srcGUID or 0) + (dstGUID or 0) + timestamp
 					self:TriggerCombatEvent(v.category, v.name, info)
 					info = del( info )
