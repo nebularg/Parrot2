@@ -2278,7 +2278,7 @@ end
 
 local function sfiltered(info)
 	local filter = sfilters[tostring(info.spellID)] or sfilters[info.abilityName]
-	if filter and (not filter.amount or (filter.amount > (info.amount or 0))) then
+	if filter and (not filter.amount or (filter.amount > (info.realAmount or info.amount or 0))) then
 		if (filter.inc and UnitGUID("player") ~= info.recipientID) or
 			(filter.out and UnitGUID("player") ~= info.sourceID) then
 
