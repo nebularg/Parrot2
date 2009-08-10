@@ -90,7 +90,7 @@ local groups = {
 -- 	[BSL["Explosive Trap"]]
 	[GetSpellInfo(27025)] = L["Fire traps"],
 -- Black Arrow
-	[GetSpellInfo(63668)] = L["Fire traps"],	
+	[GetSpellInfo(63668)] = L["Fire traps"],
 
 -- 	[BSL["Frost Shock"]]
 	[GetSpellInfo(25464)] = L["Shocks"],

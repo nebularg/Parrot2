@@ -1,7 +1,7 @@
 v1.8.3+:
      add support for per-spell-filtering (by name or ID) (fixes Ticket #42)
-     add default-filters for Unleashed Rage and Ferocious Inspiration
-          (fixes Ticket #16)
+     add default-filters for Unleashed Rage, Ferocious Inspiration, and
+          Abominable Might (fixes Ticket #16)
      Hide realm name in tags (fixes Ticket #83)
      add "FrostFire", "Froststrom", and "Shadowstrom" to color-options
 
@@ -21,7 +21,7 @@ v1.8.1:
 v1.8.0:
      use ace3 for config-stuff
      make profile-switching work again (by using AceDB-3.0)
-         Note: The profile now defaults to your Character-profile instead of 
+         Note: The profile now defaults to your Character-profile instead of
          "Default". Try switching profiles to regain all saved settings.
      add Parrot to the Blizzard-Addon-Options
      add new Primary TriggerCondition: Successful Spell Cast (Ticket #65)
@@ -36,7 +36,7 @@ v1.7.2:
      add secondary conditions for "in vehicle" and "mounted"
 
 v1.7.1:
- 
+
      make dot-crits show as sticky.
      fix optdeps.
      add Options to disable CombatEvents when in a raid-instance.

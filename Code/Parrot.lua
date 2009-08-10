@@ -67,7 +67,7 @@ function Parrot:OnInitialize()
 	-- use db1 to fool LibRock-1.0
 	-- even without the RockDB-mixin, LibRock operates on self.db
 	self.db1 = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults)
-	
+
 	self.db1.RegisterCallback(self, "OnProfileChanged", "UpdateModuleConfigs")
 	self.db1.RegisterCallback(self, "OnProfileCopied", "UpdateModuleConfigs")
 	self.db1.RegisterCallback(self, "OnProfileReset", "UpdateModuleConfigs")
@@ -228,7 +228,7 @@ function Parrot:OnOptionsCreate()
 				name = L["Show realm name"],
 				desc = L["Display realm in player names (in battlegrounds)"],
 				get = function() return Parrot.db1.profile.showNameRealm end,
-				set = function(info, value) 
+				set = function(info, value)
 						Parrot.db1.profile.showNameRealm = value
 					end,
 

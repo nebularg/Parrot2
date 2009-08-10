@@ -424,12 +424,12 @@ local function insertDefaultTriggers()
 		self.db1.profile.version = 1
 		dbVer = 1
 	end
-	
+
 	if dbVer == #default_triggers then
 		debug("nothing to do, returning...")
 		return
 	end
-	
+
 
 	for k,v in ipairs(default_triggers) do
 		if not dbVer or k > dbVer then
@@ -459,7 +459,7 @@ function Parrot_Triggers:ApplyConfig()
 	insertDefaultTriggers()
 	Parrot.options.args.triggers = nil
 	self:OnOptionsCreate()
-	rebuildEffectiveRegistry()	
+	rebuildEffectiveRegistry()
 end
 
 function Parrot_Triggers:OnEnable(first)
