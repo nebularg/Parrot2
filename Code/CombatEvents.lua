@@ -43,8 +43,9 @@ local dbDefaults = {
 		},
 		filters = {},
 		sfilters = {
-			[GetSpellInfo(34460)] = { inc = true, },
-			[GetSpellInfo(30809)] = { inc = true, },
+			[GetSpellInfo(34460)] = { inc = true, }, -- Ferocious Inspiration
+			[GetSpellInfo(30809)] = { inc = true, }, -- Unleashed Rage
+			[GetSpellInfo(53136)] = { inc = true, }, -- Abominable Might
 		},
 		throttles = {},
 		abbreviateStyle = "abbreviate",
