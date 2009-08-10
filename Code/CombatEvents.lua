@@ -61,6 +61,9 @@ local dbDefaults = {
 			["Frost"] = "7f7fff",
 			["Shadow"] = "7f007f",
 			["Arcane"] = "ff7fff",
+			["FrostFire"] = "ff0088",
+			["Froststorm"] = "7f7f7f",
+			["Shadowstorm"] = "1f1f1f",
 		},
 		modifier = {
 			color = true,
@@ -775,7 +778,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		"Nature", L["Nature"],
 		"Frost", L["Frost"],
 		"Shadow", L["Shadow"],
-		"Arcane", L["Arcane"]
+		"Arcane", L["Arcane"],
+		"FrostFire", L["FrostFire"],
+		"Froststorm", L["Froststorm"],
+		"Shadowstorm", L["Shadowstorm"]
 	)
 	local function getColor(info)
 		return hexColorToTuple(self.db1.profile.damageTypes[info.arg])
