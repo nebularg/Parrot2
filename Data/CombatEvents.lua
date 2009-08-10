@@ -96,6 +96,24 @@ local function checkFlags(flags1, flags2)
 	return (bit_band(flags1, flags2) == flags2)
 end
 
+local function retrieveSourceName(info)
+	if not info.sourceName then return end
+	if Parrot.db1.profile.showNameRealm then
+		return info.sourceName
+	else
+		return info.sourceName:gsub("-.*", "")
+	end
+end
+
+local function retrieveDestName(info)
+	if not info.recipientName then return end
+	if Parrot.db1.profile.showNameRealm then
+		return info.recipientName
+	else
+		return info.recipientName:gsub("-.*", "")
+	end
+end
+
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Melee"],
@@ -130,7 +148,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Amount = coloredDamageAmount,
 	},
 	tagTranslationsHelp = {
@@ -205,7 +223,7 @@ local parseMissInfo = function( srcGUID, srcName, _, dstGUID, dstName, _, missTy
 end
 
 local missTagTranslations = {
-	Name = "sourceName",
+	Name = retrieveSourceName,
 	Amount = "amount",
 }
 
@@ -442,7 +460,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -552,7 +570,7 @@ Parrot:RegisterCombatEvent{
 		}
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -615,7 +633,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -648,7 +666,7 @@ local parseSpellMissInfo = function(srcGUID, srcName, srcFlags, dstGUID,
 end
 
 local spellMissTagTranslations = {
-	Name = "sourceName",
+	Name = retrieveSourceName,
 	Skill = retrieveAbilityName,
 	Icon = retrieveIconFromAbilityName,
 	Amount = "amount",
@@ -971,7 +989,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Skill = retrieveAbilityName,
 		ExtraSkill = retrieveExtraAbilityName,
 		Icon = retrieveIconFromAbilityName,
@@ -1061,7 +1079,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -1093,7 +1111,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -1126,7 +1144,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -1158,7 +1176,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -1263,7 +1281,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Amount = coloredDamageAmount,
 	},
 	tagTranslationsHelp = {
@@ -1522,7 +1540,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -1581,7 +1599,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -2124,7 +2142,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "destName",
+		Name = "sourceName", -- no realm possible
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -2157,7 +2175,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName",
+		Name = "sourceName", -- no realm possible
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -2212,7 +2230,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Amount = coloredDamageAmount,
 	},
 	tagTranslationsHelp = {
@@ -2256,7 +2274,7 @@ Parrot:RegisterCombatEvent{
 }
 
 local outMissTagTranslations = {
-	Name = "recipientName",
+	Name = retrieveDestName,
 	Amount = "amount",
 }
 
@@ -2449,7 +2467,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -2536,7 +2554,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -2592,7 +2610,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -2609,7 +2627,7 @@ Parrot:RegisterCombatEvent{
 }
 
 local outSpellMissTagTranslations = {
-	Name = "recipientName",
+	Name = retrieveDestName,
 	Skill = retrieveAbilityName,
 	Icon = retrieveIconFromAbilityName,
 	Amount = "amount",
@@ -2969,7 +2987,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Skill = retrieveAbilityName,
 		ExtraSkill = retrieveExtraAbilityName,
 		Icon = retrieveIconFromAbilityName,
@@ -3000,7 +3018,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -3033,7 +3051,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -3067,7 +3085,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -3099,7 +3117,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -3154,7 +3172,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Amount = "amount",
 	},
 	tagTranslationsHelp = {
@@ -3229,7 +3247,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
@@ -3270,7 +3288,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
@@ -3311,7 +3329,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
@@ -3352,7 +3370,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
@@ -3393,7 +3411,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
@@ -3434,7 +3452,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
@@ -3475,7 +3493,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
@@ -3525,7 +3543,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -3586,7 +3604,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Amount = coloredDamageAmount,
 		Type = damageTypeString,
 		Skill = retrieveAbilityName,
@@ -4131,7 +4149,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "destName",
+		Name = "recipientName", -- no realm possible
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -4163,7 +4181,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "destName",
+		Name = "recipientName",
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -4424,7 +4442,7 @@ Parrot:RegisterCombatEvent{
 		Amount = "amount",
 		Type = "attributeLocal",
 		Skill = retrieveAbilityName,
-		Name = "sourceName",
+		Name = retrieveSourceName,
 		Icon = retrieveIconFromAbilityName,
 	},
 	tagTranslationsHelp = {
@@ -4495,7 +4513,7 @@ Parrot:RegisterCombatEvent{
 
 	tagTranslations = {
 		Amount = "amount",
--- 		Name = "sourceName", -- not supported anymore
+-- 		Name = retrieveSourceName, -- not supported anymore
 -- 		Rank = "sourceRank", -- not supported anymore
 	},
 	tagTranslationHelp = {
@@ -4577,7 +4595,7 @@ Parrot:RegisterCombatEvent{
 		recipientID = "player",
 	},
 	tagTranslations = {
-		-- Name = "sourceName", -- not supported anymore by the event
+		-- Name = retrieveSourceName, -- not supported anymore by the event
 		Amount = "amount",
 	},
 	tagTranslationHelp = {
@@ -4616,7 +4634,7 @@ Parrot:RegisterCombatEvent{
 		}
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Skill = function(info) return info.abilityName or PLAYERSTAT_MELEE_COMBAT end,
 	},
 	tagTranslationHelp = {
@@ -4663,7 +4681,7 @@ Parrot:RegisterCombatEvent{
 		}
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Skill = function(info) return info.abilityName or PLAYERSTAT_MELEE_COMBAT end,
 	},
 	tagTranslationHelp = {

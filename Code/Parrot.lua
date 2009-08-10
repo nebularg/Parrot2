@@ -223,6 +223,16 @@ function Parrot:OnOptionsCreate()
 					Parrot.db1.profile.totemDamage = value
 				end,
 			},
+			showNameRealm = {
+				type = 'toggle',
+				name = L["Show realm name"],
+				desc = L["Display realm in player names (in battlegrounds)"],
+				get = function() return Parrot.db1.profile.showNameRealm end,
+				set = function(info, value) 
+						Parrot.db1.profile.showNameRealm = value
+					end,
+
+			}
 		}
 	})
 end
