@@ -3,6 +3,7 @@ v1.8.3+:
      add default-filters for Unleashed Rage and Ferocious Inspiration
           (fixes Ticket #16)
      Hide realm name in tags (fixes Ticket #83)
+     add "FrostFire", "Froststrom", and "Shadowstrom" to color-options
 
 v1.8.3:
      fix some issues with the Config when Ace3 is not installed seperatly
