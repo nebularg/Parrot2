@@ -1,5 +1,7 @@
-++:
-     add support for per-spell-filtering (by name or ID)
+v1.8.3+:
+     add support for per-spell-filtering (by name or ID) (fixes Ticket #42)
+     add default-filters for Unleashed Rage and Ferocious Inspiration
+          (fixes Ticket #16)
 
 v1.8.3:
      fix some issues with the Config when Ace3 is not installed seperatly
