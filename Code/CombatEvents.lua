@@ -42,7 +42,10 @@ local dbDefaults = {
 			['*'] = {}
 		},
 		filters = {},
-		sfilters = {},
+		sfilters = {
+			[GetSpellInfo(34460)] = { inc = true, },
+			[GetSpellInfo(30809)] = { inc = true, },
+		},
 		throttles = {},
 		abbreviateStyle = "abbreviate",
 		abbreviateLength = 30,
