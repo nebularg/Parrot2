@@ -871,7 +871,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 
 	local function getIcon(t)
-		return tostring(t.arg.icon) or ''
+		return tostring(t.arg.icon or "")
 	end
 	local function setIcon(t, value)
 		if value == '' then
