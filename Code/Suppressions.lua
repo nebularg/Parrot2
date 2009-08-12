@@ -17,7 +17,6 @@ local dbDefaults = {
 }
 
 function Parrot_Suppressions:OnInitialize()
-	debug("initialize Suppressions")
 	Parrot_Suppressions.db1 = Parrot.db1:RegisterNamespace("Suppressions", dbDefaults)
 end
 
@@ -63,7 +62,6 @@ function Parrot_Suppressions:OnOptionsCreate()
 		if Parrot_Suppressions.db1.profile.suppressions[new] ~= nil then
 			return
 		end
-		debug(info)
 		local old = info.arg
 		Parrot_Suppressions.db1.profile.suppressions[new] = Parrot_Suppressions.db1.profile.suppressions[old]
 		Parrot_Suppressions.db1.profile.suppressions[old] = nil

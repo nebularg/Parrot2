@@ -125,7 +125,6 @@ local Parrot_TriggerConditions
 
 function Parrot_CombatEvents:OnInitialize()
 
-	debug("init CombatEvents")
 	Parrot_CombatEvents.db1 = Parrot.db1:RegisterNamespace("CombatEvents", dbDefaults)
 
 	Parrot_Display = Parrot:GetModule("Display")
@@ -218,7 +217,6 @@ local onEnableFuncs = {}
 function Parrot_CombatEvents:OnEnable(first)
 	enabled = true
 
-	debug("enable CombatEvents")
 
 	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
@@ -1290,23 +1288,14 @@ function Parrot_CombatEvents:OnOptionsCreate()
 
 	local function setSpellName(info, new)
 		if self.db1.profile.sfilters[new] ~= nil then
-			debug("already present, aborting...")
 			return
 		end
 
 		local old = info.arg
-
-		debug("moving db-entry")
-
 		self.db1.profile.sfilters[new] = self.db1.profile.sfilters[old]
 		self.db1.profile.sfilters[old] = nil
 
-		debug("opt: " .. info[#info-1])
-
 		local opt = sfilters_opt.args[info[#info-1]]
-
-		debug(opt)
-
 		local name = new == '' and L["New filter"] or new
 
 		opt.order = new == '' and -110 or -100
@@ -1408,7 +1397,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		createFilterOption(filterType)
 	end
 	for spellFilter in pairs(self.db1.profile.sfilters) do
-		debug("making filter for " .. spellFilter)
 		local f = makeFilter(spellFilter)
 		sfilters_opt.args[tostring(f)] = f
 	end
@@ -2295,7 +2283,6 @@ local function sfiltered(info)
 			return false
 		end
 
-		debug(("Filtering %s (%d)"):format(info.abilityName or "", info.amount or 0))
 		return true
 	end
 	return false

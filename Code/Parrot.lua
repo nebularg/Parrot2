@@ -1,7 +1,7 @@
 Parrot = Rock:NewAddon("Parrot", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0")
 local Parrot, self = Parrot, Parrot
 --@debug@
-Parrot.version = "v1.8.1"
+Parrot.version = "v1.8.3+dev"
 --@end-debug@
 Parrot.abbrhash = "@project-abbreviated-hash@"
 Parrot.hash = "@project-hash@"
@@ -36,7 +36,6 @@ end
 Parrot.debug = debug
 
 local function initOptions()
-	debug("init options")
 	if Parrot.options.args.general then
 		return
 	end
@@ -50,7 +49,6 @@ local function initOptions()
 	end
 
 	Parrot.options.args.load = del(Parrot.options.args.load)
-	debug("optins initialized")
 end
 
 local dbDefaults = {
@@ -126,8 +124,6 @@ function Parrot.inheritFontChoices()
 end
 function Parrot:OnEnable()
 
-	debug("enable Parrot")
-
 	_G.SHOW_COMBAT_TEXT = "0"
 	if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
 	   _G.CombatText_UpdateDisplayedMessages()
@@ -148,9 +144,7 @@ function Parrot:OnEnable()
 	SetCVar("CombatLogPeriodicSpells", 1)
 	SetCVar("PetMeleeDamage", 1)
 
-	debug("iterating moduels")
 	for name, module in self:IterateModules() do
-		debug("enable module " .. name)
 		self:ToggleModuleActive(module, true)
 	end
 end

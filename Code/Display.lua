@@ -31,12 +31,10 @@ local Parrot_Suppressions
 local Parrot_ScrollAreas
 
 function Parrot_Display:OnInitialize()
-	debug("initialize Display")
 	self.db1 = Parrot.db1:RegisterNamespace("Display", dbDefaults)
 end
 
 function Parrot_Display:OnEnable()
-	debug("enable Display")
 
 	Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 	Parrot_Suppressions = Parrot:GetModule("Suppressions")

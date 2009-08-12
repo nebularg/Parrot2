@@ -14,7 +14,6 @@ local choices = {}
 -- Parrot_ScrollAreas.db = Parrot:GetDatabaseNamespace("ScrollAreas")
 
 function Parrot_ScrollAreas:OnInitialize()
-	debug("initialize ScrollAreas")
 	Parrot_ScrollAreas.db1 = Parrot.db1:RegisterNamespace("ScrollAreas")
 end
 
@@ -61,7 +60,6 @@ function Parrot_ScrollAreas:ApplyConfig()
 end
 
 function Parrot_ScrollAreas:OnEnable()
-	debug("enable ScrollAreas")
 
 	initDB()
 	scrollAreas = self.db1.profile.areas
@@ -354,11 +352,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 	end
 	local function getFontFace(info)
 		local kind, k = info.arg[1], info.arg[2]
-		debug("kind " .. kind)
-		debug("k " .. k)
-		debug(info.arg)
 		local font = scrollAreas[k][kind == "normal" and "font" or "stickyFont"]
-		debug(font or "nil")
 		if font == nil then
 --			return L["Inherit"]
 			return "1"
