@@ -2295,7 +2295,7 @@ local function sfiltered(info)
 			return false
 		end
 
-		debug(("Filtering %s (%d)"):format(info.abilityName, info.amount or 0))
+		debug(("Filtering %s (%d)"):format(info.abilityName or "", info.amount or 0))
 		return true
 	end
 	return false
