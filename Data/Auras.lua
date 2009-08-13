@@ -4,6 +4,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 
+local debug = Parrot.debug
+
 local AURA_LATENCY_DELAY = 0.2
 
 local current_player_auras = {}
@@ -428,7 +430,16 @@ Parrot:RegisterCombatEvent{
 	color = "e5e5e5", -- light gray
 }
 
-
+local function compareSpells(param, arg)
+	if type(param) == 'number' then
+		return param == arg
+	elseif type(param) == 'string' then
+		debug(("(GetSpellInfo(%s)"):format(tostring(arg)))
+		return param == GetSpellInfo(arg)
+	else
+		return false
+	end
+end
 
 Parrot:RegisterPrimaryTriggerCondition {
 	subCategory = L["Auras"],
@@ -442,15 +453,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Buff name>"],
+		usage = L["<Buff name or spell id>"],
 	},
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -465,28 +477,23 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return string.format("%s,%d",spellName,amount)
+				return string.format("%s,%d",spellId,amount)
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Buff name>,<Number of stacks>"],
+		usage = L["<Buff name or spell id>,<Number of stacks>"],
 	},
-	check = function(param)
-	  local a,b = string.find(param, ".*,")
-	  local spellId = param:sub(a,b-1)
-	  if type(spellId) == "number" then
-	    spellId = GetSpellInfo(spellId) or ""
-	  end
-	  local amount = param:sub(b+1)
-
-	  local name, _, _, cur_amount = UnitAura("player", spellId)
-
-	  return (amount == cur_amount)
-
-	end
+	check = function(param, arg)
+			local realSpellId, realAmount = (","):split(arg)
+			local paramSpellName, paramAmount = (","):split(param)
+			if type(paramSpellName) == 'string' then
+				realSpellId = GetSpellInfo(realSpellId)
+			end
+			return realSpellId == paramSpellName and realAmount == paramAmount
+		end,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -501,15 +508,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Buff name>"],
+		usage = L["<Buff name or spell id>"],
 	},
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -524,15 +532,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Debuff name>"],
+		usage = L["<Debuff name or spell id>"],
 	},
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -547,15 +556,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Debuff name>"],
+		usage = L["<Debuff name or spell id>"],
 	},
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -616,16 +626,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Buff name>"],
+		usage = L["<Buff name or spell id>"],
 	},
 	parserArg = 'abilityName',
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -640,15 +651,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Debuff name>"],
+		usage = L["<Debuff name or spell id>"],
 	},
+	check = compareSpells,
 }
 
 
@@ -664,16 +676,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Buff name>"],
+		usage = L["<Buff name or spell id>"],
 	},
 	parserArg = 'abilityName',
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -688,15 +701,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Debuff name>"],
+		usage = L["<Debuff name or spell id>"],
 	},
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -711,16 +725,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Buff name>"],
+		usage = L["<Buff name or spell id>"],
 	},
 	parserArg = 'abilityName',
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -735,16 +750,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Debuff name>"],
+		usage = L["<Debuff name or spell id>"],
 	},
 	parserArg = 'abilityName',
+	check = compareSpells,
 }
 
 
@@ -760,16 +776,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Buff name>"],
+		usage = L["<Buff name or spell id>"],
 	},
 	parserArg = 'abilityName',
+	check = compareSpells,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -784,16 +801,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 
-				return spellName
+				return spellId
 
 			end,
 		},
 	},
 	param = {
 		type = 'string',
-		usage = L["<Debuff name>"],
+		usage = L["<Debuff name or spell id>"],
 	},
 	parserArg = 'abilityName',
+	check = compareSpells,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {

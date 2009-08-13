@@ -370,6 +370,33 @@ local default_triggers = {
 		-- Kill command and mongoose bite
 		remove = { 9, 13 },
 	},
+	[4] = {
+		{
+			-- Eclipse
+			id = 28,
+			name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48518), GetSpellInfo(48465))), -- Starfire
+			icon = 48518,
+			class = "DRUID",
+			conditions = {
+				["Self buff gain"] = 48518,
+			},
+			sticky = true,
+			color = "ffffff",
+			locale = GetLocale(),
+		},
+		{
+			id = 28,
+			name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48517), GetSpellInfo(48461))), -- Wrath
+			icon = 48517,
+			class = "DRUID",
+			conditions = {
+				["Self buff gain"] = 48517,
+			},
+			sticky = true,
+			color = "ffffff",
+			locale = GetLocale(),
+		},
+	},
 }
 
 
@@ -629,7 +656,7 @@ end
 local numberedConditions = {}
 local timerCheck = {}
 
-function Parrot_Triggers:OnTriggerCondition(name, arg, uid)
+function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 	if UnitIsDeadOrGhost("player") then
 		return
 	end
@@ -641,6 +668,8 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid)
 				local good = false
 				if param == true then
 				 	good = true
+				elseif check and type(check) == 'function' then
+					good = check(param, arg)
 				elseif type(arg) == "string" then
 					good = param == arg
 				elseif type(arg) == "number" then
@@ -871,6 +900,8 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 
 	local function getIcon(t)
+		debug("t.arg.icon: " .. tostring(t.arg.icon))
+		debug("tostring: " .. tostring(t.arg.icon or ""))
 		return tostring(t.arg.icon or "")
 	end
 	local function setIcon(t, value)
@@ -976,10 +1007,10 @@ function Parrot_Triggers:OnOptionsCreate()
 				'name', localName,
 				'desc', localName,
 				'get', function()
-					return t.conditions[name]
+					return tostring(t.conditions[name] or "")
 				end,
 				'set', function(info, value)
-					t.conditions[name] = value
+					t.conditions[name] = tonumber(value) or value
 				end,
 				'order', -100
 			)

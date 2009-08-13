@@ -4,6 +4,8 @@ v1.8.3+:
           Abominable Might (fixes Ticket #16)
      Hide realm name in tags (fixes Ticket #83)
      add "FrostFire", "Froststrom", and "Shadowstrom" to color-options
+     allow spell-ids as parameters in aura-trigger-conditions
+     add triggers for Eclipse (Wrath and Starfire)
 
 v1.8.3:
      fix some issues with the Config when Ace3 is not installed seperatly

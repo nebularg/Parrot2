@@ -4,6 +4,8 @@ local mod = Parrot:NewModule("TriggerConditionsData")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
 
+local debug = Parrot.debug
+
 local onEnableFuncs = {}
 function mod:OnEnable()
 	for _,v in ipairs(onEnableFuncs) do
@@ -645,6 +647,24 @@ Parrot:RegisterPrimaryTriggerCondition {
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
+	name = "Minimum target health",
+	localName = L["Minimum target health"],
+	param = {
+		type = 'number',
+		min = 0,
+		max = 20000,
+		step = 1,
+		bigStep = 1000,
+	},
+	check = function(param)
+		if UnitIsDeadOrGhost("target") then
+			return false
+		end
+		return UnitHealth("target") >= param
+	end,
+}
+
+Parrot:RegisterSecondaryTriggerCondition {
 	name = "Minimum target health percent",
 	localName = L["Minimum target health percent"],
 	param = {
@@ -656,6 +676,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		isPercent = true,
 	},
 	check = function(param)
+		debug(UnitHealth("target") .. "HP")
 		if UnitIsDeadOrGhost("target") then
 			return false
 		end
@@ -679,5 +700,17 @@ Parrot:RegisterSecondaryTriggerCondition {
 			return false
 		end
 		return UnitHealth("target")/UnitHealthMax("target") <= param
+	end,
+}
+
+Parrot:RegisterSecondaryTriggerCondition {
+	name = "Target is player",
+	localName = L["Target is player"],
+	notLocalName = L["Target is NPC"],
+	check = function()
+		if UnitIsDeadOrGhost("target") then
+			return false
+		end
+		return UnitIsPlayer("target")
 	end,
 }

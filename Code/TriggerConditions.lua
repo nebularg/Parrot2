@@ -7,6 +7,8 @@ local self = Parrot_TriggerConditions
 local RockEvent = Rock("LibRockEvent-1.0")
 local RockTimer = Rock("LibRockTimer-1.0")
 
+local debug = Parrot.debug
+
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions")
 
 local _,playerClass = UnitClass("player")
@@ -126,7 +128,11 @@ function Parrot_TriggerConditions:FirePrimaryTriggerCondition(name, arg, uid)
 				uid = -RockTimer.currentUID - 1e10
 			end
 		end
-		Parrot_Triggers:OnTriggerCondition(name, arg, uid)
+		local check
+		if conditions[name] then
+			check = conditions[name].check
+		end
+		Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 	end
 end
 Parrot.FirePrimaryTriggerCondition = Parrot_TriggerConditions.FirePrimaryTriggerCondition
