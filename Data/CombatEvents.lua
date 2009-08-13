@@ -1905,7 +1905,7 @@ Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Pet skills"],
 	name = "Pet skill absorbs",
-	localName = L["Pet skill"],
+	localName = L["Pet skill absorbs"],
 	defaultTag = PET .. " " .. ABSORB .. " [Amount]! ([Skill])",
 	combatLogEvents = {
 		{
@@ -3912,7 +3912,7 @@ Parrot:RegisterCombatEvent{
 	category = "Outgoing",
 	subCategory = L["Pet skills"],
 	name = "Pet skill absorbs",
-	localName = L["Pet skill"],
+	localName = L["Pet skill absorbs"],
 	defaultTag = PET .. " " .. ABSORB .. " [Amount]! ([Skill])",
 	combatLogEvents = {
 		{
