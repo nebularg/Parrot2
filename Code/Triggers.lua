@@ -900,8 +900,6 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 
 	local function getIcon(t)
-		debug("t.arg.icon: " .. tostring(t.arg.icon))
-		debug("tostring: " .. tostring(t.arg.icon or ""))
 		return tostring(t.arg.icon or "")
 	end
 	local function setIcon(t, value)
@@ -1003,12 +1001,16 @@ function Parrot_Triggers:OnOptionsCreate()
 			)
 			return true
 		else
+			local getter
+			if param.type == 'number' then
+				getter = function() return t.conditions[name] end
+			elseif param.type == 'string' then
+				getter = function() return tostring(t.conditions[name] or "") end
+			end
 			local tmp = newDict(
 				'name', localName,
 				'desc', localName,
-				'get', function()
-					return tostring(t.conditions[name] or "")
-				end,
+				'get', getter,
 				'set', function(info, value)
 					t.conditions[name] = tonumber(value) or value
 				end,
