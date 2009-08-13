@@ -714,3 +714,34 @@ Parrot:RegisterSecondaryTriggerCondition {
 		return UnitIsPlayer("target")
 	end,
 }
+
+
+local luacache = {}
+
+Parrot:RegisterSecondaryTriggerCondition {
+	name = "Lua function",
+	localName = L["Lua function"],
+	defaultParam = "return true",
+	param = {
+		type = 'string',
+		multiline = true,
+		width = 'full',
+	},
+	check = function(param)
+		local func = luacache[param]
+		if not func then
+			-- It's not there yet. build it
+			local lua_string = 'return function() '..param..' end'
+			local create_func, err = loadstring(lua_string)
+			if create_func then
+				func = create_func()
+				-- and put it in the cache
+				luacache[param] = func
+			else
+				geterrorhandler()(err)
+				return false
+			end
+		end
+		return func()
+	end,
+}
