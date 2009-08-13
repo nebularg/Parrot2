@@ -6,6 +6,8 @@ v1.8.3+:
      add "FrostFire", "Froststrom", and "Shadowstrom" to color-options
      allow spell-ids as parameters in aura-trigger-conditions
      add triggers for Eclipse (Wrath and Starfire)
+     add secondary conditins "Target minimum health" and "Target is player"
+     allow custom coloring of Frostfire, Shadowstorm and Froststorm damage
 
 v1.8.3:
      fix some issues with the Config when Ace3 is not installed seperatly
