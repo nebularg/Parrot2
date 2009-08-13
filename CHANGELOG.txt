@@ -1,5 +1,6 @@
 v1.8.3+:
      add support for per-spell-filtering (by name or ID) (fixes Ticket #42)
+     add support for per-spell-throttling
      add default-filters for Unleashed Rage, Ferocious Inspiration, and
           Abominable Might (fixes Ticket #16)
      Hide realm name in tags (fixes Ticket #83)
