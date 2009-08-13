@@ -48,6 +48,7 @@ local dbDefaults = {
 			[GetSpellInfo(53136)] = { inc = true, }, -- Abominable Might
 		},
 		throttles = {},
+		sthrottles = {},
 		abbreviateStyle = "abbreviate",
 		abbreviateLength = 30,
 		stickyCrit = true,
@@ -615,6 +616,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				type = 'group',
 				name = L["Spell filters"],
 				desc = L["Filters that are applied to a single spell"],
+				args = {},
+			},
+			sthrottles = {
+				type = 'group',
+				name = L["Spell throttles"],
+				desc = L["Throttles that are applied to a single spell"],
 				args = {},
 			},
 			abbreviate = {
@@ -1385,6 +1392,135 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		end,
 	}
 
+	-- per-spell-throttle-options
+	local sthrottles_opt = events_opt.args.sthrottles
+
+	local function setThrottleSpellName(info, new)
+		if self.db1.profile.sfilters[new] ~= nil then
+			debug("already present, aborting...")
+			return
+		end
+
+		local old = info.arg
+
+		debug("moving db-entry")
+
+		self.db1.profile.sthrottles[new] = self.db1.profile.sthrottles[old]
+		self.db1.profile.sthrottles[old] = nil
+
+		debug("opt: " .. info[#info-1])
+
+		local opt = sthrottles_opt.args[info[#info-1]]
+
+		debug(opt)
+
+		local name = new == '' and L["New throttle"] or new
+
+		opt.order = new == '' and -110 or -100
+		opt.name = name
+		opt.desc = name
+		for k,v in pairs(opt.args) do
+			v.arg = new
+		end
+--		opt.args.spell.arg = new
+--		opt.args.amount.arg = new
+--		opt.args.delete.arg = new
+	end
+
+	local function removeThrottle(info)
+		self.db1.profile.sthrottles[info.arg] = nil
+		sthrottles_opt.args[info[#info-1]] = nil
+	end
+
+	local function setThrottleTime(info, value)
+		if (value == 0) then
+			value = nil
+		end
+		self.db1.profile.sthrottles[info.arg].time = value
+	end
+
+	local function makeSpellThrottle(k)
+		local name = k == '' and L["New throttle"] or k
+		return {
+			type = 'group',
+			name = name,
+			desc = name,
+			args = {
+				spell = {
+					type = 'input',
+					name = L["Spell"],
+					desc = L["Name or ID of the spell"],
+					get = function(info) return info.arg end,
+					set = setThrottleSpellName,
+					arg = k,
+					order = 1,
+				},
+				time = {
+					type = 'range',
+					name = L["Throttle time"],
+					desc = L["Interval for collecting data"],
+					get = function(info) return (self.db1.profile.sthrottles[info.arg].time or 0) end,
+					set = setThrottleTime,
+					min = 0,
+					max = 15,
+					step = 0.1,
+					bigStep = 1,
+					arg = k,
+					order = 2,
+				},
+				-- TODO what to do when table-entry is active
+				-- disable for now
+--[[				waitStyle = {
+					type = 'toggle',
+					name = "TODO waitStyle",
+					desc = "TODO waitStyle",
+					get = function(info) return self.db1.profile.sthrottles[info.arg].waitStyle end,
+					set = function(info, value) self.db1.profile.sthrottles[info.arg].waitStyle = value end,
+					arg = k,
+				},--]]
+				--[[inc = {
+					type = 'toggle',
+					name = L["Incoming"],
+					desc = L["Filter incoming spells"],
+					get = function(info) return not not self.db1.profile.sfilters[info.arg].inc end,
+					set = function(info, value) self.db1.profile.sfilters[info.arg].inc = value end,
+					arg = k,
+					order = 3,
+				},
+				out = {
+					type = 'toggle',
+					name = L["Outgoing"],
+					desc = L["Filter outgoing spells"],
+					get = function(info) return not not self.db1.profile.sfilters[info.arg].out end,
+					set = function(info, value) self.db1.profile.sfilters[info.arg].out = value end,
+					arg = k,
+					order = 4,
+				},--]]
+				delete = {
+					type = 'execute',
+					name = L["Remove"],
+					desc = L["Remove throttle"],
+					func = removeThrottle,
+					arg = k,
+					order = -1,
+				},
+			}
+		}
+	end
+
+	events_opt.args.sthrottles.args.new = {
+		order = 1,
+		type = 'execute',
+		name = L["New throttle"],
+		desc = L["Add a new throttle."],
+		func = function()
+			self.db1.profile.sthrottles[''] = {}
+			local t = makeSpellThrottle('')
+			sthrottles_opt.args[tostring(t)] = t
+		end,
+	}
+
+
 	for category, q in pairs(combatEvents) do
 		for name, data in pairs(q) do
 			createOption(category, name)
@@ -1399,6 +1535,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	for spellFilter in pairs(self.db1.profile.sfilters) do
 		local f = makeFilter(spellFilter)
 		sfilters_opt.args[tostring(f)] = f
+	end
+	for spellThrottle in pairs(self.db1.profile.sthrottles) do
+		debug("making throttle for " .. spellThrottle)
+		local f = makeSpellThrottle(spellThrottle)
+		sthrottles_opt.args[tostring(f)] = f
 	end
 end
 
@@ -1720,18 +1861,24 @@ modifierTranslationHelps = {
 local throttleData = {}
 
 onEnableFuncs[#onEnableFuncs+1] = function()
-	Parrot_CombatEvents:AddRepeatingTimer(0.05, "RunThrottle")
+--	Parrot_CombatEvents:AddRepeatingTimer(0.05, "RunThrottle")
+	Parrot_CombatEvents:AddRepeatingTimer(1.0, "RunThrottle")
 end
 
 local LAST_TIME = _G.newproxy() -- cheaper than {}
 local NEXT_TIME = _G.newproxy() -- cheaper than {}
+local STHROTTLE = _G.newproxy() -- for spell-throttle
 
 -- #NODOC
 function Parrot_CombatEvents:RunThrottle(force)
 	local now = GetTime()
+	local action = false
 	for throttleType,w in pairs(throttleData) do
+		action = true
 		local goodTime = now
+		debug("now: " .. now)
 		local waitStyle = throttleWaitStyles[throttleType]
+		debug(throttleType .. " waitstyle : " .. tostring(waitStyle))
 		if not waitStyle then
 			local throttleTime = self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]
 			goodTime = now - throttleTime
@@ -1739,16 +1886,48 @@ function Parrot_CombatEvents:RunThrottle(force)
 		for category,v in pairs(w) do
 			for name,u in pairs(v) do
 				for id,info in pairs(u) do
-					if not waitStyle then
-						if force or goodTime >= info[LAST_TIME] then
-							if next(info) == LAST_TIME and next(info, LAST_TIME) == nil then
+					local goodTime2 = goodTime
+					local waitStyle2 = waitStyle
+					debug("run throttle for " .. id)
+					if info[STHROTTLE] then
+						debug("sthrottle found")
+--						debug(info[STHROTTLE])
+						waitStyle2 = info[STHROTTLE].waitStyle
+						if not waitStyle2 then
+							goodTime2 = now - info[STHROTTLE].time
+--							debug("goodTime2 set to " .. goodTime2)
+						end
+					end
+					debug(goodTime2)
+					debug(id .. " waitstyle: " .. tostring(waitStyle2))
+					if not waitStyle2 then
+						if info[LAST_TIME] == nil then
+							debug("--------------- now it's nil -------------")
+						end
+						if force or goodTime2 >= info[LAST_TIME] then
+--							debug("next(info)")
+--							debug(next(info))
+							local todel = true
+							for k,v in pairs(info) do
+								if k ~= LAST_TIME and k ~= STHROTTLE then
+									todel = false
+									break
+								end
+							end
+--							if next(info) == STHROTTLE and next(info, then
+--								info[STHROTTLE] = nil
+--							end
+							-- cleanup
+							if todel then
+								debug("del all info")
 								u[id] = del(info)
 							else
+								debug("***release throttle for " .. id)
 								self:TriggerCombatEvent(category, name, info, true)
 							end
 						end
 					else
-						if force or goodTime >= info[NEXT_TIME] then
+						if force or goodTime2 >= info[NEXT_TIME] then
 							self:TriggerCombatEvent(category, name, info, true)
 							u[id] = del(info)
 						end
@@ -1766,6 +1945,23 @@ function Parrot_CombatEvents:RunThrottle(force)
 			throttleData[throttleType] = del(w)
 		end
 	end
+	if action then
+		debug("+-+-+-+-+-+-+-+-+-+-+-+ RunThrottle done +-+-+-+-+-+-+-+-+")
+	end
+end
+
+local sthrottles
+
+onEnableFuncs[#onEnableFuncs + 1] = function()
+	sthrottles = self.db1.profile.sthrottles
+end
+
+local function get_sthrottle(info)
+	local sthrottle = sthrottles[info.spellID] or sthrottles[info.abilityName]
+	if sthrottle then
+		debug(sthrottle)
+	end
+	return sthrottle
 end
 
 local nextFrameCombatEvents = {}
@@ -1857,15 +2053,31 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	end
 
 	if throttleDone then
-		if throttleWaitStyles[data.throttle[1]] then
-			info[NEXT_TIME] = nil
+		if info[STHROTTLE] then
+			if info[STHROTTLE].waitStyle then
+				debug("setting NEXT_TIME to nil")
+				info[NEXT_TIME] = nil
+			else
+				debug("setting LAST_TIME to " .. GetTime())
+				info[LAST_TIME] = GetTime()
+			end
 		else
-			info[LAST_TIME] = GetTime()
+			if throttleWaitStyles[data.throttle[1]] then
+
+				info[NEXT_TIME] = nil
+			else
+
+				info[LAST_TIME] = GetTime()
+			end
 		end
 	elseif data.throttle then
 		local throttle = data.throttle
 		local throttleType = throttle[1]
-		if (self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]) > 0 then
+		-- TODO per-spell-throttle
+		local sthrottle = get_sthrottle(info)
+
+		if (self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]) > 0 or (sthrottle and sthrottle.time > 0) then
+			debug("throttling this")
 			if not throttleData[throttleType] then
 				throttleData[throttleType] = newList()
 			end
@@ -1882,6 +2094,7 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 			else
 				info_throttleKey = info[throttleKey]
 			end
+			debug(info_throttleKey or "nil")
 			local throttleCountData = throttle[3]
 			local throttleCountKey = throttleCountData[1]
 			for i = 2, #throttleCountData-1 do
@@ -1910,10 +2123,23 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 				return
 			else
 				t = newList()
-				if throttleWaitStyles[throttleType] then
-					t[NEXT_TIME] = GetTime() + (self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType])
+				if (sthrottle) then
+					debug("setting sthrottle for ")
+					debug(sthrottle)
+					if sthrottle.waitStyle then
+						t[NEXT_TIME] = GetTime() + sthrottle.time
+					else
+						t[LAST_TIME] = 0
+					end
+					t[STHROTTLE] = sthrottle
 				else
-					t[LAST_TIME] = 0
+					if throttleWaitStyles[throttleType] then
+						t[NEXT_TIME] = GetTime() + (self.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType])
+						debug("set NEXT_TIME")
+					else
+						t[LAST_TIME] = 0
+						debug("set LAST_TIME to 0")
+					end
 				end
 				throttleData[throttleType][category][name][info_throttleKey] = t
 				for k, v in pairs(info) do
@@ -1943,8 +2169,9 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	end
 
 	if throttleDone then
+		debug("throttle done, delete info...")
 		for k in pairs(info) do
-			if k ~= LAST_TIME then
+			if k ~= LAST_TIME and k ~= STHROTTLE then
 				info[k] = nil
 			end
 		end
@@ -2269,7 +2496,6 @@ function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
 end
 
 local sfilters
-
 onEnableFuncs[#onEnableFuncs + 1] = function()
 	sfilters = self.db1.profile.sfilters
 end
@@ -2282,9 +2508,9 @@ local function sfiltered(info)
 
 			return false
 		end
-
 		return true
 	end
+
 	return false
 end
 

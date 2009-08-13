@@ -636,7 +636,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_CAST_SUCCESS",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName )
-				return ("%s,%s,%s"):format(srcName, dstName or "", spellName)
+				return ("%s,%s,%s"):format(srcName or "", dstName or "", spellName or "")
 			end,
 		},
 	},
