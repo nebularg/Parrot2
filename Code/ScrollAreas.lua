@@ -866,6 +866,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		disabled = function()
 			return not self:IsActive()
 		end,
+		order = 5,
 		args = {
 			config = {
 				type = 'toggle',

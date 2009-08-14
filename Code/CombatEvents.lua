@@ -487,6 +487,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		type = 'group',
 		name = L["Events"],
 		desc = L["Change event settings"],
+		order = 2,
 --		disabled = function()
 --			return not self:IsActive()
 --		end,

@@ -753,6 +753,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		disabled = function()
 			return not self:IsActive()
 		end,
+		order = 3,
 		args = {
 			new = {
 				type = 'execute',

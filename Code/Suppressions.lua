@@ -37,7 +37,8 @@ function Parrot_Suppressions:OnOptionsCreate()
 		disabled = function()
 			return not self:IsActive()
 		end,
-		args = {}
+		args = {},
+		order = 10,
 	}
 --	local function ret(...)
 --		return ...

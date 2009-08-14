@@ -5,6 +5,20 @@ local mod = Parrot:NewModule("Cooldowns", "LibRockEvent-1.0", "LibRockTimer-1.0"
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Cooldowns")
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
+local debug = Parrot.debug
+
+local db1 = nil
+local dbDefaults = {
+	profile = {
+		treshold = 10,
+		filters = {},
+	}
+}
+
+function mod:OnInitialize()
+	debug("init Cooldowns")
+	db1 = Parrot.db1:RegisterNamespace("Cooldowns", dbDefaults)
+end
 
 function mod:OnEnable()
 	self:ResetSpells()
@@ -12,6 +26,63 @@ function mod:OnEnable()
 	self:AddRepeatingTimer(0.1, "OnUpdate")
 	self:AddEventListener("SPELLS_CHANGED", "ResetSpells")
 	self:AddEventListener("SPELL_UPDATE_COOLDOWN", "ResetCooldownState")
+end
+
+function mod:OnOptionsCreate()
+	local cd_opt = {
+		type = 'group',
+		name = L["Cooldowns"],
+		desc = L["Cooldowns"],
+		args = {
+			treshold = {
+				name = L["Treshold"],
+				desc = L["Minimum time the cooldown must have (in seconds)"],
+				type = 'range',
+				min = 0,
+				max = 300,
+				step = 1,
+				bigStep = 10,
+				get = function() return db1.profile.treshold end,
+				set = function(info, value) db1.profile.treshold = value end,
+				order = 1,
+			},
+		},
+		order = 100,
+	}
+
+	local function removeFilter(spellName)
+		cd_opt.args[spellName] = nil
+		db1.profile.filters[spellName] = nil
+		mod:ResetSpells()
+	end
+
+	local function addFilter(spellName)
+		if cd_opt.args[spellName] then return end
+		db1.profile.filters[spellName] = true
+		local button = {
+			type = 'execute',
+			name = spellName,
+			desc = L["Click to remove"],
+			func = function(info) removeFilter(info.arg) end,
+			arg = spellName,
+		}
+		cd_opt.args[spellName] = button
+	end
+
+	cd_opt.args.newFilter = {
+		type = 'input',
+		name = L["Ignore"],
+		desc = L["Ignore Cooldown"],
+		get = function() return end,
+		set = function(info, value) addFilter(value); mod:ResetSpells() end,
+		order = 2,
+	}
+
+	for k,v in pairs(db1.profile.filters) do
+		addFilter(k)
+	end
+
+	Parrot:AddOption('cooldowns', cd_opt)
 end
 
 Parrot:RegisterCombatEvent{
@@ -52,7 +123,7 @@ function mod:ResetCooldownState()
 
 	for name, id in pairs(spellNameToID) do
 		local start, duration = GetSpellCooldown(id, "spell")
-		cooldowns[name] = start > 0 and duration > GCD
+		cooldowns[name] = start > 0 and duration > GCD and duration > db1.profile.treshold
 	end
 
 end
@@ -68,8 +139,13 @@ function mod:ResetSpells()
 		for j = 1, num do
 			local id = offset+j
 			local spell = GetSpellName(id, "spell")
-			spellNameToID[spell] = id
-			spellNameToTree[spell] = i
+			if not db1.profile.filters[spell] then
+--				debug("adding " .. spell .. " to spelllist")
+				spellNameToID[spell] = id
+				spellNameToTree[spell] = i
+			else
+				debug("skipping " .. spell .. " while creating spelllist")
+			end
 		end
 	end
 
@@ -77,26 +153,26 @@ function mod:ResetSpells()
 end
 
 local groups = {
-	--[BSL["Freezing Trap"]]
+	-- "Freezing Trap"
 	[GetSpellInfo(14311)] = L["Frost traps"],
-	--[BSL["Frost Trap"]]
+	-- "Frost Trap"
 	[GetSpellInfo(13809)] = L["Frost traps"],
--- 	[BSL["Snake Trap"]]
--- leave commented for now until another spell shares the CD
---	[GetSpellInfo(34600)] = L["Nature Traps"],
+	-- "Snake Trap"
+	-- leave commented for now until another spell shares the CD
+	--	[GetSpellInfo(34600)] = L["Nature Traps"],
 
---  [BSL["Immolation Trap"]]
+	-- "Immolation Trap"
 	[GetSpellInfo(27023)] = L["Fire traps"],
--- 	[BSL["Explosive Trap"]]
+	-- "Explosive Trap"
 	[GetSpellInfo(27025)] = L["Fire traps"],
--- Black Arrow
+	-- "Black Arrow"
 	[GetSpellInfo(63668)] = L["Fire traps"],
 
--- 	[BSL["Frost Shock"]]
+	-- "Frost Shock"
 	[GetSpellInfo(25464)] = L["Shocks"],
--- 	[BSL["Flame Shock"]]
+	-- "Flame Shock"
 	[GetSpellInfo(25457)] = L["Shocks"],
-	--[BSL["Earth Shock"]]
+	-- "Earth Shock"
 	[GetSpellInfo(25454)] = L["Shocks"],
 
 	-- Judgement of Justice
@@ -123,11 +199,11 @@ function mod:OnUpdate()
 	for name, id in pairs(spellNameToID) do
 		local old = cooldowns[name]
 		local start, duration = GetSpellCooldown(id, "spell")
-		local check = start > 0 and duration > GCD
+		local check = start > 0 and duration > GCD and duration > db1.profile.treshold
 		cooldowns[name] = check
 		if not check and old then
 			spellsToTrigger[name] = id
-            if not groups[name] then
+	          if not groups[name] then
 				local tree = spellNameToTree[name]
 				treeCount[tree] = (treeCount[tree] or 0) + 1
 			end
