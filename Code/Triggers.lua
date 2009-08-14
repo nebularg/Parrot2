@@ -1002,10 +1002,10 @@ function Parrot_Triggers:OnOptionsCreate()
 			return true
 		else
 			local getter
-			if param.type == 'number' then
-				getter = function() return t.conditions[name] end
-			elseif param.type == 'string' then
+			if param.type == 'string' then
 				getter = function() return tostring(t.conditions[name] or "") end
+			else
+				getter = function() return t.conditions[name] end
 			end
 			local tmp = newDict(
 				'name', localName,
