@@ -1,4 +1,4 @@
-v1.8.3+:
+v1.9.0:
      add support for per-spell-filtering (by name or ID) (fixes Ticket #42)
      add support for per-spell-throttling
      add default-filters for Unleashed Rage, Ferocious Inspiration, and
@@ -7,7 +7,6 @@ v1.8.3+:
      allow spell-ids as parameters in aura-trigger-conditions
      add triggers for Eclipse (Wrath and Starfire)
      add secondary conditions "Target minimum health" and "Target is player"
-     ((allow custom coloring of Frostfire, Shadowstorm and Froststorm damage))
      add secondary condition "Lua function" to run custom lua-code for checks
      add more options for Cooldowns (treshold and filters)
 
