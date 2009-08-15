@@ -21,14 +21,41 @@ local newList, unpackListAndDel = Rock:GetRecyclingFunctions("Parrot", "newList"
 
 local del = Rock:GetRecyclingFunctions("Parrot", "del")
 
-local function debug(text)
-	--@debug@
-	if type(text) == 'table' then
-		for k,v in pairs(text) do
-			debug(string.format("[\"%s\"] = \"%s\",",k,tostring(v)))
+--@debug@
+-- function is not needed at all when debug is off
+local function debugTableValues(table, stop)
+	if stop then
+		for k,v in pairs(table) do
+			local line = ""
+			line = line .. ("[%s]"):format(tonumber(k) or tostring(k))
+			line = line .. (" = %s,"):format(tonumber(v) or tostring(v))
+			ChatFrame4:AddMessage(line)
 		end
 	else
-		ChatFrame4:AddMessage(tostring(text))
+		for k,v in pairs(table) do
+			local line = ""
+			line = line .. ("[%s] = {"):format(tonumber(k) or tostring(k))
+			ChatFrame4:AddMessage(line)
+			debugTableValues(v, true)
+			ChatFrame4:AddMessage("}")
+		end
+	end
+end
+--@end-debug@
+
+local function debug(...)
+	--@debug@
+	local first = select(1,...)
+	if type(first) == 'table' then
+		ChatFrame4:AddMessage("{")
+		debugTableValues(first)
+		ChatFrame4:AddMessage("}")
+	else
+		local text = ""
+		for i = 1, select('#', ...) do
+			text = text .. tostring(select(i, ...))
+		end
+		ChatFrame4:AddMessage(text)
 	end
 	--@end-debug@
 end
