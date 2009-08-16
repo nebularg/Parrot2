@@ -23,25 +23,31 @@ local del = Rock:GetRecyclingFunctions("Parrot", "del")
 
 --@debug@
 -- function is not needed at all when debug is off
-local function debugTableValues(table, stop)
+local function debugTableValues(table, tabs, stop)
+	if not tabs then tabs = 0 end
 	if stop then
 		for k,v in pairs(table) do
-			local line = ""
+			local line = ("  "):rep(tabs)
 			line = line .. ("[%s]"):format(tonumber(k) or tostring(k))
 			line = line .. (" = %s,"):format(tonumber(v) or tostring(v))
 			ChatFrame4:AddMessage(line)
 		end
 	else
 		for k,v in pairs(table) do
-			local line = ""
-			line = line .. ("[%s] = {"):format(tonumber(k) or tostring(k))
-			ChatFrame4:AddMessage(line)
-			debugTableValues(v, true)
-			ChatFrame4:AddMessage("}")
+			local line = ("  "):rep(tabs)
+			line = line .. ("[%s] = "):format(tonumber(k) or tostring(k))
+
+			if type(v) == 'table' then
+				ChatFrame4:AddMessage(line .. "{")
+				debugTableValues(v, tabs + 1, true)
+				ChatFrame4:AddMessage(("  "):rep(tabs) .. "}")
+			else
+				ChatFrame4:AddMessage("  " .. line .. v .. ",")
+			end
 		end
+
 	end
-end
---@end-debug@
+end--@end-debug@
 
 local function debug(...)
 	--@debug@
