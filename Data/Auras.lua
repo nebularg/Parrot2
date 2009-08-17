@@ -487,6 +487,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		usage = L["<Buff name or spell id>,<Number of stacks>"],
 	},
 	check = function(param, arg)
+			if not arg then return false end
 			local realSpellId, realAmount = (","):split(arg)
 			local paramSpellName, paramAmount = (","):split(param)
 			if type(paramSpellName) == 'string' then
