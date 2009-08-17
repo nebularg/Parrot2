@@ -9,6 +9,8 @@ v1.9.0:
      add secondary conditions "Target minimum health" and "Target is player"
      add secondary condition "Lua function" to run custom lua-code for checks
      add more options for Cooldowns (treshold and filters)
+     hide full overheals (but add option for making them visible again)
+     show player's heals on pets only as incoming pet heal (Ticket #92)
 
 v1.8.3:
      fix some issues with the Config when Ace3 is not installed seperatly
