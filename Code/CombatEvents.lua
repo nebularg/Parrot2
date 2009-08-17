@@ -1087,11 +1087,13 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		end--]]
 
 		-- copy the choices
-		local scrollarea_choices = {}
-		for k,v in pairs(Parrot_ScrollAreas:GetScrollAreasChoices()) do
-			scrollarea_choices[k] = v
+		local function getScrollAreasChoices()
+			local tmp = {}
+			for k,v in pairs(Parrot_ScrollAreas:GetScrollAreasChoices()) do
+				tmp[k] = v
+			end
+			return tmp
 		end
-		-- scrollarea_choices[" "] = " "
 
 		-- added so that options get sorted into subcategories
 
@@ -1114,7 +1116,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						name = L["Scroll area"],
 						desc = L["Scoll area where all events will be shown"],
 						type = 'select',
-						values = function() return Parrot_ScrollAreas:GetScrollAreasChoices() end,
+						values = getScrollAreasChoices,
 						get = getCommonScrollArea,
 						set = setCommonScrollArea,
 						arg = {category, subcat},
@@ -1228,7 +1230,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					type = 'select',
 					name = L["Scroll area"],
 					desc = L["Which scroll area to use."],
-					values = Parrot_ScrollAreas:GetScrollAreasChoices(),
+					values = getScrollAreasChoices,
 					get = getScrollArea,
 					set = setScrollArea,
 					arg = {category, name},
