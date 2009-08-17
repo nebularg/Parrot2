@@ -54,6 +54,7 @@ local dbDefaults = {
 		stickyCrit = true,
 		disable_in_10man = false,
 		disable_in_25man = false,
+		hideFullOverheals = true,
 		damageTypes = {
 			color = true,
 			["Physical"] = "ffffff",
@@ -499,7 +500,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				get = function() return self:GetModule("CombatEvents"):IsActive() end,
 				set = function(value) self:GetModule("CombatEvents"):ToggleActive(value) self.db1.profile.disabled = value end,
 			},]]--
-
 			disable_in_10man = {
 				type = 'toggle',
 				name = L["Disable in normal raids"],
@@ -520,7 +520,15 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						self:check_raid_instance()
 					end,
 			},
-
+			hideFullOverheals = {
+				type = 'toggle',
+				name = L["Hide full overheals"],
+				desc = L["Do not show heal events when 100% of the amount is overheal"],
+				get = function() return self.db1.profile.hideFullOverheals end,
+				set = function(info, value)
+						self.db1.profile.hideFullOverheals = value
+					end,
+			},
 			Incoming = {
 				type = 'group',
 				name = L["Incoming"],

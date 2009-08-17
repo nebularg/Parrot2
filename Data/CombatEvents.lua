@@ -6,6 +6,8 @@ local _, playerClass = _G.UnitClass("player")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 
+local db1
+
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
 
 local debug = Parrot.debug
@@ -55,16 +57,18 @@ local PowerTypeParser = {
 
 local onEnableFuncs = {}
 function mod:OnEnable()
+	db1 = Parrot:GetModule("CombatEvents").db1
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
 end
 
+
 ------------------------------------------------------------------------------
 -- Incoming events -----------------------------------------------------------
 ------------------------------------------------------------------------------
 local coloredDamageAmount = function(info)
-	local db = Parrot:GetModule("CombatEvents").db1.profile.damageTypes
+	local db = db1.profile.damageTypes
 	if db.color and db[info.damageType] then
 		return "|cff" .. db[info.damageType] .. info.amount .. "|r"
 	else
@@ -1057,6 +1061,14 @@ local function parseHeal(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,
 	return info;
 end
 
+local function checkFullOverheal(amount, overheal)
+	if db1.profile.hideFullOverheals ~= true then
+		return true
+	else
+		return (amount - overheal) > 0
+	end
+end
+
 local function parseHoT(...)
 	local info = parseHeal(...)
 	info.isHoT = true
@@ -1072,8 +1084,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		check = function(srcGUID, _, _, dstGUID)
-					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet"))
+
+		check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
+					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet")) and checkFullOverheal(amount, overheal)
 				end,
 		func = parseHeal,
 		},
@@ -1104,8 +1117,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		check = function(srcGUID, _, _, dstGUID)
-				return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player"))
+		check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
+				return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player")) and checkFullOverheal(amount, overheal)
 			end,
 		func = parseHeal,
 		},
@@ -1137,8 +1150,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		check = function(srcGUID, _, _, dstGUID)
-					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet"))
+		check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
+					return (dstGUID == UnitGUID("player") and srcGUID ~= UnitGUID("player") and srcGUID ~= UnitGUID("pet")) and checkFullOverheal(amount, overheal)
 				end,
 		func = parseHoT,
 		},
@@ -1169,8 +1182,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		check = function(srcGUID, _, _, dstGUID)
-					return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player"))
+		check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
+					return (dstGUID == UnitGUID("player") and srcGUID == UnitGUID("player")) and checkFullOverheal(amount, overheal)
 				end,
 		func = parseHoT,
 		},
@@ -2135,8 +2148,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("pet")
+		check = function(_, _, _, dstGUID, _, _,_, _, _, amount, overheal)
+				return dstGUID == UnitGUID("pet") and checkFullOverheal(amount, overheal)
 			end,
 		func = parseHeal,
 		},
@@ -2168,8 +2181,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("pet")
+		check = function(_, _, _, dstGUID, _, _,_, _, _, amount, overheal)
+				return dstGUID == UnitGUID("pet") and checkFullOverheal(amount, overheal)
 			end,
 		func = parseHoT,
 		},
@@ -3011,8 +3024,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		check = function(srcGUID, _, _, dstGUID)
+		check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
 				return srcGUID == UnitGUID("player") and dstGUID ~= UnitGUID("player")
+					and dstGUID ~= UnitGUID("pet") and checkFullOverheal(amount, overheal)
 			end,
 		func = parseHeal,
 		},
@@ -3044,8 +3058,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_HEAL",
-		check = function(srcGUID, _, _, dstGUID)
+		check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
 				return dstGUID == srcGUID and srcGUID == UnitGUID("player")
+					and checkFullOverheal(amount, overheal)
 			end,
 		func = parseHeal,
 		},
@@ -3078,8 +3093,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		check = function(srcGUID, _, _, dstGUID)
+		check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
 				return srcGUID == UnitGUID("player") and dstGUID ~= UnitGUID("player")
+					and dstGUID ~= UnitGUID("pet") and checkFullOverheal(amount, overheal)
 			end,
 		func = parseHoT,
 		},
@@ -3110,8 +3126,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 		eventType = "SPELL_PERIODIC_HEAL",
-		check = function(srcGUID, _, _, dstGUID)
+		check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
 				return dstGUID == srcGUID and srcGUID == UnitGUID("player")
+					and checkFullOverheal(amount, overheal)
 			end,
 		func = parseHeal,
 		},
@@ -4142,8 +4159,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_HEAL",
-			check = function(srcGUID, _, _, dstGUID)
+			check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
 					return srcGUID ~= dstGUID and srcGUID == UnitGUID("pet")
+						and checkFullOverheal(amount, overheal)
 				end,
 			func = parseHeal,
 		},
@@ -4174,8 +4192,9 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_PERIODIC_HEAL",
-			check = function(srcGUID, _, _, dstGUID)
+			check = function(srcGUID, _, _, dstGUID, _, _,_, _, _, amount, overheal)
 					return srcGUID ~= dstGUID and srcGUID == UnitGUID("pet")
+						and checkFullOverheal(amount, overheal)
 				end,
 			func = parseHoT,
 		},
