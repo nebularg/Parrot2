@@ -46,9 +46,14 @@ local dbDefaults = {
 			[GetSpellInfo(34460)] = { inc = true, }, -- Ferocious Inspiration
 			[GetSpellInfo(30809)] = { inc = true, }, -- Unleashed Rage
 			[GetSpellInfo(53136)] = { inc = true, }, -- Abominable Might
+			[GetSpellInfo(53414)] = { inc = true, }, -- Elemental Oath
+			[GetSpellInfo(48090)] = { inc = true, }, -- Demonic Pact
+			[GetSpellInfo(30029)] = { inc = true, }, -- Rampage
 		},
 		throttles = {},
-		sthrottles = {},
+		sthrottles = {
+			[GetSpellInfo(57669)] = { time = 5, }, -- Replenishment
+		},
 		abbreviateStyle = "abbreviate",
 		abbreviateLength = 30,
 		stickyCrit = true,
