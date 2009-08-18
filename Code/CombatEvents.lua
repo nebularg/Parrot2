@@ -43,12 +43,12 @@ local dbDefaults = {
 		},
 		filters = {},
 		sfilters = {
-			[GetSpellInfo(34460)] = { inc = true, }, -- Ferocious Inspiration
-			[GetSpellInfo(30809)] = { inc = true, }, -- Unleashed Rage
-			[GetSpellInfo(53136)] = { inc = true, }, -- Abominable Might
-			[GetSpellInfo(53414)] = { inc = true, }, -- Elemental Oath
-			[GetSpellInfo(48090)] = { inc = true, }, -- Demonic Pact
-			[GetSpellInfo(30029)] = { inc = true, }, -- Rampage
+			[GetSpellInfo(34460)] = { inc = true, out = true, }, -- Ferocious Inspiration
+			[GetSpellInfo(30809)] = { inc = true, out = true, }, -- Unleashed Rage
+			[GetSpellInfo(53136)] = { inc = true, out = true, }, -- Abominable Might
+			[GetSpellInfo(53414)] = { inc = true, out = true, }, -- Elemental Oath
+			[GetSpellInfo(48090)] = { inc = true, out = true, }, -- Demonic Pact
+			[GetSpellInfo(30029)] = { inc = true, out = true, }, -- Rampage
 		},
 		throttles = {},
 		sthrottles = {
@@ -2477,12 +2477,10 @@ end
 local function sfiltered(info)
 	local filter = sfilters[tostring(info.spellID)] or sfilters[info.abilityName]
 	if filter and (not filter.amount or (filter.amount > (info.realAmount or info.amount or 0))) then
-		if (filter.inc and UnitGUID("player") ~= info.recipientID) or
-			(filter.out and UnitGUID("player") ~= info.sourceID) then
-
-			return false
+		if (filter.inc and UnitGUID("player") == info.recipientID) or
+			(filter.out and UnitGUID("player") == info.sourceID) then
+			return true
 		end
-		return true
 	end
 
 	return false
