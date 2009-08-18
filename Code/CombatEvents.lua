@@ -1865,8 +1865,7 @@ modifierTranslationHelps = {
 local throttleData = {}
 
 onEnableFuncs[#onEnableFuncs+1] = function()
---	Parrot_CombatEvents:AddRepeatingTimer(0.05, "RunThrottle")
-	Parrot_CombatEvents:AddRepeatingTimer(1.0, "RunThrottle")
+	Parrot_CombatEvents:AddRepeatingTimer(0.05, "RunThrottle")
 end
 
 local LAST_TIME = _G.newproxy() -- cheaper than {}
