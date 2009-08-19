@@ -379,6 +379,7 @@ local dumbIconOverride = {
 	[22482] = select(3, GetSpellInfo(13877)), -- Blade Flurry
 	[48665] = select(3, GetSpellInfo(34411)), -- Mutilate
 	[48664] = select(3, GetSpellInfo(34411)), -- Mutilate
+	[53254] = select(3, GetSpellInfo(53217)), -- Wild Quiver
 }
 
 local function retrieveIconFromAbilityName(info)
