@@ -400,6 +400,20 @@ local default_triggers = {
 	[5] = {
 		remove = { 17 },
 	},
+	[6] = {
+		{
+			id = 29,
+			name = L["%s!"]:format(GetSpellInfo(53489)),
+			icon = 53489,
+			class = "PALADIN",
+			conditions = {
+				["Self buff gain"] = GetSpellInfo(53489),
+			},
+			sticky = true,
+			color = "ffff00",
+			locale = GetLocale(),
+		},
+	},
 }
 
 
