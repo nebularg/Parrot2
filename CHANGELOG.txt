@@ -11,6 +11,7 @@ v1.9.0:
      add more options for Cooldowns (treshold and filters)
      hide full overheals (but add option for making them visible again)
      show player's heals on pets only as incoming pet heal (Ticket #92)
+     show correct icon when using "Wild Quiver" (Ticket #93)
 
 v1.8.3:
      fix some issues with the Config when Ace3 is not installed seperatly
