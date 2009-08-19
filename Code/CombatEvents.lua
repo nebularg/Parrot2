@@ -486,6 +486,10 @@ local function getSoundChoices()
 	return t
 end
 
+function Parrot_CombatEvents:ApplyConfig()
+	Parrot.options.args.events = del(Parrot.options.args.events)
+	Parrot_CombatEvents:OnOptionsCreate()
+end
 
 function Parrot_CombatEvents:OnOptionsCreate()
 	local events_opt
