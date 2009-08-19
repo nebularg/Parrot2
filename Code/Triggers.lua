@@ -213,7 +213,7 @@ local default_triggers = {
 			color = "7f007f",
 			locale = GetLocale(),
 		},
-		{
+--[[		{
 			id = 17,
 			-- Rampage = 29801
 			name = L["%s!"]:format(GetSpellInfo(29801)),
@@ -230,7 +230,7 @@ local default_triggers = {
 			sticky = true,
 			color = "ff0000",
 			locale = GetLocale(),
-		},
+		},--]]
 		{
 			id = 18,
 			-- Revenge = 30357
@@ -396,6 +396,9 @@ local default_triggers = {
 			color = "ffffff",
 			locale = GetLocale(),
 		},
+	},
+	[5] = {
+		remove = { 17 },
 	},
 }
 
