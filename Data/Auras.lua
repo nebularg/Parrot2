@@ -8,17 +8,6 @@ local debug = Parrot.debug
 
 local AURA_LATENCY_DELAY = 0.2
 
-local current_player_auras = {}
-
-local function checkAura(spellId)
-  for i,v in ipairs(current_player_auras) do
-    if v == spellId then
-      return i
-    end
-  end
-  return nil
-end
-
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	subCategory = L["Auras"],
@@ -31,15 +20,6 @@ Parrot:RegisterCombatEvent{
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
-				end
-
-				auraid = checkAura(spellId)
-
-				if auraid then
-					-- ChatFrame4:AddMessage("skip spell_aura_applied because aura is already there")
-				  return nil
-				else
-				  table.insert(current_player_auras, spellId)
 				end
 
 				local info = newList()
@@ -191,17 +171,6 @@ Parrot:RegisterCombatEvent{
 			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
 				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
 					return nil
-				end
-
-				if UnitAura("player", spellName) then
-					-- ChatFrame4:AddMessage("skip spell_aura_removed because aura is still there")
-					return nil
-				end
-
-				local auraid = checkAura(spellId)
-
-				if auraid then
-				  table.remove(current_player_auras, auraid)
 				end
 
 				local info = newList()
