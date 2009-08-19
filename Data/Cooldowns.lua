@@ -265,9 +265,12 @@ Parrot:RegisterSecondaryTriggerCondition {
 	check = function(param)
 		if(tonumber(param)) then
 			param = GetSpellInfo(param)
+		elseif(type(param) == 'string') then
+			return (GetSpellCooldown(param) == 0)
+		else
+			debug("param was not a string but ", type(param))
+			return false
 		end
-
-		return (GetSpellCooldown(param) == 0)
 	end,
 }
 
