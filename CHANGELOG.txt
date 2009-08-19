@@ -5,7 +5,8 @@ v1.9.0:
           Abominable Might (fixes Ticket #16)
      Hide realm name in tags (fixes Ticket #83)
      allow spell-ids as parameters in aura-trigger-conditions
-     add triggers for Eclipse (Wrath and Starfire)
+     add 2 triggers for Eclipse (Wrath and Starfire)
+     add trigger for The Art of War
      add secondary conditions "Target minimum health" and "Target is player"
      add secondary condition "Lua function" to run custom lua-code for checks
      add more options for Cooldowns (treshold and filters)
