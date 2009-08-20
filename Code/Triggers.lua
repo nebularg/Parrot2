@@ -414,6 +414,23 @@ local default_triggers = {
 			locale = GetLocale(),
 		},
 	},
+	[7] = {
+		{
+			id = 31,
+			-- Kill shot
+			name = L["%s!"]:format(GetSpellInfo(53351)),
+			icon = 53351,
+			class = "HUNTER",
+			conditions = {
+				["Enemy target health percent"] = 0.2,
+			},
+			secondaryConditions = {
+				["Spell ready"] = GetSpellInfo(53351),
+			},
+			sticky = true,
+			color = "ff0000",
+		},
+	},
 }
 
 
