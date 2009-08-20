@@ -42,7 +42,7 @@ local function debugTableValues(table, tabs, stop)
 				debugTableValues(v, tabs + 1, true)
 				ChatFrame4:AddMessage(("  "):rep(tabs) .. "}")
 			else
-				ChatFrame4:AddMessage("  " .. line .. v .. ",")
+				ChatFrame4:AddMessage("  " .. line .. tostring(v) .. ",")
 			end
 		end
 
