@@ -7,7 +7,6 @@
 	<!--@no-lib-strip@-->
 
 	<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
-	<Include file="libs\LibBabble-Class-3.0\lib.xml" />
 	<Include file="libs\LibRock-1.0\lib.xml"/>
 	<Include file="libs\LibRockEvent-1.0\lib.xml"/>
 	<Include file="libs\LibRockTimer-1.0\lib.xml"/>

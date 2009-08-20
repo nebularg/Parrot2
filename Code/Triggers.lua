@@ -9,7 +9,7 @@ _G.Parrot_Triggers = self
 --@end-debug@
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
-local BCL = LibStub("LibBabble-Class-3.0"):GetLookupTable()
+local CL = _G.LOCALIZED_CLASS_NAMES_MALE
 
 local newList, newSet, newDict, del, unpackDictAndDel = Rock:GetRecyclingFunctions("Parrot", "newList", "newSet", "newDict", "del", "unpackDictAndDel")
 
@@ -1010,16 +1010,16 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 
 	local classChoices = {
-		DRUID = BCL["Druid"],
-		ROGUE = BCL["Rogue"],
-		SHAMAN = BCL["Shaman"],
-		PALADIN = BCL["Paladin"],
-		MAGE = BCL["Mage"],
-		WARLOCK = BCL["Warlock"],
-		PRIEST = BCL["Priest"],
-		WARRIOR = BCL["Warrior"],
-		HUNTER = BCL["Hunter"],
-		DEATHKNIGHT = BCL["Deathknight"],
+		DRUID = CL["DRUID"],
+		ROGUE = CL["ROGUE"],
+		SHAMAN = CL["SHAMAN"],
+		PALADIN = CL["PALADIN"],
+		MAGE = CL["MAGE"],
+		WARLOCK = CL["WARLOCK"],
+		PRIEST = CL["PRIEST"],
+		WARRIOR = CL["WARRIOR"],
+		HUNTER = CL["HUNTER"],
+		DEATHKNIGHT = CL["DEATHKNIGHT"],
 	}
 
 	local function addPrimaryCondition(t, name, localName)
