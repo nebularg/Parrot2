@@ -1,60 +1,61 @@
+v1.9.0+:
+* get rid of LibBabble-Class
+
 v1.9.0:
-     add support for per-spell-filtering (by name or ID) (fixes Ticket #42)
-     add support for per-spell-throttling
-     add default-filters for Unleashed Rage, Ferocious Inspiration, and
-          Abominable Might (fixes Ticket #16)
-     Hide realm name in tags (fixes Ticket #83)
-     allow spell-ids as parameters in aura-trigger-conditions
-     add 2 triggers for Eclipse (Wrath and Starfire)
-     add trigger for The Art of War
-     add trigger for Kill shot
-     add secondary conditions "Target minimum health" and "Target is player"
-     add secondary condition "Lua function" to run custom lua-code for checks
-     add more options for Cooldowns (treshold and filters)
-     hide full overheals (but add option for making them visible again)
-     show player's heals on pets only as incoming pet heal (Ticket #92)
-     show correct icon when using "Wild Quiver" (Ticket #93)
+* add support for per-spell-filtering (by name or ID) (fixes Ticket #42)
+* add support for per-spell-throttling
+* add default-filters for Unleashed Rage, Ferocious Inspiration, and
+    Abominable Might (fixes Ticket #16)
+* Hide realm name in tags (fixes Ticket #83)
+* allow spell-ids as parameters in aura-trigger-conditions
+* add 2 triggers for Eclipse (Wrath and Starfire)
+* add trigger for The Art of War
+* add trigger for Kill shot
+* add secondary conditions "Target minimum health" and "Target is player"
+* add secondary condition "Lua function" to run custom lua-code for checks
+* add more options for Cooldowns (treshold and filters)
+* hide full overheals (but add option for making them visible again)
+* show player's heals on pets only as incoming pet heal (Ticket #92)
+* show correct icon when using "Wild Quiver" (Ticket #93)
 
 v1.8.3:
-     fix some issues with the Config when Ace3 is not installed seperatly
+* fix some issues with the Config when Ace3 is not installed seperatly
 
 v1.8.1:
-     fix new shared cooldowns of hunter traps
-     remove windshock from shared cooldowns
-     fix bugs in new ace-config (fixes Tickets #80 and #81)
-     rewrite the db-import of default-triggers (uses a versioncheck now)
-          This means default-triggers do not get recreated when deleting them.
-     bugfixes in profile-switching
-          profile-applying to submodules
-          profile-copying and reseting
+* fix new shared cooldowns of hunter traps
+* remove windshock from shared cooldowns
+* fix bugs in new ace-config (fixes Tickets #80 and #81)
+* rewrite the db-import of default-triggers (uses a versioncheck now)
+   This means default-triggers do not get recreated when deleting them.
+* bugfixes in profile-switching
+    profile-applying to submodules
+    profile-copying and reseting
 
 v1.8.0:
-     use ace3 for config-stuff
-     make profile-switching work again (by using AceDB-3.0)
-         Note: The profile now defaults to your Character-profile instead of
-         "Default". Try switching profiles to regain all saved settings.
-     add Parrot to the Blizzard-Addon-Options
-     add new Primary TriggerCondition: Successful Spell Cast (Ticket #65)
-     add secondary Trigger Conditions (Minimum/Maximum Target Health Percent)
-         (Ticket #55)
-     add Dispel- and Spellsteal CombetEvents (Ticket #74)
-     make Heals show properly in 3.2 (fixes Ticket #78)
+* use ace3 for config-stuff
+* make profile-switching work again (by using AceDB-3.0)
+    Note: The profile now defaults to your Character-profile instead of
+    "Default". Try switching profiles to regain all saved settings.
+* add Parrot to the Blizzard-Addon-Options
+* add new Primary TriggerCondition: Successful Spell Cast (Ticket #65)
+* add secondary Trigger Conditions (Minimum/Maximum Target Health Percent)
+    (Ticket #55)
+* add Dispel- and Spellsteal CombetEvents (Ticket #74)
+* make Heals show properly in 3.2 (fixes Ticket #78)
 
 v1.7.2:
-     add support for throttling miss-events (avoids like parry, block, etc.)
-     add "minimum power percent"-secondary trigger condition
-     add secondary conditions for "in vehicle" and "mounted"
+* add support for throttling miss-events (avoids like parry, block, etc.)
+* add "minimum power percent"-secondary trigger condition
+* add secondary conditions for "in vehicle" and "mounted"
 
 v1.7.1:
-
-     make dot-crits show as sticky.
-     fix optdeps.
-     add Options to disable CombatEvents when in a raid-instance.
-     add icon-override for mutilate.
-     add support for AddonLoader (http://www.wowace.com/addons/addon-loader/).
+* make dot-crits show as sticky.
+* fix optdeps.
+* add Options to disable CombatEvents when in a raid-instance.
+* add icon-override for mutilate.
+* add support for AddonLoader (http://www.wowace.com/addons/addon-loader/).
 
 v1.7.0:
-
-     add Judgements to its own group, like shocks.
-     remove blackout- and deathtrance-trigger from default-triggers.
+* add Judgements to its own group, like shocks.
+* remove blackout- and deathtrance-trigger from default-triggers.
 
