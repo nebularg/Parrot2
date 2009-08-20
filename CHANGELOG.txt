@@ -7,6 +7,7 @@ v1.9.0:
      allow spell-ids as parameters in aura-trigger-conditions
      add 2 triggers for Eclipse (Wrath and Starfire)
      add trigger for The Art of War
+     add trigger for Kill shot
      add secondary conditions "Target minimum health" and "Target is player"
      add secondary condition "Lua function" to run custom lua-code for checks
      add more options for Cooldowns (treshold and filters)
