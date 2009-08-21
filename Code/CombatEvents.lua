@@ -60,6 +60,8 @@ local dbDefaults = {
 		disable_in_10man = false,
 		disable_in_25man = false,
 		hideFullOverheals = true,
+		hideSkillNames = false,
+		hideUnitNames = false,
 		damageTypes = {
 			color = true,
 			["Physical"] = "ffffff",
@@ -536,6 +538,24 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				get = function() return self.db1.profile.hideFullOverheals end,
 				set = function(info, value)
 						self.db1.profile.hideFullOverheals = value
+					end,
+			},
+			hideSkillNames = {
+				type = 'toggle',
+				name = L["Hide skill names"],
+				desc = L["Always hide skill names even when present in the tag"],
+				get = function() return self.db1.profile.hideSkillNames end,
+				set = function(info, value)
+						self.db1.profile.hideSkillNames = value
+					end,
+			},
+			hideUnitNames = {
+				type = 'toggle',
+				name = L["Hide unit names"],
+				desc = L["Always hide unit names even when present in the tag"],
+				get = function() return self.db1.profile.hideUnitNames end,
+				set = function(info, value)
+						self.db1.profile.hideUnitNames = value
 					end,
 			},
 			Incoming = {
@@ -2195,6 +2215,11 @@ local function runEvent(category, name, info)
 	handler__info = info
 	local icon
 	if handler__translation then
+		if self.db1.profile.hideSkillNames then
+			text = text:gsub("%(%[Skill%]%)","")
+			text = text:gsub("%(%[Skill%] %- ","(")
+			text = text:gsub("%[Skill%]","")
+		end
 		text = text:gsub("(%b[])", handler)
 		icon = handler__translation.Icon
 		if icon then
@@ -2204,6 +2229,12 @@ local function runEvent(category, name, info)
 				icon = info[icon]
 			end
 		end
+	end
+
+	if self.db1.profile.hideUnitNames then
+		text = text:gsub("%(__NONAME__%)","")
+		text = text:gsub(" %- __NONAME__%)",")")
+		text = text:gsub("__NONAME__","")
 	end
 
 	local t = newList(text)
@@ -2506,6 +2537,9 @@ function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName,
 						info = del(info)
 						return
 					end
+--[[					if self.db1.profile.hideSkillNames then
+						info.abilityName = ""
+					end--]]
 					info.uid = (srcGUID or 0) + (dstGUID or 0) + timestamp
 					self:TriggerCombatEvent(v.category, v.name, info)
 					info = del( info )

@@ -102,6 +102,9 @@ end
 
 local function retrieveSourceName(info)
 	if not info.sourceName then return end
+	if db1.profile.hideUnitNames == true then
+		return "__NONAME__"
+	end
 	if Parrot.db1.profile.showNameRealm then
 		return info.sourceName
 	else
@@ -111,6 +114,9 @@ end
 
 local function retrieveDestName(info)
 	if not info.recipientName then return end
+	if db1.profile.hideUnitNames == true then
+		return "__NONAME__"
+	end
 	if Parrot.db1.profile.showNameRealm then
 		return info.recipientName
 	else
@@ -2156,7 +2162,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName", -- no realm possible
+		Name = retrieveSourceName, -- no realm possible
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -2189,7 +2195,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "sourceName", -- no realm possible
+		Name = retrieveSourceName, -- no realm possible
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -4168,7 +4174,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName", -- no realm possible
+		Name = retrieveDestName, -- no realm possible
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
@@ -4201,7 +4207,7 @@ Parrot:RegisterCombatEvent{
 		},
 	},
 	tagTranslations = {
-		Name = "recipientName",
+		Name = retrieveDestName,
 		Skill = retrieveAbilityName,
 		Amount = "realAmount",
 		Icon = retrieveIconFromAbilityName,
