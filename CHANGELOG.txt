@@ -1,5 +1,6 @@
 v1.9.0+:
 * get rid of LibBabble-Class
+* add options for always hiding unit- and skill names
 
 v1.9.0:
 * add support for per-spell-filtering (by name or ID) (fixes Ticket #42)
