@@ -3,10 +3,9 @@
 
 	<Script file="libs\LibStub\LibStub.lua" />
 	<Include file="libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
+	<Script file="libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 
 	<!--@no-lib-strip@-->
-
-	<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
 	<Include file="libs\LibRock-1.0\lib.xml"/>
 	<Include file="libs\LibRockEvent-1.0\lib.xml"/>
 	<Include file="libs\LibRockTimer-1.0\lib.xml"/>
@@ -15,19 +14,16 @@
 	<Include file="libs\LibRockModuleCore-1.0\lib.xml"/>
 
 	<Include file="libs\AceLocale-3.0\AceLocale-3.0.xml" />
-
 	<Include file="libs\AceGUI-3.0\AceGUI-3.0.xml" />
 	<Include file="libs\AceConsole-3.0\AceConsole-3.0.xml" />
 	<Include file="libs\AceConfig-3.0\AceConfig-3.0.xml" />
 	<Include file="libs\AceDB-3.0\AceDB-3.0.xml" />
 	<Include file="libs\AceDBOptions-3.0\AceDBOptions-3.0.xml" />
 
+	<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
+
 
 	<Script file="libs\AceLibrary\AceLibrary.lua" />
 	<Script file="libs\Deformat-2.0\Deformat-2.0.lua"/>
-
 	<!--@end-no-lib-strip@-->
-
-	<Script file="libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
-
 </Ui>
