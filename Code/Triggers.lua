@@ -1238,6 +1238,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					get = getIcon,
 					set = setIcon,
 					arg = t,
+					order = 2,
 				},
 				enabled = {
 					type = 'toggle',
@@ -1246,7 +1247,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					get = getEnabled,
 					set = setEnabled,
 					arg = t,
-					order = -1,
+					order = 3,
 				},
 				remove = {
 					type = 'execute',
@@ -1266,6 +1267,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					get = getColor,
 					set = setColor,
 					arg = t,
+					order = 4,
 				},
 				sticky = {
 					type = 'toggle',
@@ -1274,6 +1276,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					get = getSticky,
 					set = setSticky,
 					arg = t,
+					order = 8,
 				},
 				classes = {
 					type = 'multiselect',
@@ -1283,6 +1286,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					get = getClass,
 					set = setClass,
 					arg = t,
+					order = 6,
 				},
 				scrollArea = {
 					type = 'select',
@@ -1292,6 +1296,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					get = getScrollArea,
 					set = setScrollArea,
 					arg = t,
+					order = 7,
 				},
 				sound = {
 					type = 'select',
@@ -1301,6 +1306,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					get = getSound,
 					set = setSound,
 					arg = t,
+					order = 5,
 				},
 				test = {
 					type = 'execute',
