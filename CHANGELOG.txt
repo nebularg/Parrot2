@@ -1,6 +1,6 @@
 v1.9.0+:
 * get rid of LibBabble-Class
-* add options for always hiding unit- and skill names
+* add options for always hiding unit- and skill names (except Cooldowns)
 * add secondary condition "Active talents"
 
 v1.9.0:
