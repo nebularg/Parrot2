@@ -90,13 +90,13 @@ Parrot:RegisterCombatEvent{
 	subCategory = L["Cooldowns"],
 	name = "Skill cooldown finish",
 	localName = L["Skill cooldown finish"],
-	defaultTag = L["[[Skill] ready!]"],
+	defaultTag = L["[[Spell] ready!]"],
 	tagTranslations = {
-		Skill = 1,
+		Spell = 1,
 		Icon = 2,
 	},
 	tagTranslationHelp = {
-		Skill = L["The name of the spell or ability which is ready to be used."],
+		Spell = L["The name of the spell or ability which is ready to be used."],
 	},
 	color = "ffffff", -- white
 	sticky = false,

@@ -41,6 +41,7 @@ local dbDefaults = {
 		['*'] = {
 			['*'] = {}
 		},
+		dbver = 0,
 		filters = {},
 		sfilters = {
 			[GetSpellInfo(34460)] = { inc = true, out = true, }, -- Ferocious Inspiration
@@ -131,6 +132,25 @@ local combatEvents = {}
 local Parrot_Display
 local Parrot_ScrollAreas
 local Parrot_TriggerConditions
+
+local updateDBFuncs = {
+	[1] = function()
+			local entry = self.db1.profile.Notification["Skill cooldown finish"]
+			if entry and entry.tag then
+				entry.tag = entry.tag:gsub("%[Skill%]","[Spell]")
+			end
+		end,
+}
+
+local function updateDB()
+	if not self.db1.profile.dbver then
+		self.db1.profile.dbver = 0
+	end
+	for i = self.db1.profile.dbver+1, #updateDBFuncs do
+		updateDBFuncs[i]()
+		self.db1.profile.dbver = i
+	end
+end
 
 function Parrot_CombatEvents:OnInitialize()
 
@@ -225,8 +245,7 @@ local onEnableFuncs = {}
 
 function Parrot_CombatEvents:OnEnable(first)
 	enabled = true
-
-
+	updateDB()
 	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
 	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
@@ -489,6 +508,7 @@ local function getSoundChoices()
 end
 
 function Parrot_CombatEvents:ApplyConfig()
+	updateDB()
 	Parrot.options.args.events = del(Parrot.options.args.events)
 	Parrot_CombatEvents:OnOptionsCreate()
 end
