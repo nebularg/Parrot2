@@ -1,3 +1,9 @@
+alpha:
+* major changes to the Trigger-System
+  + TriggerCondition now support multiple arguments
+  + Most TriggerConditions can be used more than once
+  + simplified the List of built-in conditions
+
 v1.9.1:
 * remove Dependency of LibBabble-Class (and use built-in class-translations)
 * add options for always hiding unit- and skill names (except Cooldowns)

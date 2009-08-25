@@ -754,6 +754,20 @@ local triggers2translation = {
 			return "Successful spell cast", {}
 		end,
 	["Check every XX seconds"] = true,
+	["Self item buff gain"] = function(param)
+			local arg = {
+				unit = "player",
+				spell = param,
+			}
+			return "Item buff gain", arg
+		end,
+	["Self Item buff fade"] = function(param)
+			local arg = {
+				unit = "player",
+				spell = param,
+			}
+			return "Item buff fade", arg
+		end,
 }
 
 local triggers2secondary = {
