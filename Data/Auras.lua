@@ -399,12 +399,195 @@ Parrot:RegisterCombatEvent{
 	color = "e5e5e5", -- light gray
 }
 
-local function compareSpells(param, arg)
-	if type(param) == 'number' then
-		return param == arg
-	elseif type(param) == 'string' then
-		debug(("(GetSpellInfo(%s)"):format(tostring(arg)))
-		return param == GetSpellInfo(arg)
+local function compareUnitAndSpell(ref, info)
+
+	if not ref.unit or not ref.spell or not info.dstGUID then
+--		debug("not complete, return false")
+		return false
+	end
+	local good = (info.dstGUID == UnitGUID(ref.unit)) and (ref.auraType == info.auraType)
+--	debug("compare unit and auraType ", good)
+--	debug("compare unit and auraType ", info.dstGUID == UnitGUID(ref.unit))
+
+	if good then
+		if type(ref.spell) == 'number' then
+			return ref.spell == info.spellId
+		else
+			return ref.spell == info.spellName
+		end
+	end
+end
+
+local unitChoices = {
+	["player"] = PLAYER,
+	["focus"] = FOCUS,
+	["target"] = TARGET,
+	["pet"] = PET,
+}
+
+local auraTypeChoices = {
+	["BUFF"] = L["Buff"],
+	["DEBUFF"] = L["Debuff"],
+}
+
+local function parseSpell(arg)
+	return tostring(arg or "")
+end
+local function saveSpell(arg)
+	return tonumber(arg) or arg
+end
+
+Parrot:RegisterPrimaryTriggerCondition {
+	subCategory = L["Auras"],
+	name = "Aura gain",
+	localName = L["Aura gain"],
+	combatLogEvents = {
+		{
+			eventType = "SPELL_AURA_APPLIED",
+			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
+				return {
+					spellId = spellId,
+					spellName = spellName,
+					dstGUID = dstGUID,
+					auraType = auraType,
+				}
+			end,
+		},
+	},
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name or spell id"],
+				type = 'string',
+				usage = "<Buff name or spell id>",
+				save = saveSpell,
+				parse = parseSpell,
+			},
+			auraType = {
+				name = L["Aura type"],
+				desc = L["Type of the aura"],
+				type = 'select',
+				values = auraTypeChoices,
+			},
+		},
+	},
+	check = compareUnitAndSpell,
+}
+
+Parrot:RegisterPrimaryTriggerCondition {
+	subCategory = L["Auras"],
+	name = "Aura stack gain",
+	localName = L["Aura stack gain"],
+	combatLogEvents = {
+		{
+			eventType = "SPELL_AURA_APPLIED_DOSE",
+			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
+				return {
+					dstGUID = dstGUID,
+					spellId = spellId,
+					spellName = spellName,
+					amount = amount,
+				}
+			end,
+		},
+	},
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name or spell id"],
+				type = 'string',
+				usage = "<Buff name or spell id>",
+				save = saveSpell,
+				parse = parseSpell,
+			},
+			amount = {
+				name = L["Amount"],
+				desc = L["Amount of stacks of the buff"],
+				type = 'number',
+				min = 1,
+				max = 100,
+				step = 1,
+			},
+			auraType = {
+				name = L["Aura type"],
+				desc = L["Type of the aura"],
+				type = 'select',
+				values = auraTypeChoices,
+			},
+		},
+	},
+	check = function(ref, info)
+			if not ref.amount then
+				return false
+			end
+			return compareUnitAndSpell(ref, info) and ref.amount == info.amount
+		end,
+}
+
+Parrot:RegisterPrimaryTriggerCondition {
+	subCategory = L["Auras"],
+	name = "Aura fade",
+	localName = L["Aura fade"],
+	combatLogEvents = {
+		{
+			eventType = "SPELL_AURA_REMOVED",
+			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
+				return {
+					spellId = spellId,
+					spellName = spellName,
+					auraType = auraType,
+					dstGUID = dstGUID,
+				}
+			end,
+		},
+	},
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name or spell id"],
+				type = 'string',
+				usage = "<Buff name or spell id>",
+				save = saveSpell,
+				parse = parseSpell,
+			},
+			auraType = {
+				name = L["Aura type"],
+				desc = L["Type of the aura"],
+				type = 'select',
+				values = auraTypeChoices,
+			},
+		},
+	},
+	check = compareUnitAndSpell,
+}
+
+local function checkItemBuff(ref, info)
+	if ref.unit and ref.spell then
+		return ref.spell == info.spellName and UnitGUID(ref.unit) == info.dstGUID
 	else
 		return false
 	end
@@ -412,388 +595,86 @@ end
 
 Parrot:RegisterPrimaryTriggerCondition {
 	subCategory = L["Auras"],
-	name = "Self buff gain",
-	localName = L["Self buff gain"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Buff name or spell id>"],
-	},
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Self buff stacks gain",
-	localName = L["Self buff stacks gain"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED_DOSE",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				return string.format("%s,%d",spellId,amount)
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Buff name or spell id>,<Number of stacks>"],
-	},
-	check = function(param, arg)
-			if not arg then return false end
-			local realSpellId, realAmount = (","):split(arg)
-			local paramSpellName, paramAmount = (","):split(param)
-			if type(paramSpellName) == 'string' then
-				realSpellId = GetSpellInfo(realSpellId)
-			end
-			return realSpellId == paramSpellName and realAmount == paramAmount
-		end,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Self buff fade",
-	localName = L["Self buff fade"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_REMOVED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Buff name or spell id>"],
-	},
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Self debuff gain",
-	localName = L["Self debuff gain"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Debuff name or spell id>"],
-	},
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Self debuff fade",
-	localName = L["Self debuff fade"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_REMOVED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Debuff name or spell id>"],
-	},
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Self item buff gain",
-	localName = L["Self item buff gain"],
+	name = "Item buff gain",
+	localName = L["Item buff gain"],
 	combatLogEvents = {
 		{
 			eventType = "ENCHANT_APPLIED",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellName, itemId, itemName)
-				if dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				return spellName
-
+				return {
+					spellName = spellName,
+					itemName = itemName,
+					dstGUID = dstGUID,
+				}
 			end,
 		}
 	},
 	param = {
-		type = 'string',
-		usage = L["<Item buff name>"],
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name"],
+				type = 'string',
+			},
+		},
 	},
+	check = checkItemBuff,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
 	subCategory = L["Auras"],
-	name = "Self item buff fade",
-	localName = L["Self item buff fade"],
+	name = "Item buff fade",
+	localName = L["Item buff fade"],
 	combatLogEvents = {
 		{
 			eventType = "ENCHANT_REMOVED",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellName, itemId, itemName)
-				if dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				return spellName
-
+				return {
+					spellName = spellName,
+					itemName = itemName,
+					dstGUID = dstGUID,
+				}
 			end,
 		}
 	},
 	param = {
-		type = 'string',
-		usage = L["<Item buff name>"],
-	},
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Target buff gain",
-	localName = L["Target buff gain"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("target") then
-					return nil
-				end
-
-				return spellId
-
-			end,
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name"],
+				type = 'string',
+			},
 		},
 	},
-	param = {
-		type = 'string',
-		usage = L["<Buff name or spell id>"],
-	},
-	parserArg = 'abilityName',
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Target debuff gain",
-	localName = L["Target debuff gain"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("target") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Debuff name or spell id>"],
-	},
-	check = compareSpells,
-}
-
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Target buff fade",
-	localName = L["Target buff fade"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_REMOVED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("target") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Buff name or spell id>"],
-	},
-	parserArg = 'abilityName',
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Target debuff fade",
-	localName = L["Target debuff fade"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_REMOVED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("target") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Debuff name or spell id>"],
-	},
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Focus buff gain",
-	localName = L["Focus buff gain"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("focus") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Buff name or spell id>"],
-	},
-	parserArg = 'abilityName',
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Focus debuff gain",
-	localName = L["Focus debuff gain"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("focus") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Debuff name or spell id>"],
-	},
-	parserArg = 'abilityName',
-	check = compareSpells,
-}
-
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Focus buff fade",
-	localName = L["Focus buff fade"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_REMOVED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("focus") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Buff name or spell id>"],
-	},
-	parserArg = 'abilityName',
-	check = compareSpells,
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	subCategory = L["Auras"],
-	name = "Focus debuff fade",
-	localName = L["Focus debuff fade"],
-	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_REMOVED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("focus") then
-					return nil
-				end
-
-				return spellId
-
-			end,
-		},
-	},
-	param = {
-		type = 'string',
-		usage = L["<Debuff name or spell id>"],
-	},
-	parserArg = 'abilityName',
-	check = compareSpells,
+	check = checkItemBuff,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
 	subCategory = L["Auras"],
-	name = "Buff inactive",
-	localName = L["Buff inactive"],
-	notLocalName = L["Buff active"],
+	name = "Aura inactive",
+	localName = L["Aura inactive"],
+	notLocalName = L["Aura active"],
 	param = {
 		type = 'string',
 		usage = "<Buff name>",
+		save = saveSpell,
+		parse = parseSpell,
 	},
 	check = function(param)
-		return not UnitAura("player",param)
+		return not UnitAura("player", param or "")
 	end,
 }

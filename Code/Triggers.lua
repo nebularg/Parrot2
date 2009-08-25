@@ -15,431 +15,510 @@ local newList, newSet, newDict, del, unpackDictAndDel = Rock:GetRecyclingFunctio
 
 local debug = Parrot.debug
 
+local function copyTable(table)
+	if not table then return nil end
+	local tmp = {}
+	for k,v in pairs(table) do
+		if type(v) == 'table' then
+			tmp[k] = copyTable(v)
+		else
+			tmp[k] = v
+		end
+	end
+	return tmp
+end
+
 local _,playerClass = UnitClass("player")
 
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
--- Parrot_Triggers.db = Parrot:GetDatabaseNamespace("Triggers")
+--[[
+	List of default Triggers:
+	Index is starting at 1001. User-created triggers start at index 1.
+	The reason is that when a new default-trigger is added, it will always get
+	inserted into the db, even if the user created some custom triggers in the
+	meanwhile.
+--]]
 
--- Parrot:SetDatabaseNamespaceDefaults("Triggers", 'profile', {})
-
-local dbDefaults = { profile = {}, }
-
-local default_triggers = {
-	[1] = {
-		{
-			id = 1,
-			-- 34939 = Backlash
-			name = L["%s!"]:format(GetSpellInfo(34939)),
-			icon = 34939,
-			class = "WARLOCK",
-			conditions = {
-				["Self buff gain"] = GetSpellInfo(34939),
+local defaultTriggers = {
+	[1001] = {
+		-- 34939 = Backlash
+		name = L["%s!"]:format(GetSpellInfo(34939)),
+		icon = 34939,
+		class = "WARLOCK",
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(34939),
+					unit = "player",
+					auraType = "BUFF",
+				}
 			},
-			sticky = true,
-			color = "ff00ff",
-			locale = GetLocale(),
 		},
-		{
-			-- 16246 = Clearcasting (Priest) TODO
-			id = 3,
-			name = L["%s!"]:format(GetSpellInfo(16246)),
-			icon = 16246,
-			class = "MAGE;PRIEST;SHAMAN",
-			conditions = {
-				["Self buff gain"] = GetSpellInfo(16246),
-			},
-			sticky = true,
-			color = "ffff00",
-			locale = GetLocale(),
-		},
-		{
-			id = 4,
-			-- 27067 = Counterattack
-			name = L["%s!"]:format(GetSpellInfo(27067)),
-			icon = 27067,
-			class = "HUNTER",
-			conditions = {
-				["Incoming parry"] = true,
-			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(27067),
-			},
-			sticky = true,
-			color = "ffff00",
-			locale = GetLocale(),
-		},
-		{
-			id = 5,
-			-- 25236 = Execute
-			name = L["%s!"]:format(GetSpellInfo(25236)),
-			icon = 25236,
-			class = "WARRIOR",
-			conditions = {
-				["Enemy target health percent"] = 0.19,
-			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(25236),
-			},
-			sticky = true,
-			color = "ffff00",
-			locale = GetLocale(),
-		},
-		{
-			id = 6,
-			-- Frostbite = 12497
-			name = L["%s!"]:format(GetSpellInfo(12497)),
-			icon = 12497,
-			class = "MAGE",
-			conditions = {
-				["Target debuff gain"] = GetSpellInfo(12497),
-			},
-			sticky = true,
-			color = "0000ff",
-			locale = GetLocale(),
-		},
-		{
-				id = 7,
-			-- 27180 - Hammer of Wrath
-			name = L["%s!"]:format(GetSpellInfo(27180)),
-			icon = 27180,
-			class = "PALADIN",
-			conditions = {
-				["Enemy target health percent"] = 0.2,
-			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(27180),
-			},
-			sticky = true,
-			color = "ffff00",
-			locale = GetLocale(),
-		},
-		{
-			id = 8,
-			-- Impact = 11103
-			name = L["%s!"]:format(GetSpellInfo(11103)),
-			icon = 11103,
-			class = "MAGE",
-			conditions = {
-				["Target debuff gain"] = GetSpellInfo(11103),
-			},
-			sticky = true,
-			color = "ff0000",
-			locale = GetLocale(),
-		},
-		{
-			id = 10,
-			name = L["Low Health!"],
-			class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT",
-			conditions = {
-				["Self health percent"] = 0.4,
-			},
-			secondaryConditions = {
-				["Trigger cooldown"] = 3,
-			},
-			sticky = true,
-			color = "ff7f7f",
-			locale = GetLocale(),
-		},
-		{
-			id = 11,
-			name = L["Low Mana!"],
-			class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
-			conditions = {
-				["Self mana percent"] = 0.35,
-			},
-			secondaryConditions = {
-				["Trigger cooldown"] = 3,
-			},
-			sticky = true,
-			color = "7f7fff",
-			locale = GetLocale(),
-		},
-		{
-			id = 12,
-			name = L["Low Pet Health!"],
-			class = "HUNTER;MAGE;WARLOCK;DEATHKNIGHT",
-			conditions = {
-				["Pet health percent"] = 0.4,
-			},
-			secondaryConditions = {
-				["Trigger cooldown"] = 3,
-			},
-			color = "ff7f7f",
-			locale = GetLocale(),
-		},
-		{
-			id = 14,
-			-- 18095 = Nightfall
-			name = L["%s!"]:format(GetSpellInfo(18095)),
-			icon = 18095,
-			class = "WARLOCK",
-			conditions = {
-				-- 17941 = Shadow Trance
-				["Self buff gain"] = GetSpellInfo(17941),
-			},
-			sticky = true,
-			color = "7f007f",
-			locale = GetLocale(),
-		},
-		{
-			id = 15,
-			-- Smite = 25364
-			name = L["Free %s!"]:format(GetSpellInfo(25364)),
-			icon = 25364,
-			class = "PRIEST",
-			conditions = {
-				-- Surge of Light =33154
-				["Self buff gain"] = GetSpellInfo(33154),
-			},
-			sticky = true,
-			disabled = true,
-			color = "ff0000",
-			locale = GetLocale(),
-		},
-		{
-			id = 16,
-			-- Overpower = 11585
-			name = L["%s!"]:format(GetSpellInfo(11585)),
-			icon = 11585,
-			class = "WARRIOR",
-			conditions = {
-				["Outgoing dodge"] = true,
-			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(11585),
-			},
-			sticky = true,
-			color = "7f007f",
-			locale = GetLocale(),
-		},
---[[		{
-			id = 17,
-			-- Rampage = 29801
-			name = L["%s!"]:format(GetSpellInfo(29801)),
-			icon = 29801,
-			class = "WARRIOR",
-			conditions = {
-				["Outgoing crit"] = true,
-			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(29801),
-				["Buff inactive"] = GetSpellInfo(29801),
-				["Minimum power amount"] = 20,
-			},
-			sticky = true,
-			color = "ff0000",
-			locale = GetLocale(),
-		},--]]
-		{
-			id = 18,
-			-- Revenge = 30357
-			name = L["%s!"]:format(GetSpellInfo(30357)),
-			icon = 30357,
-			class = "WARRIOR",
-			conditions = {
-				["Incoming block"] = true,
-				["Incoming dodge"] = true,
-				["Incoming parry"] = true,
-			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(30357),
-				["Warrior stance"] = "Defensive Stance",
-			},
-			sticky = true,
-			color = "ffff00",
-			disabled = true,
-			locale = GetLocale(),
-		},
-		{
-			id = 19,
-			-- Riposte = 14251
-			name = L["%s!"]:format(GetSpellInfo(14251)),
-			icon = 14251,
-			class = "ROGUE",
-			conditions = {
-				["Incoming parry"] = true,
-			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(14251),
-			},
-			sticky = true,
-			color = "ffff00",
-			locale = GetLocale(),
-		},
-		{
-			id = 20,
-			-- Maelstrom Weapon = 51532
-			name = L["%s!"]:format(GetSpellInfo(51532)),
-			icon = 51532,
-			class = "SHAMAN",
-			conditions = {
-				    ["Self buff stacks gain"] = string.format("%s,%s",GetSpellInfo(51532),"5"),
-			},
-			sticky = true,
-			color = "0000ff",
-			locale = GetLocale(),
-		},
-		-- 4 Deathknight-triggers by waallen
-		{
-			id = 22,
-			-- Freezing Fog = 59052
-			name = L["%s!"]:format(GetSpellInfo(59052)),
-			icon = 59052,
-			class = "DEATHKNIGHT",
-			conditions = {
-				-- 59052 = Freezing Fog
-				["Self buff gain"] = GetSpellInfo(59052),
-			},
-			sticky = true,
-			color = "0000ff",
-			locale = GetLocale(),
-		},
-		{
-			id = 23,
-			-- Killing Machine	= 51130
-			name = L["%s!"]:format(GetSpellInfo(51130)),
-			icon = 51130,
-			class = "DEATHKNIGHT",
-			conditions = {
-				-- 51130 = Killing Machine
-				["Self buff gain"] = GetSpellInfo(51130),
-			},
-			sticky = true,
-			color = "0000ff",
-			locale = GetLocale(),
-		},
-		{
-			id = 24,
-			-- Rune Strike = 56816
-			name = L["%s!"]:format(GetSpellInfo(56816)),
-			icon = 56816,
-			class = "DEATHKNIGHT",
-			conditions = {
-				["Incoming dodge"] = true,
-				["Incoming parry"] = true,
-			},
-			sticky = true,
-			color = "0000ff",
-			disabled = true,
-			locale = GetLocale(),
-		},
+		sticky = true,
+		color = "ff00ff",
 	},
-	[2] = {
-		{
-			id = 25,
-			-- Lock and Load = 56344
-			name = L["%s!"]:format(GetSpellInfo(56344)),
-			icon = 56344,
-			class = "HUNTER",
-			conditions = {
-				["Self buff gain"] = GetSpellInfo(56344),
+	[1002] = {
+		-- 16246 = Clearcasting (Priest) TODO
+		name = L["%s!"]:format(GetSpellInfo(16246)),
+		icon = 16246,
+		class = "MAGE;PRIEST;SHAMAN",
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(16246),
+					unit = "player",
+					auraType = "BUFF",
+				}
 			},
-			sticky = true,
-			color = "ff0000",
-			locale = GetLocale(),
 		},
-		{
-			id = 26,
-			-- Brain Freeze = 57761
-			name = L["%s!"]:format(GetSpellInfo(44549)),
-			icon = 57761,
-			class = "MAGE",
-			conditions = {
-				["Self buff gain"] = GetSpellInfo(57761),
-			},
-			sticky = true,
-			color = "0000ff",
-			locale = GetLocale(),
-		},
-		{
-			id = 27,
-			-- Sudden Death 52437
-			name = L["%s!"]:format(GetSpellInfo(52437)),
-			icon = 52437,
-			class = "WARRIOR",
-			conditions = {
-				["Self buff gain"] = GetSpellInfo(52437),
-			},
-			sticky = true,
-			color = "ff0000",
-			locale = GetLocale(),
-		},
+		sticky = true,
+		color = "ffff00",
 	},
-	[3] = {
-		-- Kill command and mongoose bite
-		remove = { 9, 13 },
-	},
-	[4] = {
-		{
-			-- Eclipse
-			id = 28,
-			name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48518), GetSpellInfo(48465))), -- Starfire
-			icon = 48518,
-			class = "DRUID",
-			conditions = {
-				["Self buff gain"] = 48518,
-			},
-			sticky = true,
-			color = "ffffff",
-			locale = GetLocale(),
+	[1003] = {
+		-- 27067 = Counterattack
+		name = L["%s!"]:format(GetSpellInfo(27067)),
+		icon = 27067,
+		class = "HUNTER",
+		conditions = {
+			["Incoming miss"] = { "PARRY",	},
 		},
-		{
-			id = 28,
-			name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48517), GetSpellInfo(48461))), -- Wrath
-			icon = 48517,
-			class = "DRUID",
-			conditions = {
-				["Self buff gain"] = 48517,
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(27067),
 			},
-			sticky = true,
-			color = "ffffff",
-			locale = GetLocale(),
 		},
+		sticky = true,
+		color = "ffff00",
 	},
-	[5] = {
-		remove = { 17 },
-	},
-	[6] = {
-		{
-			id = 29,
-			name = L["%s!"]:format(GetSpellInfo(53489)),
-			icon = 53489,
-			class = "PALADIN",
-			conditions = {
-				["Self buff gain"] = GetSpellInfo(53489),
+	[1004] = {
+		-- 25236 = Execute
+		name = L["%s!"]:format(GetSpellInfo(25236)),
+		icon = 25236,
+		class = "WARRIOR",
+		conditions = {
+			["Unit health"] = {
+				{
+					unit = "target",
+					amount = 0.20,
+					comparator = "<",
+					friendly = 0,
+				},
 			},
-			sticky = true,
-			color = "ffff00",
-			locale = GetLocale(),
 		},
-	},
-	[7] = {
-		{
-			id = 31,
-			-- Kill shot
-			name = L["%s!"]:format(GetSpellInfo(53351)),
-			icon = 53351,
-			class = "HUNTER",
-			conditions = {
-				["Enemy target health percent"] = 0.2,
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(25236),
 			},
-			secondaryConditions = {
-				["Spell ready"] = GetSpellInfo(53351),
-			},
-			sticky = true,
-			color = "ff0000",
 		},
+		sticky = true,
+		color = "ffff00",
+	},
+	[1005] = {
+		-- Frostbite = 12497
+		name = L["%s!"]:format(GetSpellInfo(12497)),
+		icon = 12497,
+		class = "MAGE",
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(12497),
+					unit = "target",
+					auraType = "DEBUFF",
+				}
+			}
+		},
+		sticky = true,
+		color = "0000ff",
+	},
+	[1006] = {
+		-- 27180 - Hammer of Wrath
+		name = L["%s!"]:format(GetSpellInfo(27180)),
+		icon = 27180,
+		class = "PALADIN",
+		conditions = {
+			["Unit health"] = {
+				{
+					unit = "target",
+					amount = 0.20,
+					comparator = "<",
+					friendly = 0,
+				},
+			},
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(27180),
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	},
+	[1007] = {
+		-- Impact = 11103
+		name = L["%s!"]:format(GetSpellInfo(11103)),
+		icon = 11103,
+		class = "MAGE",
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(11103),
+					unit = "target",
+					auraType = "DEBUFF",
+				}
+			},
+		},
+		sticky = true,
+		color = "ff0000",
+	},
+	[1008] = {
+		name = L["Low Health!"],
+		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT",
+		conditions = {
+			["Unit health"] = {
+				{
+					unit = "player",
+					amount = 0.40,
+					comparator = "<=",
+					friendly = 1,
+				},
+			},
+		},
+		secondaryConditions = {
+			["Trigger cooldown"] = 3,
+		},
+		sticky = true,
+		color = "ff7f7f",
+	},
+	[1009] = {
+		name = L["Low Mana!"],
+		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
+		conditions = {
+			["Unit power"] = {
+				{
+					unit = "player",
+					amount = 0.35,
+					comparator = "<=",
+					friendly = 1,
+					powerType = "MANA",
+				},
+			},
+		},
+		secondaryConditions = {
+			["Trigger cooldown"] = 3,
+		},
+		sticky = true,
+		color = "7f7fff",
+	},
+	[1010] = {
+		name = L["Low Pet Health!"],
+		class = "HUNTER;MAGE;WARLOCK;DEATHKNIGHT",
+		conditions = {
+			["Unit health"] = {
+				[1] = {
+					unit = "pet",
+					amount = 0.40,
+					comparator = "<=",
+					friendly = 1,
+				},
+			},
+		},
+		secondaryConditions = {
+			["Trigger cooldown"] = 3,
+		},
+		color = "ff7f7f",
+	},
+	[1011] = {
+		-- 18095 = Nightfall
+		name = L["%s!"]:format(GetSpellInfo(18095)),
+		icon = 18095,
+		class = "WARLOCK",
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(17941),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "7f007f",
+	},
+	[1012] = {
+		-- Smite = 25364
+		name = L["Free %s!"]:format(GetSpellInfo(25364)),
+		icon = 25364,
+		class = "PRIEST",
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(33154),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		disabled = true,
+		color = "ff0000",
+	},
+	[1013] = {
+		-- Overpower = 11585
+		name = L["%s!"]:format(GetSpellInfo(11585)),
+		icon = 11585,
+		class = "WARRIOR",
+		conditions = {
+			["Outgoing miss"] = { "DODGE", },
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(11585),
+			},
+		},
+		sticky = true,
+		color = "7f007f",
+	},
+	[1014] = {
+		-- Revenge = 30357
+		name = L["%s!"]:format(GetSpellInfo(30357)),
+		icon = 30357,
+		class = "WARRIOR",
+		conditions = {
+			["Incoming miss"] = { "BLOCK", "DODGE", "PARRY", },
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(30357),
+			},
+			["Warrior stance"] = {
+				"Defensive Stance",
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+		disabled = true,
+	},
+	[1015] = {
+		-- Riposte = 14251
+		name = L["%s!"]:format(GetSpellInfo(14251)),
+		icon = 14251,
+		class = "ROGUE",
+		conditions = {
+			["Incoming miss"] = { "PARRY", },
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(14251),
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	},--]]
+	[1016] = {
+		-- Maelstrom Weapon = 51532
+		name = L["%s!"]:format(GetSpellInfo(51532)),
+		icon = 51532,
+		class = "SHAMAN",
+		conditions = {
+			["Aura stack gain"] = {
+				{
+					spell = GetSpellInfo(51532),
+					unit = "player",
+					auraType = "BUFF",
+					amount = 5,
+				},
+			},
+		},
+		sticky = true,
+		color = "0000ff",
+	},
+	-- Deathknight-triggers by waallen
+	[1017] = {
+		-- Freezing Fog = 59052
+		name = L["%s!"]:format(GetSpellInfo(59052)),
+		icon = 59052,
+		class = "DEATHKNIGHT",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(59052),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "0000ff",
+	},
+	[1018] = {
+		-- Killing Machine	= 51130
+		name = L["%s!"]:format(GetSpellInfo(51130)),
+		icon = 51130,
+		class = "DEATHKNIGHT",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(51130),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "0000ff",
+	},
+	[1019] = {
+		-- Rune Strike = 56816
+		name = L["%s!"]:format(GetSpellInfo(56816)),
+		icon = 56816,
+		class = "DEATHKNIGHT",
+		conditions = {
+			["Incoming miss"] = { "DODGE", "PARRY", },
+		},
+		sticky = true,
+		color = "0000ff",
+		disabled = true,
+	},
+	[1020] = {
+		-- Lock and Load = 56344
+		name = L["%s!"]:format(GetSpellInfo(56344)),
+		icon = 56344,
+		class = "HUNTER",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(56344),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff0000",
+	},
+	[1021] = {
+		-- Brain Freeze = 57761
+		name = L["%s!"]:format(GetSpellInfo(44549)),
+		icon = 57761,
+		class = "MAGE",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(57761),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "0000ff",
+	},
+	[1022] = {
+		-- Sudden Death 52437
+		name = L["%s!"]:format(GetSpellInfo(52437)),
+		icon = 52437,
+		class = "WARRIOR",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(52437),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff0000",
+	},
+	[1023] = {
+		-- Eclipse
+		id = 28,
+		name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48518), GetSpellInfo(48465))), -- Starfire
+		icon = 48518,
+		class = "DRUID",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = 48518,
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffffff",
+	},
+	[1024] = {
+		name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48517), GetSpellInfo(48461))), -- Wrath
+		icon = 48517,
+		class = "DRUID",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = 48517,
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffffff",
+	},
+	[1025] = {
+		-- The Art of War
+		name = L["%s!"]:format(GetSpellInfo(53489)),
+		icon = 53489,
+		class = "PALADIN",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(53489),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	},
+	[1026] = {
+		name = L["%s!"]:format(GetSpellInfo(53351)),
+		icon = 53351,
+		class = "HUNTER",
+		conditions = {
+			["Unit health"] = {
+				[1] = {
+					unit = "target",
+					friendly = 0,
+					amount = 0.2,
+					comparator = "<=",
+				},
+			},
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(53351),
+			},
+		},
+		sticky = true,
+		color = "ff0000",
 	},
 }
 
+local dbDefaults = {
+	profile = {
+		triggers2 = defaultTriggers,
+		dbver = 1,
+	},
+}
 
 local effectiveRegistry = {}
 local function rebuildEffectiveRegistry()
 	for i = 1, #effectiveRegistry do
 		effectiveRegistry[i] = nil
 	end
-	for _,v in ipairs(Parrot_Triggers.db1.profile.triggers) do
+	for _,v in pairs(Parrot_Triggers.db1.profile.triggers2) do
 		if not v.disabled then
 			local classes = newSet((';'):split(v.class))
 			if classes[playerClass] then
@@ -452,7 +531,7 @@ end
 
 -- so triggers can be enabled/disabled from outside
 function Parrot_Triggers:setTriggerEnabled(triggerindex, enabled)
-	self.db1.profile.triggers[triggerindex].disabled = not enabled
+	self.db1.profile.triggers2[triggerindex].disabled = not enabled
 	rebuildEffectiveRegistry()
 end
 
@@ -474,50 +553,400 @@ function Parrot_Triggers:OnInitialize()
 	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 end
 
-local function insertDefaultTriggers()
+--[[============================================================================
+* This code is for converting Trigggers created before v1.10 to the
+* triggers2-table
+============================================================================--]]
+local triggers2translation = {
+	["Self buff gain"] = function(spell)
+			local arg = {
+				auraType = "BUFF",
+				unit = "player",
+				spell = spell,
+			}
+			return "Aura gain", arg
+		end,
+	["Self buff stacks gain"] = function(string)
+			local spell, amount = (","):split(string)
+			local arg = {
+				auraType = "BUFF",
+				unit = "player",
+				spell = spell,
+				amount = tonumber(amount),
+			}
+			return "Aura stack gain", arg
+		end,
+	["Self buff fade"] = function(spell)
+			local arg = {
+				auraType = "BUFF",
+				unit = "player",
+				spell = spell,
+			}
+			return "Aura fade", arg
+		end,
+	["Self debuff gain"] = function(spell)
+			local arg = {
+				auraType = "DEBUFF",
+				unit = "player",
+				spell = spell,
+			}
+			return "Aura gain", arg
+		end,
+	["Self debuff fade"] = function(spell)
+			local arg = {
+				auraType = "DEBUFF",
+				unit = "player",
+				spell = spell,
+			}
+			return "Aura fade", arg
+		end,
+	["Target buff gain"] = function(spell)
+			local arg = {
+				auraType = "BUFF",
+				unit = "target",
+				spell = spell,
+			}
+			return "Aura gain", arg
+		end,
+	["Target buff fade"] = function(spell)
+			local arg = {
+				auraType = "BUFF",
+				unit = "target",
+				spell = spell,
+			}
+			return "Aura fade", arg
+		end,
+	["Target debuff gain"] = function(spell)
+			local arg = {
+				auraType = "DEBUFF",
+				unit = "target",
+				spell = spell,
+			}
+			return "Aura gain", arg
+		end,
+	["Target debuff fade"] = function(spell)
+			local arg = {
+				auraType = "DEBUFF",
+				unit = "target",
+				spell = spell,
+			}
+			return "Aura fade", arg
+		end,
+	["Focus buff gain"] = function(spell)
+			local arg = {
+				auraType = "BUFF",
+				unit = "focus",
+				spell = spell,
+			}
+			return "Aura gain", arg
+		end,
+	["Focus buff fade"] = function(spell)
+			local arg = {
+				auraType = "BUFF",
+				unit = "focus",
+				spell = spell,
+			}
+			return "Aura fade", arg
+		end,
+	["Focus debuff gain"] = function(spell)
+			local arg = {
+				auraType = "DEBUFF",
+				unit = "focus",
+				spell = spell,
+			}
+			return "Aura gain", arg
+		end,
+	["Focus debuff fade"] = function(spell)
+			local arg = {
+				auraType = "DEBUFF",
+				unit = "focus",
+				spell = spell,
+			}
+			return "Aura fade", arg
+		end,
+	["Enter combat"] = true,
+	["Leave combat"] = true,
+	["Spell ready"] = function(spell)
+			return "Spell ready", spell
+		end,
 
+	["Enemy target health percent"] = function(param)
+			local arg = {
+				unit = "target",
+				friendly = 0,
+				amount = param,
+				comparator = "<=",
+			}
+			return "Unit health", arg
+		end,
+	["Friendly target health percent"] = function(param)
+			local arg = {
+				unit = "target",
+				friendly = 1,
+				amount = param,
+				comparator = "<=",
+			}
+			return "Unit health", arg
+		end,
+	["Self health percent"] = function(param)
+			local arg = {
+				unit = "player",
+				friendly = 1,
+				amount = param,
+				comparator = "<=",
+			}
+			return "Unit health", arg
+		end,
+	["Self mana percent"] = function(param)
+			local arg = {
+				unit = "player",
+				friendly = 1,
+				amount = param,
+				comparator = "<=",
+			}
+			return "Unit power", arg
+		end,
+	["Pet health percent"] = function(param)
+			local arg = {
+				unit = "pet",
+				friendly = 1,
+				amount = param,
+				comparator = "<=",
+			}
+			return "Unit health", arg
+		end,
+	["Pet mana percent"] = function(param)
+			local arg = {
+				unit = "pet",
+				friendly = 1,
+				amount = param,
+				comparator = "<=",
+			}
+			return "Unit power", arg
+		end,
+	["Incoming Block"] = function()
+			return "Incoming miss", "BLOCK"
+		end,
+	["Incoming Dodge"] = function()
+			return "Incoming miss", "DODGE"
+		end,
+	["Incoming Parry"] = function()
+			return "Incoming miss", "PARRY"
+		end,
+	["Outgoing Block"] = function()
+			return "Outgoing miss", "BLOCK"
+		end,
+	["Outgoing Dodge"] = function()
+			return "Outgoing miss", "DODGE"
+		end,
+	["Outgoing Parry"] = function()
+			return "Outgoing miss", "PARRY"
+		end,
+	["Incoming crit"] = true,
+	["Outgoing crit"] = true,
+	["Outgoing cast"] = function(param)
+			return "Outgoing cast", param
+		end,
+	["Incoming cast"] = function(param)
+			return "Incoming cast", param
+		end,
+	["Successful spell cast"] = function(param)
+			return "Successful spell cast", {}
+		end,
+	["Check every XX seconds"] = true,
+}
+
+local triggers2secondary = {
+	["Buff inactive"] = function(param)
+			return "Aura inactive", param
+		end,
+	["~Buff inactive"] = function(param)
+			return "~Aura inactive", param
+		end,
+	["In combat"] = true,
+	["~In combat"] = true,
+	["Spell ready"] = function(param)
+			return "Spell ready", param
+		end,
+	["Spell usable"] = function(param)
+			return "Spell usable", param
+		end,
+	["Minimum power amount"] = function(param)
+			local arg = {
+				unit = "player",
+				amount = param,
+				friendly = 1,
+				comparator = ">="
+			}
+			return "Unit power", arg
+		end,
+	["Minimum power percent"] = function(param)
+			local arg = {
+				unit = "player",
+				amount = param,
+				friendly = 1,
+				comparator = ">="
+			}
+			return "Unit power", arg
+		end,
+	["Warrior stance"] = function(param)
+			return "Warrior stance", param
+		end,
+	["~Warrior stance"] = function(param)
+			return "~Warrior stance", param
+		end,
+	["Druid Form"] = function(param)
+			return "Druid Form", param
+		end,
+	["~Druid Form"] = function(param)
+			return "~Druid Form", param
+		end,
+	["Deathknight presence"] = function(param)
+			return "Deathknight presence", param
+		end,
+	["~Deathknight presence"] = function(param)
+			return "~Deathknight presence", param
+		end,
+	["Grouped"] = true,
+	["Mounted"] = true,
+	["InVehicle"] = true,
+	["Target is player"] = true,
+	["~Grouped"] = true,
+	["~Mounted"] = true,
+	["~InVehicle"] = true,
+	["~Target is player"] = true,
+	["Lua function"] = function(arg)
+			return "Lua function", arg
+		end,
+	["Minimum target health"] = function(param)
+			local arg = {
+				unit = "target",
+				amount = param,
+				friendly = -1,
+				comparator = ">=",
+			}
+			return "Unit health", arg
+		end,
+	["Minimum target health percent"] = function(param)
+			local arg = {
+				unit = "target",
+				amount = param,
+				friendly = -1,
+				comparator = ">=",
+			}
+			return "Unit health", arg
+		end,
+	["Maximum target health percent"] = function(param)
+			local arg = {
+				unit = "target",
+				amount = param,
+				friendly = -1,
+				comparator = "<=",
+			}
+			return "Unit health", arg
+		end,
+	["Trigger cooldown"] = true,
+}
+
+
+local function convertTriggers2()
 	if not self.db1.profile.triggers then
-		self.db1.profile.triggers = {}
-		self.db1.profile.version = 0
-	end
-	local dbVer = self.db1.profile.version
-	if not dbVer then
-		self.db1.profile.version = 1
-		dbVer = 1
-	end
-
-	if dbVer == #default_triggers then
-		debug("nothing to do, returning...")
 		return
 	end
-
-
-	for k,v in ipairs(default_triggers) do
-		if not dbVer or k > dbVer then
-			debug(k .. ">" .. (dbVer or "nil"))
-			for _,t in ipairs(v) do
-				debug("insert trigger " .. t.name .. "(" .. t.id .. ")")
-				table.insert(self.db1.profile.triggers, t)
+	--- DEBUG!!
+--	wipe(self.db1.profile.triggers2)
+	--- DEBUG!!
+	for i,t in ipairs(self.db1.profile.triggers) do
+		local tmp = copyTable(t)
+		local cond = t.conditions
+		tmp.conditions = {}
+		for k,v in pairs(cond) do
+			if triggers2translation[k] == true then
+				tmp.conditions[k] = v
+			elseif type(triggers2translation[k]) == 'function' then
+				local name, arg = triggers2translation[k](v)
+				if Parrot_TriggerConditions:IsExclusive(name) then
+					tmp.conditions[name] = arg
+				else
+					if tmp.conditions[name] and type(tmp.conditions[name]) == 'table' then
+						table.insert(tmp.conditions[name], arg)
+					else
+						tmp.conditions[name] = { arg, }
+					end
+				end
+			else
+				debug(k, " not found")
 			end
-			if v.remove then
-				for _, r in ipairs(v.remove) do
-					for i,t in ipairs(self.db1.profile.triggers) do
-						if t.id == r then
-							-- remove deprecated triggers
-							table.remove(self.db1.profile.triggers, i)
+		end
+		cond = tmp.secondaryConditions
+		if cond then
+			tmp.secondaryConditions = {}
+			for k,v in pairs(cond) do
+				if triggers2secondary[k] == true then
+					tmp.secondaryConditions[k] = v
+				elseif type(triggers2secondary[k]) == 'function' then
+					local name, arg = triggers2secondary[k](v)
+					if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
+						tmp.secondaryConditions[name] = arg
+					else
+						if tmp.secondaryConditions[name] and type(tmp.secondaryConditions[name]) == 'table' then
+							table.insert(tmp.secondaryConditions[name], arg)
+						else
+							tmp.secondaryConditions[name] = { arg, }
 						end
 					end
+				else
+					debug(k, " not found")
 				end
 			end
 		end
+		if tmp.id then
+			tmp.id = nil
+		end
+		local index
+		for k,t2 in pairs(defaultTriggers) do
+			if t2.name == tmp.name then
+				debug("matched ", t2.name, " from old triggers")
+				index = k
+				break
+			end
+		end
+		if index then
+			self.db1.profile.triggers2[index] = tmp
+		else
+			table.insert(self.db1.profile.triggers2, tmp)
+		end
+		-- deleting old triggers
+--		self.db1.profile.triggers = nil
+			self.db1.profile.version = nil
 	end
-	debug("set profile.version to " .. #default_triggers)
-	self.db1.profile.version = #default_triggers
+end
 
+--[[============================================================================
+* End of 1.9->1.10 conversion code
+============================================================================--]]
+
+--[[
+* General purpose update-db-functions
+--]]
+local updateFuncs = {
+	[1] = convertTriggers2,
+}
+
+
+local function updateDB()
+	if not self.db1.profile.dbver then
+		self.db1.profile.dbver = 0
+	end
+	for i = (self.db1.profile.dbver + 1), #updateFuncs do
+		Parrot:Print(("updating DB to %d->%d"):format(i-1, i))
+		updateFuncs[i]()
+		self.db1.profile.dbver = i
+	end
 end
 
 function Parrot_Triggers:ApplyConfig()
-	insertDefaultTriggers()
+	updateDB()
 	Parrot.options.args.triggers = nil
 	self:OnOptionsCreate()
 	rebuildEffectiveRegistry()
@@ -525,9 +954,7 @@ end
 
 function Parrot_Triggers:OnEnable(first)
 
-	debug("enable Triggers")
-
-	insertDefaultTriggers()
+	updateDB()
 
 	self:AddRepeatingTimer(0.1, function()
 		Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
@@ -544,12 +971,16 @@ function Parrot_Triggers:OnEnable(first)
 				step = 0.1,
 				bigStep = 1,
 			},
+			exclusive = true,
 			check = function(param)
-				if not cooldowns[currentTrigger] then
+				-- special handling
+					debug("check called")
 					return true
-				end
-				local now = GetTime()
-				return now - cooldowns[currentTrigger] > param
+--				if not cooldowns[currentTrigger] then
+--					return true
+--				end
+--				local now = GetTime()
+--				return now - cooldowns[currentTrigger] > param
 			end,
 		}
 
@@ -564,62 +995,9 @@ function Parrot_Triggers:OnEnable(first)
 				step = 0.1,
 				bigStep = 1,
 			},
+			exclusive = true,
 		}
 
-		for _,data in ipairs(self.db1.profile.triggers) do
-			local t = newList()
-			for k,v in pairs(data.conditions) do
-				t[k] = v
-				data.conditions[k] = nil
-			end
-			local choices = Parrot_TriggerConditions:GetPrimaryConditionChoices()
-			for k,v in pairs(t) do
-				if choices[k] then
-					data.conditions[k] = v
-					t[k] = nil
-				else
-					local k_lower = k:lower()
-					for l,u in pairs(choices) do
-						if l:lower() == k_lower then
-							data.conditions[l] = v
-							t[k] = nil
-						end
-					end
-					if t[k] then
-						data.conditions[k] = v
-						t[k] = nil
-					end
-				end
-			end
-			t = del(t)
-			if data.secondaryConditions then
-				local t = newList()
-				for k,v in pairs(data.secondaryConditions) do
-					t[k] = v
-					data.secondaryConditions[k] = nil
-				end
-				local choices = Parrot_TriggerConditions:GetSecondaryConditionChoices()
-				for k,v in pairs(t) do
-					if choices[k] then
-						data.secondaryConditions[k] = v
-						t[k] = nil
-					else
-						local k_lower = k:lower()
-						for l,u in pairs(choices) do
-							if l:lower() == k_lower then
-								data.secondaryConditions[l] = v
-								t[k] = nil
-							end
-						end
-						if t[k] then
-							data.secondaryConditions[k] = v
-							t[k] = nil
-						end
-					end
-				end
-				t = del(t)
-			end
-		end
 	end
 
 	rebuildEffectiveRegistry()
@@ -638,14 +1016,11 @@ local oldIconName = {
 	["Counterattack"] = 27067,
 	["Frostbite"] = 12497,
 	["Impact"] = 12360,
-	["Kill Command"] = 34026,
-	["Mongoose Bite"] = 36916,
 	["Nightfall"] = 18095,
 	["Overpower"] = 11585,
 	["Rampage"] = 30033,
 	["Revenge"] = 30357,
 	["Riposte"] = 14251,
-
 }
 
 local function figureIconPath(icon)
@@ -690,76 +1065,202 @@ end
 local numberedConditions = {}
 local timerCheck = {}
 
+local function checkPrimaryCondition(condition, arg, check)
+	if condition == true then
+		return true
+	elseif check and type(check) == 'function' then
+		local good = check(condition, arg)
+		return good
+	else
+		return condition == arg
+	end
+end
+
+local function checkSecondaryCondition(name, value)
+	return Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, value)
+end
+
+local function checkTriggerCooldown(t, value)
+	if not cooldowns[t.name] then
+		return true
+	end
+	local now = GetTime()
+	return now - cooldowns[t.name] > value
+end
+
+local function performPeriodicCheck(name, param)
+	local val = timerCheck[name]
+	if not val then
+		val = 0
+	end
+	if param == 0 then
+		val = 0
+	else
+		val = (val + 0.1) % param
+	end
+	timerCheck[name] = val
+	if val < 0.1 then
+		return true
+	else
+		return false
+	end
+end
+
+local function showTrigger(t)
+	cooldowns[t.name] = GetTime()
+	local r, g, b = hexColorToTuple(t.color or 'ffffff')
+	local icon = figureIconPath(t.icon)
+
+	Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, icon)
+
+	if t.sound then
+		local sound = SharedMedia:Fetch('sound', t.sound)
+		if sound then
+			PlaySoundFile(sound)
+		end
+	end
+end
+
 function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 	if UnitIsDeadOrGhost("player") then
 		return
 	end
-	for _,v in ipairs(effectiveRegistry) do
-		local conditions = v.conditions
-		if conditions then
+	-- check all triggers in registry
+	for _,t in ipairs(effectiveRegistry) do
+		local conditions = t.conditions
+		-- if trigger has primary conditions
+		if conditions and conditions[name] then
+			-- assume it does not fit (pessimistic)
+			local good = false
+			--this can be just a single value or a table of params
 			local param = conditions[name]
-			if param then
-				local good = false
-				if param == true then
-				 	good = true
-				elseif check and type(check) == 'function' then
-					good = check(param, arg)
-				elseif type(arg) == "string" then
-					good = param == arg
-				elseif type(arg) == "number" then
-					if not numberedConditions[v] then
-						numberedConditions[v] = newList()
-					end
-					good = arg <= param and (not numberedConditions[v][name] or numberedConditions[v][name] > param)
-					numberedConditions[v][name] = arg
-				elseif name == "Check every XX seconds" then
-					local val = timerCheck[name]
-					if not val then
-						val = 0
-					end
-					if param == 0 then
-						val = 0
-					else
-						val = (val + 0.1) % param
-					end
-					timerCheck[name] = val
-					if val < 0.1 then
+			if type(param) == 'table' then
+				for i, v in ipairs(param) do
+					-- if one condition matches, the trigger fires
+					if checkPrimaryCondition(v, arg, check) then
 						good = true
+						break
 					end
 				end
-				if good then
-					local secondaryConditions = v.secondaryConditions
-					if secondaryConditions then
-						currentTrigger = v.name
-						for k, v in pairs(secondaryConditions) do
-							if not Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(k, v) then
+			elseif name == "Check every XX seconds" then
+				good = performPeriodicCheck(name, param)
+			else
+				good = checkPrimaryCondition(param, arg, check)
+			end
+			if good then
+				-- check secondary conditions
+				local secondaryConditions = t.secondaryConditions
+				if secondaryConditions then
+					-- check all conditions associated with the trigger
+					currentTrigger = t.name
+					for k, v in pairs(secondaryConditions) do
+						if k == "Trigger cooldown" then
+							good = checkTriggerCooldown(t, v) and good
+						elseif type(v) == 'table' and #v > 0 then
+						-- if the condition is not exclusive there may be multiple matchers
+							for _,cond in ipairs(v) do
+								if not checkSecondaryCondition(k,cond) then
+									good = false
+									break
+								end
+							end
+						else
+							if not checkSecondaryCondition(k,v) then
 								good = false
 								break
 							end
 						end
 					end
-					if good and Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass("Trigger cooldown", 0.1) then
-						cooldowns[v.name] = GetTime()
-						local r, g, b = hexColorToTuple(v.color or 'ffffff')
-						local icon = figureIconPath(v.icon)
-						-- getIconById(v.iconSpellId) or figureIconPath(v.icon)
-
-						Parrot_Display:ShowMessage(v.name, v.scrollArea or "Notification", v.sticky, r, g, b, v.font, v.fontSize, v.outline, icon)
-
-						if v.sound then
-							local sound = SharedMedia:Fetch('sound', v.sound)
-							if sound then
-								PlaySoundFile(sound)
-							end
-						end
-						if uid then
-							Parrot_CombatEvents:CancelEventsWithUID(uid)
-						end
+				end
+				-- check a 0.1-seconds cooldown too
+				if good and checkTriggerCooldown(t, 0.1) then
+--					debug("show trigger ", name)
+					showTrigger(t)
+					if uid then
+						Parrot_CombatEvents:CancelEventsWithUID(uid)
 					end
 				end
 			end
-		end
-	end
+
+			--[[
+
+			debug("type ", type(conditions[name]))
+			debug(conditions[name])
+			if type(conditions[name]) ~= 'table' then
+				debug("not a table, ", name, " must be exclusive")
+			elseif type(conditions[name]) == 'table' then
+				for i,ref in ipairs(conditions[name]) do
+					local param = ref
+					if param then
+						local good = false
+						if param == true then
+						 	good = true
+						elseif check and type(check) == 'function' then
+							good = check(param, arg)
+--							debug("check was " .. tostring(good))
+						elseif type(arg) == "string" then
+							good = param == arg
+						elseif type(arg) == "number" then
+							if not numberedConditions[v] then
+								numberedConditions[v] = newList()
+							end
+							good = arg <= param and (not numberedConditions[v][name] or numberedConditions[v][name] > param)
+							numberedConditions[v][name] = arg
+						elseif name == "Check every XX seconds" then
+--							local param = param
+--							debug("check for xx seconds")
+							local val = timerCheck[name]
+							if not val then
+								val = 0
+							end
+							if param == 0 then
+								val = 0
+							else
+								val = (val + 0.1) % param
+							end
+							timerCheck[name] = val
+							if val < 0.1 then
+								good = true
+							end
+						end
+						if good then
+							local secondaryConditions = v.secondaryConditions
+							if secondaryConditions then
+								currentTrigger = v.name
+								for k, v in pairs(secondaryConditions) do
+									debug("does it pass ", type(v))
+									debug(v)
+									if not Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(k, v) then
+										good = false
+										break
+									end
+								end
+							end
+							if good and Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass("Trigger cooldown", 0.1) then
+								cooldowns[v.name] = GetTime()
+								local r, g, b = hexColorToTuple(v.color or 'ffffff')
+								local icon = figureIconPath(v.icon)
+								-- getIconById(v.iconSpellId) or figureIconPath(v.icon)
+
+								Parrot_Display:ShowMessage(v.name, v.scrollArea or "Notification", v.sticky, r, g, b, v.font, v.fontSize, v.outline, icon)
+
+								if v.sound then
+									local sound = SharedMedia:Fetch('sound', v.sound)
+									if sound then
+										PlaySoundFile(sound)
+									end
+								end
+								if uid then
+									Parrot_CombatEvents:CancelEventsWithUID(uid)
+								end
+							end
+						end -- if good then
+					end -- if param then
+				end -- for i,ref in ipairs(condition) do
+			end--]]
+--			end -- for _,condition in pairs(conditions) do
+		end -- if conditions then
+	end -- for _,v in ipairs(effectiveRegistry) do
 end
 
 local function getSoundChoices()
@@ -800,16 +1301,16 @@ function Parrot_Triggers:OnOptionsCreate()
 						class = select(2, UnitClass("player")),
 						conditions = {},
 					}
-					local registry = self.db1.profile.triggers
+					local registry = self.db1.profile.triggers2
 					registry[#registry+1] = t
 					makeOption(t)
 					rebuildEffectiveRegistry()
 				end,
 				disabled = function()
-					if not self.db1.profile.triggers then
+					if not self.db1.profile.triggers2 then
 						return true
 					end
-					for _,v in ipairs(self.db1.profile.triggers) do
+					for _,v in ipairs(self.db1.profile.triggers2) do
 						if v.name == L["New trigger"] then
 							return true
 						end
@@ -817,7 +1318,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					return false
 				end
 			},
-			cleanup = {
+--[[			cleanup = {
 				type = 'execute',
 				order = 21,
 				name = L["Cleanup Triggers"],
@@ -825,7 +1326,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				desc = L["Delete all Triggers that belong to a different locale"],
 				func = function()
 
-					for _,v in ipairs(self.db1.profile.triggers) do
+					for _,v in ipairs(self.db1.profile.triggers2) do
 						if v.locale and v.locale ~= GetLocale() then
 
 							Parrot:Print(string.format("Deleting Trigger \"%s\" because it is \'%s\'", v.name, v.locale))
@@ -834,7 +1335,7 @@ function Parrot_Triggers:OnOptionsCreate()
 						end
 					end
 				end,
-			}
+			}--]]
 		}
 	}
 	Parrot:AddOption('triggers', triggers_opt)
@@ -909,9 +1410,9 @@ function Parrot_Triggers:OnOptionsCreate()
 	-- not local, declared above
 	function remove(t)
 		triggers_opt.args[tostring(t.arg)] = nil
-		for i,v in ipairs(self.db1.profile.triggers) do
+		for i,v in ipairs(self.db1.profile.triggers2) do
 			if v == t.arg then
-				table.remove(self.db1.profile.triggers, i)
+				table.remove(self.db1.profile.triggers2, i)
 				break
 			end
 		end
@@ -1022,64 +1523,180 @@ function Parrot_Triggers:OnOptionsCreate()
 		DEATHKNIGHT = CL["DEATHKNIGHT"],
 	}
 
-	local function addPrimaryCondition(t, name, localName)
+	local function addPrimaryCondition(t, name, localName, index)
+		local index = index
+		if not index then
+			index = 1
+		end
 		local opt = triggers_opt.args[tostring(t)].args.primary
 		local param, default = Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
-		if not param then
-			opt.args[name] = newDict(
-				'type', 'execute',
-				-- 'buttonText', "---",
-				'name', localName,
-				'desc', localName,
-				'func', function() end,
-				'order', -100
-			)
-			return true
-		else
-			local getter
-			if param.type == 'string' then
-				getter = function() return tostring(t.conditions[name] or "") end
+		local tmp
+
+		local function makeGetSet(k, ptype)
+			local getter, setter
+			if Parrot_TriggerConditions:IsExclusive(name) then
+				getter = function(info) return t.conditions[name][k] end
+				setter = function(info, value) t.conditions[name][k] = value end
 			else
-				getter = function() return t.conditions[name] end
+				getter = function(info) return t.conditions[name][info.arg][k] end
+				setter = function(info, value) t.conditions[name][info.arg][k] = value end
 			end
-			local tmp = newDict(
-				'name', localName,
-				'desc', localName,
-				'get', getter,
-				'set', function(info, value)
-					t.conditions[name] = tonumber(value) or value
-				end,
-				'order', -100
-			)
-			for k, v in pairs(param) do
-				if k == "type" then
-					tmp[k] = acetype[v] or v
+			return getter, setter
+		end
+
+		if param and param.type == 'group' then
+			tmp = copyTable(param)
+			for k,v in pairs(tmp.args) do
+				-- derive setter and getter for the option
+
+				local function ret(arg)
+					return arg
+				end
+				local save = v.save or ret
+				local parse = v.parse or ret
+				v.save = nil
+				v.parse = nil
+
+				local getter, setter
+				if Parrot_TriggerConditions:IsExclusive(name) then
+					getter = function(info) return parse(t.conditions[name][k]) end
+					setter = function(info, value) t.conditions[name][k] = save(value) end
 				else
-					tmp[k] = v
+					getter = function(info) return parse(t.conditions[name][info.arg][k]) end
+					setter = function(info, value) t.conditions[name][info.arg][k] = save(value) end
 				end
 
+				v.get = getter --function(info) return t.conditions[name][info.arg][k] end
+				v.set = setter --function(info, value) t.conditions[name][info.arg][k] = value end
+				if acetype[v.type] then
+					v.type = acetype[v.type]
+				end
+				v.arg = index
 			end
-			opt.args[name] = tmp
-			if default then
-				return default
+		else
+			tmp = {
+				type = 'group',
+				args = {},
+			}
+			if not param then
+				tmp.args.param = {
+					type = 'execute',
+					name = localName,
+					desc = localName,
+					func = function() end,
+				}
+			else
+				tmp = {
+					type = 'group',
+					args = {},
+				}
+				local param_opt = copyTable(param)
+				tmp.args.param = param_opt
+				param_opt.name = localName
+				param_opt.desc = localName
+
+				local function ret(arg)
+					return arg
+				end
+				local save = param.save or ret
+				local parse = param.parse or ret
+				param_opt.save = nil
+				param_opt.parse = nil
+				local getter, setter
+				if Parrot_TriggerConditions:IsExclusive(name) then
+					getter = function(info) return parse(t.conditions[name]) end
+					setter = function(info, value) t.conditions[name] = save(value) end
+				else
+					getter = function(info) return parse(t.conditions[name][info.arg]) end
+					setter = function(info, value) t.conditions[name][info.arg] = save(value) end
+				end
+
+				param_opt.get = getter
+				param_opt.set = setter
+				param_opt.arg = index
+				if acetype[param_opt.type] then
+					param_opt.type = acetype[param_opt.type]
+				end
 			end
-			if type(param.min) == "number" and type(param.max) == "number" then
-				return (param.max + param.min) / 2
-			end
-			return false
 		end
+		-- for any option
+		tmp.inline = true
+		tmp.name = localName
+		tmp.desc = localName
+		tmp.args.remove = {
+			type = 'execute',
+			name = L["Remove"],
+			desc = L["Remove condition"],
+			func = function(info)
+					local opt = triggers_opt.args[tostring(t)].args.primary
+					-- delete all other conditions with same name
+--					debug("delete all other options with the same name")
+					for k,v in pairs(opt.args) do
+						if k:match("^" .. name .. "%d*") then
+--							debug("delete ", k)
+							opt.args[k] = del(opt.args[k])
+						end
+					end
+					if Parrot_TriggerConditions:IsExclusive(name) then
+						t.conditions[name] = nil
+					else
+						t.conditions[name][index] = nil
+						-- and nil the table if empty
+						if not next(t.conditions[name]) then
+--							debug("no more conditions present, deleting subtable...")
+							t.conditions[name] = nil
+						else
+							-- there are still conditions present, so we rebuild the options
+							for i in pairs(t.conditions[name]) do
+								addPrimaryCondition(t, name, localName, i)
+							end
+						end
+					end
+				end,
+			arg = index,
+			order = -1,
+		}
+		opt.args[name .. index] = tmp
+		if not param then
+			return true
+		end
+		if default then
+			return default
+		end
+--		if param.type == 'group' then
+--			return {}
+--		end
+		if type(param.min) == "number" and type(param.max) == "number" then
+			return (param.max + param.min) / 2
+		end
+		if param.type == 'group' then
+			return {}
+		else
+			return nil
+		end
+--		return false
 	end
-	local function newPrimaryCondition(t, name)
-		local t = t.arg
+	local function newPrimaryCondition(info, name)
+		local t = info.arg
 		local opt = triggers_opt.args[tostring(t)].args.primary
 		local localName = Parrot_TriggerConditions:GetPrimaryConditionChoices()[name]
-		t.conditions[name] = addPrimaryCondition(t, name, localName)
+		if Parrot_TriggerConditions:IsExclusive(name) then
+			t.conditions[name] = addPrimaryCondition(t, name, localName)
+		else
+			local index
+			if t.conditions[name] then
+				index = #(t.conditions[name]) + 1
+			else
+				t.conditions[name] = {}
+				index = 1
+			end
+			t.conditions[name][index] = addPrimaryCondition(t, name, localName, index)
+		end
 	end
-	local function removePrimaryCondition(t, name)
-		local t = t.arg
+	local function removePrimaryCondition(t, name, index)
 		local opt = triggers_opt.args[tostring(t)].args.primary
-		opt.args[name] = del(opt.args[name])
-		t.conditions[name] = nil
+		opt.args[name .. index] = del(opt.args[name .. index])
+		t.conditions[name][index] = nil
 	end
 	local function hasNoPrimaryConditions(t)
 		return next(t.arg.conditions) == nil
@@ -1092,10 +1709,14 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		return true
 	end
-	local function getAvailablePrimaryConditions(t)
-		local tmp = newList()
+	local function getAvailablePrimaryConditions(info)
+		local t = info.arg
+		if not t.conditions then
+			return copyTable(Parrot_TriggerConditions:GetPrimaryConditionChoices())
+		end
+		local tmp = {}
 		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
-			if not t.arg.conditions[k] then
+			if not (t.conditions[k] and Parrot_TriggerConditions:IsExclusive(k)) then
 				tmp[k] = v
 			end
 		end
@@ -1111,64 +1732,166 @@ function Parrot_Triggers:OnOptionsCreate()
 		return tmp
 	end
 
-	local function addSecondaryCondition(t, name, localName)
+	local function addSecondaryCondition(t, name, localName, index)
+		local index = index
+		if not index then
+			index = 1
+		end
 		local opt = triggers_opt.args[tostring(t)].args.secondary
 		local param, default = Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
-		if not param then
-			opt.args[name] = newDict(
-				'type', 'execute',
-				-- 'buttonText', "---",
-				'name', localName,
-				'desc', localName,
-				'func', function() end,
-				'order', -100
-			)
-			return true
-		else
-			local tmp = newDict(
-				'name', localName,
-				'desc', localName,
-				'get', function()
-					return t.secondaryConditions[name]
-				end,
-				'set', function(info, value)
-					t.secondaryConditions[name] = value
-				end,
-				'order', -100
-			)
-			for k, v in pairs(param) do
-				-- TODO remove
-				if k ~= "usage" then
+		local tmp
 
+		if param and param.type == 'group' then
+			tmp = copyTable(param)
+			for k,v in pairs(tmp.args) do
+				-- derive setter and getter for the option
+				local function ret(arg)
+					return arg
+				end
+				local save = v.save or ret
+				local parse = v.parse or ret
+				v.save = nil
+				v.parse = nil
 
-				if k == "type" then
-					tmp[k] = acetype[v] or v
+				local getter, setter
+				if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
+					getter = function(info) return parse(t.secondaryConditions[name][k]) end
+					setter = function(info, value) t.secondaryConditions[name][k] = save(value) end
 				else
-					tmp[k] = v
+					getter = function(info) return parse(t.secondaryConditions[name][info.arg][k]) end
+					setter = function(info, value) t.secondaryConditions[name][info.arg][k] = save(value) end
 				end
 
+				v.get = getter --function(info) return t.conditions[name][info.arg][k] end
+				v.set = setter --function(info, value) t.conditions[name][info.arg][k] = value end
+				if acetype[v.type] then
+					v.type = acetype[v.type]
+				end
+				v.arg = index
+			end
+		else
+			tmp = {
+				type = 'group',
+				args = {},
+			}
+			if not param then
+				tmp.args.param = {
+					type = 'execute',
+					name = localName,
+					desc = localName,
+					func = function() end,
+				}
+			else
+				tmp = {
+					type = 'group',
+					args = {},
+				}
+				local param_opt = copyTable(param)
+
+				tmp.args.param = param_opt
+				param_opt.name = localName
+				param_opt.desc = localName
+
+				local function ret(arg)
+					return arg
+				end
+				local save = param.save or ret
+				local parse = param.parse or ret
+				param_opt.save = nil
+				param_opt.parse = nil
+
+				local getter, setter
+				if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
+					getter = function(info) return parse(t.secondaryConditions[name]) end
+					setter = function(info, value) t.secondaryConditions[name] = save(value) end
+				else
+					getter = function(info) return parse(t.secondaryConditions[name][info.arg]) end
+					setter = function(info, value) t.secondaryConditions[name][info.arg] = save(value) end
+				end
+
+				param_opt.get = getter
+				param_opt.set = setter
+				param_opt.arg = index
+				if acetype[param_opt.type] then
+					param_opt.type = acetype[param_opt.type]
 				end
 			end
-			opt.args[name] = tmp
-			if default then
-				return default
-			end
-			if type(param.min) == "number" and type(param.max) == "number" then
-				return (param.max + param.min) / 2
-			end
-			return false
+		end
+		-- for any option
+		tmp.inline = true
+		tmp.name = localName
+		tmp.desc = localName
+		tmp.args.remove = {
+			type = 'execute',
+			name = L["Remove"],
+			desc = L["Remove condition"],
+			func = function(info)
+					local opt = triggers_opt.args[tostring(t)].args.secondary
+					-- delete all other conditions with same name
+--					debug("delete all other options with the same name")
+					for k,v in pairs(opt.args) do
+						if k:match("^" .. name .. "%d*") then
+--							debug("delete ", k)
+							opt.args[k] = del(opt.args[k])
+						end
+					end
+					if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
+						t.secondaryConditions[name] = nil
+					else
+						t.secondaryConditions[name][index] = nil
+						-- and nil the table if empty
+						if not next(t.secondaryConditions[name]) then
+--							debug("no more conditions present, deleting subtable...")
+							t.secondaryConditions[name] = nil
+						else
+							-- there are still conditions present, so we rebuild the options
+							for i in pairs(t.secondaryConditions[name]) do
+								addSecondaryCondition(t, name, localName, i)
+							end
+						end
+					end
+				end,
+			arg = index,
+			order = -1,
+		}
+		opt.args[name .. index] = tmp
+		if not param then
+			return true
+		end
+		if default then
+			return default
+		end
+		if type(param.min) == "number" and type(param.max) == "number" then
+			return (param.max + param.min) / 2
+		end
+		if param.type == 'group' then
+			return {}
+		else
+			return nil
 		end
 	end
+
 	local function newSecondaryCondition(t, name)
 		local t = t.arg
 		local opt = triggers_opt.args[tostring(t)].args.secondary
 		local localName = Parrot_TriggerConditions:GetSecondaryConditionChoices()[name]
 		if not t.secondaryConditions then
-			t.secondaryConditions = newList()
+			t.secondaryConditions = {}
 		end
-		t.secondaryConditions[name] = addSecondaryCondition(t, name, localName)
+		if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
+			t.secondaryConditions[name] = addSecondaryCondition(t, name, localName)
+		else
+			local index
+			if t.secondaryConditions[name] then
+				index = #(t.secondaryConditions[name]) + 1
+			else
+				t.secondaryConditions[name] = {}
+				index = 1
+			end
+			t.secondaryConditions[name][index] = addSecondaryCondition(t, name, localName, index)
+		end
 	end
-	local function removeSecondaryCondition(t, name)
+local function removeSecondaryCondition(t, name)
 		local t = t.arg
 		local opt = triggers_opt.args[tostring(t)].args.secondary
 		opt.args[name] = del(opt.args[name])
@@ -1192,11 +1915,20 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		return true
 	end
-	local function getAvailableSecondaryConditions(t)
-		local t = t.arg
+	local function getAvailableSecondaryConditions(info)
+		local t = info.arg
+		if not t.secondaryConditions then
+			return copyTable(Parrot_TriggerConditions:GetSecondaryConditionChoices())
+		end
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do
-			if not t.secondaryConditions or not t.secondaryConditions[k] then
+		local kpos = k:gsub("^~", "")
+			if Parrot_TriggerConditions:SecondaryIsExclusive(kpos) then
+				if not t.secondaryConditions[k] and not t.secondaryConditions["~" .. k]
+						and not t.secondaryConditions[kpos] then
+					tmp[k] = v
+				end
+			else
 				tmp[k] = v
 			end
 		end
@@ -1380,11 +2112,10 @@ function Parrot_Triggers:OnOptionsCreate()
 							values = getAvailablePrimaryConditions,
 							get = false,
 							set = newPrimaryCondition,
-							disabled = hasAllPrimaryConditions,
 							arg = t,
 							order = 1,
 						},
-						remove = {
+						--[[remove = {
 							type = 'select',
 							name = L["Remove condition"],
 							desc = L["Remove a primary condition"],
@@ -1394,7 +2125,7 @@ function Parrot_Triggers:OnOptionsCreate()
 							disabled = hasNoPrimaryConditions,
 							arg = t,
 							order = 2,
-						}
+						}--]]
 					}
 				},
 				secondary = {
@@ -1410,11 +2141,10 @@ function Parrot_Triggers:OnOptionsCreate()
 							values = getAvailableSecondaryConditions,
 							get = false,
 							set = newSecondaryCondition,
-							disabled = hasAllSecondaryConditions,
 							arg = t,
 							order = 1,
 						},
-						remove = {
+						--[[remove = {
 							type = 'select',
 							name = L["Remove condition"],
 							desc = L["Remove a secondary condition"],
@@ -1424,25 +2154,49 @@ function Parrot_Triggers:OnOptionsCreate()
 							disabled = hasNoSecondaryConditions,
 							arg = t,
 							order = 2,
-						}
+						}--]]
 					}
 				},
 			}
 		}
 		triggers_opt.args[tostring(t)] = opt
-		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
-			if t.conditions[k] then
-				addPrimaryCondition(t, k, v)
+		for k,v in pairs(t.conditions) do
+			if type(v) == 'table' then
+--				debug(k, " is a table")
+--				debug(v)
+				for i,cond in ipairs(v) do
+					local localName = Parrot_TriggerConditions:GetPrimaryConditionChoices()[k]
+					addPrimaryCondition(t, k, localName, i)
+				end
+			else
+--				debug(k, " is not a table")
+				local localName = Parrot_TriggerConditions:GetPrimaryConditionChoices()[k]
+				addPrimaryCondition(t, k, localName)
 			end
 		end
-		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do
-			if t.secondaryConditions and t.secondaryConditions[k] then
-				addSecondaryCondition(t, k, v)
+		--[[
+		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
+			if t.conditions[k] then
+				for i in ipairs(t.conditions[k]) do
+					addPrimaryCondition(t, k, v, i)
+				end
+			end
+		end--]]
+		if t.secondaryConditions then
+			for k,v in pairs(t.secondaryConditions) do
+				local localName = Parrot_TriggerConditions:GetSecondaryConditionChoices()[k]
+				if type(v) == 'table' then
+					for i in pairs(v) do
+						addSecondaryCondition(t, k, localName, i)
+					end
+				else
+					addSecondaryCondition(t, k, localName)
+				end
 			end
 		end
 	end
 
-	for _,t in ipairs(self.db1.profile.triggers) do
+	for _,t in pairs(self.db1.profile.triggers2) do
 		makeOption(t)
 	end
 end

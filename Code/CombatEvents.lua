@@ -42,6 +42,7 @@ local dbDefaults = {
 			['*'] = {}
 		},
 		dbver = 0,
+		cancelUIDSoon = true,
 		filters = {},
 		sfilters = {
 			[GetSpellInfo(34460)] = { inc = true, out = true, }, -- Ferocious Inspiration
@@ -152,15 +153,18 @@ local function updateDB()
 	end
 end
 
+local cancelUIDSoonEnabled
+
 function Parrot_CombatEvents:OnInitialize()
 
 	Parrot_CombatEvents.db1 = Parrot.db1:RegisterNamespace("CombatEvents", dbDefaults)
+
+	cancelUIDSoonEnabled = self.db1.profile.cancelUIDSoon
 
 	Parrot_Display = Parrot:GetModule("Display")
 
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
-
 
 	if (disabled) then
 
@@ -185,10 +189,10 @@ function Parrot_CombatEvents:OnInitialize()
 
 	else
 
-		self:AddEventListener("Blizzard", "COMBAT_LOG_EVENT_UNFILTERED", "OnEvent");
+		Parrot:RegisterCombatLog(self)
 
 		--LootEvents
-		self:AddEventListener("Blizzard", "CHAT_MSG_LOOT", "OnLootEvent")
+--[[		self:AddEventListener("Blizzard", "CHAT_MSG_LOOT", "OnLootEvent")
 		self:AddEventListener("Blizzard", "CHAT_MSG_MONEY", "OnLootEvent")
 
 		-- Experiencegains
@@ -202,7 +206,7 @@ function Parrot_CombatEvents:OnInitialize()
 
 		-- Reputationgains
 		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")
-
+--]]
 	end
 
 end
@@ -296,10 +300,10 @@ end
 
 local function addEventListeners()
 	-- Combatlog
-		self:AddEventListener("Blizzard", "COMBAT_LOG_EVENT_UNFILTERED", "OnEvent");
+--		self:AddEventListener("Blizzard", "COMBAT_LOG_EVENT_UNFILTERED", "OnEvent");
 
 		--LootEvents
-		self:AddEventListener("Blizzard", "CHAT_MSG_LOOT", "OnLootEvent")
+--[[		self:AddEventListener("Blizzard", "CHAT_MSG_LOOT", "OnLootEvent")
 		self:AddEventListener("Blizzard", "CHAT_MSG_MONEY", "OnLootEvent")
 
 		-- Experiencegains
@@ -312,7 +316,7 @@ local function addEventListeners()
 		self:AddEventListener("Blizzard", "CHAT_MSG_SKILL", "OnSkillgainEvent" )
 
 		-- Reputationgains
-		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")
+		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")--]]
 end
 
 table.insert(onEnableFuncs, addEventListeners)
@@ -459,11 +463,12 @@ local function refreshEventRegistration(category, name)
 		end
 	else
 		if blizzardEvent then
-			Parrot_CombatEvents:AddEventListener(blizzardEvent_ns, blizzardEvent_ev, function(ns, event, ...)
+			Parrot_CombatEvents:AddEventListener(blizzardEvent_ev, function(ns, event, ...)
+--			Parrot_CombatEvents:AddEventListener(blizzardEvent_ns, blizzardEvent_ev, function(ns, event, ...)
 				local info = newList(...)
 				info.namespace = ns
 				info.event = event
-				info.uid = -RockEvent.currentUID
+--				info.uid = -RockEvent.currentUID
 				Parrot_CombatEvents:TriggerCombatEvent(category, name, info)
 				info = del(info)
 			end)
@@ -576,6 +581,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				get = function() return self.db1.profile.hideUnitNames end,
 				set = function(info, value)
 						self.db1.profile.hideUnitNames = value
+					end,
+			},
+			cancelUIDSoon = {
+				type = 'toggle',
+				name = L["Hide events used in triggers"],
+				desc = L["Hides combat events when they were used in triggers"],
+				get = function() return self.db1.profile.cancelUIDSoon end,
+				set = function(info, value)
+						self.db1.profile.cancelUIDSoon = value
+						cancelUIDSoonEnabled = value
 					end,
 			},
 			Incoming = {
@@ -1592,7 +1607,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 end
 
 -- TODO make local again
-self.combatLogEvents = {}
+local combatLogEvents = {}
+self.combatLogEvents = combatLogEvents
+local registeredBlizzardEvents = {}
+self.blizzardEvents = registeredBlizzardEvents
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -1684,16 +1702,13 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 	if type(defaultTag) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. defaultTag must be a %q, got %q."):format("string", type(defaultTag)), 2)
 	end
-	local parserEvent = data.parserEvent
-	if parserEvent and type(parserEvent) ~= "table" then
-		error(("Bad argument #2 to `RegisterCombatEvent'. parserEvent must be a %q or nil, got %q."):format("table", type(parserEvent)), 2)
+	if data.parserEvent then
+		debug(("RegisterCombatEvent: %s uses deprecated entry \"parserEvent\""):format(data.name))
+		-- error("Bad argument #2 to `RegisterCombatEvent'. parserEvent is deprecated")
 	end
 	local blizzardEvent = data.blizzardEvent
 	if blizzardEvent and type(blizzardEvent) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. blizzardEvent must be a %q or nil, got %q."):format("string", type(blizzardEvent)), 2)
-	end
-	if parserEvent and blizzardEvent then
-		error("Bad argument #2 to `RegisterCombatEvent'. blizzardEvent and parserEvent cannot coexist.", 2)
 	end
 	local tagTranslations = data.tagTranslations
 	if tagTranslations and type(tagTranslations) ~= "table" then
@@ -1717,7 +1732,6 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 	local combatLogEvents = data.combatLogEvents
 	if combatLogEvents then
 		for _, v in ipairs(combatLogEvents) do
-
 			local eventType = v.eventType
 			if not self.combatLogEvents[eventType] then
 				self.combatLogEvents[eventType] = {}
@@ -1730,9 +1744,42 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			if type(check) ~= "function" then
 				error(("Bad argument #2 to `RegisterCombatEvent'. check must be a %q or nil, got %q."):format("function", type(check)), 2)
 			end
-			table.insert(self.combatLogEvents[eventType], { category = data.category, name = data.name, infofunc = v.func, checkfunc = check })
+			table.insert(self.combatLogEvents[eventType], {
+					category = category,
+					name = data.name,
+					infofunc = v.func,
+					checkfunc = check,
+				}
+			)
 		end
+	end
 
+	local blizzardEvents = data.blizzardEvents
+	if blizzardEvents then
+		for k,v in pairs(blizzardEvents) do
+			local check = v.check
+			if not check then
+				check = function() return true end
+			end
+			if type(check) ~= "function" then
+				error(("Bad argument #2 to `RegisterCombatEvent'. check must be a %q or nil, got %q."):format("function", type(check)), 2)
+			end
+			local parse = v.parse
+			if not parse then
+				parse = function() return { check() } end
+			end
+			if not registeredBlizzardEvents[k] then
+				registeredBlizzardEvents[k] = newList()
+			end
+			table.insert(registeredBlizzardEvents[k], {
+					category = category,
+					name = data.name,
+					parse = parse,
+					check = check,
+				}
+			)
+			Parrot:RegisterBlizzardEvent(self, k, "HandleBlizzardEvent")
+		end
 	end
 
 	createOption(category, name)
@@ -1994,6 +2041,21 @@ local nextFrameCombatEvents = {}
 local runCachedEvents
 local cancelUIDSoon = {}
 
+function Parrot_CombatEvents:CancelEventsWithUID(uid)
+	if not cancelUIDSoonEnabled then
+		return
+	end
+	local i = #nextFrameCombatEvents
+	while i >= 1 do
+		     local v = nextFrameCombatEvents[i]
+		     if v and uid == v[3].uid then
+		             table.remove(nextFrameCombatEvents, i)
+		     end
+		     i = i - 1
+	end
+	cancelUIDSoon[uid] = true
+end
+
 --[[----------------------------------------------------------------------------------
 Arguments:
 	string - the name of the category in English
@@ -2018,16 +2080,6 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	end
 	if cancelUIDSoon[info.uid] then
 		return
-	elseif not info.uid then
-		local uid
-		if RockEvent.currentUID then
-			uid = -RockEvent.currentUID
-		elseif RockTimer.currentUID then
-			uid = -RockTimer.currentUID - 1e10
-		end
-		if cancelUIDSoon[uid] then
-			return
-		end
 	end
 	if type(category) ~= "string" then
 		error(("Bad argument #2 to `TriggerCombatEvent'. %q expected, got %q."):format("string", type(category)), 2)
@@ -2175,15 +2227,6 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	end
 	for k, v in pairs(info) do
 		infoCopy[k] = v
-	end
-	if not infoCopy.uid then
-		local uid
-		if RockEvent.currentUID then
-			uid = -RockEvent.currentUID
-		elseif RockTimer.currentUID then
-			uid = -RockTimer.currentUID - 1e10
-		end
-		infoCopy.uid = uid
 	end
 
 	if throttleDone then
@@ -2368,23 +2411,7 @@ function runCachedEvents()
 	end
 end
 
-function Parrot_CombatEvents:CancelEventsWithUID(uid)
-	local i = #nextFrameCombatEvents
-	while i >= 1 do
-		local v = nextFrameCombatEvents[i]
-		if v and uid == v[3].uid then
-			table.remove(nextFrameCombatEvents, i)
-		end
-		i = i - 1
-	end
-	cancelUIDSoon[uid] = true
-end
-
-function Parrot_CombatEvents:OnEvent( _, _, ...)
-	Parrot_CombatEvents:HandleEvent( ... )
-end
-
-local GOLD_AMOUNT = _G.GOLD_AMOUNT
+--[[local GOLD_AMOUNT = _G.GOLD_AMOUNT
 local SILVER_AMOUNT = _G.SILVER_AMOUNT
 local COPPER_AMOUNT = _G.COPPER_AMOUNT
 
@@ -2460,7 +2487,7 @@ function Parrot_CombatEvents:OnLootEvent(_, eventName, chatmsg)
 	end
 
 end
-
+--]]
 local FACTION_STANDING_INCREASED = _G.FACTION_STANDING_INCREASED
 local FACTION_STANDING_DECREASED = _G.FACTION_STANDING_DECREASED
 
@@ -2524,6 +2551,33 @@ function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
 	end
 end
 
+function Parrot_CombatEvents:HandleBlizzardEvent(uid, _, eventName, ...)
+	if not self:IsActive() then
+		return
+	end
+	local handlers = registeredBlizzardEvents[eventName]
+	if handlers then
+		for i,v in ipairs(handlers) do
+			if type(v.check) ~= 'function' then
+				debug(uid, " ", eventName)
+			end
+			if v.check(...) then
+				local info = v.parse(...)
+				if type(info) == 'boolean' then
+--					debug(eventName, " triggers boolean parse (", info, ").")
+--					debug(v)
+				end
+				if info then
+					if type(info) == 'table' then
+						info.uid = uid
+					end
+					self:TriggerCombatEvent(v.category, v.name, info)
+				end
+			end
+		end
+	end
+end
+
 local sfilters
 onEnableFuncs[#onEnableFuncs + 1] = function()
 	sfilters = self.db1.profile.sfilters
@@ -2541,32 +2595,25 @@ local function sfiltered(info)
 	return false
 end
 
-function Parrot_CombatEvents:HandleEvent(timestamp, eventtype, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
+--[[function Parrot_CombatEvents:OnEvent( _, _, ...)
+	Parrot_CombatEvents:HandleEvent( ... )
+end--]]
 
-	if not Parrot:IsModuleActive(Parrot_CombatEvents) then
+function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, _, timestamp, eventType, ...)
+	if not self:IsActive() then
 		return
 	end
-	local registeredHandlers = self.combatLogEvents[eventtype]
+	local registeredHandlers = self.combatLogEvents[eventType]
 	if registeredHandlers then
 		for _, v in ipairs(registeredHandlers) do
-
-			if v.checkfunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...) then
-				local info = v.infofunc(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
-				if info then
-					if sfiltered(info) then
-						info = del(info)
-						return
-					end
---[[					if self.db1.profile.hideSkillNames then
-						info.abilityName = ""
-					end--]]
-					info.uid = (srcGUID or 0) + (dstGUID or 0) + timestamp
+			if v.checkfunc(...) then
+				local info = v.infofunc(...)
+				if info and not sfiltered(info) then
+					info.uid = uid
 					self:TriggerCombatEvent(v.category, v.name, info)
-					info = del( info )
+					info = del(info)
 				end
 			end
-
 		end
 	end
-
 end

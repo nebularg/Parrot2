@@ -157,6 +157,8 @@ function Parrot.inheritFontChoices()
 end
 function Parrot:OnEnable()
 
+	self:AddEventListener("COMBAT_LOG_EVENT_UNFILTERED")
+
 	_G.SHOW_COMBAT_TEXT = "0"
 	if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
 	   _G.CombatText_UpdateDisplayedMessages()
@@ -181,6 +183,7 @@ function Parrot:OnEnable()
 		self:ToggleModuleActive(module, true)
 	end
 end
+
 function Parrot:OnDisable()
 	SetCVar("CombatDamage", "1")
 	SetCVar("CombatHealing", "1")
@@ -190,6 +193,7 @@ function Parrot:OnDisable()
 		self:ToggleModuleActive(module, false)
 	end
 end
+
 function Parrot:OnProfileEnable()
 	if self:IsActive() then
 		self:ToggleActive(false)
@@ -197,10 +201,91 @@ function Parrot:OnProfileEnable()
 	end
 end
 
-
 function Parrot:ShowConfig()
 	initOptions()
 	AceConfigDialog:Open("Parrot")
+end
+
+local combatLogHandlers = {}
+local uid = 0
+
+local function nextUID()
+	uid = uid + 1
+	return uid
+end
+
+function Parrot:RegisterCombatLog(mod)
+	if type(mod.HandleCombatlogEvent) ~= 'function' then
+		error("mod must have function named HandleCombatlogEvent")
+	end
+	table.insert(combatLogHandlers, mod)
+end
+
+function Parrot:UnregisterCombatLog(mod)
+	for i,v in ipairs(combatLogHandlers) do
+		if v == mod then
+			table.remove(i)
+		end
+	end
+end
+
+function Parrot:COMBAT_LOG_EVENT_UNFILTERED(...)
+	local uid = nextUID()
+--	debug("combatlog-event, uid: ", uid)
+	for _, v in ipairs(combatLogHandlers) do
+		v:HandleCombatlogEvent(uid, ...)
+	end
+end
+
+local blizzardEventHandlers = {}
+Parrot.bleHandlers = blizzardEventHandlers
+function Parrot:RegisterBlizzardEvent(mod, eventName, handlerfunc)
+	if handlerfunc then
+		if type(mod[handlerfunc]) ~= 'function' then
+			error(("module must contain a function named %s"):format(handlerfunc))
+		end
+	else
+		if type(mod[eventName]) ~= 'function' then
+			error(("module must contain a function named %s"):format(eventName))
+		end
+	end
+
+	if not blizzardEventHandlers[eventName] then
+		blizzardEventHandlers[eventName] = {}
+		self:AddEventListener(eventName, "OnBlizzardEvent")
+	end
+	if not blizzardEventHandlers[eventName][mod] then
+		blizzardEventHandlers[eventName][mod] = {}
+	end
+
+	blizzardEventHandlers[eventName][mod] = handlerfunc or eventName
+
+end
+
+function Parrot:UnRegisterBlizzardEvent(mod, eventName)
+	blizzardEventHandlers[eventName][mod] = nil
+	if not next(blizzardEventHandlers[eventName]) then
+		self:RemoveEventListener(eventName)
+		blizzardEventHandlers[eventName] = nil
+	end
+end
+
+function Parrot:UnRegisterAllEvents(mod)
+	for eventName,v in pairs(blizzardEventHandlers) do
+		v[mod] = nil
+	end
+end
+
+function Parrot:OnBlizzardEvent(ns, eventName, ...)
+	local uid = nextUID()
+	-- should not happen
+--[[	if not blizzardEventHandlers[eventName] then
+		debug("remove stale registered event ", eventName)
+		self:RemoveEventListener(eventName)
+	end--]]
+	for k,v in pairs(blizzardEventHandlers[eventName]) do
+			k[v](k, uid, ns, eventName, ...)
+	end
 end
 
 function Parrot:OnOptionsCreate()

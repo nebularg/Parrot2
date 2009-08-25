@@ -1,6 +1,6 @@
 local Parrot = Parrot
 
-local mod = Parrot:NewModule("TriggerConditionsData")
+local mod = Parrot:NewModule("TriggerConditionsData", "LibRockEvent-1.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
 
@@ -13,19 +13,109 @@ function mod:OnEnable()
 	end
 end
 
+local unitChoices = {
+	["player"] = PLAYER,
+	["focus"] = FOCUS,
+	["target"] = TARGET,
+	["pet"] = PET,
+}
+
+local comparatorChoices = {
+	["<"] = "<",
+	["<="] = "<=",
+	["=="] = "==",
+	[">="] = ">=",
+	[">"] = ">",
+--	["~="] = "~=",
+}
+local friendlyChoices = {
+	[1] = FRIENDLY,
+	[0] = HOSTILE,
+	[-1] = L["Any"],
+}
+
+local comparatorFunc = {
+	["<"] = function(arg1, arg2) return arg1 < arg2 end,
+	["<="] = function(arg1, arg2) return arg1 <= arg2 end,
+	["=="] = function(arg1, arg2) return arg1 == arg2 end,
+	[">="] = function(arg1, arg2) return arg1 >= arg2 end,
+	[">"] = function(arg1, arg2) return arg1 > arg2 end,
+--	["~="] = function(arg1, arg2) return arg1 ~= arg2 end,
+}
+
+local function ret(arg)
+	return arg
+end
+
+local function compare(val1, comparator, val2)
+--	debug("compare: ", val1, comparator, val2, " = ", comparatorFunc[comparator](val1, val2))
+	return comparatorFunc[comparator](val1, val2)
+end
+
+local function parseAmount(arg)
+	if not arg then
+		return ""
+	elseif arg <= 1 then
+		return (arg*100) .. "%"
+	else
+		return tostring(arg)
+	end
+end
+
+local function saveAmount(arg)
+	if arg:match("%d+%%") then
+		local percent = tonumber(arg:sub(1,arg:len()-1))
+		if percent then
+			return percent/100
+		end
+		return
+	else
+		return tonumber(arg)
+	end
+end
+
+local unitHealthStates = {
+	player = {},
+	target = {},
+	pet = {},
+	focus = {},
+}
 
 Parrot:RegisterPrimaryTriggerCondition {
-	name = "Enemy target health percent",
-	localName = L["Enemy target health percent"],
-	defaultParam = 0.5,
+	name = "Unit health",
+	localName = L["Unit health"],
+--	defaultParam = 0.5,
 	param = {
-		type = "number",
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			friendly = {
+				type = 'select',
+				name = L["Hostility"],
+				desc = L["Whether the unit should be friendly or hostile"],
+				values = friendlyChoices,
+			},
+			amount = {
+				type = 'string',
+				name = L["Amount"],
+				desc = L["Amount of health to compare"],
+				parse = parseAmount,
+				save = saveAmount,
+			},
+			comparator = {
+				type = 'select',
+				name = L["Comparator Type"],
+				desc = L["How to compare actual value with parameter"],
+				values = comparatorChoices,
+			},
+		},
 	},
+	stateful = true,
 	getCurrent = function()
 		if not UnitExists("target") or not UnitCanAttack("player", "target") or UnitIsDeadOrGhost("target") then
 			return nil
@@ -34,151 +124,208 @@ Parrot:RegisterPrimaryTriggerCondition {
 		end
 	end,
 	events = {
-		UNIT_HEALTH = "target",
-		UNIT_MAXHEALTH = "target",
-		UNIT_FACTION = "target",
-		PLAYER_TARGET_CHANGED = true,
+		UNIT_HEALTH = ret,
+		UNIT_MAXHEALTH = ret,
+		UNIT_FACTION = ret,
+--		PLAYER_TARGET_CHANGED = true,
 	},
+	check = function(ref, info)
+			-- check if ref is complete
+			if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
+				return false
+			end
+			-- only check the unit
+			local good = ref.unit == info
+			-- check the friendly-flag
+			if good and ref.friendly >= 0 then
+				good = ref.friendly == 0 and (UnitIsFriend("player", info) == nil) or
+					ref.friendly == UnitIsFriend("player", info)
+			end
+			-- everything fits, check the amount
+			if good then
+				local amount = ref.amount
+				if amount < 1 then
+					amount = UnitHealthMax(info) * ref.amount
+				end
+				good = compare(UnitHealth(info), ref.comparator, amount)
+				-- check if the state has changed
+				if good ~= unitHealthStates[ref.unit][ref] then
+					unitHealthStates[ref.unit][ref] = good
+					return good
+				end
+			end
+		end,
 }
 
+local powerTypeChoices = {
+	["*"] = L["Any"],
+	["MANA"] = MANA,
+	["RAGE"] = RAGE,
+	["FOCUS"] = FOCUS,
+	["ENERGY"] = ENERGY,
+	["HAPPINESS"] = HAPPINESS,
+	["RUNES"] = RUNES,
+	["RUNIC_POWER"] = RUNIC_POWER,
+}
+
+local unitPowerStates = {
+	player = {},
+	target = {},
+	pet = {},
+	focus = {},
+}
+
+--[[
+-- wipe the states for units that can change when they are changed
+--]]
+table.insert(onEnableFuncs, function()
+		mod:AddEventListener("PLAYER_TARGET_CHANGED", function()
+				debug("wipe target states")
+				wipe(unitHealthStates.target)
+				wipe(unitPowerStates.target)
+			end
+		)
+	end
+)
+table.insert(onEnableFuncs, function()
+		mod:AddEventListener("PLAYER_FOCUS_CHANGED", function()
+				debug("wipe focus states")
+				wipe(unitHealthStates.focus)
+				wipe(unitPowerStates.focus)
+			end
+		)
+	end
+)
+table.insert(onEnableFuncs, function()
+		mod:AddEventListener("PLAYER_PET", function()
+				wipe(unitHealthStates.pet)
+				wipe(unitPowerStates.pet)
+			end
+		)
+	end
+)
+
 Parrot:RegisterPrimaryTriggerCondition {
-	name = "Friendly target health percent",
-	localName = L["Friendly target health percent"],
+	name = "Unit power",
+	localName = L["Unit power"],
 	param = {
-		type = "number",
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			friendly = {
+				type = 'select',
+				name = L["Hostility"],
+				desc = L["Whether the unit should be friendly or hostile"],
+				values = friendlyChoices,
+			},
+			amount = {
+				type = 'string',
+				name = L["Amount"],
+				desc = L["Amount of health to compare"],
+				parse = parseAmount,
+				save = saveAmount,
+			},
+			comparator = {
+				type = 'select',
+				name = L["Comparator Type"],
+				desc = L["How to compare actual value with parameter"],
+				values = comparatorChoices,
+			},
+		},
 	},
-	getCurrent = function()
-		if not UnitExists("target") or not UnitIsFriend("player", "target") or UnitIsDeadOrGhost("target") then
-			return nil
-		else
-			return UnitHealth("target")/UnitHealthMax("target")
-		end
-	end,
 	events = {
-		UNIT_HEALTH = "target",
-		UNIT_MAXHEALTH = "target",
-		UNIT_FACTION = "target",
-		PLAYER_TARGET_CHANGED = true,
+		UNIT_MANA = ret,
+		UNIT_MAXMANA = ret,
+		UNIT_DISPLAYPOWER = ret,
 	},
+	check = function(ref, info)
+			-- check if ref is complete
+			if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
+				return false
+			end
+			-- only check the unit
+			local good = ref.unit == info
+			-- check the friendly-flag
+			if good and ref.friendly >= 0 then
+				good = ref.friendly == 0 and (UnitIsFriend("player", info) == nil) or
+					ref.friendly == UnitIsFriend("player", info)
+			end
+			-- everything fits, check the amount
+			if good then
+				local amount = ref.amount
+				if amount < 1 then
+					amount = UnitPowerMax(info) * ref.amount
+				end
+				good = compare(UnitPower(info), ref.comparator, amount)
+				-- check if the state has changed
+				if good ~= unitPowerStates[ref.unit][ref] then
+					unitPowerStates[ref.unit][ref] = good
+					return good
+				end
+			end
+		end,
+}
+
+local missTypeChoices = {
+	["ABSORB"] = ABSORB,
+	["BLOCK"] = BLOCK,
+	["DEFLECT"] = DEFLECT,
+	["DODGE"] = DODGE,
+	["EVADE"] = EVADE,
+	["IMMUNE"] = IMMUNE,
+	["MISS"] = MISS,
+	["PARRY"] = PARRY,
+	["REFLECT"] = REFLECT,
+	["RESIST"] = RESIST,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
-	name = "Self health percent",
-	localName = L["Self health percent"],
-	param = {
-		type = "number",
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
-	},
-	getCurrent = function()
-		if UnitIsDeadOrGhost("player") then
-			return nil
-		else
-			return UnitHealth("player")/UnitHealthMax("player")
-		end
-	end,
-	events = {
-		UNIT_HEALTH = "player",
-		UNIT_MAXHEALTH = "player",
-	},
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Self mana percent",
-	localName = L["Self mana percent"],
-	param = {
-		type = "number",
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
-	},
-	getCurrent = function()
-		if UnitIsDeadOrGhost("player") or UnitPowerType("player") ~= 0 then
-			return nil
-		else
-			return UnitMana("player")/UnitManaMax("player")
-		end
-	end,
-	events = {
-		UNIT_MANA = "player",
-		UNIT_MAXMANA = "player",
-		UNIT_DISPLAYPOWER = "player",
-	},
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Pet health percent",
-	localName = L["Pet health percent"],
-	param = {
-		type = "number",
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
-	},
-	getCurrent = function()
-		if not UnitExists("pet") or UnitIsDeadOrGhost("pet") then
-			return nil
-		end
-		return UnitHealth("pet")/UnitHealthMax("pet")
-	end,
-	events = {
-		UNIT_HEALTH = "pet",
-		UNIT_MAXHEALTH = "pet",
-		PLAYER_PET_CHANGED = "pet",
-	},
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Pet mana percent",
-	localName = L["Pet mana percent"],
-	param = {
-		type = "number",
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
-	},
-	getCurrent = function()
-		if not UnitExists("pet") or UnitIsDeadOrGhost("pet") then
-			return nil
-		end
-		return UnitHealth("pet")/UnitHealthMax("pet")
-	end,
-	events = {
-		UNIT_MANA = "pet",
-		UNIT_MAXMANA = "pet",
-		PLAYER_PET_CHANGED = "pet",
-	},
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Incoming Block",
-	localName = L["Incoming block"],
+	name = "Incoming miss",
+	localName = L["Incoming miss"],
 	combatLogEvents = {
 		{
 			eventType = "SWING_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if dstGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
+				if dstGUID ~= UnitGUID("player") then
 					return nil
 				end
-
-				return true
+				return missType
 			end,
-		}
+		},
+	},
+	param = {
+		type = 'select',
+		name = L["Miss type"],
+		desc = L["Reason for the miss"],
+		values = missTypeChoices,
 	}
+}
+
+Parrot:RegisterPrimaryTriggerCondition {
+	name = "Outgoing miss",
+	localName = L["Outgoing miss"],
+	combatLogEvents = {
+		{
+			eventType = "SWING_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+				if srcGUID ~= UnitGUID("player") then
+					return nil
+				end
+				return missType
+			end,
+		},
+	},
+	param = {
+		type = 'select',
+		name = L["Miss type"],
+		desc = L["Reason for the miss"],
+		values = missTypeChoices,
+	},
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -215,90 +362,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 				end
 
 				return true
-
 			end,
 
 		},
 	},
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Incoming Dodge",
-	localName = L["Incoming dodge"],
-	combatLogEvents = {
-		{
-			eventType = "SWING_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-					return nil
-				end
-
-				return true
-			end,
-		},
-		{
-			eventType = "SPELL_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if dstGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-					return nil
-				end
-
-				return true
-			end,
-		},
-	}
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Incoming Parry",
-	localName = L["Incoming parry"],
-	combatLogEvents = {
-		{
-			eventType = "SWING_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-					return nil
-				end
-
-				return true
-			end,
-		},
-		{
-			eventType = "SPELL_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if dstGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-					return nil
-				end
-
-				return true
-			end,
-		}
-	}
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Outgoing Block",
-	localName = L["Outgoing block"],
-	combatLogEvents = {
-		{
-			eventType = "SWING_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-					return nil
-				end
-				return true
-			end,
-		},
-		{
-			eventType = "SPELL_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if srcGUID ~= UnitGUID("player") or missType ~= "BLOCK" then
-					return nil
-				end
-				return true
-			end,
-		},
-	}
+	exclusive = true,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -340,60 +408,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 
 		},
 	},
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Outgoing Dodge",
-	localName = L["Outgoing dodge"],
-	combatLogEvents = {
-		{
-			eventType = "SWING_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-
-				if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-					return nil
-				end
-				return true
-			end,
-		},
-		{
-			eventType = "SPELL_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-
-				if srcGUID ~= UnitGUID("player") or missType ~= "DODGE" then
-					return nil
-				end
-				return true
-			end,
-		},
-	}
-}
-
-Parrot:RegisterPrimaryTriggerCondition {
-	name = "Outgoing Parry",
-	localName = L["Outgoing parry"],
-	combatLogEvents = {
-		{
-			eventType = "SWING_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-
-				if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-					return nil
-				end
-				return true
-			end,
-		},
-		{
-			eventType = "SPELL_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-
-				if srcGUID ~= UnitGUID("player") or missType ~= "PARRY" then
-					return nil
-				end
-				return true
-			end,
-		},
-	}
+	exclusive = true,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -471,42 +486,91 @@ local function manastep()
 end
 
 Parrot:RegisterSecondaryTriggerCondition {
-	name = "Minimum power amount",
-	localName = L["Minimum power amount"],
-	defaultParam = 0.5,
+	name = "Unit power",
+	localName = L["Unit power"],
 	param = {
-		type = 'number',
-		min = 0,
-		max = UnitManaMax("player"),
-		step = 1,
-		bigStep = manastep(),
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			friendly = {
+				type = 'select',
+				name = L["Hostility"],
+				desc = L["Whether the unit should be friendly or hostile"],
+				values = friendlyChoices,
+			},
+			amount = {
+				type = 'string',
+				name = L["Amount"],
+				desc = L["Amount of power to compare"],
+			},
+			powerType = {
+				type = 'select',
+				name = L["Power type"],
+				desc = L["Type of power"],
+				values = powerTypeChoices,
+			},
+			comparator = {
+				type = 'select',
+				name = L["Comparator Type"],
+				desc = L["How to compare actual value with parameter"],
+				values = comparatorChoices,
+			},
+		},
 	},
 	check = function(param)
+		-- TODO implement completely
 		if UnitIsDeadOrGhost("player") then
 			return false
 		end
-		return UnitMana("player") >= param
+		return UnitMana("player") >= param.amount
 	end,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
-	name = "Minimum power percent",
-	localName = L["Minimum power percent"],
+	name = "Unit health",
+	localName = L["Unit health"],
 	param = {
-		type = 'number',
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			friendly = {
+				type = 'select',
+				name = L["Hostility"],
+				desc = L["Whether the unit should be friendly or hostile"],
+				values = friendlyChoices,
+			},
+			amount = {
+				type = 'string',
+				name = L["Amount"],
+				desc = L["Amount of health to compare"],
+			},
+			comparator = {
+				type = 'select',
+				name = L["Comparator Type"],
+				desc = L["How to compare actual value with parameter"],
+				values = comparatorChoices,
+			},
+		},
 	},
 	check = function(param)
+		-- TODO implement completely
 		if UnitIsDeadOrGhost("player") then
 			return false
 		end
-		return UnitMana("player")/UnitManaMax("player") >= param
+		return UnitMana("player") >= param.amount
 	end,
 }
+
 
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Warrior stance",
@@ -553,7 +617,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 		}
 	},
 	check = function(param)
-
 		if select(2,UnitClass("player")) ~= "DRUID" then
 			return true
 		end
@@ -585,7 +648,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Deathknight presence",
-	--TODO experimental
 	localName = L["Deathknight presence"],
 	notLocalName = L["Not Deathknight presence"],
 	param = {
@@ -613,15 +675,12 @@ Parrot:RegisterSecondaryTriggerCondition {
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
-    name = "Grouped",
-    localName = L["In a Group or Raid"],
-    check = function()
-        if GetNumPartyMembers() > 0 or UnitInRaid("player") then
-            return true
-        else
-            return false
-        end
-    end,
+  name = "Grouped",
+  localName = L["In a Group or Raid"],
+  check = function()
+      return GetNumPartyMembers() > 0 or UnitInRaid("player")
+  end,
+ 	exclusive = true,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
@@ -631,6 +690,7 @@ Parrot:RegisterSecondaryTriggerCondition {
     check = function()
         return IsMounted()
     end,
+    exclusive = true,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
@@ -640,6 +700,7 @@ Parrot:RegisterSecondaryTriggerCondition {
     check = function()
         return UnitInVehicle("player")
     end,
+   	exclusive = true
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -653,67 +714,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 			end,
 		},
 	},
+	-- TODO
 	param = {
 		type = 'string',
 		usage = L["<Sourcename>,<Destinationname>,<Spellname>"],
 	},
-}
-
-Parrot:RegisterSecondaryTriggerCondition {
-	name = "Minimum target health",
-	localName = L["Minimum target health"],
-	param = {
-		type = 'number',
-		min = 0,
-		max = 20000,
-		step = 1,
-		bigStep = 1000,
-	},
-	check = function(param)
-		if UnitIsDeadOrGhost("target") then
-			return false
-		end
-		return UnitHealth("target") >= param
-	end,
-}
-
-Parrot:RegisterSecondaryTriggerCondition {
-	name = "Minimum target health percent",
-	localName = L["Minimum target health percent"],
-	param = {
-		type = 'number',
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
-	},
-	check = function(param)
-		debug(UnitHealth("target") .. "HP")
-		if UnitIsDeadOrGhost("target") then
-			return false
-		end
-		return UnitHealth("target")/UnitHealthMax("target") >= param
-	end,
-}
-
-Parrot:RegisterSecondaryTriggerCondition {
-	name = "Maximum target health percent",
-	localName = L["Maximum target health percent"],
-	param = {
-		type = 'number',
-		min = 0,
-		max = 1,
-		step = 0.01,
-		bigStep = 0.05,
-		isPercent = true,
-	},
-	check = function(param)
-		if UnitIsDeadOrGhost("target") then
-			return false
-		end
-		return UnitHealth("target")/UnitHealthMax("target") <= param
-	end,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
@@ -726,6 +731,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		end
 		return UnitIsPlayer("target")
 	end,
+	exclusive = true
 }
 
 
@@ -743,7 +749,12 @@ Parrot:RegisterSecondaryTriggerCondition {
 	check = function(param)
 		local func = luacache[param]
 		if not func then
-			-- It's not there yet. build it
+			-- It's not there yet. build it+
+
+			if type(param) ~= 'string' then
+				debug(param, " is not a string")
+				return false
+			end
 			local lua_string = 'return function() '..param..' end'
 			local create_func, err = loadstring(lua_string)
 			if create_func then

@@ -244,6 +244,13 @@ function mod:OnUpdate()
 	spellsToTrigger = del(spellsToTrigger)
 end
 
+local function parseSpell(arg)
+	return tostring(arg or "")
+end
+local function saveSpell(arg)
+	return tonumber(arg) or arg
+end
+
 Parrot:RegisterPrimaryTriggerCondition {
 	subCategory = L["Cooldowns"],
 	name = "Spell ready",
@@ -251,6 +258,8 @@ Parrot:RegisterPrimaryTriggerCondition {
 	param = {
 		type = 'string',
 		usage = L["<Spell name>"],
+		save = saveSpell,
+		parse = parseSpell,
 	},
 }
 
@@ -261,6 +270,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 	param = {
 		type = 'string',
 		usage = L["<Spell name>"],
+		save = saveSpell,
+		parse = parseSpell,
 	},
 	check = function(param)
 		if(tonumber(param)) then
@@ -281,6 +292,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 	param = {
 		type = 'string',
 		usage = L["<Spell name>"],
+		save = saveSpell,
+		parse = parseSpell,
 	},
 	check = function(param)
 		if(tonumber(param)) then

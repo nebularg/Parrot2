@@ -8,7 +8,9 @@ Parrot:RegisterCombatEvent{
 	name = "Enter combat",
 	localName = L["Enter combat"],
 	defaultTag = L["+Combat"],
-	blizzardEvent = "PLAYER_REGEN_DISABLED",
+	blizzardEvents = {
+		["PLAYER_REGEN_DISABLED"] = {},
+	},
 	color = "ffffff", -- white
 }
 
@@ -18,7 +20,9 @@ Parrot:RegisterCombatEvent{
 	name = "Leave combat",
 	localName = L["Leave combat"],
 	defaultTag = L["-Combat"],
-	blizzardEvent = "PLAYER_REGEN_ENABLED",
+	blizzardEvents = {
+		["PLAYER_REGEN_ENABLED"] = {},
+	},
 	color = "ffffff", -- white
 }
 
@@ -28,6 +32,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	events = {
 		PLAYER_REGEN_DISABLED = true,
 	},
+	exclusive = true,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -36,6 +41,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	events = {
 		PLAYER_REGEN_ENABLED = true,
 	},
+	exclusive = true,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
@@ -45,4 +51,5 @@ Parrot:RegisterSecondaryTriggerCondition {
 	check = function()
 		return InCombatLockdown()
 	end,
+	exclusive = true,
 }

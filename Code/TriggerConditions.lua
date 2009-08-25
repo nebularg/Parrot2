@@ -1,5 +1,3 @@
-local VERSION = tonumber(("$Revision: 426 $"):match("%d+"))
-
 local Parrot = Parrot
 local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "LibRockEvent-1.0")
 local self = Parrot_TriggerConditions
@@ -24,12 +22,13 @@ local onEnableFuncs = {}
 local Parrot_Triggers
 function Parrot_TriggerConditions:OnEnable()
 	Parrot_Triggers = Parrot:GetModule("Triggers")
+	-- TODO remove
 	for k, v in pairs(conditions) do
 		if v.getCurrent then
 			lastStates[k] = v.getCurrent()
 		end
 	end
-	self:AddEventListener("COMBAT_LOG_EVENT_UNFILTERED")
+	Parrot:RegisterCombatLog(self)
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
@@ -42,14 +41,15 @@ function Parrot_TriggerConditions:OnDisable()
 	end
 end
 
+table.insert(onDisableFuncs, function() Parrot:UnregisterCombatLog(self) end)
+
 local function RefreshEvents()
 	local self = Parrot_TriggerConditions
-	self:RemoveAllEventListeners()
+	Parrot:UnRegisterAllEvents(self)
 
 	if not Parrot:IsModuleActive(self) then
 		return
 	end
-	self:AddEventListener("COMBAT_LOG_EVENT_UNFILTERED")
 	for k, v in pairs(conditions) do
 		if v.events then
 			for event in pairs(v.events) do
@@ -57,54 +57,46 @@ local function RefreshEvents()
 				if not event_ev then
 					event_ns, event_ev = "Blizzard", event_ns
 				end
-				self:AddEventListener(event_ns, event_ev, "EventHandler")
+			Parrot:RegisterBlizzardEvent(self, event_ev, "EventHandler")
+--				self:AddEventListener(event_ns, event_ev, "EventHandler")
 			end
 		end
 	end
 end
 
 -- #NODOC
-function Parrot_TriggerConditions:EventHandler(namespace, event, arg1)
+function Parrot_TriggerConditions:EventHandler(uid, namespace, event, arg1, ...)
 	local fullEvent = namespace == "Blizzard" and event or namespace .. ";" .. event
 	for k, v in pairs(conditions) do
 		if v.events then
 			local arg = v.events[fullEvent]
-			if arg == true or (arg1 ~= nil and arg == arg1) then
+			local info
+			if type(arg) == 'function' then
+				info = arg(arg1, ...)
+			elseif arg == true then
+				info = true
+			else
+				info = arg == arg1
+			end
+			if info then
+				self:FirePrimaryTriggerCondition(v.name, info, uid, v.check)
+			end
+			--[[if arg == true or (arg1 ~= nil and arg == arg1) then
 				if v.getCurrent then
 					local state = v.getCurrent()
 					local name = v.name
 					local oldState = lastStates[name]
 					lastStates[name] = state
 					if state ~= nil and state ~= oldState then
-						self:FirePrimaryTriggerCondition(name, state, -RockEvent.currentUID)
+						self:FirePrimaryTriggerCondition(name, state)
 					end
 				else
-					self:FirePrimaryTriggerCondition(v.name, arg1, -RockEvent.currentUID)
+					self:FirePrimaryTriggerCondition(v.name, arg1)
 				end
-			end
+			end--]]
 		end
 	end
 end
-
--- function Parrot_TriggerConditions:HandleDamage(timestamp, eventtype, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
---
--- 		local name
---
--- 		if srcGUID == UnitGUID("player") then
--- 			name = "Outgoing"
--- 		else
--- 			name = "Incoming"
--- 		end
---
--- 		-- make sure no number-arg is passed
--- 		if type(spellName) == "string" then
--- 			self:FirePrimaryTriggerCondition(name .. " cast", spellName)
--- 		end
---
--- 		if critical then
--- 			self:FirePrimaryTriggerCondition(name .. " crit")
--- 		end
--- end
 
 self.combatLogEvents = {}
 --[[----------------------------------------------------------------------------------
@@ -121,13 +113,6 @@ function Parrot_TriggerConditions:FirePrimaryTriggerCondition(name, arg, uid)
 	self = Parrot_TriggerConditions -- in case someone calls Parrot:FirePrimaryTriggerCondition
 
 	if Parrot_Triggers and Parrot:IsModuleActive(Parrot_Triggers) then
-		if not uid then
-			if RockEvent.currentUID then
-				uid = -RockEvent.currentUID
-			elseif RockTimer.currentUID then
-				uid = -RockTimer.currentUID - 1e10
-			end
-		end
 		local check
 		if conditions[name] then
 			check = conditions[name].check
@@ -312,7 +297,32 @@ function Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
 	return data.param, data.defaultParam
 end
 
+function Parrot_TriggerConditions:IsExclusive(name)
+	if not conditions[name] then
+		return false
+	else
+		return not not conditions[name].exclusive
+	end
+end
 
+function Parrot_TriggerConditions:SecondaryIsExclusive(name)
+	if name:match("^~.*") then
+		name = name:sub(2)
+	end
+	if not secondaryConditions[name] then
+		return false
+	else
+		return not not secondaryConditions[name].exclusive
+	end
+end
+
+function Parrot_TriggerConditions:IsStateful(name)
+	if not conditions[name] then
+		return false
+	else
+		return not not conditions[name].stateful
+	end
+end
 
 -- #NODOC
 function Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, arg)
@@ -337,7 +347,21 @@ function Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, arg)
 	end
 end
 
-function Parrot_TriggerConditions:COMBAT_LOG_EVENT_UNFILTERED(_, _, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
+function Parrot_TriggerConditions:HandleCombatlogEvent(uid, _, _, timestamp, eventType, ...)
+	local registeredHandlers = self.combatLogEvents[eventType]
+	if registeredHandlers then
+		for _,v in ipairs(registeredHandlers) do
+			local arg = v.triggerData(...)
+			if arg == true then
+				self:FirePrimaryTriggerCondition(v.name, nil, uid)
+			else
+				self:FirePrimaryTriggerCondition(v.name, arg, uid)
+			end
+		end
+	end
+end
+
+--[[function Parrot_TriggerConditions:COMBAT_LOG_EVENT_UNFILTERED(_, _, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
 
 	if not Parrot:IsModuleActive(Parrot_TriggerConditions) then
 		return
@@ -358,4 +382,4 @@ function Parrot_TriggerConditions:COMBAT_LOG_EVENT_UNFILTERED(_, _, timestamp, e
 	end
 
 end
-
+--]]

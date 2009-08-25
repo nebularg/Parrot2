@@ -9,7 +9,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 local db1
 
 local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
-
 local debug = Parrot.debug
 
 local SchoolParser =
@@ -4531,24 +4530,62 @@ onEnableFuncs[#onEnableFuncs+1] = function()
 	end)
 end
 
+local HONOR_CONTRIBUTION_POINTS = _G.HONOR_CONTRIBUTION_POINTS
+mod.currentHonor = 0
+table.insert(onEnableFuncs, function() mod.currentHonor = GetHonorCurrency() end)
+
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	name = "Honor gains",
 	localName = L["Honor gains"],
 	defaultTag = "+[Amount] " .. HONOR_CONTRIBUTION_POINTS,
-
 	tagTranslations = {
 		Amount = "amount",
--- 		Name = retrieveSourceName, -- not supported anymore
--- 		Rank = "sourceRank", -- not supported anymore
 	},
 	tagTranslationHelp = {
 		Amount = L["The amount of honor gained."],
-		-- Name = L["The name of the enemy slain."],
-		-- Rank = L["The rank of the enemy slain."],
 	},
 	color = "7f7fb2", -- blue-gray
+	blizzardEvents = {
+		["HONOR_CURRENCY_UPDATE"] = {
+			parse = function()
+					local newHonor = GetHonorCurrency()
+					if newHonor > mod.currentHonor then
+						local info = {
+							amount = (newHonor - mod.currentHonor),
+						}
+						mod.currentHonor = newHonor
+						return info
+					end
+				end,
+		}
+	}
 }
+
+--[[
+		-- Skillgains
+		self:AddEventListener("Blizzard", "CHAT_MSG_SKILL", "OnSkillgainEvent" )
+
+		-- Reputationgains
+		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")
+
+
+
+
+
+local SKILL_RANK_UP = _G.SKILL_RANK_UP
+
+function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
+	local skill, amount = deformat(chatmsg, SKILL_RANK_UP)
+	if skill and amount then
+		local info = newList()
+		info.abilityName = skill
+		info.amount = amount
+		self:TriggerCombatEvent("Notification", "Skill gains", info)
+	end
+end]]
+
+local REPUTATION = _G.REPUTATION
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",
@@ -4611,15 +4648,15 @@ Parrot:RegisterCombatEvent{
 	color = "5555ff", -- semi-light blue
 }
 
+local XP = _G.XP
+mod.currentXP = 0
+table.insert(onEnableFuncs, function() mod.currentXP = UnitXP("player") end)
+
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	name = "Experience gains",
 	localName = L["Experience gains"],
 	defaultTag = "[Amount] " .. XP,
-	parserEvent = {
-		eventType = "Experience",
-		recipientID = "player",
-	},
 	tagTranslations = {
 		-- Name = retrieveSourceName, -- not supported anymore by the event
 		Amount = "amount",
@@ -4631,6 +4668,18 @@ Parrot:RegisterCombatEvent{
 	color = "bf4ccc", -- magenta
 	sticky = true,
 	defaultDisabled = true,
+	blizzardEvents = {
+		["PLAYER_XP_UPDATE"] = {
+			parse = function()
+					local newXP = UnitXP("player")
+					local info = {
+						amount = newXP - mod.currentXP
+					}
+					mod.currentXP = newXP
+					return info
+				end,
+		}
+	},
 }
 
 Parrot:RegisterThrottleType("Killing blows", L["Killing blows"], 0.1, true)
