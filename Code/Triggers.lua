@@ -797,7 +797,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				func = function()
 					local t = {
 						name = L["New trigger"],
-						class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT",
+						class = select(2, UnitClass("player")),
 						conditions = {},
 					}
 					local registry = self.db1.profile.triggers

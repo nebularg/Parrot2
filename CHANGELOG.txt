@@ -1,7 +1,9 @@
-v1.9.0+:
-* get rid of LibBabble-Class
+v1.9.1:
+* remove Dependency of LibBabble-Class (and use built-in class-translations)
 * add options for always hiding unit- and skill names (except Cooldowns)
 * add secondary condition "Active talents"
+* new Triggers' class-lists contain only one entry by default
+    (the current player)
 
 v1.9.0:
 * add support for per-spell-filtering (by name or ID) (fixes Ticket #42)
