@@ -97,7 +97,7 @@ function Parrot:OnInitialize()
 
 	-- use db1 to fool LibRock-1.0
 	-- even without the RockDB-mixin, LibRock operates on self.db
-	self.db1 = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults)
+	self.db1 = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults, "Default")
 
 	self.db1.RegisterCallback(self, "OnProfileChanged", "UpdateModuleConfigs")
 	self.db1.RegisterCallback(self, "OnProfileCopied", "UpdateModuleConfigs")
