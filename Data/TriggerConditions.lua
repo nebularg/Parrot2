@@ -144,7 +144,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 			-- everything fits, check the amount
 			if good then
 				local amount = ref.amount
-				if amount < 1 then
+				if amount <= 1 then
 					amount = UnitHealthMax(info) * ref.amount
 				end
 				good = compare(UnitHealth(info), ref.comparator, amount)
@@ -258,7 +258,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 			-- everything fits, check the amount
 			if good then
 				local amount = ref.amount
-				if amount < 1 then
+				if amount <= 1 then
 					amount = UnitPowerMax(info) * ref.amount
 				end
 				good = compare(UnitPower(info), ref.comparator, amount)
@@ -507,6 +507,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 				type = 'string',
 				name = L["Amount"],
 				desc = L["Amount of power to compare"],
+				save = saveAmount,
+				parse = parseAmount,
 			},
 			powerType = {
 				type = 'select',
@@ -522,13 +524,28 @@ Parrot:RegisterSecondaryTriggerCondition {
 			},
 		},
 	},
-	check = function(param)
-		-- TODO implement completely
-		if UnitIsDeadOrGhost("player") then
-			return false
-		end
-		return UnitMana("player") >= param.amount
-	end,
+	check = function(ref)
+			-- check if ref is complete
+			if not (ref.unit and ref.amount and ref.friendly and ref.comparator
+								and ref.powerType) then
+				return false
+			end
+			local good = ref.powerType == "*" or
+					ref.powerType == select(2, UnitPowerType(ref.unit))
+			-- check the friendly-flag
+			if good and ref.friendly >= 0 then
+				good = ref.friendly == 0 and (UnitIsFriend("player", ref.unit) == nil) or
+					ref.friendly == UnitIsFriend("player", ref.unit)
+			end
+			-- everything fits, check the amount
+			if good then
+				local amount = ref.amount
+				if amount <= 1 then
+					amount = UnitPowerMax(ref.unit) * ref.amount
+				end
+				return compare(UnitPower(ref.unit), ref.comparator, amount)
+			end
+		end,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
@@ -553,6 +570,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 				type = 'string',
 				name = L["Amount"],
 				desc = L["Amount of health to compare"],
+				save = saveAmount,
+				parse = parseAmount,
 			},
 			comparator = {
 				type = 'select',
@@ -562,13 +581,27 @@ Parrot:RegisterSecondaryTriggerCondition {
 			},
 		},
 	},
-	check = function(param)
-		-- TODO implement completely
-		if UnitIsDeadOrGhost("player") then
-			return false
-		end
-		return UnitMana("player") >= param.amount
-	end,
+	check = function(ref)
+			-- check if ref is complete
+			if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
+				return false
+			end
+			local good = true
+			-- check the friendly-flag
+			if ref.friendly >= 0 then
+				good = ref.friendly == 0 and (UnitIsFriend("player", ref.unit) == nil) or
+					ref.friendly == UnitIsFriend("player", ref.unit)
+			end
+			-- everything fits, check the amount
+			if good then
+				local amount = ref.amount
+				if amount <= 1 then
+					debug("checking percent amount")
+					amount = UnitHealthMax(ref.unit) * ref.amount
+				end
+				return compare(UnitHealth(ref.unit), ref.comparator, amount)
+			end
+		end,
 }
 
 

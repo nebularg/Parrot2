@@ -509,7 +509,7 @@ local defaultTriggers = {
 local dbDefaults = {
 	profile = {
 		triggers2 = defaultTriggers,
-		dbver = 1,
+		dbver = 0,
 	},
 }
 
@@ -703,6 +703,7 @@ local triggers2translation = {
 				friendly = 1,
 				amount = param,
 				comparator = "<=",
+				powerType = "*",
 			}
 			return "Unit power", arg
 		end,
@@ -721,6 +722,7 @@ local triggers2translation = {
 				friendly = 1,
 				amount = param,
 				comparator = "<=",
+				powerType = "*",
 			}
 			return "Unit power", arg
 		end,
@@ -800,7 +802,8 @@ local triggers2secondary = {
 				unit = "player",
 				amount = param,
 				friendly = 1,
-				comparator = ">="
+				comparator = ">=",
+				powerType = "*",
 			}
 			return "Unit power", arg
 		end,
@@ -809,7 +812,8 @@ local triggers2secondary = {
 				unit = "player",
 				amount = param,
 				friendly = 1,
-				comparator = ">="
+				comparator = ">=",
+				powerType = "*",
 			}
 			return "Unit power", arg
 		end,
