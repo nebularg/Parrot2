@@ -665,16 +665,189 @@ Parrot:RegisterPrimaryTriggerCondition {
 
 Parrot:RegisterSecondaryTriggerCondition {
 	subCategory = L["Auras"],
-	name = "Aura inactive",
-	localName = L["Aura inactive"],
-	notLocalName = L["Aura active"],
+	name = "Buff inactive",
+	localName = L["Buff inactive"],
+--	notLocalName = L["Aura active"],
 	param = {
-		type = 'string',
-		usage = "<Buff name>",
-		save = saveSpell,
-		parse = parseSpell,
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["Unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name or spell id"],
+				type = 'string',
+				usage = "<Buff name or spell id>",
+				save = saveSpell,
+				parse = parseSpell,
+			},
+			byplayer = {
+				name = L["Own aura"],
+				desc = L["Only return true, if the Aura has been applied by yourself"],
+				type = 'toggle',
+			},
+		},
 	},
 	check = function(param)
-		return not UnitAura("player", param or "")
+		if not param.unit or not param.spell then
+			return false
+		end
+		local name, _, _, _, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
+		if name then
+			-- aura present, but condition is false if the aura has not been cast by
+			-- the player?
+			if param.byplayer then
+				return unitCaster ~= param.unit
+			else
+				return false
+			end
+		else
+			return true
+		end
+	end,
+}
+
+Parrot:RegisterSecondaryTriggerCondition {
+	subCategory = L["Auras"],
+	name = "Buff active",
+	localName = L["Buff active"],
+--	notLocalName = L["Aura active"],
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["Unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name or spell id"],
+				type = 'string',
+				usage = "<Buff name or spell id>",
+				save = saveSpell,
+				parse = parseSpell,
+			},
+			byplayer = {
+				name = L["Own aura"],
+				desc = L["Only return true, if the Aura has been applied by yourself"],
+				type = 'toggle',
+			},
+		},
+	},
+	check = function(param)
+		if not param.unit or not param.spell then
+			return false
+		end
+		local name, _, _, _, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
+		if name then
+			if param.byplayer == true then
+				return unitCaster == param.unit
+			else
+				return true
+			end
+		else
+			return false
+		end
+--		return not UnitAura(param.unit, param.spell or "")
+	end,
+}
+
+Parrot:RegisterSecondaryTriggerCondition {
+	subCategory = L["Auras"],
+	name = "Debuff inactive",
+	localName = L["Debuff inactive"],
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["Unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name or spell id"],
+				type = 'string',
+				usage = "<Buff name or spell id>",
+				save = saveSpell,
+				parse = parseSpell,
+			},
+			byplayer = {
+				name = L["Own aura"],
+				desc = L["Only return true, if the Aura has been applied by yourself"],
+				type = 'toggle',
+			},
+		},
+	},
+	check = function(param)
+		if not param.unit or not param.spell then
+			return false
+		end
+		local name, _, _, _, _, _, _, unitCaster = UnitDebuff(param.unit, param.spell)
+		if name then
+			-- aura present, but condition is false if the aura has not been cast by
+			-- the player?
+			if param.byplayer then
+				return unitCaster ~= param.unit
+			else
+				return false
+			end
+		else
+			return true
+		end
+	end,
+}
+
+Parrot:RegisterSecondaryTriggerCondition {
+	subCategory = L["Auras"],
+	name = "Debuff active",
+	localName = L["Debuff active"],
+--	notLocalName = L["Aura active"],
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["Unit that is affected"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Buff name or spell id"],
+				type = 'string',
+				usage = "<Buff name or spell id>",
+				save = saveSpell,
+				parse = parseSpell,
+			},
+			byplayer = {
+				name = L["Own aura"],
+				desc = L["Only return true, if the Aura has been applied by yourself"],
+				type = 'toggle',
+			},
+		},
+	},
+	check = function(param)
+		if not param.unit or not param.spell then
+			return false
+		end
+		local name, _, _, _, _, _, _, unitCaster = UnitDebuff(param.unit, param.spell)
+		if name then
+			if param.byplayer == true then
+				return unitCaster == param.unit
+			else
+				return true
+			end
+		else
+			return false
+		end
+--		return not UnitAura(param.unit, param.spell or "")
 	end,
 }

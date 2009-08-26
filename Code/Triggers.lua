@@ -772,10 +772,20 @@ local triggers2translation = {
 
 local triggers2secondary = {
 	["Buff inactive"] = function(param)
-			return "Aura inactive", param
+			local arg = {
+				unit = "player",
+				byplayer = false,
+				spell = param,
+			}
+			return "Buff inactive", arg
 		end,
 	["~Buff inactive"] = function(param)
-			return "~Aura inactive", param
+			local arg = {
+				unit = "player",
+				byplayer = false,
+				spell = param,
+			}
+			return "Aura active", arg
 		end,
 	["In combat"] = true,
 	["~In combat"] = true,
@@ -936,6 +946,52 @@ local function convertTriggers2()
 	end
 end
 
+alpha2alpah1translate = {
+	["Aura inactive"] = function(param)
+			local arg = {}
+			debug("param")
+			debug(param)
+			for k,v in ipairs(param) do
+				debug("inserting ", v)
+				arg[k] = {
+					unit = "player",
+					byplayer = false,
+					spell = v,
+				}
+			end
+			return "Buff inactive", arg
+		end,
+	["~Aura inactive"] = function(param)
+			local arg = {}
+			for k,v in ipairs(param) do
+				arg[k] = {
+					unit = "player",
+					byplayer = false,
+					spell = v,
+				}
+			end
+			return "Buff active", arg
+		end,
+}
+
+local function alpha2alpha1()
+	for i,t in pairs(self.db1.profile.triggers2) do
+		if t.secondaryConditions then
+			local news = {}
+			for k,cond in pairs(t.secondaryConditions) do
+				local func = alpha2alpah1translate[k]
+				if func then
+					local newk, newv = func(cond)
+					news[newk] = newv
+				else
+					news[k] = cond
+				end -- if func
+			end -- for k,cond
+			t.secondaryConditions = news
+		end -- if t.secondaryConditions
+	end-- for i,t
+end
+
 --[[============================================================================
 * End of 1.9->1.10 conversion code
 ============================================================================--]]
@@ -945,6 +1001,7 @@ end
 --]]
 local updateFuncs = {
 	[1] = convertTriggers2,
+	[2] = alpha2alpha1,
 }
 
 
@@ -953,7 +1010,7 @@ local function updateDB()
 		self.db1.profile.dbver = 0
 	end
 	for i = (self.db1.profile.dbver + 1), #updateFuncs do
-		Parrot:Print(("updating DB to %d->%d"):format(i-1, i))
+		Parrot:Print(("updating DB %d->%d"):format(i-1, i))
 		updateFuncs[i]()
 		self.db1.profile.dbver = i
 	end
