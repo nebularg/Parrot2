@@ -1474,6 +1474,13 @@ function Parrot_Triggers:OnOptionsCreate()
 		t.arg.color = color
 	end
 
+	local function getColor2(info)
+		return info.arg.color
+	end
+	local function setColor2(info, value)
+		info.arg.color = value
+	end
+
 	local function getClass(t, class)
 		local tmp = newSet((";"):split(t.arg.class))
 		local value = tmp[class]
@@ -2013,7 +2020,16 @@ local function removeSecondaryCondition(t, name)
 					get = getColor,
 					set = setColor,
 					arg = t,
-					order = 4,
+					order = 5,
+				},
+				color2 = {
+					name = L["Color"],
+					desc = L["Color of the text for this trigger."],
+					type = 'input',
+					get = getColor2,
+					set = setColor2,
+					arg = t,
+					order = 6,
 				},
 				sticky = {
 					type = 'toggle',
@@ -2022,7 +2038,7 @@ local function removeSecondaryCondition(t, name)
 					get = getSticky,
 					set = setSticky,
 					arg = t,
-					order = 8,
+					order = 9,
 				},
 				classes = {
 					type = 'multiselect',
@@ -2032,7 +2048,7 @@ local function removeSecondaryCondition(t, name)
 					get = getClass,
 					set = setClass,
 					arg = t,
-					order = 6,
+					order = 7,
 				},
 				scrollArea = {
 					type = 'select',
@@ -2042,7 +2058,7 @@ local function removeSecondaryCondition(t, name)
 					get = getScrollArea,
 					set = setScrollArea,
 					arg = t,
-					order = 7,
+					order = 8,
 				},
 				sound = {
 					type = 'select',
@@ -2052,7 +2068,7 @@ local function removeSecondaryCondition(t, name)
 					get = getSound,
 					set = setSound,
 					arg = t,
-					order = 5,
+					order = 4,
 				},
 				test = {
 					type = 'execute',
