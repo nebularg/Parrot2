@@ -400,15 +400,12 @@ Parrot:RegisterCombatEvent{
 }
 
 local function compareUnitAndSpell(ref, info)
-
 	if not ref.unit or not ref.spell or not info.dstGUID then
---		debug("not complete, return false")
+		debug("bailout, incomplete ref")
 		return false
 	end
-	local good = (info.dstGUID == UnitGUID(ref.unit)) and (ref.auraType == info.auraType)
---	debug("compare unit and auraType ", good)
---	debug("compare unit and auraType ", info.dstGUID == UnitGUID(ref.unit))
 
+	local good = (info.dstGUID == UnitGUID(ref.unit)) and (ref.auraType == info.auraType)
 	if good then
 		if type(ref.spell) == 'number' then
 			return ref.spell == info.spellId
@@ -416,6 +413,7 @@ local function compareUnitAndSpell(ref, info)
 			return ref.spell == info.spellName
 		end
 	end
+	return false
 end
 
 local unitChoices = {
@@ -495,6 +493,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 					spellId = spellId,
 					spellName = spellName,
 					amount = amount,
+					auraType = auraType,
 				}
 			end,
 		},
