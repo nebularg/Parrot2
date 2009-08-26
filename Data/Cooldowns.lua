@@ -10,7 +10,7 @@ local debug = Parrot.debug
 local db1 = nil
 local dbDefaults = {
 	profile = {
-		treshold = 10,
+		threshold = 0,
 		filters = {},
 	}
 }
@@ -34,16 +34,16 @@ function mod:OnOptionsCreate()
 		name = L["Cooldowns"],
 		desc = L["Cooldowns"],
 		args = {
-			treshold = {
-				name = L["Treshold"],
+			threshold = {
+				name = L["Threshold"],
 				desc = L["Minimum time the cooldown must have (in seconds)"],
 				type = 'range',
 				min = 0,
 				max = 300,
 				step = 1,
 				bigStep = 10,
-				get = function() return db1.profile.treshold end,
-				set = function(info, value) db1.profile.treshold = value end,
+				get = function() return db1.profile.threshold end,
+				set = function(info, value) db1.profile.threshold = value end,
 				order = 1,
 			},
 		},
@@ -123,7 +123,7 @@ function mod:ResetCooldownState()
 
 	for name, id in pairs(spellNameToID) do
 		local start, duration = GetSpellCooldown(id, "spell")
-		cooldowns[name] = start > 0 and duration > GCD and duration > db1.profile.treshold
+		cooldowns[name] = start > 0 and duration > GCD and duration > db1.profile.threshold
 	end
 
 end
@@ -199,7 +199,7 @@ function mod:OnUpdate()
 	for name, id in pairs(spellNameToID) do
 		local old = cooldowns[name]
 		local start, duration = GetSpellCooldown(id, "spell")
-		local check = start > 0 and duration > GCD and duration > db1.profile.treshold
+		local check = start > 0 and duration > GCD and duration > db1.profile.threshold
 		cooldowns[name] = check
 		if not check and old then
 			spellsToTrigger[name] = id
