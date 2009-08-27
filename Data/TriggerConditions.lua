@@ -481,6 +481,172 @@ Parrot:RegisterPrimaryTriggerCondition {
 	},
 }
 
+local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical, _, _)
+	local data = {}
+	data.dstName = dstName
+	data.srcName = srcName
+	data.amount = amount
+	data.critical = not not critical
+	data.spellName = spellName
+	data.spellId = spellId
+	return data
+end
+
+local function parseSwingDamage(_, srcName, _, _, dstName, _, amount, _, _, _, _, _, critical)
+	local data = {}
+	data.dstName = dstName
+	data.srcName = srcName
+	data.amount = amount
+	data.critical = not not critical
+	return data
+end
+
+Parrot:RegisterPrimaryTriggerCondition {
+	name = "Incoming damage",
+	localName = L["Incoming damage"],
+	combatLogEvents = {
+		{
+			eventType = "SWING_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			triggerData = parseSwingDamage,
+		},
+		{
+			eventType = "SPELL_PERIODIC_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			triggerData = parseSpellDamage,
+		},
+		{
+			eventType = "SPELL_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			triggerData = parseSpellDamage,
+		},
+		{
+			eventType = "RANGE_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			triggerData = parseSpellDamage,
+		},
+	},
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that attacked you"],
+				type = 'input',
+				usage = "\"player\" or \"target\" or \"<unit name>\"", -- TODO L[]
+			},
+			amount = {
+				name = L["Amount"],
+				desc = L["Amount of damage to compare with"],
+				type = 'input',
+				save = function(value) return tonumber(value) end,
+				parse = function(value) return tostring(value or "") end,
+			},
+			comparator = {
+				type = 'select',
+				name = L["Comparator Type"],
+				desc = L["How to compare actual value with parameter"],
+				values = comparatorChoices,
+			},
+		},
+	},
+	check = function(ref, info)
+			if not ref.unit then
+				return false
+			end
+			local good = ref.unit == info.srcName or info.srcName == UnitName(ref.unit)
+			if good and ref.amount then
+				if not ref.comparator then
+					return false
+				else
+					good = compare(info.amount, ref.comparator, ref.amount)
+				end
+			end
+			return good
+		end,
+}
+
+Parrot:RegisterPrimaryTriggerCondition {
+	name = "Outgoing damage",
+	localName = L["Outgoing damage"],
+	combatLogEvents = {
+		{
+			eventType = "SWING_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			triggerData = parseSwingDamage,
+		},
+		{
+			eventType = "SPELL_PERIODIC_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			triggerData = parseSpellDamage,
+		},
+		{
+			eventType = "SPELL_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			triggerData = parseSpellDamage,
+		},
+		{
+			eventType = "RANGE_DAMAGE",
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			triggerData = parseSpellDamage,
+		},
+	},
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that you attacked"],
+				type = 'input',
+				usage = "\"player\" or \"target\" or \"<unit name>\"", -- TODO L[]
+			},
+			amount = {
+				name = L["Amount"],
+				desc = L["Amount of damage to compare with"],
+				type = 'input',
+				save = function(value) return tonumber(value) end,
+				parse = function(value) return tostring(value or "") end,
+			},
+			comparator = {
+				type = 'select',
+				name = L["Comparator Type"],
+				desc = L["How to compare actual value with parameter"],
+				values = comparatorChoices,
+			},
+		},
+	},
+	check = function(ref, info)
+			if not ref.unit then
+				return false
+			end
+			local good = ref.unit == info.dstName or info.dstName == UnitName(ref.unit)
+			if good and ref.amount then
+				if not ref.comparator then
+					return false
+				else
+					good = compare(info.amount, ref.comparator, ref.amount)
+				end
+			end
+			return good
+		end,
+}
+
 local function manastep()
 	return math.min(50, UnitManaMax("player")/10)
 end
