@@ -3,6 +3,9 @@ alpha:
   + TriggerCondition now support multiple arguments
   + Most TriggerConditions can be used more than once
   + simplified the List of built-in conditions
+* add Primary Trigger Conditions:
+	+ Incoming damage
+	+ Outgoing damage
 
 v1.9.1:
 * remove Dependency of LibBabble-Class (and use built-in class-translations)
