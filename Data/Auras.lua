@@ -672,7 +672,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		args = {
 			unit = {
 				name = L["Unit"],
-				desc = L["Unit that is affected"],
+				desc = L["The unit that is affected"],
 				type = 'select',
 				values = unitChoices,
 			},
