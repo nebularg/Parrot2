@@ -5,6 +5,7 @@ local mod = Parrot:NewModule("CombatEventsData", "LibRockEvent-1.0")
 local _, playerClass = _G.UnitClass("player")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
+local deformat = AceLibrary("Deformat-2.0")
 
 local db1
 
@@ -4562,29 +4563,6 @@ Parrot:RegisterCombatEvent{
 	}
 }
 
---[[
-		-- Skillgains
-		self:AddEventListener("Blizzard", "CHAT_MSG_SKILL", "OnSkillgainEvent" )
-
-		-- Reputationgains
-		self:AddEventListener("Blizzard", "CHAT_MSG_COMBAT_FACTION_CHANGE", "OnRepgainEvent")
-
-
-
-
-
-local SKILL_RANK_UP = _G.SKILL_RANK_UP
-
-function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
-	local skill, amount = deformat(chatmsg, SKILL_RANK_UP)
-	if skill and amount then
-		local info = newList()
-		info.abilityName = skill
-		info.amount = amount
-		self:TriggerCombatEvent("Notification", "Skill gains", info)
-	end
-end]]
-
 local REPUTATION = _G.REPUTATION
 
 Parrot:RegisterCombatEvent{
@@ -4629,16 +4607,30 @@ Parrot:RegisterCombatEvent{
 	color = "7f7fb2", -- blue-gray
 }
 
+local SKILL_RANK_UP = _G.SKILL_RANK_UP
+
+local function parseSkillGain(chatmsg)
+	local skill, amount = deformat(chatmsg, SKILL_RANK_UP)
+	if skill and amount then
+		local info = newList()
+		info.abilityName = skill
+		info.amount = amount
+		return info
+	end
+end
+
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	name = "Skill gains",
 	localName = L["Skill gains"],
-	defaultTag = "[Skill]: [Amount]",
-	parserEvent = {
-		eventType = "Skill",
+	defaultTag = "[Skillname]: [Amount]",
+	blizzardEvents = {
+		["CHAT_MSG_SKILL"] = {
+			parse = parseSkillGain,
+		}
 	},
 	tagTranslations = {
-		Skill = retrieveAbilityName,
+		Skillname = retrieveAbilityName,
 		Amount = "amount",
 	},
 	tagTranslationHelp = {

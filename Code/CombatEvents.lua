@@ -141,6 +141,12 @@ local updateDBFuncs = {
 				entry.tag = entry.tag:gsub("%[Skill%]","[Spell]")
 			end
 		end,
+	[2] = function()
+			local entry = self.db1.profile.Notification["Skill gains"]
+			if entry and entry.tag then
+				entry.tag = entry.tag:gsub("%[Skill%]","[Skillname]")
+			end
+		end,
 }
 
 local function updateDB()
@@ -2537,18 +2543,6 @@ function Parrot_CombatEvents:OnXPgainEvent(_, eventName, unitId)
 	info.amount = newXP - currentXP
 	currentXP = newXP
 	self:TriggerCombatEvent("Notification", "Experience gains", info)
-end
-
-local SKILL_RANK_UP = _G.SKILL_RANK_UP
-
-function Parrot_CombatEvents:OnSkillgainEvent(_, eventName, chatmsg)
-	local skill, amount = deformat(chatmsg, SKILL_RANK_UP)
-	if skill and amount then
-		local info = newList()
-		info.abilityName = skill
-		info.amount = amount
-		self:TriggerCombatEvent("Notification", "Skill gains", info)
-	end
 end
 
 function Parrot_CombatEvents:HandleBlizzardEvent(uid, _, eventName, ...)
