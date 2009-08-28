@@ -4565,15 +4565,42 @@ Parrot:RegisterCombatEvent{
 
 local REPUTATION = _G.REPUTATION
 
+local FACTION_STANDING_INCREASED = _G.FACTION_STANDING_INCREASED
+local FACTION_STANDING_DECREASED = _G.FACTION_STANDING_DECREASED
+
+function parseRepGain(chatmsg)
+	local faction, amount = deformat(chatmsg, FACTION_STANDING_INCREASED)
+	if faction and amount then
+		local info = newList()
+		info.amount = amount
+		info.faction = faction
+		return info
+	end
+	return nil
+end
+
+function parseRepLoss(chatmsg)
+	-- try decrease
+	local faction, amount = deformat(chatmsg, FACTION_STANDING_DECREASED)
+	if faction and amount then
+		local info = newList()
+		info.amount = amount
+		info.faction = faction
+		return info
+	end
+	return nil
+end
+
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	subCategory = L["Reputation"],
 	name = "Reputation gains",
 	localName = L["Reputation gains"],
 	defaultTag = "+[Amount] " .. REPUTATION .. " ([Faction])",
-	parserEvent = {
-		eventType = "Reputation",
-		amount_gt = 0,
+	blizzardEvents = {
+		["CHAT_MSG_COMBAT_FACTION_CHANGE"] = {
+			parse = parseRepGain,
+		},
 	},
 	tagTranslations = {
 		Amount = "amount",
@@ -4592,9 +4619,10 @@ Parrot:RegisterCombatEvent{
 	name = "Reputation losses",
 	localName = L["Reputation losses"],
 	defaultTag = "-[Amount] " .. REPUTATION .. " ([Faction])",
-	parserEvent = {
-		eventType = "Reputation",
-		amount_lt = 0,
+	blizzardEvents = {
+		["CHAT_MSG_COMBAT_FACTION_CHANGE"] = {
+			parse = parseRepLoss,
+		},
 	},
 	tagTranslations = {
 		Amount = function(info) return info.amount end,
