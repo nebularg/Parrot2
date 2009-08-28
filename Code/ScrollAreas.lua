@@ -430,7 +430,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"] = value
 		local opt = scrollAreas_opt.args[tostring(scrollAreas[k])]
 		local choices = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(value)
-		opt.args.direction.args[kind].choices = choices
+		opt.args.direction.args[kind].values = choices
 		if not choices[scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"]] then
 			scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"] = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDefaultDirection(value)
 		end
