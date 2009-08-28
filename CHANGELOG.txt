@@ -7,6 +7,9 @@ alpha:
 	+ Incoming damage
 	+ Outgoing damage
 
+v1.9.2:
+* Direction-choices in ScrollAreas-options now update properly
+
 v1.9.1:
 * remove Dependency of LibBabble-Class (and use built-in class-translations)
 * add options for always hiding unit- and skill names (except Cooldowns)
