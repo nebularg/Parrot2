@@ -7,6 +7,9 @@ alpha:
 	+ Incoming damage
 	+ Outgoing damage
 
+v1.9.3:
+* fix locale-error
+
 v1.9.2:
 * Direction-choices in ScrollAreas-options now update properly
 
