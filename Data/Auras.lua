@@ -2,11 +2,25 @@ local Parrot = Parrot
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
-local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
-
+local newList, del = Parrot.newList, Parrot.del
+local newDict = Parrot.newDict
+local unpackDictAndDel = Parrot.unpackDictAndDel
 local debug = Parrot.debug
 
-local AURA_LATENCY_DELAY = 0.2
+local function parseAura(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
+
+	local info = newList()
+	info.spellID = spellId
+	info.abilityName = spellName
+	info.sourceID = srcGUID
+	info.sourceName = srcName
+	info.recipientID = dstGUID
+	info.recepientName = dstName
+	info.icon = select(3, GetSpellInfo(spellId))
+	info.amount = amount
+	return info
+
+end
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",
@@ -17,21 +31,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recepientName = dstName
-				info.icon = select(3, GetSpellInfo(spellId))
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+					return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				end,
+			func = parseAura,
 		},
 	},
 	tagTranslations = {
@@ -53,21 +56,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recepientName = dstName
-				info.icon = select(3, GetSpellInfo(spellId))
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				end,
+			func = parseAura,
 		},
 	},
 	tagTranslations = {
@@ -90,22 +82,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED_DOSE",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recepientName = dstName
-				info.icon = select(3, GetSpellInfo(spellId))
-				info.amount = amount
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+					return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				end,
+			func = parseAura,
 		}
 	},
 	tagTranslations = {
@@ -129,22 +109,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED_DOSE",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recepientName = dstName
-				info.icon = select(3, GetSpellInfo(spellId))
-				info.amount = amount
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				end,
+			func = parseAura,
 		}
 	},
 	tagTranslations = {
@@ -168,21 +136,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_REMOVED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recepientName = dstName
-				info.icon = select(3, GetSpellInfo(spellId))
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+					return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				end,
+			func = parseAura,
 		},
 	},
 	tagTranslations = {
@@ -205,27 +162,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_REMOVED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "DEBUFF" or dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
---				local auraid = checkAura(spellId)
---
---				if auraid then
---				  table.remove(current_player_auras, auraid)
---				end
-
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recepientName = dstName
-				info.icon = select(3, GetSpellInfo(spellId))
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				end,
+			func = parseAura,
 		},
 	},
 	tagTranslations = {
@@ -248,21 +188,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("target") then
-					return nil
-				end
-
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recepientName = dstName
-				info.icon = select(3, GetSpellInfo(spellId))
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+					return auraType == "BUFF" and dstGUID == UnitGUID("target")
+				end,
+			func = parseAura,
 		}
 	},
 	tagTranslations = {
@@ -287,22 +216,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED_DOSE",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				if auraType ~= "BUFF" or dstGUID ~= UnitGUID("target") then
-					return nil
-				end
-
-				local info = newList()
-				info.spellID = spellId
-				info.abilityName = spellName
-				info.recipientID = dstGUID
-				info.recepientName = dstName
-				info.icon = select(3, GetSpellInfo(spellId))
-				info.amount = amount
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+					return auraType == "BUFF" and dstGUID == UnitGUID("target")
+				end,
+			func = parseAura,
 		}
 	},
 
@@ -321,6 +238,17 @@ Parrot:RegisterCombatEvent{
 	defaultDisabled = true,
 }
 
+local function parseItembuff(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellName, itemId, itemName)
+
+	local info = newList()
+	info.itemId = itemId
+	info.abilityName = spellName
+	info.itemName = itemName
+
+	return info
+
+end
+
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	subCategory = L["Auras"],
@@ -330,19 +258,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "ENCHANT_APPLIED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellName, itemId, itemName)
-				if dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				local info = newList()
-				info.itemId = itemId
-				info.abilityName = spellName
-				info.itemName = itemName
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			func = parseItembuff,
 		},
 	},
 	tagTranslations = {
@@ -370,19 +289,10 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		{
 			eventType = "ENCHANT_REMOVED",
-			func = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellName, itemId, itemName)
-				if dstGUID ~= UnitGUID("player") then
-					return nil
-				end
-
-				local info = newList()
-				info.itemId = itemId
-				info.abilityName = spellName
-				info.itemName = itemName
-
-				return info
-
-			end,
+			check = function(_, _, _, dstGUID)
+					return dstGUID == UnitGUID("player")
+				end,
+			func = parseItembuff,
 		},
 	},
 	tagTranslations = {
@@ -443,12 +353,12 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_AURA_APPLIED",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return {
-					spellId = spellId,
-					spellName = spellName,
-					dstGUID = dstGUID,
-					auraType = auraType,
-				}
+				return newDict(
+					"spellId", spellId,
+					"spellName", spellName,
+					"dstGUID", dstGUID,
+					"auraType", auraType
+				)
 			end,
 		},
 	},
@@ -488,13 +398,13 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_AURA_APPLIED_DOSE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return {
-					dstGUID = dstGUID,
-					spellId = spellId,
-					spellName = spellName,
-					amount = amount,
-					auraType = auraType,
-				}
+				return newDict(
+					"spellId", spellId,
+					"spellName", spellName,
+					"dstGUID", dstGUID,
+					"auraType", auraType,
+					"amount", amount
+				)
 			end,
 		},
 	},
@@ -547,12 +457,12 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_AURA_REMOVED",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return {
-					spellId = spellId,
-					spellName = spellName,
-					auraType = auraType,
-					dstGUID = dstGUID,
-				}
+				return newDict(
+					"spellId", spellId,
+					"spellName", spellName,
+					"dstGUID", dstGUID,
+					"auraType", auraType
+				)
 			end,
 		},
 	},

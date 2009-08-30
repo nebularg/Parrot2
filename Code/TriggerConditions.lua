@@ -6,6 +6,7 @@ local RockEvent = Rock("LibRockEvent-1.0")
 local RockTimer = Rock("LibRockTimer-1.0")
 
 local debug = Parrot.debug
+local del = Parrot.del
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions")
 
@@ -356,6 +357,9 @@ function Parrot_TriggerConditions:HandleCombatlogEvent(uid, _, _, timestamp, eve
 				self:FirePrimaryTriggerCondition(v.name, nil, uid)
 			else
 				self:FirePrimaryTriggerCondition(v.name, arg, uid)
+			end
+			if type(arg) == 'table' then
+				arg = del(arg)
 			end
 		end
 	end

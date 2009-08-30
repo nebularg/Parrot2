@@ -31,7 +31,6 @@ Code\Suppressions.lua
 Code\TriggerConditions.lua
 Code\Triggers.lua
 
-
 Data\AnimationStyles.lua
 Data\CombatEvents.lua
 Data\TriggerConditions.lua

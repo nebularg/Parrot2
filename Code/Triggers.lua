@@ -11,7 +11,11 @@ _G.Parrot_Triggers = self
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
 local CL = _G.LOCALIZED_CLASS_NAMES_MALE
 
-local newList, newSet, newDict, del, unpackDictAndDel = Rock:GetRecyclingFunctions("Parrot", "newList", "newSet", "newDict", "del", "unpackDictAndDel")
+local newList = Parrot.newList
+local newSet = Parrot.newSet
+local newDict = Parrot.newDict
+local del = Parrot.del
+local unpackDictAndDel= Parrot.unpackDictAndDel
 
 local debug = Parrot.debug
 

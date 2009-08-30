@@ -4,7 +4,7 @@ local mod = Parrot:NewModule("Cooldowns", "LibRockEvent-1.0", "LibRockTimer-1.0"
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Cooldowns")
 
-local newList, del = Rock:GetRecyclingFunctions("Parrot", "newList", "del")
+local newList, del = Parrot.newList, Parrot.del
 local debug = Parrot.debug
 
 local db1 = nil

@@ -14,12 +14,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 local localeTables = {}
 
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-
-local SharedMedia = Rock("LibSharedMedia-3.0")
-
-local newList, unpackListAndDel = Rock:GetRecyclingFunctions("Parrot", "newList", "unpackListAndDel")
-
-local del = Rock:GetRecyclingFunctions("Parrot", "del")
+local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 --@debug@
 -- function is not needed at all when debug is off
@@ -67,6 +62,169 @@ local function debug(...)
 end
 
 Parrot.debug = debug
+
+
+--[[##########################################################################
+--  ####################### Table recycling stuff ############################
+--  ##########################################################################]]
+
+local wipe = table.wipe
+local weak = {__mode = 'kv'}
+local pool = setmetatable({}, weak)
+local activetables = {}
+
+local function table_size(t)
+	local c = 0
+	for k in pairs(t) do
+		c = c + 1
+	end
+	return c
+end
+
+local function psize()
+	local c = 0
+	for k in pairs(pool) do
+		c = c + 1
+	end
+	return c
+end
+Parrot.psize = psize
+
+local function newList(...)
+	local t = next(pool)
+	local n = select('#', ...)
+	if t then
+--		debug("taking ++", t, "++ from pool")
+		pool[t] = nil
+		for i = 1, n do
+			t[i] = select(i, ...)
+		end
+	else
+		t = { ... }
+	end
+	return t, n
+end
+
+local function newDict(...)
+
+	local c = select('#', ...)
+	local t = next(pool)
+	if t then
+		pool[t] = nil
+	else
+		t = {}
+		debug("poolsize is now ", psize())
+	end
+
+	for i = 1, select('#', ...), 2 do
+		local k, v = select(i, ...)
+--		debug("assign ", k, " -> ", v)
+		if k then
+			t[k] = v
+		else
+--			debug("*********************************")
+		end
+	end
+	activetables[t] = true
+	return t
+end
+
+local function newSet(...)
+	local t = next(pool)
+	if t then
+		pool[t] = nil
+	else
+		t = {}
+	end
+
+	for i = 1, select('#', ...) do
+		t[select(i, ...)] = true
+	end
+	return t
+end
+
+local function del(t)
+	if not t then
+		error(("Bad argument #1 to `del'. Expected %q, got %q."):format("table", type(t)), 2)
+	end
+	if pool[t] then
+		local _, ret = pcall(error, "Error, double-free syndrome.", 3)
+		geterrorhandler()(ret)
+	end
+	setmetatable(t, nil)
+	wipe(t)
+	pool[t] = true
+	return nil
+end
+
+local function f1(t, start, finish)
+	if start > finish then
+		wipe(t)
+		pool[t] = true
+		return
+	end
+	return t[start], f1(t, start+1, finish)
+end
+local function unpackListAndDel(t, start, finish)
+	if not t then
+		error(("Bad argument #1 to `unpackListAndDel'. Expected %q, got %q."):format("table", type(t)), 2)
+	end
+	if not start then
+		start = 1
+	end
+	if not finish then
+		finish = #t
+	end
+	setmetatable(t, nil)
+	return f1(t, start, finish)
+end
+
+local function f2(t, current)
+	current = next(t, current)
+	if current == nil then
+		wipe(t)
+		pool[t] = true
+		return
+	end
+	return current, f2(t, current)
+end
+local function unpackSetAndDel(t)
+	if not t then
+		error(("Bad argument #1 to `unpackListAndDel'. Expected %q, got %q."):format("table", type(t)), 2)
+	end
+	setmetatable(t, nil)
+	return f2(t, nil)
+end
+
+local function f3(t, current)
+	local value
+	current, value = next(t, current)
+	if current == nil then
+		wipe(t)
+		pool[t] = true
+		return
+	end
+	return current, value, f3(t, current)
+end
+local function unpackDictAndDel(t)
+	if not t then
+		error(("Bad argument #1 to `unpackListAndDel'. Expected %q, got %q."):format("table", type(t)), 2)
+	end
+	setmetatable(t, nil)
+	return f3(t, nil)
+end
+
+Parrot.newList = newList
+Parrot.newDict = newDict
+Parrot.newSet = newSet
+Parrot.del = del
+Parrot.unpackListAndDel = unpackListAndDel
+Parrot.unpackSetAndDel = unpackSetAndDel
+Parrot.unpackDictAndDel = unpackDictAndDel
+
+--[[##########################################################################
+--  ####################### End Table recycling stuff ########################
+--  ##########################################################################]]
 
 local function initOptions()
 	if Parrot.options.args.general then

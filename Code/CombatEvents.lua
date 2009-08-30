@@ -24,7 +24,7 @@ if type(UNKNOWN) ~= "string" then
 end
 
 local _,playerClass = _G.UnitClass("player")
-local newList, del, newDict = Rock:GetRecyclingFunctions("Parrot", "newList", "del", "newDict")
+local newList, del, newDict = Parrot.newList, Parrot.del, Parrot.newDict
 
 local debug = Parrot.debug
 
@@ -2402,6 +2402,10 @@ local function runEvent(category, name, info)
 	end
 end
 
+--[[
+-- TODO fix
+-- FIXME leaking memory here, that does not get GC'd!
+--]]
 function runCachedEvents()
 	for i,v in ipairs(nextFrameCombatEvents) do
 		nextFrameCombatEvents[i] = nil
@@ -2602,7 +2606,11 @@ function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, _, timestamp, eventTyp
 		for _, v in ipairs(registeredHandlers) do
 			if v.checkfunc(...) then
 				local info = v.infofunc(...)
-				if info and not sfiltered(info) then
+				if info then
+					if sfiltered(info) then
+						info = del(info)
+						return
+					end
 					info.uid = uid
 					self:TriggerCombatEvent(v.category, v.name, info)
 					info = del(info)
