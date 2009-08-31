@@ -4,6 +4,8 @@ local self = Parrot_ScrollAreas
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
 local debug = Parrot.debug
+local del = Parrot.del
+local newList = Parrot.newList
 --@debug@
 _G.Parrot_ScrollAreas = Parrot_ScrollAreas
 --@end-debug@--
@@ -52,17 +54,10 @@ local function initDB()
 	end
 end
 
-
-function Parrot_ScrollAreas:ApplyConfig()
-	initDB()
-	Parrot.options.args.scrollAreas = nil
-	self:OnOptionsCreate()
-end
-
-function Parrot_ScrollAreas:OnEnable()
-
-	initDB()
+local function rebuildChoices()
 	scrollAreas = self.db1.profile.areas
+	choices = del(choices)
+	choices = newList()
 	for k, v in pairs(scrollAreas) do
 		if k == "Notification" or k == "Incoming" or k == "Outgoing" then
 			choices[k] = L[k]
@@ -70,6 +65,19 @@ function Parrot_ScrollAreas:OnEnable()
 			choices[k] = k
 		end
 	end
+end
+
+function Parrot_ScrollAreas:ApplyConfig()
+	initDB()
+	if Parrot.options.args.scrollAreas then
+		Parrot.options.args.scrollAreas = nil
+		self:OnOptionsCreate()
+	end
+	rebuildChoices()
+end
+
+function Parrot_ScrollAreas:OnEnable()
+	self:ApplyConfig()
 end
 
 local setConfigMode
@@ -349,6 +357,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		if shouldConfig then
 			setConfigMode(true)
 		end
+		rebuildChoices()
 	end
 	local function getFontFace(info)
 		local kind, k = info.arg[1], info.arg[2]
@@ -898,6 +907,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 					}
 					makeOption(L["New scroll area"])
 					scrollAreas_opt.args[tostring(scrollAreas[L["New scroll area"]])].order = -110
+					rebuildChoices()
 					if shouldConfig then
 						setConfigMode(true)
 					end
