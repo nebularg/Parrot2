@@ -6,6 +6,10 @@ alpha:
 * add Primary Trigger Conditions:
 	+ Incoming damage
 	+ Outgoing damage
+* more efficient table-recycling
+
+v1.9.4:
+* properly update scroll-area-choices when profile is changed
 
 v1.9.3:
 * fix locale-error
