@@ -442,8 +442,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				type = 'toggle',
 				name = L["Enabled"],
 				desc = L["Whether this module is enabled"],
+				disabled = function() return disabled_by_raid end,
 				get = function() return self:GetModule("CombatEvents"):IsActive() end,
-				set = function(value) self:GetModule("CombatEvents"):ToggleActive(value) self.db1.profile.disabled = not value end,
+				set = function(info, value) self:GetModule("CombatEvents"):ToggleActive(value) self.db1.profile.disabled = not value end,
 			},
 			disable_in_10man = {
 				type = 'toggle',
