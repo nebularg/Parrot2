@@ -125,7 +125,9 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_AnimationStyles:HasAnimationStyle(name)
 	self = Parrot_AnimationStyles -- so people can Parrot:RegisterAnimationStyle
---	AceLibrary.argCheck(self, name, 2, "string")
+	if type(name) ~= 'string' then
+		error(("Bad argument #2 to `HasAnimationStyle'. defaultDirection must be a %q, got %q."):format("string", type(name)))
+	end
 	return not not animationStyles[name]
 end
 Parrot.HasAnimationStyle = Parrot_AnimationStyles.HasAnimationStyle

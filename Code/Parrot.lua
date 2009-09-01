@@ -273,25 +273,11 @@ function Parrot:OnInitialize()
 				type = 'execute',
 				func = initOptions,
 			},
--- should it be implemented?
---			alwaysLoad = {
---				name = L["always load options"],
---				desc = L["always load all configuration options when loading Parrot."],
---				type = 'toggle',
---				get = function() return end,
---				set = function(info, value) return end,
---			},
 		},
 	}
 
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("Parrot", Parrot.options, {"/Parrot", "/Par"})
-
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("Parrot", Parrot.options)
 	AceConfigDialog:AddToBlizOptions("Parrot", "Parrot")
-
---[[	if not self.db1.account.firstTimeWoW21 then
-		self.db1.account.firstTimeWoW21 = true
-		SetCVar("scriptErrors", "1")
-	end--]]
 end
 
 function Parrot:UpdateModuleConfigs()
@@ -308,15 +294,12 @@ function Parrot.inheritFontChoices()
 	for _,v in ipairs(SharedMedia:List('font')) do
 		t[v] = v
 	end
---	table.sort(t)
 	t["1"] = L["Inherit"]
---	table.insert(t, 1, L["Inherit"])
 	return t
 end
 function Parrot:OnEnable()
 
 	self:AddEventListener("COMBAT_LOG_EVENT_UNFILTERED")
-
 	_G.SHOW_COMBAT_TEXT = "0"
 	if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
 	   _G.CombatText_UpdateDisplayedMessages()
@@ -352,25 +335,18 @@ function Parrot:OnDisable()
 	end
 end
 
-function Parrot:OnProfileEnable()
-	if self:IsActive() then
-		self:ToggleActive(false)
-		self:ToggleActive(true)
-	end
-end
-
 function Parrot:ShowConfig()
 	initOptions()
 	AceConfigDialog:Open("Parrot")
 end
 
-local combatLogHandlers = {}
 local uid = 0
-
 local function nextUID()
 	uid = uid + 1
 	return uid
 end
+
+local combatLogHandlers = {}
 
 function Parrot:RegisterCombatLog(mod)
 	if type(mod.HandleCombatlogEvent) ~= 'function' then
@@ -389,22 +365,21 @@ end
 
 function Parrot:COMBAT_LOG_EVENT_UNFILTERED(...)
 	local uid = nextUID()
---	debug("combatlog-event, uid: ", uid)
 	for _, v in ipairs(combatLogHandlers) do
 		v:HandleCombatlogEvent(uid, ...)
 	end
 end
 
 local blizzardEventHandlers = {}
-Parrot.bleHandlers = blizzardEventHandlers
+
 function Parrot:RegisterBlizzardEvent(mod, eventName, handlerfunc)
 	if handlerfunc then
 		if type(mod[handlerfunc]) ~= 'function' then
-			error(("module must contain a function named %s"):format(handlerfunc))
+			error(("Bad argument #2 for 'RegisterBlizzardEvent'. module must contain a function named %s"):format(handlerfunc))
 		end
 	else
 		if type(mod[eventName]) ~= 'function' then
-			error(("module must contain a function named %s"):format(eventName))
+			error(("Bad argument #2 for 'RegisterBlizzardEvent'. module must contain a function named %s"):format(eventName))
 		end
 	end
 
@@ -436,11 +411,6 @@ end
 
 function Parrot:OnBlizzardEvent(ns, eventName, ...)
 	local uid = nextUID()
-	-- should not happen
---[[	if not blizzardEventHandlers[eventName] then
-		debug("remove stale registered event ", eventName)
-		self:RemoveEventListener(eventName)
-	end--]]
 	for k,v in pairs(blizzardEventHandlers[eventName]) do
 			k[v](k, uid, ns, eventName, ...)
 	end
@@ -507,9 +477,7 @@ function Parrot:OnOptionsCreate()
 	})
 end
 
---local addedOptions = {}
 function Parrot:AddOption(key, table)
---	addedOptions[key] = table
 	self.options.args[key] = table
 end
 
@@ -520,5 +488,3 @@ Parrot.options = {
 	icon = [[Interface\Icons\Spell_Nature_ForceOfNature]],
 	args = {},
 }
-
---Parrot:SetConfigTable(Parrot.options)

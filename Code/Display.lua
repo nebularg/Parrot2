@@ -1,16 +1,14 @@
 local Parrot = Parrot
 local Parrot_Display = Parrot:NewModule("Display", "LibRockTimer-1.0", "LibRockHook-1.0")
 
-
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Display")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
-local newList, del = Parrot.newList, Parrot.del
 
+local newList, del = Parrot.newList, Parrot.del
 local debug = Parrot.debug
 
 local ParrotFrame
 
--- Parrot_Display.db = Parrot:GetDatabaseNamespace("Display")
 dbDefaults = {
 	profile = {
 		alpha = 1,
@@ -310,8 +308,6 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	end
 
 	frame.fs = fs
-
-
 
 	local tex
 	if type(icon) == "string" and icon ~= "Interface\\Icons\\Temp" and scrollArea.iconSide ~= "DISABLE" and self.db1.profile.iconsEnabled then
