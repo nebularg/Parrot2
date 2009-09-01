@@ -11,6 +11,7 @@ alpha:
 * add support for CombatEvents:
 	+ Pet skill interrupts
 	+ Outgoing Siege damage
+*
 
 v1.9.4:
 * properly update scroll-area-choices when profile is changed
