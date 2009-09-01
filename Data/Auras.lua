@@ -749,3 +749,33 @@ Parrot:RegisterSecondaryTriggerCondition {
 --		return not UnitAura(param.unit, param.spell or "")
 	end,
 }
+
+Parrot:RegisterSecondaryTriggerCondition {
+	subCategory = L["Auras"],
+	name = "Item buff active",
+	localName = L["Item buff active"],
+	param = {
+		type = 'select',
+		values = {
+			[0] = L["Any"],
+			[1] = L["Main hand"],
+			[2] = L["Off hand"],
+			[3] = L["Both"],
+		},
+	},
+	check = function(param)
+		if not param then
+			return false
+		end
+		local main, _, _, off = GetWeaponEnchantInfo()
+		if param == 0 then
+			return main == 1 or off == 1
+		elseif param == 1 then
+			return main == 1
+		elseif param == 2 then
+			return off == 1
+		elseif param == 3 then
+			return main == 1 and off == 1
+		end
+	end,
+}
