@@ -979,7 +979,7 @@ end
 --============================================================================]]
 
 for k,v in pairs(missTypes) do
-	local name = "Skills " .. v
+	local name = "Skill " .. v
 	local tag = k == "ABSORB" and "([Skill]) %s [Amount]!" or "([Skill]) %s!"
 	local tag = tag:format(LM[k])
 
