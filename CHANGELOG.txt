@@ -6,7 +6,11 @@ alpha:
 * add Primary Trigger Conditions:
 	+ Incoming damage
 	+ Outgoing damage
-* more efficient table-recycling
+* use ingame-translations for damage-types
+* Maybe fix the double-combo-point-issue
+* add support for CombatEvents:
+	+ Pet skill interrupts
+	+ Outgoing Siege damage
 
 v1.9.4:
 * properly update scroll-area-choices when profile is changed
