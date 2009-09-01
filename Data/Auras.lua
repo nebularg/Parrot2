@@ -1,5 +1,4 @@
 local Parrot = Parrot
-
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
 local newList, del = Parrot.newList, Parrot.del
@@ -29,8 +28,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Buff gains"],
 	defaultTag = "([Name])",
 	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
+		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("player")
 				end,
@@ -54,8 +52,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Debuff gains"],
 	defaultTag = "([Name])",
 	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
+		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
 				end,
@@ -80,8 +77,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Buff stack gains"],
 	defaultTag = "([Name] -[Amount]-)",
 	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED_DOSE",
+		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("player")
 				end,
@@ -107,8 +103,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Debuff stack gains"],
 	defaultTag = "([Name] -[Amount]-)",
 	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED_DOSE",
+		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
 				end,
@@ -134,8 +129,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Buff fades"],
 	defaultTag = "-([Name])",
 	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_REMOVED",
+		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("player")
 				end,
@@ -160,8 +154,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Debuff fades"],
 	defaultTag = "-([Name])",
 	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_REMOVED",
+		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
 				end,
@@ -186,8 +179,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Target buff gains"],
 	defaultTag = "[Unitname] gains [Buffname]",
 	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED",
+		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("target")
 				end,
@@ -214,8 +206,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Target buff stack gains"],
 	defaultTag = "[Unitname] gains [Buffname] -[Amount]-)",
 	combatLogEvents = {
-		{
-			eventType = "SPELL_AURA_APPLIED_DOSE",
+		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("target")
 				end,
@@ -256,8 +247,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Item buff gains"],
 	defaultTag = "([Name])",
 	combatLogEvents = {
-		{
-			eventType = "ENCHANT_APPLIED",
+		ENCHANT_APPLIED = {
 			check = function(_, _, _, dstGUID)
 					return dstGUID == UnitGUID("player")
 				end,
@@ -287,8 +277,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Item buff fades"],
 	defaultTag = "-([Name])",
 	combatLogEvents = {
-		{
-			eventType = "ENCHANT_REMOVED",
+		ENCHANT_REMOVED = {
 			check = function(_, _, _, dstGUID)
 					return dstGUID == UnitGUID("player")
 				end,

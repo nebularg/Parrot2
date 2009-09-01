@@ -11,6 +11,20 @@ local currentHonor
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents")
 
+-- lookup-table for damage-types
+local LS = {
+	["Physical"] = STRING_SCHOOL_PHYSICAL,
+	["Holy"] = STRING_SCHOOL_HOLY,
+	["Fire"] = STRING_SCHOOL_FIRE,
+	["Nature"] = STRING_SCHOOL_NATURE,
+	["Frost"] = STRING_SCHOOL_FROST,
+	["Frostfire"] = STRING_SCHOOL_FROSTFIRE,
+	["Froststorm"] = STRING_SCHOOL_FROSTSTORM,
+	["Shadow"] = STRING_SCHOOL_SHADOW,
+	["Shadowstorm"] = STRING_SCHOOL_SHADOWSTORM,
+	["Arcane"] = STRING_SCHOOL_ARCANE,
+}
+
 local RockEvent = Rock("LibRockEvent-1.0")
 local RockTimer = Rock("LibRockTimer-1.0")
 
@@ -857,16 +871,16 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	tmp = del(tmp)
 
 	local tmp = newDict(
-		"Physical", L["Physical"],
-		"Holy", L["Holy"],
-		"Fire", L["Fire"],
-		"Nature", L["Nature"],
-		"Frost", L["Frost"],
-		"Shadow", L["Shadow"],
-		"Arcane", L["Arcane"],
-		"Frostfire", L["Frostfire"],
-		"Froststorm", L["Froststorm"],
-		"Shadowstorm", L["Shadowstorm"]
+		"Physical", LS["Physical"],
+		"Holy", LS["Holy"],
+		"Fire", LS["Fire"],
+		"Nature", LS["Nature"],
+		"Frost", LS["Frost"],
+		"Shadow", LS["Shadow"],
+		"Arcane", LS["Arcane"],
+		"Frostfire", LS["Frostfire"],
+		"Froststorm", LS["Froststorm"],
+		"Shadowstorm", LS["Shadowstorm"]
 	)
 	local function getColor(info)
 		return hexColorToTuple(self.db1.profile.damageTypes[info.arg])
@@ -1614,11 +1628,12 @@ end
 
 -- TODO make local again
 local combatLogEvents = {}
-self.combatLogEvents = combatLogEvents
+--self.combatLogEvents = combatLogEvents
 local registeredBlizzardEvents = {}
-self.blizzardEvents = registeredBlizzardEvents
+--self.blizzardEvents = registeredBlizzardEvents
 
 --[[----------------------------------------------------------------------------------
+-- TODO more args
 Arguments:
 	table - a data table holding the details of a combat event.
 Notes:
@@ -1628,11 +1643,6 @@ Notes:
 		name = "Name of the condition in English",
 		localName = "Name of the condition in the current locale",
 		defaultTag = "The default tagstring in the current locale", -- this can and should include relevant tags.
-		parserEvent = { -- optional, will cause it to trigger when the filter passes.
-			eventType = "Some eventType",
-			-- see Parser-3.0 for more details.
-		},
-		blizzardEvent = "NAME_OF_EVENT", -- optional, will cause it to trigger when the event fires. Incompatible with parserEvent.
 		color = "7f7fff", -- some color in the form of "rrggbb",
 		tagTranslations = { -- optional, highly recommended
 			Amount = "amount",
@@ -1665,13 +1675,6 @@ Example:
 		name = "Melee dodges",
 		localName = L["Melee dodges"],
 		defaultTag = L["Dodge!"],
-		parserEvent = {
-			eventType = "Miss",
-			missType = "Dodge",
-			sourceID = "player",
-			recipientID_not = "player",
-			abilityName = false,
-		},
 		tagTranslations = {
 			Name = "recipientName",
 		},
@@ -1683,7 +1686,9 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:RegisterCombatEvent(data)
 	self = Parrot_CombatEvents -- so people can do Parrot:RegisterCombatEvent
---	AceLibrary.argCheck(self, data, 2, "table") -- TODO
+	if type(data) ~= 'table' then
+		error(("Bad argument #2 to 'RegisterCombatEvent'. data must be a %q, got %q."):format("table", type(data)))
+	end
 	local category = data.category
 	if type(category) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. category must be a %q, got %q."):format("string", type(category)), 2)
@@ -1735,12 +1740,13 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 	combatEvents[category][name] = data
 	refreshEventRegistration(category, name)
 
-	local combatLogEvents = data.combatLogEvents
-	if combatLogEvents then
-		for _, v in ipairs(combatLogEvents) do
-			local eventType = v.eventType
-			if not self.combatLogEvents[eventType] then
-				self.combatLogEvents[eventType] = {}
+	if data.combatLogEvents then
+		for eventType, v in pairs(data.combatLogEvents) do
+			if type(v.func) ~= 'function' then
+				error(("Bad argument #2 to `RegisterCombatEvent'. func must be a %q, got %q."):format("function", type(v.func)))
+			end
+			if not combatLogEvents[eventType] then
+				combatLogEvents[eventType] = {}
 			end
 			local check = v.check
 			if not check then
@@ -1750,7 +1756,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			if type(check) ~= "function" then
 				error(("Bad argument #2 to `RegisterCombatEvent'. check must be a %q or nil, got %q."):format("function", type(check)), 2)
 			end
-			table.insert(self.combatLogEvents[eventType], {
+			table.insert(combatLogEvents[eventType], {
 					category = category,
 					name = data.name,
 					infofunc = v.func,
@@ -2593,18 +2599,19 @@ local function sfiltered(info)
 	return false
 end
 
---[[function Parrot_CombatEvents:OnEvent( _, _, ...)
-	Parrot_CombatEvents:HandleEvent( ... )
-end--]]
+function Parrot_CombatEvents:GetCombatEvents()
+	return combatLogEvents
+end
 
 function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, _, timestamp, eventType, ...)
 	if not self:IsActive() then
 		return
 	end
-	local registeredHandlers = self.combatLogEvents[eventType]
+	local registeredHandlers = combatLogEvents[eventType]
 	if registeredHandlers then
-		for _, v in ipairs(registeredHandlers) do
+		for i, v in ipairs(registeredHandlers) do
 			if v.checkfunc(...) then
+				debug(v.category, v.name)
 				local info = v.infofunc(...)
 				if info then
 					if sfiltered(info) then
@@ -2612,6 +2619,7 @@ function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, _, timestamp, eventTyp
 						return
 					end
 					info.uid = uid
+
 					self:TriggerCombatEvent(v.category, v.name, info)
 					info = del(info)
 				end

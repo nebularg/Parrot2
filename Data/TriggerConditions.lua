@@ -182,7 +182,6 @@ local unitPowerStates = {
 --]]
 table.insert(onEnableFuncs, function()
 		mod:AddEventListener("PLAYER_TARGET_CHANGED", function()
-				debug("wipe target states")
 				wipe(unitHealthStates.target)
 				wipe(unitPowerStates.target)
 			end
