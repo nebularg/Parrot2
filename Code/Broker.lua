@@ -6,7 +6,6 @@ local ldbdata = {
 	OnClick = function(_, msg)
 			if msg == "LeftButton" then
 				Parrot:ShowConfig()
- --			elseif msg == "RightButton" then
 			end
 		end,
 	label = "Parrot",

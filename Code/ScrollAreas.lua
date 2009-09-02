@@ -602,8 +602,8 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 					disabled = disableRemove,
 					arg = k,
 					order = -1,
+					confirm = true,
 					confirmText = L["Are you sure?"],
-					-- -- buttonText = L["Remove"],
 				},
 				icon = {
 					type = 'select',
@@ -623,7 +623,6 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 						normal = {
 							type = 'execute',
 							name = L["Normal"],
-							-- -- buttonText = L["Send"],
 							desc = L["Send a normal test message."],
 							func = function(info) test(info.arg[1], info.arg[2]) end,
 							arg = {"normal", k},
@@ -631,7 +630,6 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 						sticky = {
 							type = 'execute',
 							name = L["Sticky"],
-							-- -- buttonText = L["Send"],
 							desc = L["Send a sticky test message."],
 							func = function(info) test(info.arg[1], info.arg[2]) end,
 							arg = {"sticky", k},
@@ -772,7 +770,6 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							name = L["Normal font face"],
 							desc = L["Normal font face"],
 							values = Parrot.inheritFontChoices(),
-							--choiceFonts = SharedMedia:HashTable('font'),
 							get = getFontFace,
 							set = setFontFace,
 							arg = {"normal", k},
@@ -818,7 +815,6 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							name = L["Sticky font face"],
 							desc = L["Sticky font face"],
 							values = Parrot.inheritFontChoices,
---							choiceFonts = SharedMedia:HashTable('font'),
 							get = getFontFace,
 							set = setFontFace,
 							arg = {"sticky", k},
@@ -889,7 +885,6 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 			new = {
 				type = 'execute',
 				name = L["New scroll area"],
-				-- -- buttonText = L["Create"],
 				desc = L["Add a new scroll area."],
 				func = function()
 					local shouldConfig = configMode

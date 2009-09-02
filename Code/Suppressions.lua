@@ -67,11 +67,6 @@ function Parrot_Suppressions:OnOptionsCreate()
 		Parrot_Suppressions.db1.profile.suppressions[new] = Parrot_Suppressions.db1.profile.suppressions[old]
 		Parrot_Suppressions.db1.profile.suppressions[old] = nil
 		local opt = suppressions_opt.args[info[#info-1]]
---[[		for k,v in pairs(suppressions_opt.args) do
-			if v.k == old then
-				opt = v
-			end
-		end--]]
 		local name = new == '' and L["New suppression"] or new
 
 		opt.order = new == '' and -110 or -100
@@ -98,8 +93,6 @@ function Parrot_Suppressions:OnOptionsCreate()
 			type = 'group',
 			name = name,
 			desc = name,
---			order = k == '' and -110 or -100,
---			k = k,
 			args = {
 				edit = {
 					type = 'input',
@@ -123,8 +116,8 @@ function Parrot_Suppressions:OnOptionsCreate()
 				},
 				delete = {
 					type = 'execute',
---					confirmText = L["Are you sure?"],
---					buttonText = L["Remove"],
+					confirm = true,
+					confirmText = L["Are you sure?"],
 					name = L["Remove"],
 					desc = L["Remove suppression"],
 					func = remove,
@@ -138,7 +131,6 @@ function Parrot_Suppressions:OnOptionsCreate()
 	suppressions_opt.args.new = {
 		order = 1,
 		type = 'execute',
---		buttonText = L["Create"],
 		name = L["New suppression"],
 		desc = L["Add a new suppression."],
 		func = function()
