@@ -370,7 +370,8 @@ local function parseEnergize(srcGUID, srcName, srcFlags, dstGUID, dstName,
 	info.sourceID = srcGUID
 	info.abilityName = spellName
 	info.attributeLocal = PowerTypeParser[powerType]
-	info.amount = extraAmount or amount
+	info.amount = amount
+	info.extraAmount = extraAmount
 	return info
 end
 
@@ -471,7 +472,7 @@ local playerGUID
 table.insert(onEnableFuncs, function() playerGUID = UnitGUID("player") end)
 
 local function checkPlayerInc(_, _, _, dstGUID, _, dstFlags)
-	return dstGUID == UnitGUID(playerGUID)
+	return dstGUID == playerGUID
 end
 local function checkPlayerOut(srcGUID, _, srcFlags)
 	return srcGUID == playerGUID
