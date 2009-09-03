@@ -6,6 +6,28 @@ local newDict = Parrot.newDict
 local unpackDictAndDel = Parrot.unpackDictAndDel
 local debug = Parrot.debug
 
+local _G = _G
+local PET = _G.PET
+
+local bit_band = bit.band
+local function checkFlags(flags1, flags2)
+	return bit_band(flags1, flags2) == flags2
+end
+
+local HOSTILE = _G.COMBATLOG_OBJECT_REACTION_HOSTILE
+local FRIENDLY = _G.COMBATLOG_OBJECT_REACTION_FRIENDLY
+
+local TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
+local CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
+local AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
+
+local PET_FLAGS = bit.bor(
+	TYPE_PET,
+	CONTROL_PLAYER,
+	FRIENDLY,
+	AFFILIATION_MINE
+)
+
 local function parseAura(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
 
 	local info = newList()
@@ -14,12 +36,25 @@ local function parseAura(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,
 	info.sourceID = srcGUID
 	info.sourceName = srcName
 	info.recipientID = dstGUID
-	info.recepientName = dstName
+	info.recipientName = dstName
 	info.icon = select(3, GetSpellInfo(spellId))
 	info.amount = amount
 	return info
 
 end
+
+local function retrieveDestName(info)
+	if not info.recipientName then return end
+	if Parrot.db1.profile.showNameRealm then
+		return info.recipientName
+	else
+		return info.recipientName:gsub("-.*", "")
+	end
+end
+
+--[[============================================================================
+-- Players Auras
+--============================================================================]]
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",
@@ -171,7 +206,9 @@ Parrot:RegisterCombatEvent{
 	color = "00d8d8", -- cyan
 }
 
-
+--[[============================================================================
+-- Target's Auras
+--============================================================================]]
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	subCategory = L["Auras"],
@@ -189,7 +226,7 @@ Parrot:RegisterCombatEvent{
 	tagTranslations = {
 		Buffname = "abilityName",
 		Icon = "icon",
-		Unitname = "recepientName",
+		Unitname = "recipientName",
 	},
 	tagTranslationsHelp = {
 		Buffname = L["The name of the buff gained."],
@@ -229,15 +266,242 @@ Parrot:RegisterCombatEvent{
 	defaultDisabled = true,
 }
 
-local function parseItembuff(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellName, itemId, itemName)
+--[[============================================================================
+-- Pet's Auras
+--============================================================================]]
 
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	subCategory = L["Auras"],
+	name = "Pet buff gains",
+	localName = L["Pet buff gains"],
+	defaultTag = PET .. " ([Spell])",
+	combatLogEvents = {
+		SPELL_AURA_APPLIED = {
+			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
+					return auraType == "BUFF" and checkFlags(dstFlags, PET_FLAGS)
+				end,
+			func = parseAura,
+		},
+	},
+	tagTranslations = {
+		Name = retrieveDestName,
+		Spell = "abilityName",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The name of the pet that gained the buff"],
+		Spell = L["The name of the buff gained."],
+	},
+	color = "b2b200", -- dark yellow
+	defaultDisabled = true,
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	subCategory = L["Auras"],
+	name = "Pet debuff gains",
+	localName = L["Pet debuff gains"],
+	defaultTag = PET .. " ([Spell])",
+	combatLogEvents = {
+		SPELL_AURA_APPLIED = {
+			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
+					return auraType == "DEBUFF" and checkFlags(dstFlags, PET_FLAGS)
+				end,
+			func = parseAura,
+		},
+	},
+	tagTranslations = {
+		Name = retrieveDestName,
+		Spell = "abilityName",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The name of the pet that gained the debuff"],
+		Spell = L["The name of the debuff gained."],
+	},
+	color = "007f7f", -- dark cyan
+	defaultDisabled = true,
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	subCategory = L["Auras"],
+	name = "Pet buff fades",
+	localName = L["Pet buff fades"],
+	defaultTag = PET .. " -([Spell])",
+	combatLogEvents = {
+		SPELL_AURA_REMOVED = {
+			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
+					return auraType == "BUFF" and checkFlags(dstFlags, PET_FLAGS)
+				end,
+			func = parseAura,
+		},
+	},
+	tagTranslations = {
+		Name = retrieveDestName,
+		Spell = "abilityName",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The name of the pet that lost the buff"],
+		Spell = L["The name of the buff lost."],
+	},
+	color = "e5e500", -- yellow
+	defaultDisabled = true,
+}
+
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	subCategory = L["Auras"],
+	name = "Pet debuff fades",
+	localName = L["Pet debuff fades"],
+	defaultTag = PET .. " -([Spell])",
+	combatLogEvents = {
+		SPELL_AURA_REMOVED = {
+			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
+					return auraType == "DEBUFF" and checkFlags(dstFlags, PET_FLAGS)
+				end,
+			func = parseAura,
+		},
+	},
+	tagTranslations = {
+		Name = retrieveDestName,
+		Spell = "abilityName",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The name of the pet that lost the debuff"],
+		Spell = L["The name of the debuff gained."],
+	},
+	color = "00d8d8", -- cyan
+	defaultDisabled = true,
+}
+
+--[[============================================================================
+-- Enemy's Auras
+--============================================================================]]
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	subCategory = L["Auras"],
+	name = "Enemy buff gains",
+	localName = L["Enemy buff gains"],
+	defaultTag = "[Name] ([Spell])",
+	combatLogEvents = {
+		SPELL_AURA_APPLIED = {
+			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
+					return auraType == "BUFF" and checkFlags(dstFlags, HOSTILE)
+				end,
+			func = parseAura,
+		},
+	},
+	tagTranslations = {
+		Name = retrieveDestName,
+		Spell = "abilityName",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The enemy that gained the buff"],
+		Spell = L["The name of the buff gained."],
+	},
+	color = "b2b200", -- dark yellow
+	defaultDisabled = true,
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	subCategory = L["Auras"],
+	name = "Enemy debuff gains",
+	localName = L["Enemy debuff gains"],
+	defaultTag = "[Name] ([Spell])",
+	combatLogEvents = {
+		SPELL_AURA_APPLIED = {
+			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
+					return auraType == "DEBUFF" and checkFlags(dstFlags, HOSTILE)
+				end,
+			func = parseAura,
+		},
+	},
+	tagTranslations = {
+		Name = retrieveDestName,
+		Spell = "abilityName",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The enemy that gained the debuff"],
+		Spell = L["The name of the debuff gained."],
+	},
+	color = "007f7f", -- dark cyan
+	defaultDisabled = true,
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	subCategory = L["Auras"],
+	name = "Enemy buff fades",
+	localName = L["Enemy buff fades"],
+	defaultTag = "[Name] -([Spell])",
+	combatLogEvents = {
+		SPELL_AURA_REMOVED = {
+			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
+					return auraType == "BUFF" and checkFlags(dstFlags, HOSTILE)
+				end,
+			func = parseAura,
+		},
+	},
+	tagTranslations = {
+		Name = retrieveDestName,
+		Spell = "abilityName",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The enemy that lost the buff"],
+		Spell = L["The name of the buff lost."],
+	},
+	color = "e5e500", -- yellow
+	defaultDisabled = true,
+}
+
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	subCategory = L["Auras"],
+	name = "Enemy debuff fades",
+	localName = L["Enemy debuff fades"],
+	defaultTag = "[Name] -([Spell])",
+	combatLogEvents = {
+		SPELL_AURA_REMOVED = {
+			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
+					return auraType == "DEBUFF" and checkFlags(dstFlags, HOSTILE)
+				end,
+			func = parseAura,
+		},
+	},
+	tagTranslations = {
+		Name = retrieveDestName,
+		Spell = "abilityName",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The enemy that lost the debuff"],
+		Spell = L["The name of the debuff lost."],
+	},
+	color = "00d8d8", -- cyan
+	defaultDisabled = true,
+}
+
+--[[============================================================================
+-- Item Buffs
+--============================================================================]]
+local function parseItembuff(srcGUID, srcName, srcFlags, dstGUID, dstName,
+		dstFlags, spellName, itemId, itemName)
 	local info = newList()
 	info.itemId = itemId
 	info.abilityName = spellName
 	info.itemName = itemName
-
 	return info
-
 end
 
 Parrot:RegisterCombatEvent{
@@ -268,8 +532,6 @@ Parrot:RegisterCombatEvent{
 	color = "b2b2b2", -- gray
 }
 
-
-
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	subCategory = L["Auras"],
@@ -297,6 +559,8 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "e5e5e5", -- light gray
 }
+
+
 
 local function compareUnitAndSpell(ref, info)
 	if not ref.unit or not ref.spell or not info.dstGUID then
