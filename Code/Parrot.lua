@@ -322,6 +322,8 @@ function Parrot:OnEnable()
 	SetCVar("PetMeleeDamage", 1)
 end
 
+Parrot.IsActive = Parrot.IsEnabled
+
 function Parrot:OnDisable()
 	SetCVar("CombatDamage", "1")
 	SetCVar("CombatHealing", "1")
