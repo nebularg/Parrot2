@@ -8,8 +8,7 @@
 ## X-Website: http://www.wowace.com/
 ## X-Category: Combat
 ## SavedVariables: ParrotDB
-## OptionalDeps: LibRock-1.0, LibRockEvent-1.0, LibRockTimer-1.0, LibRockHook-1.0, LibRockConsole-1.0, LibRockModuleCore-1.0, Ace3, LibSharedMedia-3.0, Deformat
-## X-Embeds: LibRock-1.0, LibRockEvent-1.0, LibRockTimer-1.0, LibRockHook-1.0, LibRockConsole-1.0, LibRockModuleCore-1.0, LibSharedMedia-3.0, Deformat, AceLocale-3.0, AceConfig-3.0, AceDB-3.0, AceDBOptions-3.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, Deformat
 ## X-WoWIPortal: ckknight
 ## X-License: GPL v2 or later
 ## Version: @project-version@

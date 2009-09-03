@@ -1,6 +1,6 @@
 local Parrot = Parrot
 
-local mod = Parrot:NewModule("TriggerConditionsData", "LibRockEvent-1.0")
+local mod = Parrot:NewModule("TriggerConditionsData", "AceEvent-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
 
@@ -181,7 +181,7 @@ local unitPowerStates = {
 -- wipe the states for units that can change when they are changed
 --]]
 table.insert(onEnableFuncs, function()
-		mod:AddEventListener("PLAYER_TARGET_CHANGED", function()
+		mod:RegisterEvent("PLAYER_TARGET_CHANGED", function()
 				wipe(unitHealthStates.target)
 				wipe(unitPowerStates.target)
 			end
@@ -189,8 +189,8 @@ table.insert(onEnableFuncs, function()
 	end
 )
 table.insert(onEnableFuncs, function()
-		mod:AddEventListener("PLAYER_FOCUS_CHANGED", function()
-				debug("wipe focus states")
+		mod:RegisterEvent("PLAYER_FOCUS_CHANGED", function()
+--				debug("wipe focus states")
 				wipe(unitHealthStates.focus)
 				wipe(unitPowerStates.focus)
 			end
@@ -198,7 +198,7 @@ table.insert(onEnableFuncs, function()
 	end
 )
 table.insert(onEnableFuncs, function()
-		mod:AddEventListener("PLAYER_PET", function()
+		mod:RegisterEvent("PLAYER_PET", function()
 				wipe(unitHealthStates.pet)
 				wipe(unitPowerStates.pet)
 			end

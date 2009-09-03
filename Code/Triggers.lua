@@ -1,7 +1,5 @@
--- local VERSION = tonumber(("$Revision: 425 $"):match("%d+"))
-
 local Parrot = Parrot
-local Parrot_Triggers = Parrot:NewModule("Triggers", "LibRockTimer-1.0")
+local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0")
 local self = Parrot_Triggers
 
 --@debug@
@@ -1030,14 +1028,14 @@ function Parrot_Triggers:ApplyConfig()
 	self:OnOptionsCreate()
 	rebuildEffectiveRegistry()
 end
-
-function Parrot_Triggers:OnEnable(first)
+local first = true
+function Parrot_Triggers:OnEnable()
 
 	updateDB()
 
-	self:AddRepeatingTimer(0.1, function()
+	self:ScheduleRepeatingTimer(function()
 		Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
-	end)
+	end, 0.1)
 	if first then
 		Parrot_TriggerConditions:RegisterSecondaryTriggerCondition {
 			name = "Trigger cooldown",
@@ -1076,7 +1074,7 @@ function Parrot_Triggers:OnEnable(first)
 			},
 			exclusive = true,
 		}
-
+		first = false
 	end
 
 	rebuildEffectiveRegistry()
@@ -1365,7 +1363,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		name = L["Triggers"],
 		desc = L["Triggers"],
 		disabled = function()
-			return not self:IsActive()
+			return not self:IsEnabled()
 		end,
 		order = 3,
 		args = {

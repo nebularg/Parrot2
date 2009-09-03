@@ -1,6 +1,6 @@
 local Parrot = Parrot
 
-local mod = Parrot:NewModule("Cooldowns", "LibRockEvent-1.0", "LibRockTimer-1.0")
+local mod = Parrot:NewModule("Cooldowns", "AceEvent-3.0", "AceTimer-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Cooldowns")
 
@@ -23,9 +23,9 @@ end
 function mod:OnEnable()
 	self:ResetSpells()
 
-	self:AddRepeatingTimer(0.1, "OnUpdate")
-	self:AddEventListener("SPELLS_CHANGED", "ResetSpells")
-	self:AddEventListener("SPELL_UPDATE_COOLDOWN", "ResetCooldownState")
+	self:ScheduleRepeatingTimer("OnUpdate", 0.1)
+	self:RegisterEvent("SPELLS_CHANGED", "ResetSpells")
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "ResetCooldownState")
 end
 
 function mod:OnOptionsCreate()

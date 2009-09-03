@@ -1,5 +1,5 @@
 local Parrot = Parrot
-local Parrot_Display = Parrot:NewModule("Display", "LibRockTimer-1.0", "LibRockHook-1.0")
+local Parrot_Display = Parrot:NewModule("Display", "AceHook-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Display")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
@@ -8,6 +8,7 @@ local newList, del = Parrot.newList, Parrot.del
 local debug = Parrot.debug
 
 local ParrotFrame
+local ParrotTimerFrame
 
 dbDefaults = {
 	profile = {
@@ -31,8 +32,28 @@ function Parrot_Display:OnInitialize()
 	self.db1 = Parrot.db1:RegisterNamespace("Display", dbDefaults)
 end
 
-function Parrot_Display:OnEnable()
+--[[local lastTurn = 0
+local freq = 30
+local function checkTurn()
+	local now = math.floor(GetTime() * freq)
+	if now == lastTurn then
+		return false
+	else
+		lastTurn = now
+		return true
+	end
+end--]]
 
+local active
+local function onUpdate()
+--	if not checkTurn() then return end
+	if active then
+		Parrot_Display:OnUpdate()
+	end
+end
+
+function Parrot_Display:OnEnable()
+	debug("enable Display")
 	Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 	Parrot_Suppressions = Parrot:GetModule("Suppressions")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
@@ -44,9 +65,10 @@ function Parrot_Display:OnEnable()
 		ParrotFrame:SetWidth(0.0001)
 		ParrotFrame:SetHeight(0.0001)
 	end
+	Parrot:RegisterOnUpdate(onUpdate)
 
 	if _G.CombatText_AddMessage then
-		self:AddHook("CombatText_AddMessage")
+		self:RawHook("CombatText_AddMessage", true)
 	else
 		function _G.CombatText_AddMessage(...)
 			self:CombatText_AddMessage(...)
@@ -241,7 +263,7 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fontSize, outline, icon)
 	self = Parrot_Display -- for those who do Parrot:ShowMessage
-	if not Parrot:IsModuleActive(self) then
+	if not self:IsEnabled() then
 		return
 	end
 	if Parrot_Suppressions:ShouldSuppress(text) then
@@ -377,7 +399,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	local aniStyle = Parrot_AnimationStyles:GetAnimationStyle(animationStyle)
 	if not wildFrames then
 		wildFrames = newList()
-		self:AddRepeatingTimer("Parrot_OnUpdate", 0, "OnUpdate")
+		active = true
 	end
 	local wildFrames_scrollArea = wildFrames[scrollArea]
 	if not wildFrames_scrollArea then
@@ -519,6 +541,7 @@ function Parrot_Display:OnUpdate()
 	end
 	if not next(wildFrames) then
 		wildFrames = del(wildFrames)
-		self:RemoveTimer("Parrot_OnUpdate")
+		--self:RemoveTimer("Parrot_OnUpdate")
+		active = false
 	end
 end

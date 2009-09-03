@@ -1,14 +1,12 @@
 local Parrot = Parrot, Parrot
-local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "LibRockEvent-1.0", "LibRockTimer-1.0")
+local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
 local self = Parrot_CombatEvents
 
 -- libs
-local RockEvent = Rock("LibRockEvent-1.0")
-local RockTimer = Rock("LibRockTimer-1.0")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 local _G = _G
-
+local TimerFrame
 --[[
 -- localization
 --]]
@@ -199,35 +197,37 @@ function Parrot_CombatEvents:check_raid_instance()
 		if instance_type == "raid" then
 			if GetInstanceDifficulty() == 2 then
 				-- Heroic = 25man
-				self:ToggleActive(not self.db1.profile.disable_in_25man)
+				self:SetEnabledState(not self.db1.profile.disable_in_25man)
 			else
 				-- Normal = 10man (or maybe some old raid-instance)
-				self:ToggleActive(not self.db1.profile.disable_in_10man)
+				self:SetEnabledState(not self.db1.profile.disable_in_10man)
 			end
 		end
-		if not self:IsActive() then
+		if not self:IsEnabled() then
 			disabled_by_raid = true
 		end
 	else
-		self:ToggleActive(true)
+		self:IsEnabled(true)
 		disabled_by_raid = false
 	end
-	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
-	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
-	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "check_raid_instance")
+	self:RegisterEvent("PLAYER_LEAVING_WORLD", "check_raid_instance")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "check_raid_instance")
 end
 -- used as table for data about combatEvents in the registry
 local combatEvents = {}
 local onEnableFuncs = {}
+local active = false
 function Parrot_CombatEvents:OnEnable(first)
 	enabled = true
 	updateDB()
-	self:AddEventListener("Blizzard", "PLAYER_ENTERING_WORLD", "check_raid_instance")
-	self:AddEventListener("Blizzard", "PLAYER_LEAVING_WORLD", "check_raid_instance")
-	self:AddEventListener("Blizzard", "ZONE_CHANGED_NEW_AREA", "check_raid_instance")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "check_raid_instance")
+	self:RegisterEvent("PLAYER_LEAVING_WORLD", "check_raid_instance")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "check_raid_instance")
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
+	Parrot:RegisterOnUpdate(self.OnUpdate)
 end
 
 local onDisableFuncs = {}
@@ -377,14 +377,23 @@ local function refreshEventRegistration(category, name)
 		end
 	else
 		if blizzardEvent then
-			Parrot_CombatEvents:AddEventListener(blizzardEvent_ev, function(ns, event, ...)
+			Parrot:RegisterBlizzardEvent(self, blizzardEvent_ev, function(uid, event, ...)
+					debug("bla: ", ...)
+					local info = newList(...)
+					info.uid = uid
+					info.event = event
+					self:TriggerCombatEvent(category, name, info)
+					info = del(info)
+				end
+			)
+--[[			Parrot_CombatEvents:AddEventListener(blizzardEvent_ev, function(ns, event, ...)
 --			Parrot_CombatEvents:AddEventListener(blizzardEvent_ns, blizzardEvent_ev, function(ns, event, ...)
 				local info = newList(...)
 				info.namespace = ns
 				info.event = event
 				Parrot_CombatEvents:TriggerCombatEvent(category, name, info)
 				info = del(info)
-			end)
+			end)--]]
 		end
 	end
 end
@@ -443,8 +452,8 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				name = L["Enabled"],
 				desc = L["Whether this module is enabled"],
 				disabled = function() return disabled_by_raid end,
-				get = function() return self:GetModule("CombatEvents"):IsActive() end,
-				set = function(info, value) self:GetModule("CombatEvents"):ToggleActive(value) self.db1.profile.disabled = not value end,
+				get = function() return self:IsEnabled() end,
+				set = function(info, value) self:SetEnabledState(value) self.db1.profile.disabled = not value end,
 			},
 			disable_in_10man = {
 				type = 'toggle',
@@ -1813,7 +1822,7 @@ modifierTranslationHelps = {
 local throttleData = {}
 
 onEnableFuncs[#onEnableFuncs+1] = function()
-	Parrot_CombatEvents:AddRepeatingTimer(0.05, "RunThrottle")
+	Parrot_CombatEvents:ScheduleRepeatingTimer("RunThrottle", 0.05)
 end
 
 local LAST_TIME = _G.newproxy() -- cheaper than {}
@@ -1926,7 +1935,7 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDone)
 	self = Parrot_CombatEvents -- so people can do Parrot:TriggerCombatEvent
-	if not Parrot:IsModuleActive(self) then
+	if not self:IsEnabled() then
 		return
 	end
 	if UnitIsDeadOrGhost("player") then
@@ -2092,12 +2101,19 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	end
 
 	if #nextFrameCombatEvents == 0 then
-		Parrot_CombatEvents:AddRepeatingTimer("Parrot_CombatEvents-runCachedEvents", 0, runCachedEvents)
+		active = true
+--		Parrot_CombatEvents:ScheduleRepeatingTimer("Parrot_CombatEvents-runCachedEvents", 0, runCachedEvents)
 	end
 
 	nextFrameCombatEvents[#nextFrameCombatEvents+1] = newList(category, name, infoCopy)
 end
 Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
+
+function Parrot_CombatEvents:OnUpdate()
+	if active then
+		runCachedEvents()
+	end
+end
 
 local function runEvent(category, name, info)
 	local db = Parrot_CombatEvents.db1.profile[category][name]
@@ -2261,15 +2277,15 @@ function runCachedEvents()
 		del(v)
 	end
 
-	Parrot_CombatEvents:RemoveTimer("Parrot_CombatEvents-runCachedEvents")
+	active = false
 
 	for k in pairs(cancelUIDSoon) do
 		cancelUIDSoon[k] = nil
 	end
 end
 
-function Parrot_CombatEvents:HandleBlizzardEvent(uid, _, eventName, ...)
-	if not self:IsActive() then
+function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
+	if not self:IsEnabled() then
 		return
 	end
 	local handlers = registeredBlizzardEvents[eventName]
@@ -2310,8 +2326,8 @@ local function sfiltered(info)
 	return false
 end
 
-function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, _, timestamp, eventType, ...)
-	if not self:IsActive() then
+function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType, ...)
+	if not self:IsEnabled() then
 		return
 	end
 	local registeredHandlers = combatLogEvents[eventType]

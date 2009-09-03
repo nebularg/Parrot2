@@ -1,9 +1,6 @@
 local Parrot = Parrot
-local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "LibRockEvent-1.0")
+local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "AceEvent-3.0")
 local self = Parrot_TriggerConditions
-
-local RockEvent = Rock("LibRockEvent-1.0")
-local RockTimer = Rock("LibRockTimer-1.0")
 
 local debug = Parrot.debug
 local del = Parrot.del
@@ -48,7 +45,7 @@ local function RefreshEvents()
 	local self = Parrot_TriggerConditions
 	Parrot:UnRegisterAllEvents(self)
 
-	if not Parrot:IsModuleActive(self) then
+	if not self:IsEnabled() then
 		return
 	end
 	for k, v in pairs(conditions) do
@@ -59,15 +56,15 @@ local function RefreshEvents()
 					event_ns, event_ev = "Blizzard", event_ns
 				end
 			Parrot:RegisterBlizzardEvent(self, event_ev, "EventHandler")
---				self:AddEventListener(event_ns, event_ev, "EventHandler")
 			end
 		end
 	end
 end
 
 -- #NODOC
-function Parrot_TriggerConditions:EventHandler(uid, namespace, event, arg1, ...)
-	local fullEvent = namespace == "Blizzard" and event or namespace .. ";" .. event
+function Parrot_TriggerConditions:EventHandler(uid, event, arg1, ...)
+--	local fullEvent = namespace == "Blizzard" and event or namespace .. ";" .. event
+	local fullEvent = event
 	for k, v in pairs(conditions) do
 		if v.events then
 			local arg = v.events[fullEvent]
@@ -113,7 +110,7 @@ Example:
 function Parrot_TriggerConditions:FirePrimaryTriggerCondition(name, arg, uid)
 	self = Parrot_TriggerConditions -- in case someone calls Parrot:FirePrimaryTriggerCondition
 
-	if Parrot_Triggers and Parrot:IsModuleActive(Parrot_Triggers) then
+	if Parrot_Triggers and Parrot_Triggers:IsEnabled() then
 		local check
 		if conditions[name] then
 			check = conditions[name].check
@@ -282,6 +279,10 @@ function Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
 	return data.param, data.defaultParam
 end
 
+function Parrot_TriggerConditions:GetSecondary()
+	return secondaryConditions
+end
+
 -- #NODOC
 function Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
 --	AceLibrary.argCheck(self, name, 2, "string") -- TODO
@@ -348,7 +349,7 @@ function Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, arg)
 	end
 end
 
-function Parrot_TriggerConditions:HandleCombatlogEvent(uid, _, _, timestamp, eventType, ...)
+function Parrot_TriggerConditions:HandleCombatlogEvent(uid, _, timestamp, eventType, ...)
 	local registeredHandlers = self.combatLogEvents[eventType]
 	if registeredHandlers then
 		for _,v in ipairs(registeredHandlers) do

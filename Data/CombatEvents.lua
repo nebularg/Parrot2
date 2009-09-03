@@ -1,5 +1,5 @@
 local Parrot = Parrot
-local mod = Parrot:NewModule("CombatEventsData", "LibRockEvent-1.0")
+local mod = Parrot:NewModule("CombatEventsData")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 local deformat = AceLibrary("Deformat-2.0")

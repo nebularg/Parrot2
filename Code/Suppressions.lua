@@ -35,7 +35,7 @@ function Parrot_Suppressions:OnOptionsCreate()
 		name = L["Suppressions"],
 		desc = L["List of strings that will be squelched if found."],
 		disabled = function()
-			return not self:IsActive()
+			return not self:IsEnabled()
 		end,
 		args = {},
 		order = 10,
@@ -149,7 +149,7 @@ function Parrot_Suppressions:OnOptionsCreate()
 end
 
 function Parrot_Suppressions:ShouldSuppress(text)
-	if not Parrot:IsModuleActive(self) then
+	if not self:IsEnabled() then
 		return false
 	end
 	for suppression, escape in pairs(self.db1.profile.suppressions) do

@@ -1,15 +1,11 @@
-Parrot = Rock:NewAddon("Parrot", "LibRockConsole-1.0", "LibRockModuleCore-1.0", "LibRockEvent-1.0", "LibRockTimer-1.0", "LibRockHook-1.0")
+Parrot = LibStub("AceAddon-3.0"):NewAddon("Parrot", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
 local Parrot, self = Parrot, Parrot
 --@debug@
-Parrot.version = "v1.8.3+dev"
+Parrot.version = "dev"
 --@end-debug@
-Parrot.abbrhash = "@project-abbreviated-hash@"
-Parrot.hash = "@project-hash@"
-Parrot.date = "@project-date-iso@"
-
-local _G = _G
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
+local TimerFrame
 
 local localeTables = {}
 
@@ -251,7 +247,8 @@ local dbDefaults = {
 }
 
 function Parrot:OnInitialize()
-	self:AddSlashCommand("ShowConfig", {"/par", "/parrot"})
+	self:RegisterChatCommand("par", "ShowConfig")
+	self:RegisterChatCommand("parrot", "ShowConfig")
 
 	-- use db1 to fool LibRock-1.0
 	-- even without the RockDB-mixin, LibRock operates on self.db
@@ -298,20 +295,24 @@ function Parrot.inheritFontChoices()
 	return t
 end
 function Parrot:OnEnable()
+	if not TimerFrame then
+		TimerFrame = CreateFrame("Frame", "ParrotTimerFrame", UIParent)
+		TimerFrame:SetScript("OnUpdate", Parrot.OnUpdate)
+	end
 
-	self:AddEventListener("COMBAT_LOG_EVENT_UNFILTERED")
+	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	_G.SHOW_COMBAT_TEXT = "0"
 	if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
 	   _G.CombatText_UpdateDisplayedMessages()
 	end
 
 	if _G.CombatText_OnEvent then
-		self:AddHook("CombatText_OnEvent", function()
+		self:RawHook("CombatText_OnEvent", function()
 			_G.SHOW_COMBAT_TEXT = "0"
 			if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
 			   _G.CombatText_UpdateDisplayedMessages()
 			end
-		end)
+		end, true)
 	end
 
 	SetCVar("CombatDamage", self.db1.profile.gameDamage and "1" or "0")
@@ -319,10 +320,6 @@ function Parrot:OnEnable()
 
 	SetCVar("CombatLogPeriodicSpells", 1)
 	SetCVar("PetMeleeDamage", 1)
-
-	for name, module in self:IterateModules() do
-		self:ToggleModuleActive(module, true)
-	end
 end
 
 function Parrot:OnDisable()
@@ -331,7 +328,7 @@ function Parrot:OnDisable()
 	_G.SHOW_COMBAT_TEXT = "1"
 
 	for name, module in self:IterateModules() do
-		self:ToggleModuleActive(module, false)
+		self:DisableModule(module)
 	end
 end
 
@@ -344,6 +341,17 @@ local uid = 0
 local function nextUID()
 	uid = uid + 1
 	return uid
+end
+
+local updateFrameMods = {}
+local onUpdateFuncs = {}
+function Parrot:OnUpdate()
+	for _, v in ipairs(onUpdateFuncs) do
+		v()
+	end
+end
+function Parrot:RegisterOnUpdate(func)
+	table.insert(onUpdateFuncs, func)
 end
 
 local combatLogHandlers = {}
@@ -385,7 +393,7 @@ function Parrot:RegisterBlizzardEvent(mod, eventName, handlerfunc)
 
 	if not blizzardEventHandlers[eventName] then
 		blizzardEventHandlers[eventName] = {}
-		self:AddEventListener(eventName, "OnBlizzardEvent")
+		self:RegisterEvent(eventName, "OnBlizzardEvent")
 	end
 	if not blizzardEventHandlers[eventName][mod] then
 		blizzardEventHandlers[eventName][mod] = {}
@@ -409,10 +417,10 @@ function Parrot:UnRegisterAllEvents(mod)
 	end
 end
 
-function Parrot:OnBlizzardEvent(ns, eventName, ...)
+function Parrot:OnBlizzardEvent(eventName, ...)
 	local uid = nextUID()
 	for k,v in pairs(blizzardEventHandlers[eventName]) do
-			k[v](k, uid, ns, eventName, ...)
+			k[v](k, uid, eventName, ...)
 	end
 end
 
@@ -424,7 +432,7 @@ function Parrot:OnOptionsCreate()
 		name = L["General"],
 		desc = L["General settings"],
 		disabled = function()
-			return not self:IsActive()
+			return not self:IsEnabled()
 		end,
 		order = 1,
 		args = {

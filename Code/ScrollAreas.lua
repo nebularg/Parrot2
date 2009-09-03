@@ -1,5 +1,5 @@
 local Parrot = Parrot
-local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "LibRockTimer-1.0")
+local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "AceTimer-3.0")
 local self = Parrot_ScrollAreas
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
@@ -103,7 +103,7 @@ function Parrot:SetConfigMode(state)
 	end
 	setConfigMode(state)
 end
-
+local configModeTimer
 local offsetBoxes
 local function hideAllOffsetBoxes()
 	if not offsetBoxes then
@@ -112,7 +112,7 @@ local function hideAllOffsetBoxes()
 	for k,v in pairs(offsetBoxes) do
 		v:Hide()
 	end
-	Parrot_ScrollAreas:RemoveTimer("Parrot_ScrollAreas-configModeMessages")
+	Parrot_ScrollAreas:CancelTimer(configModeTimer)
 end
 local function showOffsetBox(k)
 	if not offsetBoxes then
@@ -236,7 +236,6 @@ local function configModeMessages()
 end
 
 local configMode = false
-
 function setConfigMode(value)
 	configMode = value
 	if not value then
@@ -245,7 +244,7 @@ function setConfigMode(value)
 		for k in pairs(scrollAreas) do
 			showOffsetBox(k)
 		end
-		Parrot_ScrollAreas:AddRepeatingTimer("Parrot_ScrollAreas-configModeMessages", 1, configModeMessages)
+		configModeTimer = Parrot_ScrollAreas:ScheduleRepeatingTimer(configModeMessages, 1)
 		configModeMessages()
 	end
 end
@@ -869,7 +868,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		name = L["Scroll areas"],
 		desc = L["Options regarding scroll areas."],
 		disabled = function()
-			return not self:IsActive()
+			return not self:IsEnabled()
 		end,
 		order = 5,
 		args = {
