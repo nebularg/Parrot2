@@ -269,6 +269,7 @@ end
 -- + Abbriviate: "SB"
 --]]
 function Parrot_CombatEvents:GetAbbreviatedSpell(name)
+	if not name then return end
 	local style = self.db1.profile.abbreviateStyle
 	if style == "none" then
 		return name
