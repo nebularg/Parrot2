@@ -682,10 +682,17 @@ local skillThrottle = {
 	sourceName = L["Multiple"]
 }
 
-local dothotThrottle = {
+local dotThrottle = {
 	"DoTs and HoTs",
 	'abilityName',
 	{ 'throttleCount', 'isCrit', damageThrottleFunc },
+	sourceName = L["Multiple"]
+}
+
+local hotThrottle = {
+	"DoTs and HoTs",
+	'abilityName',
+	{ 'throttleCount', 'isCrit', healThrottleFunc },
 	sourceName = L["Multiple"]
 }
 
@@ -943,7 +950,7 @@ Parrot:RegisterCombatEvent{
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = incSkillDamageTagTranslationsHelp,
 	color = "ff0000", -- red
-	throttle = dothotThrottle,
+	throttle = dotThrottle,
 }
 
 --[[============================================================================
@@ -1057,7 +1064,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = incHealTagTranslationsHelp,
-	throttle = dothotThrottle,
+	throttle = hotThrottle,
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
 }
@@ -1074,7 +1081,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = incHealTagTranslationsHelp,
-	throttle = dothotThrottle,
+	throttle = hotThrottle,
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
 }
@@ -1250,7 +1257,7 @@ Parrot:RegisterCombatEvent{
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = petIncSkillDamageTagTranslationsHelp,
 	color = "ff0000", -- red
-	throttle = dothotThrottle,
+	throttle = dotThrottle,
 }
 
 --[[============================================================================
@@ -1352,7 +1359,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = petIncHealTagTranslationsHelp,
-	throttle = dothotThrottle,
+	throttle = hotThrottle,
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
 }
@@ -1463,7 +1470,7 @@ Parrot:RegisterCombatEvent{
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
 	color = "ffff00", -- yellow
-	throttle = dothotThrottle,
+	throttle = dotThrottle,
 }
 
 Parrot:RegisterCombatEvent{
@@ -1592,7 +1599,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = outHealTagTranslationsHelp,
-	throttle = dothotThrottle,
+	throttle = hotThrottle,
 	color = "00ff00", -- green
 	filterType = { "Outgoing heals", 'realAmount' },
 }
@@ -1609,7 +1616,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = outHealTagTranslationsHelp,
-	throttle = dothotThrottle,
+	throttle = hotThrottle,
 	color = "00ff00", -- green
 	filterType = { "Outgoing heals", 'realAmount' },
 	defaultDisabled = true,
@@ -1764,7 +1771,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = petOutSkillDamageTagTranslationsHelp,
-	throttle = dothotThrottle,
+	throttle = dotThrottle,
 	color = "ffff00", -- yellow
 }
 
@@ -1884,7 +1891,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = petOutHealTagTranslations,
-	throttle = dothotThrottle,
+	throttle = hotThrottle,
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
 }

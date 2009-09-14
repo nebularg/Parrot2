@@ -1,4 +1,4 @@
-alpha:
+v1.10:
 * major changes to the Trigger-System
   + TriggerCondition now support multiple arguments
   + Most TriggerConditions can be used more than once
@@ -7,11 +7,10 @@ alpha:
 	+ Incoming damage
 	+ Outgoing damage
 * use ingame-translations for damage-types
-* Maybe fix the double-combo-point-issue
+* Maybe fix the double-combo-point-issue (Ticket #41)
 * add support for CombatEvents:
 	+ Pet skill interrupts
 	+ Outgoing Siege damage
-*
 
 v1.9.4:
 * properly update scroll-area-choices when profile is changed
