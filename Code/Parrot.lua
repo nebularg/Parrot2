@@ -5,7 +5,6 @@ Parrot.version = "dev"
 --@end-debug@
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
-local TimerFrame
 
 local localeTables = {}
 
@@ -295,11 +294,6 @@ function Parrot.inheritFontChoices()
 	return t
 end
 function Parrot:OnEnable()
-	if not TimerFrame then
-		TimerFrame = CreateFrame("Frame", "ParrotTimerFrame", UIParent)
-		TimerFrame:SetScript("OnUpdate", Parrot.OnUpdate)
-	end
-
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	_G.SHOW_COMBAT_TEXT = "0"
 	if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
@@ -343,17 +337,6 @@ local uid = 0
 local function nextUID()
 	uid = uid + 1
 	return uid
-end
-
-local updateFrameMods = {}
-local onUpdateFuncs = {}
-function Parrot:OnUpdate()
-	for _, v in ipairs(onUpdateFuncs) do
-		v()
-	end
-end
-function Parrot:RegisterOnUpdate(func)
-	table.insert(onUpdateFuncs, func)
 end
 
 local combatLogHandlers = {}

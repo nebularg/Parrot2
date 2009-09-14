@@ -8,9 +8,8 @@ local newList, del = Parrot.newList, Parrot.del
 local debug = Parrot.debug
 
 local ParrotFrame
-local ParrotTimerFrame
 
-dbDefaults = {
+local dbDefaults = {
 	profile = {
 		alpha = 1,
 		iconAlpha = 1,
@@ -44,28 +43,24 @@ local function checkTurn()
 	end
 end--]]
 
-local active
 local function onUpdate()
---	if not checkTurn() then return end
-	if active then
-		Parrot_Display:OnUpdate()
-	end
+	Parrot_Display:OnUpdate()
 end
 
 function Parrot_Display:OnEnable()
-	debug("enable Display")
 	Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 	Parrot_Suppressions = Parrot:GetModule("Suppressions")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	if not ParrotFrame then
 		ParrotFrame = CreateFrame("Frame", "ParrotFrame", UIParent)
+		ParrotFrame:Hide()
 		ParrotFrame:SetFrameStrata("HIGH")
 		ParrotFrame:SetToplevel(true)
 		ParrotFrame:SetPoint("CENTER")
 		ParrotFrame:SetWidth(0.0001)
 		ParrotFrame:SetHeight(0.0001)
+		ParrotFrame:SetScript("OnUpdate", onUpdate)
 	end
-	Parrot:RegisterOnUpdate(onUpdate)
 
 	if _G.CombatText_AddMessage then
 		self:RawHook("CombatText_AddMessage", true)
@@ -399,7 +394,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	local aniStyle = Parrot_AnimationStyles:GetAnimationStyle(animationStyle)
 	if not wildFrames then
 		wildFrames = newList()
-		active = true
+		ParrotFrame:Show()
 	end
 	local wildFrames_scrollArea = wildFrames[scrollArea]
 	if not wildFrames_scrollArea then
@@ -541,7 +536,6 @@ function Parrot_Display:OnUpdate()
 	end
 	if not next(wildFrames) then
 		wildFrames = del(wildFrames)
-		--self:RemoveTimer("Parrot_OnUpdate")
-		active = false
+		ParrotFrame:Hide()
 	end
 end

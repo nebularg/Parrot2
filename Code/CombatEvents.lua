@@ -6,7 +6,6 @@ local self = Parrot_CombatEvents
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 local _G = _G
-local TimerFrame
 --[[
 -- localization
 --]]
@@ -227,7 +226,7 @@ function Parrot_CombatEvents:OnEnable(first)
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
-	Parrot:RegisterOnUpdate(self.OnUpdate)
+--	Parrot:RegisterOnUpdate(self.OnUpdate)
 end
 
 local onDisableFuncs = {}
@@ -1823,7 +1822,7 @@ modifierTranslationHelps = {
 local throttleData = {}
 
 onEnableFuncs[#onEnableFuncs+1] = function()
-	Parrot_CombatEvents:ScheduleRepeatingTimer("RunThrottle", 0.05)
+	Parrot_CombatEvents:ScheduleRepeatingTimer("RunThrottle", 0.1)
 end
 
 local LAST_TIME = _G.newproxy() -- cheaper than {}
@@ -1903,6 +1902,7 @@ end
 
 local nextFrameCombatEvents = {}
 local runCachedEvents
+local combatTimerFrame
 local cancelUIDSoon = {}
 
 function Parrot_CombatEvents:CancelEventsWithUID(uid)
@@ -2102,19 +2102,19 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	end
 
 	if #nextFrameCombatEvents == 0 then
-		active = true
---		Parrot_CombatEvents:ScheduleRepeatingTimer("Parrot_CombatEvents-runCachedEvents", 0, runCachedEvents)
+		combatTimerFrame:Show()
+--		Parrot_CombatEvents:ScheduleRepeatingTimer(runCachedEvents, 0.1)
 	end
 
 	nextFrameCombatEvents[#nextFrameCombatEvents+1] = newList(category, name, infoCopy)
 end
 Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
 
-function Parrot_CombatEvents:OnUpdate()
+--[[function Parrot_CombatEvents:OnUpdate()
 	if active then
 		runCachedEvents()
 	end
-end
+end--]]
 
 local function runEvent(category, name, info)
 	local db = Parrot_CombatEvents.db1.profile[category][name]
@@ -2278,12 +2278,16 @@ function runCachedEvents()
 		del(v)
 	end
 
-	active = false
+	combatTimerFrame:Hide()
 
 	for k in pairs(cancelUIDSoon) do
 		cancelUIDSoon[k] = nil
 	end
 end
+
+combatTimerFrame = CreateFrame("Frame")
+combatTimerFrame:Hide()
+combatTimerFrame:SetScript("OnUpdate", runCachedEvents)
 
 function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
 	if not self:IsEnabled() then
