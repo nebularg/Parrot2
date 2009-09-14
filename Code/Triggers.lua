@@ -516,18 +516,30 @@ local dbDefaults = {
 }
 
 local effectiveRegistry = {}
+local periodicCheckTimer
 local function rebuildEffectiveRegistry()
 	for i = 1, #effectiveRegistry do
 		effectiveRegistry[i] = nil
 	end
+	self:CancelTimer(periodicCheckTimer, true)
+	periodicCheckTimer = nil
+	local containsPeriodic = false
 	for _,v in pairs(Parrot_Triggers.db1.profile.triggers2) do
 		if not v.disabled then
 			local classes = newSet((';'):split(v.class))
 			if classes[playerClass] then
 				effectiveRegistry[#effectiveRegistry+1] = v
+				if v.conditions["Check every XX seconds"] then
+					containsPeriodic = true
+				end
 			end
 			classes = del(classes)
 		end
+	end
+	if containsPeriodic then
+		periodicCheckTimer = self:ScheduleRepeatingTimer(function()
+			Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
+		end, 0.1)
 	end
 end
 
@@ -1033,9 +1045,6 @@ function Parrot_Triggers:OnEnable()
 
 	updateDB()
 
-	self:ScheduleRepeatingTimer(function()
-		Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
-	end, 0.1)
 	if first then
 		Parrot_TriggerConditions:RegisterSecondaryTriggerCondition {
 			name = "Trigger cooldown",
@@ -1766,6 +1775,13 @@ function Parrot_Triggers:OnOptionsCreate()
 		local localName = Parrot_TriggerConditions:GetPrimaryConditionChoices()[name]
 		if Parrot_TriggerConditions:IsExclusive(name) then
 			t.conditions[name] = addPrimaryCondition(t, name, localName)
+			if name == "Check every XX seconds" then
+				if not periodicCheckTimer then
+					periodicCheckTimer = self:ScheduleRepeatingTimer(function()
+							Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
+						end, 0.1)
+				end
+			end
 		else
 			local index
 			if t.conditions[name] then
