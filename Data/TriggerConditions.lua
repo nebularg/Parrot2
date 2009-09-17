@@ -166,7 +166,7 @@ local powerTypeChoices = {
 	["FOCUS"] = FOCUS,
 	["ENERGY"] = ENERGY,
 	["HAPPINESS"] = HAPPINESS,
-	["RUNES"] = RUNES,
+--	["RUNES"] = RUNES,
 	["RUNIC_POWER"] = RUNIC_POWER,
 }
 
@@ -243,6 +243,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 		UNIT_MANA = ret,
 		UNIT_MAXMANA = ret,
 		UNIT_DISPLAYPOWER = ret,
+		UNIT_RUNIC_POWER = ret,
+		UNIT_ENERGY = ret,
+		UNIT_HAPPINESS = ret,
+		UNIT_FOCUS = ret,
+		UNIT_RAGE = ret,
 	},
 	check = function(ref, info)
 			-- check if ref is complete
