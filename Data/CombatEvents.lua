@@ -1836,7 +1836,7 @@ for k,v in pairs(missTypes) do
 	local tag = tag:format(PET, LM[k])
 
 	local function check(srcGUID, _, srcFlags, _, _, _, _, _, _, missType)
-		return missType == "MISS" and checkPetOut(srcGUID, nil, srcFlags)
+		return missType == k and checkPetOut(srcGUID, nil, srcFlags)
 	end
 
 	Parrot:RegisterCombatEvent{
