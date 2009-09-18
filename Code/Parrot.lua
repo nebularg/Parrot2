@@ -239,6 +239,7 @@ end
 
 local dbDefaults = {
 	profile = {
+		gameText = false,
 		gameDamage = false,
 		gameHealing = false,
 		totemDamage = true,
@@ -308,9 +309,10 @@ function Parrot:OnEnable()
 			end
 		end, true)
 	end
-
-	SetCVar("CombatDamage", self.db1.profile.gameDamage and "1" or "0")
-	SetCVar("CombatHealing", self.db1.profile.gameHealing and "1" or "0")
+	if Parrot.db1.profile.gameText then
+		SetCVar("CombatDamage", self.db1.profile.gameDamage and "1" or "0")
+		SetCVar("CombatHealing", self.db1.profile.gameHealing and "1" or "0")
+	end
 
 	SetCVar("CombatLogPeriodicSpells", 1)
 	SetCVar("PetMeleeDamage", 1)
@@ -421,29 +423,53 @@ function Parrot:OnOptionsCreate()
 		end,
 		order = 1,
 		args = {
-			gameDamage = {
-				type = 'toggle',
-				name = L["Game damage"],
-				desc = L["Whether to show damage over the enemy's heads."],
-				get = function()
-					return Parrot.db1.profile.gameDamage
-				end,
-				set = function(info, value)
-					Parrot.db1.profile.gameDamage = value
-					SetCVar("CombatDamage", value and "1" or "0")
-				end,
-			},
-			gameHealing = {
-				type = 'toggle',
-				name = L["Game healing"],
-				desc = L["Whether to show healing over the enemy's heads."],
-				get = function()
-					return Parrot.db1.profile.gameHealing
-				end,
-				set = function(info, value)
-					Parrot.db1.profile.gameHealing = value
-					SetCVar("CombatHealing", value and "1" or "0")
-				end,
+			gameText = {
+				type = 'group',
+				inline = true,
+				name = L["Game options"],
+				args = {
+					control = {
+						type = 'toggle',
+						name = L["Control game options"],
+						desc = L[ [=[Whether Parrot should control the default interface's options below.
+These settings always override manual changes to the default interface options.]=] ],
+						get = function()
+							return Parrot.db1.profile.gameText
+						end,
+						set = function(info, value)
+							Parrot.db1.profile.gameText = value
+						end,
+						order = 1,
+					},
+					gameDamage = {
+						type = 'toggle',
+						name = L["Game damage"],
+						desc = L["Whether to show damage over the enemy's heads."],
+						disabled = function() return not Parrot.db1.profile.gameText end,
+						get = function()
+							return Parrot.db1.profile.gameDamage
+						end,
+						set = function(info, value)
+							Parrot.db1.profile.gameDamage = value
+							SetCVar("CombatDamage", value and "1" or "0")
+						end,
+						order = 2,
+					},
+					gameHealing = {
+						type = 'toggle',
+						name = L["Game healing"],
+						desc = L["Whether to show healing over the enemy's heads."],
+						disabled = function() return not Parrot.db1.profile.gameText end,
+						get = function()
+							return Parrot.db1.profile.gameHealing
+						end,
+						set = function(info, value)
+							Parrot.db1.profile.gameHealing = value
+							SetCVar("CombatHealing", value and "1" or "0")
+						end,
+						order = 3,
+					},
+				},
 			},
 			totemDamage = {
 				type = 'toggle',
@@ -464,7 +490,6 @@ function Parrot:OnOptionsCreate()
 				set = function(info, value)
 						Parrot.db1.profile.showNameRealm = value
 					end,
-
 			}
 		}
 	})
