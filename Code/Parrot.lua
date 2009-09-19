@@ -138,6 +138,19 @@ local function newSet(...)
 	return t
 end
 
+local function deepCopy(table)
+	if not table then return nil end
+	local tmp = newList()
+	for k,v in pairs(table) do
+		if type(v) == 'table' then
+			tmp[k] = copyTable(v)
+		else
+			tmp[k] = v
+		end
+	end
+	return tmp
+end
+
 local function del(t)
 	if not t then
 		error(("Bad argument #1 to `del'. Expected %q, got %q."):format("table", type(t)), 2)
@@ -212,6 +225,7 @@ end
 Parrot.newList = newList
 Parrot.newDict = newDict
 Parrot.newSet = newSet
+Parrot.deepCopy = deepCopy
 Parrot.del = del
 Parrot.unpackListAndDel = unpackListAndDel
 Parrot.unpackSetAndDel = unpackSetAndDel
