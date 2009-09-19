@@ -16,19 +16,7 @@ local del = Parrot.del
 local unpackDictAndDel= Parrot.unpackDictAndDel
 
 local debug = Parrot.debug
-
-local function copyTable(table)
-	if not table then return nil end
-	local tmp = {}
-	for k,v in pairs(table) do
-		if type(v) == 'table' then
-			tmp[k] = copyTable(v)
-		else
-			tmp[k] = v
-		end
-	end
-	return tmp
-end
+local deepCopy = Parrot.deepCopy
 
 local _,playerClass = UnitClass("player")
 
@@ -899,7 +887,7 @@ local function convertTriggers2()
 --	wipe(self.db1.profile.triggers2)
 	--- DEBUG!!
 	for i,t in ipairs(self.db1.profile.triggers) do
-		local tmp = copyTable(t)
+		local tmp = deepCopy(t)
 		local cond = t.conditions
 		tmp.conditions = {}
 		for k,v in pairs(cond) do
@@ -1638,7 +1626,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 
 		if param and param.type == 'group' then
-			tmp = copyTable(param)
+			tmp = deepCopy(param)
 			for k,v in pairs(tmp.args) do
 				-- derive setter and getter for the option
 
@@ -1683,7 +1671,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					type = 'group',
 					args = {},
 				}
-				local param_opt = copyTable(param)
+				local param_opt = deepCopy(param)
 				tmp.args.param = param_opt
 				param_opt.name = localName
 				param_opt.desc = localName
@@ -1812,7 +1800,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function getAvailablePrimaryConditions(info)
 		local t = info.arg
 		if not t.conditions then
-			return copyTable(Parrot_TriggerConditions:GetPrimaryConditionChoices())
+			return deepCopy(Parrot_TriggerConditions:GetPrimaryConditionChoices())
 		end
 		local tmp = {}
 		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
@@ -1842,7 +1830,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		local tmp
 
 		if param and param.type == 'group' then
-			tmp = copyTable(param)
+			tmp = deepCopy(param)
 			for k,v in pairs(tmp.args) do
 				-- derive setter and getter for the option
 				local function ret(arg)
@@ -1886,7 +1874,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					type = 'group',
 					args = {},
 				}
-				local param_opt = copyTable(param)
+				local param_opt = deepCopy(param)
 
 				tmp.args.param = param_opt
 				param_opt.name = localName
@@ -2018,7 +2006,7 @@ local function removeSecondaryCondition(t, name)
 	local function getAvailableSecondaryConditions(info)
 		local t = info.arg
 		if not t.secondaryConditions then
-			return copyTable(Parrot_TriggerConditions:GetSecondaryConditionChoices())
+			return deepCopy(Parrot_TriggerConditions:GetSecondaryConditionChoices())
 		end
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do
