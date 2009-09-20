@@ -2337,7 +2337,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Extra attacks"],
 	defaultTag = L["%s!"]:format("[Skill]"),
 	combatLogEvents = {
-		SPELL_EXTRA_ATTACKS = { check = checkPlayerOut, func = parseSwingDamage, },
+		SPELL_EXTRA_ATTACKS = { check = checkPlayerOut, func = parseSpellDamage, },
 	},
 	tagTranslations = {
 		Skill = retrieveAbilityName,
