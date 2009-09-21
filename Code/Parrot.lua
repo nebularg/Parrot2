@@ -326,10 +326,11 @@ function Parrot:OnEnable()
 	if Parrot.db1.profile.gameText then
 		SetCVar("CombatDamage", self.db1.profile.gameDamage and "1" or "0")
 		SetCVar("CombatHealing", self.db1.profile.gameHealing and "1" or "0")
+		SetCVar("CombatLogPeriodicSpells", 1)
+		SetCVar("PetMeleeDamage", 1)
 	end
 
-	SetCVar("CombatLogPeriodicSpells", 1)
-	SetCVar("PetMeleeDamage", 1)
+
 end
 
 Parrot.IsActive = Parrot.IsEnabled
