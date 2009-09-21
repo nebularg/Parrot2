@@ -143,7 +143,7 @@ local function deepCopy(table)
 	local tmp = newList()
 	for k,v in pairs(table) do
 		if type(v) == 'table' then
-			tmp[k] = copyTable(v)
+			tmp[k] = deepCopy(v)
 		else
 			tmp[k] = v
 		end
