@@ -237,6 +237,12 @@ Parrot:RegisterPrimaryTriggerCondition {
 				desc = L["How to compare actual value with parameter"],
 				values = comparatorChoices,
 			},
+			powerType = {
+				type = 'select',
+				name = L["Power type"],
+				desc = L["Type of power"],
+				values = powerTypeChoices,
+			},
 		},
 	},
 	events = {
@@ -251,11 +257,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 	},
 	check = function(ref, info)
 			-- check if ref is complete
-			if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
+			if not (ref.unit and ref.amount and ref.friendly and ref.comparator and ref.powerType) then
 				return false
 			end
 			-- only check the unit
 			local good = ref.unit == info
+
+			-- check the powertype
+			if good then
+				good = ref.powerType == "*" or
+					ref.powerType == select(2, UnitPowerType(ref.unit))
+			end
 			-- check the friendly-flag
 			if good and ref.friendly >= 0 then
 				good = ref.friendly == 0 and (UnitIsFriend("player", info) == nil) or
