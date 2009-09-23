@@ -7,10 +7,11 @@ v1.10:
 	+ Incoming damage
 	+ Outgoing damage
 * use ingame-translations for damage-types
-* Maybe fix the double-combo-point-issue (Ticket #41)
+* Fix the double-combo-point-issue (Ticket #41)
 * add support for CombatEvents:
 	+ Pet skill interrupts
 	+ Outgoing Siege damage
+* optimize the Cooldown-module to use much less CPU-time
 
 v1.9.4:
 * properly update scroll-area-choices when profile is changed
