@@ -1939,9 +1939,6 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	if not self:IsEnabled() then
 		return
 	end
-	if UnitIsDeadOrGhost("player") then
-		return
-	end
 	if cancelUIDSoon[info.uid] then
 		return
 	end
