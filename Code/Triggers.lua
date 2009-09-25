@@ -548,6 +548,7 @@ function Parrot_Triggers:OnInitialize()
 
 	debug("initialize Triggers")
 	Parrot_Triggers.db1 = Parrot.db1:RegisterNamespace("Triggers", dbDefaults)
+	self.db1.RegisterCallback(Parrot_Triggers, "OnNewProfile", "OnNewProfile")
 
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
@@ -878,7 +879,6 @@ local triggers2secondary = {
 	["Trigger cooldown"] = true,
 }
 
-
 local function convertTriggers2()
 	if not self.db1.profile.triggers then
 		return
@@ -1010,6 +1010,9 @@ local updateFuncs = {
 	[2] = alpha2alpha1,
 }
 
+function Parrot_Triggers:OnNewProfile(t, key)
+	key.profile.dbver = #updateFuncs
+end
 
 local function updateDB()
 	if not self.db1.profile.dbver then

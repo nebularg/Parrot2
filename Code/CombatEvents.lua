@@ -150,6 +150,10 @@ local updateDBFuncs = {
 		end,
 }
 
+function Parrot_CombatEvents:OnNewProfile()
+	key.profile.dbver = #updateFuncs
+end
+
 --[[
 -- executes all updateDBFuncs from <dbver> (self.db.profile) to
 -- <number of updateDBFuncs> and then updates the dbver to this number
@@ -174,6 +178,7 @@ local Parrot_TriggerConditions
 function Parrot_CombatEvents:OnInitialize()
 
 	Parrot_CombatEvents.db1 = Parrot.db1:RegisterNamespace("CombatEvents", dbDefaults)
+	self.db1.RegisterCallback(self, "OnNewProfile", "OnNewProfile")
 	cancelUIDSoonEnabled = self.db1.profile.cancelUIDSoon
 
 	-- module dependencies
