@@ -150,7 +150,7 @@ local updateDBFuncs = {
 		end,
 }
 
-function Parrot_CombatEvents:OnNewProfile()
+function Parrot_CombatEvents:OnNewProfile(t, key)
 	key.profile.dbver = #updateDBFuncs
 end
 
