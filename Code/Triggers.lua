@@ -1338,7 +1338,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 end
 
 local function getSoundChoices()
-	local t = {}
+	local t = newList()
 	for _,v in ipairs(SharedMedia:List("sound")) do
 		t[v] = v
 	end
@@ -1802,7 +1802,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		if not t.conditions then
 			return deepCopy(Parrot_TriggerConditions:GetPrimaryConditionChoices())
 		end
-		local tmp = {}
+		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
 			if not (t.conditions[k] and Parrot_TriggerConditions:IsExclusive(k)) then
 				tmp[k] = v
