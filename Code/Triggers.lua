@@ -706,7 +706,7 @@ local triggers2translation = {
 				friendly = 1,
 				amount = param,
 				comparator = "<=",
-				powerType = "*",
+				powerType = "MANA",
 			}
 			return "Unit power", arg
 		end,
@@ -725,7 +725,7 @@ local triggers2translation = {
 				friendly = 1,
 				amount = param,
 				comparator = "<=",
-				powerType = "*",
+				powerType = "MANA",
 			}
 			return "Unit power", arg
 		end,
@@ -806,7 +806,7 @@ local triggers2secondary = {
 				amount = param,
 				friendly = 1,
 				comparator = ">=",
-				powerType = "*",
+				powerType = "MANA",
 			}
 			return "Unit power", arg
 		end,
@@ -816,7 +816,7 @@ local triggers2secondary = {
 				amount = param,
 				friendly = 1,
 				comparator = ">=",
-				powerType = "*",
+				powerType = "MANA",
 			}
 			return "Unit power", arg
 		end,
@@ -998,6 +998,15 @@ local function alpha2alpha1()
 	end-- for i,t
 end
 
+--[[
+-- reset the Powertype for the low mana-trigger to MANA because previous
+-- conversions (alpha->alpha) caused it to be "*".
+--]]
+local function resetLowManaPowerType()
+	self.db1.profile.triggers2[1009].conditions["Unit power"][1].
+		powerType = "MANA"
+end
+
 --[[============================================================================
 * End of 1.9->1.10 conversion code
 ============================================================================--]]
@@ -1008,6 +1017,7 @@ end
 local updateFuncs = {
 	[1] = convertTriggers2,
 	[2] = alpha2alpha1,
+	[3] = resetLowManaPowerType,
 }
 
 function Parrot_Triggers:OnNewProfile(t, key)
