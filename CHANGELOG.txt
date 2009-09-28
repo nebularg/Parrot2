@@ -1,17 +1,27 @@
 v1.10:
+* Move to Ace3 (got rid of the rest of LibRock)
 * major changes to the Trigger-System
   + TriggerCondition now support multiple arguments
   + Most TriggerConditions can be used more than once
   + simplified the List of built-in conditions
 * add Primary Trigger Conditions:
-	+ Incoming damage
-	+ Outgoing damage
+  + Incoming damage
+  + Outgoing damage
+* add Secondary Trigger Conditions:
+  + Item buff active
 * use ingame-translations for damage-types
 * Fix the double-combo-point-issue (Ticket #41)
 * add support for CombatEvents:
-	+ Pet skill interrupts
-	+ Outgoing Siege damage
+  + Pet skill interrupts
+  + Outgoing Siege damage
+  + Pet buff gain/fade (disabled by default)
+  + Pet debuff gain/fade (disabled by default)
+  + Enemy buff gain/fade (disabled by default)
+  + Enemy debuff gain/fade (disabled by default)
 * optimize the Cooldown-module to use much less CPU-time
+* continue showing events when dead
+* Do not control Game Damage/Healing by default
+* only schedule "Check for XX seconds"-timer when a Trigger is using it
 
 v1.9.4:
 * properly update scroll-area-choices when profile is changed
