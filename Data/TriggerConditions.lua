@@ -86,7 +86,12 @@ local unitHealthStates = {
 Parrot:RegisterPrimaryTriggerCondition {
 	name = "Unit health",
 	localName = L["Unit health"],
---	defaultParam = 0.5,
+	defaultParam = {
+		unit = "player",
+		friendly = -1,
+		amount = 0.5,
+		comparator = "<=",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -209,6 +214,13 @@ table.insert(onEnableFuncs, function()
 Parrot:RegisterPrimaryTriggerCondition {
 	name = "Unit power",
 	localName = L["Unit power"],
+	defaultParam = {
+		unit = "player",
+		friendly = -1,
+		amount = 0.5,
+		comparator = "<=",
+		powerType = "MANA",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -552,6 +564,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 			triggerData = parseSpellDamage,
 		},
 	},
+	defaultParam = {
+		unit = "target",
+		comparator = ">",
+		amount = 0,
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -625,6 +642,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 			triggerData = parseSpellDamage,
 		},
 	},
+	defaultParam = {
+		unit = "target",
+		comparator = ">",
+		amount = 0,
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -672,6 +694,13 @@ end
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Unit power",
 	localName = L["Unit power"],
+	defaultParam = {
+		unit = "player",
+		comparator = "<=",
+		amount = 0.4,
+		friendly = -1,
+		powerType = "MANA",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -735,6 +764,12 @@ Parrot:RegisterSecondaryTriggerCondition {
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Unit health",
 	localName = L["Unit health"],
+	defaultParam = {
+		unit = "player",
+		comparator = "<=",
+		amount = 0.5,
+		friendly = -1,
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -991,6 +1026,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 	name = "Active talents",
 	localName = L["Active talents"],
 	defaultParam = 1,
+	exclusive = true,
 	param = {
 		type = 'select',
 		values = {

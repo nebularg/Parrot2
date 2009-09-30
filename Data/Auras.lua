@@ -615,6 +615,10 @@ Parrot:RegisterPrimaryTriggerCondition {
 			end,
 		},
 	},
+	defaultParam = {
+		unit = "player",
+		auraType = "BUFF",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -660,6 +664,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 				)
 			end,
 		},
+	},
+	defaultParam = {
+		unit = "player",
+		auraType = "BUFF",
+		amount = 5,
 	},
 	param = {
 		type = 'group',
@@ -719,6 +728,10 @@ Parrot:RegisterPrimaryTriggerCondition {
 			end,
 		},
 	},
+	defaultParam = {
+		unit = "player",
+		auraType = "BUFF",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -771,6 +784,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 			end,
 		}
 	},
+	defaultParam = {
+		unit = "player",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -806,6 +822,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 			end,
 		}
 	},
+	defaultParam = {
+		unit = "player",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -830,6 +849,9 @@ Parrot:RegisterSecondaryTriggerCondition {
 	name = "Buff inactive",
 	localName = L["Buff inactive"],
 --	notLocalName = L["Aura active"],
+	defaultParam = {
+		unit = "player",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -878,6 +900,9 @@ Parrot:RegisterSecondaryTriggerCondition {
 	name = "Buff active",
 	localName = L["Buff active"],
 --	notLocalName = L["Aura active"],
+	defaultParam = {
+		unit = "player",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -924,6 +949,9 @@ Parrot:RegisterSecondaryTriggerCondition {
 	subCategory = L["Auras"],
 	name = "Debuff inactive",
 	localName = L["Debuff inactive"],
+	defaultParam = {
+		unit = "player",
+	},
 	param = {
 		type = 'group',
 		args = {
@@ -972,6 +1000,9 @@ Parrot:RegisterSecondaryTriggerCondition {
 	name = "Debuff active",
 	localName = L["Debuff active"],
 --	notLocalName = L["Aura active"],
+	defaultParam = {
+		unit = "player",
+	},
 	param = {
 		type = 'group',
 		args = {
