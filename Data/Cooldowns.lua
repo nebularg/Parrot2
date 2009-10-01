@@ -57,13 +57,6 @@ end
 
 local spellNameToTree = {}
 
---[[function mod:ResetCooldownState()
-	for name, id in pairs(spellNameToID) do
-		local start, duration = GetSpellCooldown(id, "spell")
-		cooldowns[name] = start > 0 and duration > GCD and duration > db.profile.threshold
-	end
-end--]]
-
 local nextUpdate
 local lastRecalc
 local recalcTimer

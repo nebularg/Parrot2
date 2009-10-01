@@ -546,7 +546,6 @@ local Parrot_CombatEvents
 
 function Parrot_Triggers:OnInitialize()
 
-	debug("initialize Triggers")
 	Parrot_Triggers.db1 = Parrot.db1:RegisterNamespace("Triggers", dbDefaults)
 	self.db1.RegisterCallback(Parrot_Triggers, "OnNewProfile", "OnNewProfile")
 
@@ -955,10 +954,7 @@ end
 alpha2alpah1translate = {
 	["Aura inactive"] = function(param)
 			local arg = {}
-			debug("param")
-			debug(param)
 			for k,v in ipairs(param) do
-				debug("inserting ", v)
 				arg[k] = {
 					unit = "player",
 					byplayer = false,
@@ -1222,7 +1218,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 			--this can be just a single value or a table of params
 			local param = conditions[name]
 			if type(param) == 'table' then
-				for i, v in ipairs(param) do
+				for i, v in pairs(param) do
 					-- if one condition matches, the trigger fires
 					if checkPrimaryCondition(v, arg, check) then
 						good = true
@@ -1245,7 +1241,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 							good = checkTriggerCooldown(t, v) and good
 						elseif type(v) == 'table' and #v > 0 then
 						-- if the condition is not exclusive there may be multiple matchers
-							for _,cond in ipairs(v) do
+							for _,cond in pairs(v) do
 								if not checkSecondaryCondition(k,cond) then
 									good = false
 									break
@@ -1616,56 +1612,157 @@ function Parrot_Triggers:OnOptionsCreate()
 		HUNTER = CL["HUNTER"],
 		DEATHKNIGHT = CL["DEATHKNIGHT"],
 	}
-
-	local function addPrimaryCondition(t, name, localName, index)
-		local index = index
-		if not index then
-			index = 1
-		end
-		local opt = triggers_opt.args[tostring(t)].args.primary
-		local param, default = Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
-		local tmp
-
-		local function makeGetSet(k, ptype)
-			local getter, setter
-			if Parrot_TriggerConditions:IsExclusive(name) then
-				getter = function(info) return t.conditions[name][k] end
-				setter = function(info, value) t.conditions[name][k] = value end
+	
+	local function getConditionValue(info)
+		local t, name, field, index, parse = info.arg.t, info.arg.name, info.arg.field,
+				info.arg.index, info.arg.parse
+		local result
+		if not field then
+			if index then
+				result = t.contitions[name][index]
 			else
-				getter = function(info) return t.conditions[name][info.arg][k] end
-				setter = function(info, value) t.conditions[name][info.arg][k] = value end
+				result = t.conditions[name]
 			end
-			return getter, setter
+		else
+			if index then
+				result = t.conditions[name][index][field]
+			else
+				result = t.conditions[name][field]
+			end
 		end
+		if parse then
+			return parse(result)
+		else
+			return result
+		end
+	end
+	local function setConditionValue(info, value)
+		local t, name, field, index, save = info.arg.t, info.arg.name, info.arg.field,
+				info.arg.index, info.arg.save
+		if save then
+			value = save(value)
+		end
+		if not field then
+			if index then
+				t.conditions[name][index] = value
+			else
+				t.conditions[name] = value
+			end -- if index
+		else
+			if index then
+				t.conditions[name][index][field] = value
+			else
+				t.conditions[name][field] = value
+			end -- if index
+		end -- if not field
+	end -- setConditionValue()
+	
+	local function getSecondaryConditionValue(info)
+--		if true then debug(info.arg); return end
+		local t, name, field, index, parse = info.arg.t, info.arg.name, info.arg.field,
+				info.arg.index, info.arg.parse
+		local result
+		if not field then
+			if index then
+				result = t.secondaryConditions[name][index]
+			else
+				result = t.secondaryConditions[name]
+			end
+		else
+			if index then
+				result = t.secondaryConditions[name][index][field]
+			else
+				result = t.secondaryConditions[name][field]
+			end
+		end
+		if parse then
+			return parse(result)
+		else
+			return result
+		end
+	end
+	local function setSecondaryConditionValue(info, value)
+		local t, name, field, index, save = info.arg.t, info.arg.name, info.arg.field,
+				info.arg.index, info.arg.save
+		if save then
+			value = save(value)
+		end
+		if not field then
+			if index then
+				t.secondaryConditions[name][index] = value
+			else
+				t.secondaryConditions[name] = value
+			end -- if index
+		else
+			if index then
+				t.secondaryConditions[name][index][field] = value
+			else
+				t.secondaryConditions[name][field] = value
+			end -- if index
+		end -- if not field
+	end -- setConditionValue()
+	
+	local function donothing()
+	end
+	
+	local function removePrimaryCondition(info)
+		local t, name, index = unpack(info.arg)
+		local opt = triggers_opt.args[tostring(t)].args.primary
+		if index then
+			opt.args[name .. index] = del(opt.args[name .. index])
+			t.conditions[name][index] = nil
+		else
+			opt.args[name] = del(opt.args[name])
+		end
+		-- delete the whole condition-table
+		if not index or not next(t.conditions[name]) then
+			t.conditions[name] = nil
+		end
+	end -- removeCondition()
+
+	local function removeSecondaryCondition(info)
+		local t, name, index = unpack(info.arg)
+		local opt = triggers_opt.args[tostring(t)].args.secondary
+		if index then
+			opt.args[name .. index] = del(opt.args[name .. index])
+			t.secondaryConditions[name][index] = nil
+		else
+			opt.args[name] = del(opt.args[name])
+		end
+		-- delete the whole condition-table
+		if not index or not next(t.secondaryConditions[name]) then
+			t.secondaryConditions[name] = nil
+		end
+	end -- removeCondition()
+
+	local function addCondition(t, name, localName, index, primary)
+		-- the only stuff that is different about adding primary and secondary conditions
+		local opt, param, default
+		local set, get, remove
+		if primary then
+			opt = triggers_opt.args[tostring(t)].args.primary
+			param, default = Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
+			set, get = setConditionValue, getConditionValue
+			remove = removePrimaryCondition
+		else
+			opt = triggers_opt.args[tostring(t)].args.secondary
+			param, default = Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
+			set, get = setSecondaryConditionValue, getSecondaryConditionValue
+			remove = removeSecondaryCondition
+		end
+		local tmp
 
 		if param and param.type == 'group' then
 			tmp = deepCopy(param)
 			for k,v in pairs(tmp.args) do
-				-- derive setter and getter for the option
-
-				local function ret(arg)
-					return arg
-				end
-				local save = v.save or ret
-				local parse = v.parse or ret
-				v.save = nil
-				v.parse = nil
-
-				local getter, setter
-				if Parrot_TriggerConditions:IsExclusive(name) then
-					getter = function(info) return parse(t.conditions[name][k]) end
-					setter = function(info, value) t.conditions[name][k] = save(value) end
-				else
-					getter = function(info) return parse(t.conditions[name][info.arg][k]) end
-					setter = function(info, value) t.conditions[name][info.arg][k] = save(value) end
-				end
-
-				v.get = getter --function(info) return t.conditions[name][info.arg][k] end
-				v.set = setter --function(info, value) t.conditions[name][info.arg][k] = value end
+				v.get = get
+				v.set = set
 				if acetype[v.type] then
 					v.type = acetype[v.type]
 				end
-				v.arg = index
+				v.arg = { t = t, name = name, field = k, index = index, parse = v.parse, save = v.save }
+				v.save = nil
+				v.parse = nil
 			end
 		else
 			tmp = {
@@ -1677,89 +1774,42 @@ function Parrot_Triggers:OnOptionsCreate()
 					type = 'execute',
 					name = localName,
 					desc = localName,
-					func = function() end,
+					func = donothing,
 				}
 			else
-				tmp = {
-					type = 'group',
-					args = {},
-				}
 				local param_opt = deepCopy(param)
 				tmp.args.param = param_opt
 				param_opt.name = localName
 				param_opt.desc = localName
-
-				local function ret(arg)
-					return arg
-				end
-				local save = param.save or ret
-				local parse = param.parse or ret
+				param_opt.get = get
+				param_opt.set = set
+				param_opt.arg = { t = t, name = name, index = index, parse = param_opt.parse, save = param_opt.save, }
 				param_opt.save = nil
 				param_opt.parse = nil
-				local getter, setter
-				if Parrot_TriggerConditions:IsExclusive(name) then
-					getter = function(info) return parse(t.conditions[name]) end
-					setter = function(info, value) t.conditions[name] = save(value) end
-				else
-					getter = function(info) return parse(t.conditions[name][info.arg]) end
-					setter = function(info, value) t.conditions[name][info.arg] = save(value) end
-				end
-
-				param_opt.get = getter
-				param_opt.set = setter
-				param_opt.arg = index
 				if acetype[param_opt.type] then
 					param_opt.type = acetype[param_opt.type]
 				end
 			end
 		end
-		-- for any option
-		tmp.inline = true
+
 		tmp.name = localName
 		tmp.desc = localName
+		tmp.inline = true
 		tmp.args.remove = {
 			type = 'execute',
 			name = L["Remove"],
 			desc = L["Remove condition"],
-			func = function(info)
-					local opt = triggers_opt.args[tostring(t)].args.primary
-					-- delete all other conditions with same name
---					debug("delete all other options with the same name")
-					for k,v in pairs(opt.args) do
-						if k:match("^" .. name .. "%d*") then
---							debug("delete ", k)
-							opt.args[k] = del(opt.args[k])
-						end
-					end
-					if Parrot_TriggerConditions:IsExclusive(name) then
-						t.conditions[name] = nil
-					else
-						t.conditions[name][index] = nil
-						-- and nil the table if empty
-						if not next(t.conditions[name]) then
---							debug("no more conditions present, deleting subtable...")
-							t.conditions[name] = nil
-						else
-							-- there are still conditions present, so we rebuild the options
-							for i in pairs(t.conditions[name]) do
-								addPrimaryCondition(t, name, localName, i)
-							end
-						end
-					end
-				end,
-			arg = index,
+			func = primary and removePrimaryCondition or removeSecondaryCondition,
+			arg = {t, name, index,},
 			order = -1,
 		}
-		opt.args[name .. index] = tmp
+		opt.args[name .. (index or "")] = tmp
 		if not param then
 			return true
 		end
 		if default then
 			return default
 		end
---		if param.type == 'group' then
---			return {}
---		end
 		if type(param.min) == "number" and type(param.max) == "number" then
 			return (param.max + param.min) / 2
 		end
@@ -1768,7 +1818,10 @@ function Parrot_Triggers:OnOptionsCreate()
 		else
 			return nil
 		end
---		return false
+	end
+
+	local function addPrimaryCondition(t, name, localName, index)
+		return addCondition(t, name, localName, index, true)
 	end
 	local function newPrimaryCondition(info, name)
 		local t = info.arg
@@ -1794,22 +1847,6 @@ function Parrot_Triggers:OnOptionsCreate()
 			t.conditions[name][index] = addPrimaryCondition(t, name, localName, index)
 		end
 	end
-	local function removePrimaryCondition(t, name, index)
-		local opt = triggers_opt.args[tostring(t)].args.primary
-		opt.args[name .. index] = del(opt.args[name .. index])
-		t.conditions[name][index] = nil
-	end
-	local function hasNoPrimaryConditions(t)
-		return next(t.arg.conditions) == nil
-	end
-	local function hasAllPrimaryConditions(t)
-		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
-			if t.arg.conditions[k] == nil then
-				return false
-			end
-		end
-		return true
-	end
 	local function getAvailablePrimaryConditions(info)
 		local t = info.arg
 		if not t.conditions then
@@ -1823,153 +1860,9 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		return tmp
 	end
-	local function getUsedPrimaryConditions(t)
-		local tmp = newList()
-		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
-			if t.arg.conditions[k] then
-				tmp[k] = v
-			end
-		end
-		return tmp
-	end
 
-	local function addSecondaryCondition(t, name, localName, index)
-		local index = index
-		if not index then
-			index = 1
-		end
-		local opt = triggers_opt.args[tostring(t)].args.secondary
-		local param, default = Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
-		local tmp
-
-		if param and param.type == 'group' then
-			tmp = deepCopy(param)
-			for k,v in pairs(tmp.args) do
-				-- derive setter and getter for the option
-				local function ret(arg)
-					return arg
-				end
-				local save = v.save or ret
-				local parse = v.parse or ret
-				v.save = nil
-				v.parse = nil
-
-				local getter, setter
-				if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
-					getter = function(info) return parse(t.secondaryConditions[name][k]) end
-					setter = function(info, value) t.secondaryConditions[name][k] = save(value) end
-				else
-					getter = function(info) return parse(t.secondaryConditions[name][info.arg][k]) end
-					setter = function(info, value) t.secondaryConditions[name][info.arg][k] = save(value) end
-				end
-
-				v.get = getter --function(info) return t.conditions[name][info.arg][k] end
-				v.set = setter --function(info, value) t.conditions[name][info.arg][k] = value end
-				if acetype[v.type] then
-					v.type = acetype[v.type]
-				end
-				v.arg = index
-			end
-		else
-			tmp = {
-				type = 'group',
-				args = {},
-			}
-			if not param then
-				tmp.args.param = {
-					type = 'execute',
-					name = localName,
-					desc = localName,
-					func = function() end,
-				}
-			else
-				tmp = {
-					type = 'group',
-					args = {},
-				}
-				local param_opt = deepCopy(param)
-
-				tmp.args.param = param_opt
-				param_opt.name = localName
-				param_opt.desc = localName
-
-				local function ret(arg)
-					return arg
-				end
-				local save = param.save or ret
-				local parse = param.parse or ret
-				param_opt.save = nil
-				param_opt.parse = nil
-
-				local getter, setter
-				if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
-					getter = function(info) return parse(t.secondaryConditions[name]) end
-					setter = function(info, value) t.secondaryConditions[name] = save(value) end
-				else
-					getter = function(info) return parse(t.secondaryConditions[name][info.arg]) end
-					setter = function(info, value) t.secondaryConditions[name][info.arg] = save(value) end
-				end
-
-				param_opt.get = getter
-				param_opt.set = setter
-				param_opt.arg = index
-				if acetype[param_opt.type] then
-					param_opt.type = acetype[param_opt.type]
-				end
-			end
-		end
-		-- for any option
-		tmp.inline = true
-		tmp.name = localName
-		tmp.desc = localName
-		tmp.args.remove = {
-			type = 'execute',
-			name = L["Remove"],
-			desc = L["Remove condition"],
-			func = function(info)
-					local opt = triggers_opt.args[tostring(t)].args.secondary
-					-- delete all other conditions with same name
---					debug("delete all other options with the same name")
-					for k,v in pairs(opt.args) do
-						if k:match("^" .. name .. "%d*") then
---							debug("delete ", k)
-							opt.args[k] = del(opt.args[k])
-						end
-					end
-					if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
-						t.secondaryConditions[name] = nil
-					else
-						t.secondaryConditions[name][index] = nil
-						-- and nil the table if empty
-						if not next(t.secondaryConditions[name]) then
---							debug("no more conditions present, deleting subtable...")
-							t.secondaryConditions[name] = nil
-						else
-							-- there are still conditions present, so we rebuild the options
-							for i in pairs(t.secondaryConditions[name]) do
-								addSecondaryCondition(t, name, localName, i)
-							end
-						end
-					end
-				end,
-			arg = index,
-			order = -1,
-		}
-		opt.args[name .. index] = tmp
-		if not param then
-			return true
-		end
-		if default then
-			return default
-		end
-		if type(param.min) == "number" and type(param.max) == "number" then
-			return (param.max + param.min) / 2
-		end
-		if param.type == 'group' then
-			return {}
-		else
-			return nil
-		end
+	local function addSecondaryCondition(...)
+		return addCondition(...)
 	end
 
 	local function newSecondaryCondition(t, name)
@@ -1989,32 +1882,9 @@ function Parrot_Triggers:OnOptionsCreate()
 				t.secondaryConditions[name] = {}
 				index = 1
 			end
-			t.secondaryConditions[name][index] = addSecondaryCondition(t, name, localName, index)
+			local tmp = addSecondaryCondition(t, name, localName, index)
+			t.secondaryConditions[name][index] = tmp
 		end
-	end
-local function removeSecondaryCondition(t, name)
-		local t = t.arg
-		local opt = triggers_opt.args[tostring(t)].args.secondary
-		opt.args[name] = del(opt.args[name])
-		t.secondaryConditions[name] = nil
-		if next(t.secondaryConditions) == nil then
-			t.secondaryConditions = del(t.secondaryConditions)
-		end
-	end
-	local function hasNoSecondaryConditions(t)
-		return not t.arg.secondaryConditions
-	end
-	local function hasAllSecondaryConditions(t)
-		local t = t.arg
-		if not t.secondaryConditions then
-			return false
-		end
-		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do
-			if t.secondaryConditions[k] == nil then
-				return false
-			end
-		end
-		return true
 	end
 	local function getAvailableSecondaryConditions(info)
 		local t = info.arg
@@ -2030,16 +1900,6 @@ local function removeSecondaryCondition(t, name)
 					tmp[k] = v
 				end
 			else
-				tmp[k] = v
-			end
-		end
-		return tmp
-	end
-	local function getUsedSecondaryConditions(t)
-		local t = t.arg
-		local tmp = newList()
-		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do
-			if t.secondaryConditions and t.secondaryConditions[k] then
 				tmp[k] = v
 			end
 		end
@@ -2225,17 +2085,6 @@ local function removeSecondaryCondition(t, name)
 							arg = t,
 							order = 1,
 						},
-						--[[remove = {
-							type = 'select',
-							name = L["Remove condition"],
-							desc = L["Remove a primary condition"],
-							values = getUsedPrimaryConditions,
-							get = false,
-							set = removePrimaryCondition,
-							disabled = hasNoPrimaryConditions,
-							arg = t,
-							order = 2,
-						}--]]
 					}
 				},
 				secondary = {
@@ -2254,17 +2103,6 @@ local function removeSecondaryCondition(t, name)
 							arg = t,
 							order = 1,
 						},
-						--[[remove = {
-							type = 'select',
-							name = L["Remove condition"],
-							desc = L["Remove a secondary condition"],
-							values = getUsedSecondaryConditions,
-							get = false,
-							set = removeSecondaryCondition,
-							disabled = hasNoSecondaryConditions,
-							arg = t,
-							order = 2,
-						}--]]
 					}
 				},
 			}
@@ -2272,26 +2110,15 @@ local function removeSecondaryCondition(t, name)
 		triggers_opt.args[tostring(t)] = opt
 		for k,v in pairs(t.conditions) do
 			if type(v) == 'table' then
---				debug(k, " is a table")
---				debug(v)
-				for i,cond in ipairs(v) do
+				for i,cond in pairs(v) do
 					local localName = Parrot_TriggerConditions:GetPrimaryConditionChoices()[k]
 					addPrimaryCondition(t, k, localName, i)
 				end
 			else
---				debug(k, " is not a table")
 				local localName = Parrot_TriggerConditions:GetPrimaryConditionChoices()[k]
 				addPrimaryCondition(t, k, localName)
 			end
 		end
-		--[[
-		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
-			if t.conditions[k] then
-				for i in ipairs(t.conditions[k]) do
-					addPrimaryCondition(t, k, v, i)
-				end
-			end
-		end--]]
 		if t.secondaryConditions then
 			for k,v in pairs(t.secondaryConditions) do
 				local localName = Parrot_TriggerConditions:GetSecondaryConditionChoices()[k]

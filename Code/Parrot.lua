@@ -6,8 +6,7 @@ Parrot.version = "dev"
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
-local localeTables = {}
-
+local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
@@ -247,8 +246,7 @@ local function initOptions()
 			v:OnOptionsCreate()
 		end
 	end
-
-	Parrot.options.args.load = del(Parrot.options.args.load)
+	AceConfig:RegisterOptionsTable("Parrot", Parrot.options)
 end
 
 local dbDefaults = {
@@ -277,18 +275,19 @@ function Parrot:OnInitialize()
 		desc = L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."],
 		type = 'group',
 		icon = [[Interface\Icons\Spell_Nature_ForceOfNature]],
-		args = {
-			load = {
-				name = L["Load config"],
-				desc = L["Load configuration options"],
-				type = 'execute',
-				func = initOptions,
-			},
-		},
+		args = {},
+	}
+	local bliz_options = CopyTable(Parrot.options)
+	bliz_options.args.load = {
+		name = L["Load config"],
+		desc = L["Load configuration options"],
+		type = 'execute',
+		func = "ShowConfig",
+		handler = Parrot,
 	}
 
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("Parrot", Parrot.options)
-	AceConfigDialog:AddToBlizOptions("Parrot", "Parrot")
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("Parrot_bliz", bliz_options)
+	AceConfigDialog:AddToBlizOptions("Parrot_bliz", "Parrot")
 end
 
 function Parrot:UpdateModuleConfigs()
