@@ -1750,6 +1750,15 @@ function Parrot_Triggers:OnOptionsCreate()
 			set, get = setSecondaryConditionValue, getSecondaryConditionValue
 			remove = removeSecondaryCondition
 		end
+		if not localName then
+			debug(localName, " was not found")
+			if t.name then
+				Parrot:Print("Trigger \"", t.name, "\" might be broken")
+				Parrot:Print("The condition ", name, " was not found")
+				Parrot:Print("Try to recreate the Trigger")
+			end
+			return
+		end
 		local tmp
 
 		if param and param.type == 'group' then
