@@ -2011,6 +2011,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				},
 				sound = {
 					type = 'select',
+					control = "LSM30_Sound",
 					values = getSoundChoices,
 					name = L["Sound"],
 					desc = L["What sound to play when the trigger is shown."],
