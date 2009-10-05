@@ -1619,7 +1619,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		local result
 		if not field then
 			if index then
-				result = t.contitions[name][index]
+				result = t.conditions[name][index]
 			else
 				result = t.conditions[name]
 			end
