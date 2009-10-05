@@ -908,13 +908,15 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		THICKOUTLINE = L["Thick"],
 		[L["Inherit"]] = L["Inherit"],
 	}
-	local function getEnable(info)
-		local category, name = info.arg[1], info.arg[2]
+	local function getEnable2(category, name)
 		local disabled = self.db1.profile[category][name].disabled
 		if disabled == nil then
 			disabled = combatEvents[category][name].defaultDisabled
 		end
 		return not disabled
+	end
+	local function getEnable(info)
+		return getEnable2(info.arg[1], info.arg[2])
 	end
 	local function setEnable(info, value)
 		local category, name = info.arg[1], info.arg[2]
@@ -926,13 +928,15 @@ function Parrot_CombatEvents:OnOptionsCreate()
 
 		refreshEventRegistration(category, name)
 	end
-	local function getScrollArea(info)
-		local category, name = info.arg[1], info.arg[2]
+	local function getScrollArea2(category, name)
 		local scrollArea = self.db1.profile[category][name].scrollArea
 		if scrollArea == nil then
 			scrollArea = category
 		end
 		return scrollArea
+	end
+	local function getScrollArea(info)
+		return getScrollArea2(info.arg[1], info.arg[2])
 	end
 	local function setScrollArea(info, value)
 		local category, name = info.arg[1], info.arg[2]
@@ -960,7 +964,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		local one_enabled, one_disabled = false, false
 		for k,v in pairs(combatEvents[category]) do
 			if v.subCategory == subcat then
-				if getEnable( { arg = {category, v.name} } ) then
+				if getEnable2(category, v.name) then
 					one_enabled = true
 				else
 					one_disabled = true
@@ -992,7 +996,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		local common_choice
 		for k,v in pairs(combatEvents[category]) do
 			if v.subCategory == subcat then
-				local choice = getScrollArea( { arg = {category, v.name} } )
+				local choice = getScrollArea2(category, v.name)
 				if common_choice then
 					if choice ~= common_choice then
 						common_choice = nil
@@ -1010,9 +1014,18 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		local category, subcat = info.arg[1], info.arg[2]
 		for k,v in pairs(combatEvents[category]) do
 			if v.subCategory == subcat then
-				setScrollArea( { arg = {category, v.name} }, value )
+				setScrollArea( { arg = newList(category, v.name) }, value )
 			end
 		end
+	end
+
+	-- copy the choices
+	local function getScrollAreasChoices()
+		local tmp = {}
+		for k,v in pairs(Parrot_ScrollAreas:GetScrollAreasChoices()) do
+			tmp[k] = v
+		end
+		return tmp
 	end
 
 	function createOption(category, name)
@@ -1046,15 +1059,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		end
 
 		local subcat = combatEvents[category][name].subCategory
-		-- copy the choices
-		local function getScrollAreasChoices()
-			local tmp = {}
-			for k,v in pairs(Parrot_ScrollAreas:GetScrollAreasChoices()) do
-				tmp[k] = v
-			end
-			return tmp
-		end
-
+		local arg = newList(category, subcat)
 		-- added so that options get sorted into subcategories
 		if not events_opt.args[category].args[subcat] then
 			events_opt.args[category].args[subcat] = {
@@ -1069,7 +1074,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						tristate = true,
 						get = getCommonEnabled,
 						set = setCommonEnabled,
-						arg = {category, subcat},
+						arg = argm
 					},
 					scrollarea = {
 						name = L["Scroll area"],
@@ -1078,13 +1083,13 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						values = getScrollAreasChoices,
 						get = getCommonScrollArea,
 						set = setCommonScrollArea,
-						arg = {category, subcat},
+						arg = arg,
 					},
 				},
 				order = 1,
 			}
 		end
-
+		arg = newList(category, name)
 		events_opt.args[category].args[subcat].args[name] = {
 			type = 'group',
 			name = localName,
@@ -1097,7 +1102,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					usage = usage,
 					get = getTag,
 					set = setTag,
-					arg = {category, name},
+					arg = arg,
 					order = 1,
 				},
 				color = {
@@ -1106,7 +1111,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					type = 'color',
 					get = getColor,
 					set = setColor,
-					arg = {category, name},
+					arg = arg,
 				},
 				sound = {
 					type = 'select',
@@ -1115,7 +1120,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					desc = L["What sound to play when the current event occurs."],
 					get = getSound,
 					set = setSound,
-					arg = {category, name},
+					arg = arg,
 				},
 				sticky = {
 					name = L["Sticky"],
@@ -1123,7 +1128,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					type = 'toggle',
 					get = getSticky,
 					set = setSticky,
-					arg = {category, name},
+					arg = arg,
 				},
 				font = {
 					type = 'group',
@@ -1138,7 +1143,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							values = Parrot.inheritFontChoices,
 							get = getFontFace,
 							set = setFontFace,
-							arg = {category, name},
+							arg = arg,
 							order = 1,
 						},
 						fontSizeInherit = {
@@ -1147,7 +1152,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							desc = L["Inherit font size"],
 							get = getFontSizeInherit,
 							set = setFontSizeInherit,
-							arg = {category, name},
+							arg = arg,
 							order = 2,
 						},
 						fontSize = {
@@ -1160,7 +1165,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							get = getFontSize,
 							set = setFontSize,
 							disabled = getFontSizeInherit,
-							arg = {category, name},
+							arg = arg,
 							order = 3,
 						},
 						fontOutline = {
@@ -1170,7 +1175,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							get = getFontOutline,
 							set = setFontOutline,
 							values = fontOutlineChoices,
-							arg = {category, name},
+							arg = arg,
 							order = 4,
 						},
 					}
@@ -1182,7 +1187,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					desc = L["Enable the current event."],
 					get = getEnable,
 					set = setEnable,
-					arg = {category, name},
+					arg = arg,
 				},
 				scrollArea = {
 					type = 'select',
@@ -1191,7 +1196,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					values = getScrollAreasChoices,
 					get = getScrollArea,
 					set = setScrollArea,
-					arg = {category, name},
+					arg = arg,
 				},
 			}
 		}
@@ -1420,24 +1425,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					get = function(info) return self.db1.profile.sthrottles[info.arg].waitStyle end,
 					set = function(info, value) self.db1.profile.sthrottles[info.arg].waitStyle = value end,
 					arg = k,
-				},--]]
-				--[[inc = {
-					type = 'toggle',
-					name = L["Incoming"],
-					desc = L["Filter incoming spells"],
-					get = function(info) return not not self.db1.profile.sfilters[info.arg].inc end,
-					set = function(info, value) self.db1.profile.sfilters[info.arg].inc = value end,
-					arg = k,
-					order = 3,
-				},
-				out = {
-					type = 'toggle',
-					name = L["Outgoing"],
-					desc = L["Filter outgoing spells"],
-					get = function(info) return not not self.db1.profile.sfilters[info.arg].out end,
-					set = function(info, value) self.db1.profile.sfilters[info.arg].out = value end,
-					arg = k,
-					order = 4,
 				},--]]
 				delete = {
 					type = 'execute',
