@@ -1,3 +1,9 @@
+v1.10-alpha:
+* fix "Own Aura"-field in buff-active-conditions
+* use SharedMediaWidgets for Sounds and Master font settings
+* set more default-values when creating a new trigger-condition
+* make options use a bit less memory
+
 v1.10:
 * Move to Ace3 (got rid of the rest of LibRock)
 * major changes to the Trigger-System
