@@ -150,6 +150,7 @@ function Parrot_Display:OnOptionsCreate()
 		args = {
 			normalFace = {
 				type = 'select',
+				control = "LSM30_Font",
 				name = L["Normal font"],
 				desc = L["Normal font face."],
 				get = function()
@@ -189,6 +190,7 @@ function Parrot_Display:OnOptionsCreate()
 			},
 			stickyFace = {
 				type = 'select',
+				control = "LSM30_Font",
 				name = L["Sticky font"],
 				desc = L["Sticky font face."],
 				get = function()
