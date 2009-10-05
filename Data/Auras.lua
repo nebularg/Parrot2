@@ -885,7 +885,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
 			if param.byplayer then
-				return unitCaster ~= param.unit
+				return unitCaster ~= "player"
 			else
 				return false
 			end
@@ -934,7 +934,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		local name, _, _, _, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
 		if name then
 			if param.byplayer == true then
-				return unitCaster == param.unit
+				return unitCaster == "player"
 			else
 				return true
 			end
@@ -985,7 +985,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
 			if param.byplayer then
-				return unitCaster ~= param.unit
+				return unitCaster ~= "player"
 			else
 				return false
 			end
@@ -1034,7 +1034,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		local name, _, _, _, _, _, _, unitCaster = UnitDebuff(param.unit, param.spell)
 		if name then
 			if param.byplayer == true then
-				return unitCaster == param.unit
+				return unitCaster == "player"
 			else
 				return true
 			end
