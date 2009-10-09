@@ -1817,6 +1817,9 @@ function Parrot_Triggers:OnOptionsCreate()
 			return true
 		end
 		if default then
+			if type(default) == 'table' then
+				default = deepCopy(default)
+			end
 			return default
 		end
 		if type(param.min) == "number" and type(param.max) == "number" then
