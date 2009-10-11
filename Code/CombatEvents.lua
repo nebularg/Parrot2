@@ -1074,7 +1074,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						tristate = true,
 						get = getCommonEnabled,
 						set = setCommonEnabled,
-						arg = argm
+						arg = arg,
 					},
 					scrollarea = {
 						name = L["Scroll area"],
