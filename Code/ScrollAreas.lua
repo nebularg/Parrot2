@@ -87,6 +87,12 @@ function Parrot_ScrollAreas:OnDisable()
 	end
 end
 
+CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
+CONFIGMODE_CALLBACKS["Parrot"] = function(state)
+		Parrot:SetConfigMode(state == "ON")
+	end
+
+
 --[[----------------------------------------------------------------------------------
 Notes:
 	Turn on/off the config mode boxes.
