@@ -383,7 +383,7 @@ local function refreshEventRegistration(category, name)
 	else
 		if blizzardEvent then
 			Parrot:RegisterBlizzardEvent(self, blizzardEvent_ev, function(uid, event, ...)
-					debug("bla: ", ...)
+--					debug("bla: ", ...)
 					local info = newList(...)
 					info.uid = uid
 					info.event = event
@@ -2286,7 +2286,7 @@ function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
 	if handlers then
 		for i,v in ipairs(handlers) do
 			if type(v.check) ~= 'function' then
-				debug(uid, " ", eventName)
+--				debug(uid, " ", eventName)
 			end
 			if v.check(...) then
 				local info = v.parse(...)
@@ -2328,7 +2328,6 @@ function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType, 
 	if registeredHandlers then
 		for i, v in ipairs(registeredHandlers) do
 			if v.checkfunc(...) then
-				debug(v.category, v.name)
 				local info = v.infofunc(...)
 				if info then
 					if sfiltered(info) then
