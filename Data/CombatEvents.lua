@@ -1286,7 +1286,7 @@ for k,v in pairs(missTypes) do
 		combatLogEvents = {
 			SWING_MISSED = { check = check, func = parseMissInfo, },
 		},
-		tagTranslations = missTagTranslations,
+		tagTranslations = incMissTagTranslations,
 		tagTranslationsHelp = petIncMissTagTranslationsHelp,
 		throttle = missThrottle,
 		color = petMissColor[k] or defaultMissColor[k],
@@ -1318,7 +1318,7 @@ for k,v in pairs(missTypes) do
 			SPELL_PERIODIC_MISSED = { check = check, func = parseSpellMissInfo, },
 			RANGE_MISSED = { check = check, func = parseSpellMissInfo, },
 		},
-		tagTranslations = spellMissTagTranslations,
+		tagTranslations = incSpellMissTagTranslations,
 		tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
 		throttle = missThrottle,
 		color = petMissColor[k] or defaultMissColor[k],
