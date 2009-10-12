@@ -3,6 +3,9 @@ v1.10-alpha:
 * use SharedMediaWidgets for Sounds and Master font settings
 * set more default-values when creating a new trigger-condition
 * make options use a bit less memory
+* fix cooldown-module missing to report finshed cooldowns sometimes
+* add config-mode-support (http://www.wowwiki.com/ConfigMode)
+* fix Pet-misses showing the tag in the text (like "Pet absorb [Amount]")
 
 v1.10:
 * Move to Ace3 (got rid of the rest of LibRock)
