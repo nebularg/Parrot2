@@ -61,9 +61,8 @@ local nextUpdate
 local lastRecalc
 local recalcTimer
 
-local expired = {}
-
 local function recalcCooldowns()
+	local expired = newList()
 	local minCD -- find the Cooldown closest to expiration
 	for spell, tree in pairs(spellNameToTree) do
 		local old = cooldowns[spell]
@@ -80,11 +79,12 @@ local function recalcCooldowns()
 	end -- for spell
 	nextUpdate = minCD and GetTime() + minCD or nil
 	lastRecalc = GetTime()
+	return expired
 end
 
 local function delayedRecalc()
 	recalcTimer = nil
-	recalcCooldowns()
+	mod:OnUpdate(true)
 end
 
 function mod:SPELL_UPDATE_COOLDOWN()
@@ -96,7 +96,7 @@ function mod:SPELL_UPDATE_COOLDOWN()
 		end
 		return
 	end
-	recalcCooldowns()
+	mod:OnUpdate(true)
 end
 
 function mod:ResetSpells()
@@ -110,7 +110,7 @@ function mod:ResetSpells()
 			spellNameToTree[spell] = i
 		end
 	end
-	recalcCooldowns()
+	mod:OnUpdate(true)
 end
 
 local groups = {
@@ -130,17 +130,15 @@ local groups = {
 	[GetSpellInfo(53408)] = L["Judgements"], -- Judgement of Wisdom
 }
 
-function mod:OnUpdate()
-	if not nextUpdate or nextUpdate > GetTime() then
+function mod:OnUpdate(force)
+	if (not nextUpdate or nextUpdate > GetTime()) and not force then
 		-- only run the update when the time is right
 		return
 	end
-	recalcCooldowns()
-	if not next(expired) then
+	local expired2 = recalcCooldowns()
+	if not next(expired2) then
 		return
 	end
-	local expired2 = deepCopy(expired)
-	wipe(expired)
 	local treeCount = newList()
 	for name, tree in pairs(expired2) do
 		Parrot:FirePrimaryTriggerCondition("Spell ready", name)
