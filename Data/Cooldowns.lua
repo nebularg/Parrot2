@@ -137,6 +137,7 @@ function mod:OnUpdate(force)
 	end
 	local expired2 = recalcCooldowns()
 	if not next(expired2) then
+		expired2 = del(expired2)
 		return
 	end
 	local treeCount = newList()
