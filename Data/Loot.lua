@@ -20,9 +20,12 @@ local GOLD_AMOUNT = _G.GOLD_AMOUNT
 local SILVER_AMOUNT = _G.SILVER_AMOUNT
 local COPPER_AMOUNT = _G.COPPER_AMOUNT
 
+local playerClass
+
 function mod:OnEnable()
 	mod.currentHonor = GetHonorCurrency()
 	mod.currentXP = UnitXP("player")
+	_, playerClass = UnitClass("player")
 end
 
 function mod:CHAT_MSG_LOOT(_, eventName, chatmsg)
