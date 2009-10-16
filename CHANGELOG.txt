@@ -1,4 +1,7 @@
-v1.10-alpha:
+v1.10.1+:
+* fix Soulshard gains
+
+v1.10.1:
 * fix "Own Aura"-field in buff-active-conditions
 * use SharedMediaWidgets for Sounds and Master font settings
 * set more default-values when creating a new trigger-condition
