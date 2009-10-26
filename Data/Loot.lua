@@ -6,9 +6,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Loot")
 local Deformat = AceLibrary("Deformat-2.0")
 
 local debug = Parrot.debug
-
-mod.currentHonor = 0
-mod.currentXP = 0
+local newList, newDict = Parrot.newList, Parrot.newDict
 
 local YOU_LOOT_MONEY = _G.YOU_LOOT_MONEY
 local LOOT_MONEY_SPLIT = _G.LOOT_MONEY_SPLIT
@@ -19,48 +17,6 @@ local LOOT_ITEM_CREATED_SELF = _G.LOOT_ITEM_CREATED_SELF
 local GOLD_AMOUNT = _G.GOLD_AMOUNT
 local SILVER_AMOUNT = _G.SILVER_AMOUNT
 local COPPER_AMOUNT = _G.COPPER_AMOUNT
-
-local playerClass
-
-function mod:OnEnable()
-	mod.currentHonor = GetHonorCurrency()
-	mod.currentXP = UnitXP("player")
-	_, playerClass = UnitClass("player")
-end
-
-function mod:CHAT_MSG_LOOT(_, eventName, chatmsg)
-
-	-- check for multiple-item-loot
-	local itemLink, amount = Deformat(chatmsg, LOOT_ITEM_SELF_MULTIPLE)
-	if not itemLink then
-		-- check for single-itemloot
-		itemLink = Deformat(chatmsg, LOOT_ITEM_SELF)
-	end
-
-	-- if something has been looted
-	if itemLink then
-
-		if not amount then
-			amount = 1
-		end
-
-		local info = newList()
-		info.itemLink = itemLink
-		info.amount = amount
-		self:TriggerCombatEvent("Notification", "Loot items", info)
-	elseif playerClass == "WARLOCK" then
-		-- check for soul shard-create
-		itemLink = Deformat(chatmsg, LOOT_ITEM_CREATED_SELF)
-		itemName = GetItemInfo(6265)
-		if itemLink and itemName and itemLink:match(".*" .. itemName .. ".*") then
-			local info = newList()
-			info.itemName = itemName
-			info.itemLink = itemLink
-			self:TriggerCombatEvent("Notification", "Soul shard gains", info)
-		end
-	end
-
-end
 
 local function parse_CHAT_MSG_LOOT(chatmsg)
 	-- check for multiple-item-loot
@@ -88,11 +44,50 @@ local function parse_CHAT_MSG_LOOT(chatmsg)
 		if not amount then
 			amount = 1
 		end
-		return {
-			itemLink = itemLink,
-			amount = amount,
-		}
+		return newDict(
+			"itemLink", itemLink,
+			"amount", amount
+		)
 	end
+end
+
+if select(2,UnitClass("player")) == "WARLOCK" then
+	local SOULSHARDNAME = GetItemInfo(6265) or "Soul Shard"
+
+	local function checkForSoulShard(chatmsg)
+		local itemLink = Deformat(chatmsg, LOOT_ITEM_CREATED_SELF)
+		if itemLink then
+			return  newDict("itemLink", itemLink,
+					"itemName", SOULSHARDNAME)
+		end
+	end
+
+	Parrot:RegisterCombatEvent{
+		category = "Notification",
+		name = "Soul shard gains",
+		localName = L["Soul shard gains"],
+		defaultTag = "+[Name]",
+		tagTranslations = {
+			Name = "itemName",
+			Icon = function(info)
+				local itemLink = info.itemLink
+				if itemLink then
+					local _, _, _, _, _, _, _, _, _, texture = GetItemInfo(itemLink)
+					return texture
+				end
+			end
+		},
+		tagTranslationHelp = {
+			Name = L["The name of the soul shard."],
+		},
+		blizzardEvents = {
+			["CHAT_MSG_LOOT"] = {
+				parse = checkForSoulShard,
+			},
+		},
+		color = "990099", -- purple
+		sticky = true,
+	}
 end
 
 Parrot:RegisterCombatEvent{
