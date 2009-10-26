@@ -1477,6 +1477,10 @@ end
 local combatLogEvents = {}
 local registeredBlizzardEvents = {}
 
+local function truecheck()
+	return true
+end
+
 --[[----------------------------------------------------------------------------------
 -- TODO more args-doc
 Arguments:
@@ -1593,11 +1597,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			if not combatLogEvents[eventType] then
 				combatLogEvents[eventType] = {}
 			end
-			local check = v.check
-			if not check then
-				--fallback when no check-function is present
-				check = function() return true end
-			end
+			local check = v.check or truecheck
 			if type(check) ~= "function" then
 				error(("Bad argument #2 to `RegisterCombatEvent'. check must be a %q or nil, got %q."):format("function", type(check)), 2)
 			end
