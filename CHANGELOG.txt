@@ -1,4 +1,4 @@
-v1.10.1+:
+v1.10.2:
 * fix Soulshard gains
 
 v1.10.1:
