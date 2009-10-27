@@ -1,4 +1,7 @@
-v1.10.2:
+v1.10.4:
+* do not trigger soulshard-gain on every item created
+
+v1.10.3:
 * fix Soulshard gains
 
 v1.10.1:

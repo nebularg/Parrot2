@@ -56,7 +56,7 @@ if select(2,UnitClass("player")) == "WARLOCK" then
 
 	local function checkForSoulShard(chatmsg)
 		local itemLink = Deformat(chatmsg, LOOT_ITEM_CREATED_SELF)
-		if itemLink then
+		if itemLink and itemLink:match(SOULSHARDNAME) then
 			return  newDict("itemLink", itemLink,
 					"itemName", SOULSHARDNAME)
 		end
