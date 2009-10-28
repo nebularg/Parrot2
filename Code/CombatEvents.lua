@@ -199,11 +199,12 @@ function Parrot_CombatEvents:check_raid_instance()
 	local is_she, instance_type = IsInInstance()
 	if is_she then
 		if instance_type == "raid" then
-			if GetInstanceDifficulty() == 2 then
-				-- Heroic = 25man
+			local diff = GetInstanceDifficulty()
+			if diff == 2 or diff == 4 then
+				-- 25man or 25man-heroic
 				self:SetEnabledState(not self.db1.profile.disable_in_25man)
 			else
-				-- Normal = 10man (or maybe some old raid-instance)
+				-- 10man (or maybe some old raid-instance)
 				self:SetEnabledState(not self.db1.profile.disable_in_10man)
 			end
 		end
@@ -462,7 +463,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			},
 			disable_in_10man = {
 				type = 'toggle',
-				name = L["Disable in normal raids"],
+				name = L["Disable in 10-man raids"],
 				desc = L["Disable CombatEvents when in a 10-man raid instance"],
 				get = function() return self.db1.profile.disable_in_10man end,
 				set = function(info, value)
@@ -472,7 +473,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			},
 			disable_in_25man = {
 				type = 'toggle',
-				name = L["Disable in heroic raids"],
+				name = L["Disable in 25-man raids"],
 				desc = L["Disable CombatEvents when in a 25-man raid instance"],
 				get = function() return self.db1.profile.disable_in_25man end,
 				set = function(info, value)
