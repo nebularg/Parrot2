@@ -1,3 +1,6 @@
+v1.10.5:
+* make "disable in raid"-options for combat-events work with 3.2s heroic raids
+
 v1.10.4:
 * do not trigger soulshard-gain on every item created
 
