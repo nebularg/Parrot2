@@ -493,9 +493,9 @@ local function checkPlayerIncHeal(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, 
 	return srcGUID ~= dstGUID and dstGUID == playerGUID
 			and checkFullOverheal(amount, overheal)
 end
-local function checkPlayerOutHeal(srcGUID, _, _, dstGUID, _, _, _, _, _, amount,
+local function checkPlayerOutHeal(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, amount,
 		overheal)
-	return srcGUID ~= dstGUID and srcGUID == playerGUID
+	return srcGUID ~= dstGUID and srcGUID == playerGUID and not checkFlags(dstFlags, PET_FLAGS)
 			and checkFullOverheal(amount, overheal)
 end
 local function checkPlayerSelfHeal(srcGUID, _, _, dstGUID, _, _,_, _, _, amount,
@@ -833,6 +833,10 @@ local outMissTagTranslationHelp = {
 	Name = L["The name of the enemy you attacked."],
 	Amount = L["Amount of the damage that was missed."],
 }
+--[[local petOutSpellMissTagTranslationsHelp = {
+	Name = L["The name of the enemy your pet attacked."],
+	Amount = L["Amount of the damage that was missed."],
+}--]]
 
 -- Outgoing spell-miss
 local outSpellMissTagTranslations = {
@@ -876,7 +880,8 @@ local outDispelTagTranslations = {
 --[[============================================================================
 -- Incoming Events:
 -- Damage
---============================================================================]]
+--===
+=========================================================================]]
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
@@ -1814,9 +1819,7 @@ for k,v in pairs(missTypes) do
 		combatLogEvents = {
 			SWING_MISSED = { check = check, func = parseMissInfo, },
 		},
-		tagTranslations = {
-			Name = retrieveDestName,
-		},
+		tagTranslations = outMissTagTranslations,
 		tagTranslationsHelp = {
 			Name = L["The name of the enemy your pet attacked."],
 		},
