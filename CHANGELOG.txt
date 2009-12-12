@@ -1,3 +1,7 @@
+v1.10.6:
+* do not show outgoing heals to pets.
+* bump toc to 30300 (for patch 3.3)
+
 v1.10.5:
 * make "disable in raid"-options for combat-events work with 3.2s heroic raids
 
