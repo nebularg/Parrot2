@@ -553,7 +553,40 @@ end
 -- functions to parse throttled data to one combat-message.
 --============================================================================]]
 
+local long_format_texts = {
+	[" (%d hit, %d crit)"] = L[" (%d hit, %d crit)"],
+	[" (%d hit, %d crits)"] = L[" (%d hit, %d crits)"],
+	[" (%d hits, %d crit)"] = L[" (%d hits, %d crit)"],
+	[" (%d hits, %d crits)"] = L[" (%d hits, %d crits)"],
+	[" (%d hits)"] = L[" (%d hits)"],
+	[" (%d crits)"] = L[" (%d crits)"],
+	
+	[" (%d heal, %d crit)"] = L[" (%d heal, %d crit)"],
+	[" (%d heal, %d crits)"] = L[" (%d heal, %d crits)"],
+	[" (%d heals, %d crit)"] = L[" (%d heals, %d crit)"],
+	[" (%d heals, %d crits)"] = L[" (%d heals, %d crits)"],
+	[" (%d heals)"] = L[" (%d heals)"],
+	[" (%d crits)"] = L[" (%d crits)"],
+}
+
+local short_format_texts = {
+	[" (%d hit, %d crit)"] = " (%dx, %d++)",
+	[" (%d hit, %d crits)"] = " (%dx, %d++)",
+	[" (%d hits, %d crit)"] = " (%dx, %d++)",
+	[" (%d hits, %d crits)"] = " (%dx, %d++)",
+	[" (%d hits)"] = " (%dx)",
+	[" (%d crits)"] = " (%d++)",
+	
+	[" (%d heal, %d crit)"] = " (%dx, %d++)",
+	[" (%d heal, %d crits)"] = " (%dx, %d++)",
+	[" (%d heals, %d crit)"] = " (%dx, %d++)",
+	[" (%d heals, %d crits)"] = " (%dx, %d++)",
+	[" (%d heals)"] = " (%dx)",
+	[" (%d crits)"] = " (%d++)",
+}
+
 local function damageThrottleFunc(info)
+	local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0
@@ -595,6 +628,7 @@ local function missThrottleFunc(info)
 end
 
 local healThrottleFunc = function(info)
+	local L = db1.profile.use_short_throttle_format and short_format_texts or long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0

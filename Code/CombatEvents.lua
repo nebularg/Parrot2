@@ -58,6 +58,7 @@ local dbDefaults = {
 		sthrottles = {
 			[GetSpellInfo(57669)] = { time = 5, }, -- Replenishment
 		},
+		useShortThrottleText = true,
 		abbreviateStyle = "abbreviate",
 		abbreviateLength = 30,
 		stickyCrit = true,
