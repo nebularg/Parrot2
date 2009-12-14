@@ -593,7 +593,19 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				type = 'group',
 				name = L["Throttle events"],
 				desc = L["Whether to merge mass events into single instances instead of excessive spam."],
-				args = {},
+				args = {
+					useShortTexts = {
+						type = 'toggle',
+						name = L["Short Texts"],
+						desc = L["Use short throttle-texts (like \"2++\" instead of \"2 crits\")"],
+						set = function(info, value)
+								self.db1.profile.useShortThrottleText = value
+							end,
+						get = function(info)
+								return self.db1.profile.useShortThrottleText
+							end,
+					}
+				},
 				hidden = function()
 					return not next(events_opt.args.throttle.args)
 				end,
