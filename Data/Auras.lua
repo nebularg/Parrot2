@@ -3,6 +3,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
 local newList, del = Parrot.newList, Parrot.del
 local newDict = Parrot.newDict
+local deepCopy = Parrot.deepCopy
 local unpackDictAndDel = Parrot.unpackDictAndDel
 local debug = Parrot.debug
 
@@ -27,6 +28,131 @@ local PET_FLAGS = bit.bor(
 	FRIENDLY,
 	AFFILIATION_MINE
 )
+
+--[[
+-- AURA-HACK for 3.3
+--]]
+local mod = Parrot:NewModule("Aura", "AceEvent-3.0")
+
+-- only do player-buffs for now
+-- aura-cache
+local auras = {
+	["player"] = {
+		["BUFF"] = {},
+		["DEBUFF"] = {},
+	},
+}
+
+local auraActions = {
+	["player"] = {
+		["BUFF"] = {
+			gain = {
+				combat = "Buff gains",
+				trigger = "Aura gain",
+			},
+			fade = {
+				combat = "Buff fades",
+				trigger = "Aura fade",
+			},
+			stackgain = {
+				combat = "Buff stack gains",
+				trigger = "Aura stack gain",
+			},
+		},
+	},
+}
+
+function mod:OnInitialize()
+	self:RegisterEvent("UNIT_AURA")
+end
+
+local function initialAuracheck(unit, btype)
+	local i = 1
+	while(true) do
+		-- not beautiful, but ...
+		local name, rank, icon, count, debuffType, duration, expirationTime,
+			unitCaster, isStealable, shouldConsolidate, spellId = 
+				UnitAura(unit, i, btype == "BUFF" and "HELPFUL" or "HARMFUL")
+		if not name then
+			break;
+		end
+		-- add new aura
+		auras[unit][btype][spellId] = count
+		i = i + 1
+	end
+end
+
+function mod:OnEnable()
+	-- only do buffs for now
+	initialAuracheck("player", "BUFF")
+end
+
+local function checkAuras(unit, btype)
+	debug("check auras")
+	local cache = deepCopy(auras[unit][btype])
+	local uguid = UnitGUID(unit)
+	local uname = UnitName(unit)
+	local i = 1
+	
+	-- scan current auras
+	while(true) do
+		-- not beautiful, but ...
+		local name, rank, icon, count, debuffType, duration, expirationTime,
+			unitCaster, isStealable, shouldConsolidate, spellId = 
+				UnitAura(unit, i, btype == "BUFF" and "HELPFUL" or "HARMFUL")
+		if not name then
+			break;
+		end
+		debug("found buff/debuff ", name)
+		local oldcount = cache[spellId]
+		if oldcount then
+			if oldcount > 0 and oldcount ~= count then
+				local info2 = newDict("dstGUID", uguid, "spellId", spellId, "spellName", name, "amount", count, "auraType", btype, "force", true)
+				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].stackgain.trigger, info2, 0)
+				auras[unit][btype][spellId] = count
+			end
+			-- still present
+			cache[spellId] = nil
+			debug(name, " is an old buff/debuff")
+		else
+			debug("new aura detected ", name)
+			auras[unit][btype][spellId] = count
+			local info2 = newDict("dstGUID", uguid, "spellId", spellId, "spellName", name, "amount", count, "auraType", btype, "force", true)
+			if count > 0 then
+				-- trigger combatevent
+				debug(name, " is stackable")
+				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].stackgain.trigger, info2, 0)
+			else
+				debug(name, " is not stackable")
+				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].gain.trigger, info2, 0)
+			end
+		end
+		i = i + 1
+	end
+	
+	-- scan for missing auras
+	for k,v in pairs(cache) do
+		debug("aura faded ", name)
+		local name = GetSpellInfo(k)
+		local info2 = newDict("dstGUID", uguid, "spellId", k, "spellName", name, "auraType", btype, "force", true)
+		Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].fade.trigger, info2, 0)
+		auras[unit][btype][k] = nil		
+	end
+	
+end
+
+function mod:UNIT_AURA(_, unit)
+	debug("UNIT_AURA occured - ", unit)
+	local tbl = auras[unit]
+	if not tbl then
+		return
+	end
+	checkAuras(unit, "BUFF")
+end
+
+--[[
+-- end of AURA-HACK for 3.3
+--]]
 
 local function parseAura(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
 
@@ -180,7 +306,6 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "e5e500", -- yellow
 }
-
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",
@@ -566,6 +691,11 @@ local function compareUnitAndSpell(ref, info)
 	if not ref.unit or not ref.spell or not info.dstGUID then
 		debug("bailout, incomplete ref")
 		return false
+	end
+	
+	if info.dstGUID == UnitGUID("player") and info.auraType == "BUFF" and not info.force then
+		debug("this event should be handled with the UNIT_AURA-hack")
+		return
 	end
 
 	local good = (info.dstGUID == UnitGUID(ref.unit)) and (ref.auraType == info.auraType)
