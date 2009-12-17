@@ -598,6 +598,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						type = 'toggle',
 						name = L["Short Texts"],
 						desc = L["Use short throttle-texts (like \"2++\" instead of \"2 crits\")"],
+						order = 1,
 						set = function(info, value)
 								self.db1.profile.useShortThrottleText = value
 							end,
