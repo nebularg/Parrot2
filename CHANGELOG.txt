@@ -1,6 +1,7 @@
 v1.10.7:
 * add hack to make some broken Proc-triggers work again
 * add option to shorten throttled text
+* add functionality to throttle reputation-gains
 
 v1.10.6:
 * do not show outgoing heals to pets.
