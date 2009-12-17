@@ -670,6 +670,14 @@ local function killingBlowThrottleFunc(info)
 	end
 end
 
+local function repThrottleFunc(info)
+	local num = info.throttleCount or 0
+	if num > 1 then
+		return (" (%dx)"):format(num)
+	end
+	return nil
+end
+
 --[[============================================================================
 -- Register Filtertypes
 --============================================================================]]
@@ -691,6 +699,7 @@ Parrot:RegisterThrottleType("DoTs and HoTs", L["DoTs and HoTs"], 2)
 Parrot:RegisterThrottleType("Heals", L["Heals"], 0.1, true)
 Parrot:RegisterThrottleType("Power gain/loss", L["Power gain/loss"], 3)
 Parrot:RegisterThrottleType("Killing blows", L["Killing blows"], 0.1, true)
+Parrot:RegisterThrottleType("Reputation gains", L["Reputation gains"], 0.1, true)
 
 --[[============================================================================
 -- Tables that describe throttle-data for several combat-events
@@ -742,6 +751,12 @@ local killingBlowThrottle = {
 	'sourceID',
 	{ 'throttleCount', killingBlowThrottleFunc, },
 	recipientName = L["Multiple"]
+}
+
+local repGainsThrottle = {
+	"Reputation gains",
+	'faction',
+	{ 'throttleCount', repThrottleFunc, },
 }
 
 --[[============================================================================
@@ -2200,6 +2215,7 @@ Parrot:RegisterCombatEvent{
 		Faction = L["The name of the faction."],
 	},
 	color = "7f7fb2", -- blue-gray
+	throttle = repGainsThrottle,
 }
 
 Parrot:RegisterCombatEvent{
