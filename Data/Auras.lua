@@ -139,6 +139,8 @@ local function checkAuras(unit, btype)
 		auras[unit][btype][k] = nil		
 	end
 	
+	cache = del(cache)
+	
 end
 
 function mod:UNIT_AURA(_, unit)
