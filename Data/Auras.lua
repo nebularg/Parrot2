@@ -121,6 +121,7 @@ local function checkAuras(unit, btype)
 			if count > 0 then
 				-- trigger combatevent
 				debug(name, " is stackable")
+				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].gain.trigger, info2, 0)
 				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].stackgain.trigger, info2, 0)
 			else
 				debug(name, " is not stackable")
