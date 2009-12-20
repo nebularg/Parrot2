@@ -71,7 +71,7 @@ local function initialAuracheck(unit, btype)
 	while(true) do
 		-- not beautiful, but ...
 		local name, rank, icon, count, debuffType, duration, expirationTime,
-			unitCaster, isStealable, shouldConsolidate, spellId = 
+			unitCaster, isStealable, shouldConsolidate, spellId =
 				UnitAura(unit, i, btype == "BUFF" and "HELPFUL" or "HARMFUL")
 		if not name then
 			break;
@@ -93,12 +93,12 @@ local function checkAuras(unit, btype)
 	local uguid = UnitGUID(unit)
 	local uname = UnitName(unit)
 	local i = 1
-	
+
 	-- scan current auras
 	while(true) do
 		-- not beautiful, but ...
 		local name, rank, icon, count, debuffType, duration, expirationTime,
-			unitCaster, isStealable, shouldConsolidate, spellId = 
+			unitCaster, isStealable, shouldConsolidate, spellId =
 				UnitAura(unit, i, btype == "BUFF" and "HELPFUL" or "HARMFUL")
 		if not name then
 			break;
@@ -110,6 +110,7 @@ local function checkAuras(unit, btype)
 				local info2 = newDict("dstGUID", uguid, "spellId", spellId, "spellName", name, "amount", count, "auraType", btype, "force", true)
 				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].stackgain.trigger, info2, 0)
 				auras[unit][btype][spellId] = count
+				info2 = del(info2)
 			end
 			-- still present
 			cache[spellId] = nil
@@ -127,21 +128,23 @@ local function checkAuras(unit, btype)
 				debug(name, " is not stackable")
 				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].gain.trigger, info2, 0)
 			end
+			info2 = del(info2)
 		end
 		i = i + 1
 	end
-	
+
 	-- scan for missing auras
 	for k,v in pairs(cache) do
 		debug("aura faded ", name)
 		local name = GetSpellInfo(k)
 		local info2 = newDict("dstGUID", uguid, "spellId", k, "spellName", name, "auraType", btype, "force", true)
 		Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].fade.trigger, info2, 0)
-		auras[unit][btype][k] = nil		
+		auras[unit][btype][k] = nil
+		info2 = del(info2)
 	end
-	
+
 	cache = del(cache)
-	
+
 end
 
 function mod:UNIT_AURA(_, unit)
@@ -695,7 +698,7 @@ local function compareUnitAndSpell(ref, info)
 		debug("bailout, incomplete ref")
 		return false
 	end
-	
+
 	if info.dstGUID == UnitGUID("player") and info.auraType == "BUFF" and not info.force then
 		debug("this event should be handled with the UNIT_AURA-hack")
 		return
