@@ -1,3 +1,6 @@
+v1.10.8:
+* fix memory leak in the new Aura-Trigger-module
+
 v1.10.7:
 * add hack to make some broken Proc-triggers work again
 * add option to shorten throttled text
