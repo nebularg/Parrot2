@@ -1,3 +1,10 @@
+v1.10.9:
+* fire both Trigger-conditions (aura gain, and aura stack gain) when a stackable
+		aura is gained. When a additional stack is gained (to a buff already
+		present) only Aura stack gain fires.
+* fix more possible memory-leaks
+* add default-trigger for Warlock's "Molten Core"
+
 v1.10.8:
 * fix memory leak in the new Aura-Trigger-module
 
