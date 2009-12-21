@@ -494,6 +494,22 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff0000",
 	},
+	[1027] = { -- Molten Core
+		name = L["%s!"]:format(GetSpellInfo(71165)),
+		icon = 71165,
+		class = "WARLOCK",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					unit = "player",
+					spell = GetSpellInfo(71165),
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "7f007f",
+	}
 }
 
 local dbDefaults = {
@@ -1612,7 +1628,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		HUNTER = CL["HUNTER"],
 		DEATHKNIGHT = CL["DEATHKNIGHT"],
 	}
-	
+
 	local function getConditionValue(info)
 		local t, name, field, index, parse = info.arg.t, info.arg.name, info.arg.field,
 				info.arg.index, info.arg.parse
@@ -1656,7 +1672,7 @@ function Parrot_Triggers:OnOptionsCreate()
 			end -- if index
 		end -- if not field
 	end -- setConditionValue()
-	
+
 	local function getSecondaryConditionValue(info)
 --		if true then debug(info.arg); return end
 		local t, name, field, index, parse = info.arg.t, info.arg.name, info.arg.field,
@@ -1701,10 +1717,10 @@ function Parrot_Triggers:OnOptionsCreate()
 			end -- if index
 		end -- if not field
 	end -- setConditionValue()
-	
+
 	local function donothing()
 	end
-	
+
 	local function removePrimaryCondition(info)
 		local t, name, index = unpack(info.arg)
 		local opt = triggers_opt.args[tostring(t)].args.primary
