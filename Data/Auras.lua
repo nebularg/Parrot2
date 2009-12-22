@@ -63,6 +63,7 @@ local auraActions = {
 }
 
 function mod:OnInitialize()
+	Parrot:RegisterDebugSpace("Aura-HACK")
 	self:RegisterEvent("UNIT_AURA")
 end
 
@@ -87,8 +88,20 @@ function mod:OnEnable()
 	initialAuracheck("player", "BUFF")
 end
 
+function mod:FireAuraTriggerCondition(unit, btype, event, info2)
+	Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype][event].trigger, info2, 0)
+end
+
+function mod:GetDebugHooks()
+	return {
+		FireAuraTriggerCondition = function(self, unit, btype, event, info2)
+				return "Aura-HACK", event, info2
+			end,
+	}
+end
+
 local function checkAuras(unit, btype)
-	debug("check auras")
+	--debug("check auras")
 	local cache = deepCopy(auras[unit][btype])
 	local uguid = UnitGUID(unit)
 	local uname = UnitName(unit)
@@ -108,7 +121,8 @@ local function checkAuras(unit, btype)
 		if oldcount then
 			if oldcount > 0 and oldcount ~= count then
 				local info2 = newDict("dstGUID", uguid, "spellId", spellId, "spellName", name, "amount", count, "auraType", btype, "force", true)
-				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].stackgain.trigger, info2, 0)
+				mod:FireAuraTriggerCondition(unit, btype, "stackgain", info2)
+				-- Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].stackgain.trigger, info2, 0)
 				auras[unit][btype][spellId] = count
 				info2 = del(info2)
 			end
@@ -121,12 +135,15 @@ local function checkAuras(unit, btype)
 			local info2 = newDict("dstGUID", uguid, "spellId", spellId, "spellName", name, "amount", count, "auraType", btype, "force", true)
 			if count > 0 then
 				-- trigger combatevent
-				debug(name, " is stackable")
-				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].gain.trigger, info2, 0)
-				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].stackgain.trigger, info2, 0)
+				mod:FireAuraTriggerCondition(unit, btype, "gain", info2)
+				mod:FireAuraTriggerCondition(unit, btype, "stackgain", info2)
+				-- Parrot:SaveDebug("Aura-HACK", "Aura stackable gain", info2)
+				-- Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].gain.trigger, info2, 0)
+				-- Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].stackgain.trigger, info2, 0)
 			else
-				debug(name, " is not stackable")
-				Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].gain.trigger, info2, 0)
+				-- Parrot:SaveDebug("Aura-HACK", "Aura gain", info2)
+				mod:FireAuraTriggerCondition(unit, btype, "gain", info2)
+				--Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].gain.trigger, info2, 0)
 			end
 			info2 = del(info2)
 		end
@@ -135,10 +152,12 @@ local function checkAuras(unit, btype)
 
 	-- scan for missing auras
 	for k,v in pairs(cache) do
-		debug("aura faded ", name)
 		local name = GetSpellInfo(k)
+		debug("aura faded ", name)
 		local info2 = newDict("dstGUID", uguid, "spellId", k, "spellName", name, "auraType", btype, "force", true)
-		Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].fade.trigger, info2, 0)
+		-- Parrot:SaveDebug("Aura-HACK", "Aura fade", info2)
+		mod:FireAuraTriggerCondition(unit, btype, "fade", info2)
+		--Parrot:FirePrimaryTriggerCondition(auraActions[unit][btype].fade.trigger, info2, 0)
 		auras[unit][btype][k] = nil
 		info2 = del(info2)
 	end
@@ -148,7 +167,7 @@ local function checkAuras(unit, btype)
 end
 
 function mod:UNIT_AURA(_, unit)
-	debug("UNIT_AURA occured - ", unit)
+	--debug("UNIT_AURA occured - ", unit)
 	local tbl = auras[unit]
 	if not tbl then
 		return
