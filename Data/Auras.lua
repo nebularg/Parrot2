@@ -127,6 +127,8 @@ local function checkAuras(unit, btype)
 				info2 = del(info2)
 			end
 			-- still present
+			-- TODO dirty workaround for buffs that can be present multiple
+			-- times (like berserk)
 			if spellId ~= 59620 then
 				cache[spellId] = nil
 			else
