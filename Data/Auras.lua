@@ -106,7 +106,7 @@ local function checkAuras(unit, btype)
 	local uguid = UnitGUID(unit)
 	local uname = UnitName(unit)
 	local i = 1
-
+	local deleteLater = false
 	-- scan current auras
 	while(true) do
 		-- not beautiful, but ...
@@ -127,7 +127,11 @@ local function checkAuras(unit, btype)
 				info2 = del(info2)
 			end
 			-- still present
-			cache[spellId] = nil
+			if spellId ~= 59620 then
+				cache[spellId] = nil
+			else
+				deleteLater = true
+			end
 			debug(name, " is an old buff/debuff")
 		else
 			debug("new aura detected ", name)
@@ -148,6 +152,10 @@ local function checkAuras(unit, btype)
 			info2 = del(info2)
 		end
 		i = i + 1
+	end
+
+	if deleteLater then
+		cache[59620] = nil
 	end
 
 	-- scan for missing auras
