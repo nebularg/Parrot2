@@ -88,7 +88,7 @@ end
 --end
 
 function mod:OnOptionsCreate()
-
+	--@debug@
 	local debug_opts = {
 		type = 'group',
 		name = L["Debug"],
@@ -125,4 +125,5 @@ function mod:OnOptionsCreate()
 	}
 
 	Parrot:AddOption('debug', debug_opts)
+	--@end-debug@
 end
