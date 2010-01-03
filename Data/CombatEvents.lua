@@ -628,7 +628,7 @@ local function missThrottleFunc(info)
 end
 
 local healThrottleFunc = function(info)
-	local L = db1.profile.use_short_throttle_format and short_format_texts or long_format_texts
+	local L = db1.profile.useShortThrottleFormat and short_format_texts or long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0
