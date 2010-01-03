@@ -1,3 +1,8 @@
+v1.10.10:
+* fix short throttle-texts not disabling properly for healing events (#136)
+* add "ad-hoc-fix" to stop spamming of berserk-triggers
+* fix possible error with SharedMediaWidgets-embed
+
 v1.10.9:
 * fire both Trigger-conditions (aura gain, and aura stack gain) when a stackable
 		aura is gained. When a additional stack is gained (to a buff already
