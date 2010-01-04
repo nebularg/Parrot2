@@ -236,8 +236,8 @@ local defaultTriggers = {
 		color = "7f007f",
 	},
 	[1012] = {
-		-- Smite = 25364
-		name = L["Free %s!"]:format(GetSpellInfo(25364)),
+		-- 33154 Surge of Light
+		name = L["%s!"]:format(GetSpellInfo(33154)),
 		icon = 25364,
 		class = "PRIEST",
 		conditions = {
