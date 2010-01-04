@@ -509,7 +509,25 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "7f007f",
-	}
+	},
+	[1028] = { -- Serendipity
+		name = L["%s!"]:format(GetSpellInfo(63734)),
+		icon = 63734,
+		class = "PRIEST",
+		conditions = {
+			["Aura stack gain"] = {
+				[1] = {
+					["unit"] = "player",
+					["spell"] = GetSpellInfo(63734),
+					["auraType"] = "BUFF",
+					["amount"] = 3,
+				},
+			},
+		},
+		sticky = true,
+		disabled = true,
+		color = "00c0ff",
+	},
 }
 
 local dbDefaults = {
