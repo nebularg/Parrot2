@@ -17,10 +17,9 @@
 	<Include file="libs\AceGUI-3.0\AceGUI-3.0.xml" />
 	<Include file="libs\AceConfig-3.0\AceConfig-3.0.xml" />
 
-	<Script file="libs\AceLibrary\AceLibrary.lua" />
-	<Script file="libs\Deformat-2.0\Deformat-2.0.lua"/>
-
 	<Include file="libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
 	<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
+
+	<Include file="libs\LibDeformat-2.0\lib.xml"/>
 	<!--@end-no-lib-strip@-->
 </Ui>

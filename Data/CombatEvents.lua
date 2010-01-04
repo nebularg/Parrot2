@@ -2,7 +2,7 @@ local Parrot = Parrot
 local mod = Parrot:NewModule("CombatEventsData")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
-local deformat = AceLibrary("Deformat-2.0")
+local deformat = LibStub("LibDeformat-3.0")
 local db1
 
 -- recycle and debug-stuff

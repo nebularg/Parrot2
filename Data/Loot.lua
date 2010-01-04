@@ -3,7 +3,7 @@ local Parrot = Parrot
 local mod = Parrot:NewModule("Loot")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Loot")
-local Deformat = AceLibrary("Deformat-2.0")
+local Deformat = LibStub("LibDeformat-3.0")
 
 local debug = Parrot.debug
 local newList, newDict = Parrot.newList, Parrot.newDict
