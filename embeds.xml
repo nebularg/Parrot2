@@ -20,6 +20,6 @@
 	<Include file="libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
 	<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
 
-	<Include file="libs\LibDeformat-2.0\lib.xml"/>
+	<Include file="libs\LibDeformat-3.0\lib.xml"/>
 	<!--@end-no-lib-strip@-->
 </Ui>
