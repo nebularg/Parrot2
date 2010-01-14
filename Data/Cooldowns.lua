@@ -50,11 +50,6 @@ Parrot:RegisterCombatEvent{
 }
 
 local cooldowns = {}
-
-function mod:GetCDs()
-	return cooldowns
-end
-
 local spellNameToTree = {}
 
 local nextUpdate

@@ -116,7 +116,7 @@ local function checkAuras(unit, btype)
 		if not name then
 			break;
 		end
-		debug("found buff/debuff ", name)
+--		debug("found buff/debuff ", name)
 		local oldcount = cache[spellId]
 		if oldcount then
 			if oldcount > 0 and oldcount ~= count then
@@ -134,9 +134,9 @@ local function checkAuras(unit, btype)
 			else
 				deleteLater = true
 			end
-			debug(name, " is an old buff/debuff")
+--			debug(name, " is an old buff/debuff")
 		else
-			debug("new aura detected ", name)
+--			debug("new aura detected ", name)
 			auras[unit][btype][spellId] = count
 			local info2 = newDict("dstGUID", uguid, "spellId", spellId, "spellName", name, "amount", count, "auraType", btype, "force", true)
 			if count > 0 then
@@ -163,7 +163,7 @@ local function checkAuras(unit, btype)
 	-- scan for missing auras
 	for k,v in pairs(cache) do
 		local name = GetSpellInfo(k)
-		debug("aura faded ", name)
+--		debug("aura faded ", name)
 		local info2 = newDict("dstGUID", uguid, "spellId", k, "spellName", name, "auraType", btype, "force", true)
 		-- Parrot:SaveDebug("Aura-HACK", "Aura fade", info2)
 		mod:FireAuraTriggerCondition(unit, btype, "fade", info2)
@@ -729,7 +729,7 @@ local function compareUnitAndSpell(ref, info)
 	end
 
 	if info.dstGUID == UnitGUID("player") and info.auraType == "BUFF" and not info.force then
-		debug("this event should be handled with the UNIT_AURA-hack")
+--		debug("this event should be handled with the UNIT_AURA-hack")
 		return
 	end
 
