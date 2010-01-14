@@ -478,32 +478,6 @@ local function checkPlayerOut(srcGUID, _, srcFlags)
 	return srcGUID == playerGUID
 end
 
--- check if the it's a full overheal and should be hidden
-local function checkFullOverheal(amount, overheal)
-	if db1.profile.hideFullOverheals ~= true then
-		return true
-	else
-		return (amount - overheal) > 0
-	end
-end
-
--- check player's heals
-local function checkPlayerIncHeal(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, _, _, amount,
-		overheal)
-	return srcGUID ~= dstGUID and dstGUID == playerGUID
-			and checkFullOverheal(amount, overheal)
-end
-local function checkPlayerOutHeal(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, amount,
-		overheal)
-	return srcGUID ~= dstGUID and srcGUID == playerGUID and not checkFlags(dstFlags, PET_FLAGS)
-			and checkFullOverheal(amount, overheal)
-end
-local function checkPlayerSelfHeal(srcGUID, _, _, dstGUID, _, _,_, _, _, amount,
-		overheal)
-	return srcGUID == dstGUID and dstGUID == playerGUID
-			and checkFullOverheal(amount, overheal)
-end
-
 -- check pet damage
 local function checkPetInc(_, _, _, dstGUID, _, dstFlags)
 	local good = checkFlags(dstFlags, PET_FLAGS)
@@ -520,6 +494,41 @@ local function checkPetOut(srcGUID, _, srcFlags)
 	return good
 end
 
+-- check if the it's a full overheal and should be hidden
+local function checkFullOverheal(_, _, _, _, _, _,_, _, _, amount,
+		overheal)
+	if db1.profile.hideFullOverheals ~= true then
+		return true
+	else
+		return (amount - overheal) > 0
+	end
+end
+
+-- check player's heals
+local function checkPlayerIncHeal(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, _, _, amount,
+		overheal)
+	return srcGUID ~= dstGUID and dstGUID == playerGUID
+end
+local function checkPlayerIncHoT(...)
+	return checkPlayerIncHeal(...) and checkFullOverheal(...)
+end
+
+local function checkPlayerOutHeal(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, amount,
+		overheal)
+	return srcGUID ~= dstGUID and srcGUID == playerGUID and not checkFlags(dstFlags, PET_FLAGS)
+end
+local function checkPlayerOutHoT(...)
+	return checkPlayerOutHeal(...) and checkFullOverheal(...)
+end
+
+local function checkPlayerSelfHeal(srcGUID, _, _, dstGUID, _, _,_, _, _, amount,
+		overheal)
+	return srcGUID == dstGUID and dstGUID == playerGUID
+end
+local function checkPlayerSelfHoT(...)
+	return checkPlayerSelfHeal(...) and checkFullOverheal(...)
+end
+
 -- check pet heal
 local function checkPetIncHeal(srcGUID, _, _, dstGUID, _, dstFlags,_, _, _,
 		amount,	overheal)
@@ -528,7 +537,7 @@ local function checkPetIncHeal(srcGUID, _, _, dstGUID, _, dstFlags,_, _, _,
 	if not good and Parrot.db1.profile.totemDamage then
 		good = checkFlags(dstFlags, GUARDIAN_FLAGS)
 	end
-	return good and checkFullOverheal(amount, overheal)
+	return good
 end
 local function checkPetOutHeal(srcGUID, _, srcFlags, dstGUID, _, _,_, _, _,
 		amount,	overheal)
@@ -538,7 +547,7 @@ local function checkPetOutHeal(srcGUID, _, srcFlags, dstGUID, _, _,_, _, _,
 	if not good and Parrot.db1.profile.totemDamage then
 		good = checkFlags(srcFlags, GUARDIAN_FLAGS)
 	end
-	return good and checkFullOverheal(amount, overheal)
+	return good
 end
 
 -- check for PvP
@@ -1114,7 +1123,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "([Skill] - [Name]) +[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPlayerIncHeal, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPlayerIncHoT, func = parseHoT, },
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = incHealTagTranslationsHelp,
@@ -1131,7 +1140,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "([Skill]) +[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPlayerSelfHeal, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPlayerSelfHoT, func = parseHoT, },
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = incHealTagTranslationsHelp,
@@ -1649,7 +1658,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "+[Amount] ([Skill] - [Name])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPlayerOutHeal, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPlayerOutHoT, func = parseHoT, },
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = outHealTagTranslationsHelp,
@@ -1666,7 +1675,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "+[Amount] ([Skill])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPlayerSelfHeal, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPlayerSelfHoT, func = parseHoT, },
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = outHealTagTranslationsHelp,
