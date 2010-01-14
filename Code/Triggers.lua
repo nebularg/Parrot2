@@ -916,9 +916,6 @@ local function convertTriggers2()
 	if not self.db1.profile.triggers then
 		return
 	end
-	--- DEBUG!!
---	wipe(self.db1.profile.triggers2)
-	--- DEBUG!!
 	for i,t in ipairs(self.db1.profile.triggers) do
 		local tmp = deepCopy(t)
 		local cond = t.conditions
@@ -1091,13 +1088,7 @@ function Parrot_Triggers:OnEnable()
 			exclusive = true,
 			check = function(param)
 				-- special handling
-					debug("check called")
 					return true
---				if not cooldowns[currentTrigger] then
---					return true
---				end
---				local now = GetTime()
---				return now - cooldowns[currentTrigger] > param
 			end,
 		}
 
@@ -1291,91 +1282,12 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 				end
 				-- check a 0.1-seconds cooldown too
 				if good and checkTriggerCooldown(t, 0.1) then
---					debug("show trigger ", name)
 					showTrigger(t)
 					if uid then
 						Parrot_CombatEvents:CancelEventsWithUID(uid)
 					end
 				end
 			end
-
-			--[[
-
-			debug("type ", type(conditions[name]))
-			debug(conditions[name])
-			if type(conditions[name]) ~= 'table' then
-				debug("not a table, ", name, " must be exclusive")
-			elseif type(conditions[name]) == 'table' then
-				for i,ref in ipairs(conditions[name]) do
-					local param = ref
-					if param then
-						local good = false
-						if param == true then
-						 	good = true
-						elseif check and type(check) == 'function' then
-							good = check(param, arg)
---							debug("check was " .. tostring(good))
-						elseif type(arg) == "string" then
-							good = param == arg
-						elseif type(arg) == "number" then
-							if not numberedConditions[v] then
-								numberedConditions[v] = newList()
-							end
-							good = arg <= param and (not numberedConditions[v][name] or numberedConditions[v][name] > param)
-							numberedConditions[v][name] = arg
-						elseif name == "Check every XX seconds" then
---							local param = param
---							debug("check for xx seconds")
-							local val = timerCheck[name]
-							if not val then
-								val = 0
-							end
-							if param == 0 then
-								val = 0
-							else
-								val = (val + 0.1) % param
-							end
-							timerCheck[name] = val
-							if val < 0.1 then
-								good = true
-							end
-						end
-						if good then
-							local secondaryConditions = v.secondaryConditions
-							if secondaryConditions then
-								currentTrigger = v.name
-								for k, v in pairs(secondaryConditions) do
-									debug("does it pass ", type(v))
-									debug(v)
-									if not Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(k, v) then
-										good = false
-										break
-									end
-								end
-							end
-							if good and Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass("Trigger cooldown", 0.1) then
-								cooldowns[v.name] = GetTime()
-								local r, g, b = hexColorToTuple(v.color or 'ffffff')
-								local icon = figureIconPath(v.icon)
-								-- getIconById(v.iconSpellId) or figureIconPath(v.icon)
-
-								Parrot_Display:ShowMessage(v.name, v.scrollArea or "Notification", v.sticky, r, g, b, v.font, v.fontSize, v.outline, icon)
-
-								if v.sound then
-									local sound = SharedMedia:Fetch('sound', v.sound)
-									if sound then
-										PlaySoundFile(sound)
-									end
-								end
-								if uid then
-									Parrot_CombatEvents:CancelEventsWithUID(uid)
-								end
-							end
-						end -- if good then
-					end -- if param then
-				end -- for i,ref in ipairs(condition) do
-			end--]]
---			end -- for _,condition in pairs(conditions) do
 		end -- if conditions then
 	end -- for _,v in ipairs(effectiveRegistry) do
 end
@@ -1435,24 +1347,6 @@ function Parrot_Triggers:OnOptionsCreate()
 					return false
 				end
 			},
---[[			cleanup = {
-				type = 'execute',
-				order = 21,
-				name = L["Cleanup Triggers"],
-				-- buttonText = L["Cleanup Triggers"],
-				desc = L["Delete all Triggers that belong to a different locale"],
-				func = function()
-
-					for _,v in ipairs(self.db1.profile.triggers2) do
-						if v.locale and v.locale ~= GetLocale() then
-
-							Parrot:Print(string.format("Deleting Trigger \"%s\" because it is \'%s\'", v.name, v.locale))
-							remove(v)
-
-						end
-					end
-				end,
-			}--]]
 		}
 	}
 	Parrot:AddOption('triggers', triggers_opt)
@@ -1460,7 +1354,6 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function getFontFace(t)
 		local font = t.arg.font
 		if font == nil then
---			return L["Inherit"]
 			return "1"
 		else
 			return font
@@ -1692,7 +1585,6 @@ function Parrot_Triggers:OnOptionsCreate()
 	end -- setConditionValue()
 
 	local function getSecondaryConditionValue(info)
---		if true then debug(info.arg); return end
 		local t, name, field, index, parse = info.arg.t, info.arg.name, info.arg.field,
 				info.arg.index, info.arg.parse
 		local result
@@ -1785,7 +1677,6 @@ function Parrot_Triggers:OnOptionsCreate()
 			remove = removeSecondaryCondition
 		end
 		if not localName then
-			debug(localName, " was not found")
 			if t.name then
 				Parrot:Print("Trigger \"", t.name, "\" might be broken")
 				Parrot:Print("The condition ", name, " was not found")
