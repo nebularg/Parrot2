@@ -1,3 +1,8 @@
+v1.10.11:
+* really fix short throttle-texts not disabling properly for healing events (#136)
+* fix error in embedding of AceGUI-3.0-SharedMediaWidgets
+* upgrade to LibDeformat-3.0 and get rid of Ace2 for good
+
 v1.10.10:
 * fix short throttle-texts not disabling properly for healing events (#136)
 * add "ad-hoc-fix" to stop spamming of berserk-triggers
