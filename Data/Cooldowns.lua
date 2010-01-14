@@ -130,12 +130,47 @@ local groups = {
 	[GetSpellInfo(53408)] = L["Judgements"], -- Judgement of Wisdom
 }
 
+local itemCooldowns = {}
+local function checkItems()
+	local minCD
+	for i = 1,19 do
+		local start, duration, enable = GetInventoryItemCooldown("player", i)
+		local link = GetInventoryItemLink("player",i)
+		if link then
+			local icd = itemCooldowns[link]
+			if icd and start == 0 then --cooldown expired
+				if icd == i then
+					local name = GetItemInfo(link)
+					Parrot:FirePrimaryTriggerCondition("Item cooldown ready", name)
+				end
+				itemCooldowns[link] = nil
+			elseif not icd and start ~= 0 then -- new cooldown
+				local name = GetItemInfo(link)
+				itemCooldowns[link] = i
+			end -- other cases don't require any handling
+		end
+		local exp = duration - GetTime() + start -- remaining Cooldown
+		if start > 0 and (not minCD or minCD > exp) then
+			minCD = exp
+		end -- if check
+	end
+	if minCD then
+		local nextUpdate2 = GetTime() + minCD
+		if nextUpdate then
+			nextUpdate = math.min(nextUpdate2, nextUpdate)
+		else
+			nextUpdate =  nextUpdate2
+		end
+	end
+end
+
 function mod:OnUpdate(force)
 	if (not nextUpdate or nextUpdate > GetTime()) and not force then
 		-- only run the update when the time is right
 		return
 	end
 	local expired2 = recalcCooldowns()
+	checkItems()
 	if not next(expired2) then
 		expired2 = del(expired2)
 		return
@@ -199,6 +234,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 		usage = L["<Spell name>"],
 		save = saveSpell,
 		parse = parseSpell,
+	},
+}
+
+Parrot:RegisterPrimaryTriggerCondition {
+	subCategory = L["Cooldowns"],
+	name = "Item cooldown ready",
+	localName = L["Item cooldown ready"],
+	param = {
+		type = 'string',
+		usage = L["<Item name>"],
 	},
 }
 
