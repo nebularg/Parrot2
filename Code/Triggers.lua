@@ -1137,7 +1137,6 @@ local function figureIconPath(icon)
 	end
 
 	local path
-
 	-- if the icon is a number, it's most likly a spellid
 	local spellId = tonumber(icon)
 	if spellId then
@@ -1168,6 +1167,23 @@ local function figureIconPath(icon)
 	end
 	-- nothing worked, either it's a path or a spell where the icon cannot be retrieved
 	return icon
+end
+
+-- no weak table required, there are only very few entries
+local iconcache = {}
+local function getIconPath(icon)
+	if not icon then
+		return
+	end
+
+	local iconpath = iconcache[icon]
+	if iconpath then
+		return iconpath
+	end
+
+	iconpath = figureIconPath(icon)
+	iconcache[icon] = iconpath
+	return iconpath
 end
 
 local numberedConditions = {}
@@ -1217,7 +1233,7 @@ end
 local function showTrigger(t)
 	cooldowns[t.name] = GetTime()
 	local r, g, b = hexColorToTuple(t.color or 'ffffff')
-	local icon = figureIconPath(t.icon)
+	local icon = getIconPath(t.icon)
 
 	Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, icon)
 
