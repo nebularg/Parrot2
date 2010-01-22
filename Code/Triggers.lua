@@ -528,6 +528,23 @@ local defaultTriggers = {
 		disabled = true,
 		color = "00c0ff",
 	},
+	[1029] = {
+		-- 44401 = Missile Barrage
+		name = L["%s!"]:format(GetSpellInfo(44401)),
+		icon = 44401,
+		class = "MAGE",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					["unit"] = "player",
+					["spell"] = GetSpellInfo(44401),
+					["auraType"] = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "cc00cc",
+	},
 }
 
 local dbDefaults = {
