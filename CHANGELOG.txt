@@ -1,3 +1,8 @@
+v1.10.12:
+* add missile-barrage to default-triggers
+* add item cooldown ready Trigger Condition
+* fix bug with AceGUI-3.0-SharedMediaWidgets embed
+
 v1.10.11:
 * really fix short throttle-texts not disabling properly for healing events (#136)
 * fix error in embedding of AceGUI-3.0-SharedMediaWidgets
