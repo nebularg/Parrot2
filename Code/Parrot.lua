@@ -11,50 +11,46 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 --@debug@
--- function is not needed at all when debug is off
-local function debugTableValues(table, tabs, stop)
-	if not tabs then tabs = 0 end
-	if stop then
-		for k,v in pairs(table) do
-			local line = ("  "):rep(tabs)
-			line = line .. ("[%s]"):format(tonumber(k) or tostring(k))
-			line = line .. (" = %s,"):format(tonumber(v) or tostring(v))
-			ChatFrame4:AddMessage(line)
-		end
-	else
-		for k,v in pairs(table) do
-			local line = ("  "):rep(tabs)
-			line = line .. ("[%s] = "):format(tonumber(k) or tostring(k))
-
-			if type(v) == 'table' then
-				ChatFrame4:AddMessage(line .. "{")
-				debugTableValues(v, tabs + 1, true)
-				ChatFrame4:AddMessage(("  "):rep(tabs) .. "}")
-			else
-				ChatFrame4:AddMessage("  " .. line .. tostring(v) .. ",")
-			end
-		end
-
+local PREFIX = "|cff00ff00Parrot|r: "
+local DevTools_Dump
+DevTools_Dump = function(value)
+	if not _G.DevTools_Dump then
+		LoadAddOn("Blizzard_DebugTools")
 	end
-end--@end-debug@
+	DevTools_Dump = _G.DevTools_Dump
+	DevTools_Dump(value)
+end
 
-local function debug(...)
+local function dump(value)
+	local orig = DEFAULT_CHAT_FRAME
+	DEFAULT_CHAT_FRAME = ChatFrame4
+	DevTools_Dump(value)
+	DEFAULT_CHAT_FRAME = orig
+end
+
+local function mystrjoin(arg1, ...)
+	local text = tostring(arg1)
+	for i = 1, select('#', ...) do
+		text = text .. tostring(select(i, ...))
+	end
+	return text
+end
+--@end-debug@
+
+local function debug(arg1, ...)
+	if not arg1 then return end
 	--@debug@
-	local first = select(1,...)
-	if type(first) == 'table' then
-		ChatFrame4:AddMessage("{")
-		debugTableValues(first)
-		ChatFrame4:AddMessage("}")
+	if type(arg1) == 'table' then
+		ChatFrame4:AddMessage(PREFIX .. "+++ table-dump")
+		dump(arg1)
+		ChatFrame4:AddMessage(PREFIX .. "--- end of table-dump")
+		debug(...)
 	else
-		local text = ""
-		for i = 1, select('#', ...) do
-			text = text .. tostring(select(i, ...))
-		end
+		local text = mystrjoin(PREFIX, arg1, ...)
 		ChatFrame4:AddMessage(text)
 	end
 	--@end-debug@
 end
-
 Parrot.debug = debug
 
 
