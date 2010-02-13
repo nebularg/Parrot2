@@ -84,7 +84,6 @@ local function newList(...)
 	local t = next(pool)
 	local n = select('#', ...)
 	if t then
---		debug("taking ++", t, "++ from pool")
 		pool[t] = nil
 		for i = 1, n do
 			t[i] = select(i, ...)
@@ -96,23 +95,18 @@ local function newList(...)
 end
 
 local function newDict(...)
-
 	local c = select('#', ...)
 	local t = next(pool)
 	if t then
 		pool[t] = nil
 	else
 		t = {}
-		debug("poolsize is now ", psize())
 	end
 
 	for i = 1, select('#', ...), 2 do
 		local k, v = select(i, ...)
---		debug("assign ", k, " -> ", v)
 		if k then
 			t[k] = v
-		else
---			debug("*********************************")
 		end
 	end
 	activetables[t] = true
