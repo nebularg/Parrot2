@@ -545,6 +545,23 @@ local defaultTriggers = {
 		sticky = true,
 		color = "cc00cc",
 	},
+	[1030] = {
+		-- 63165 Decimation
+		name = L["%s!"]:format(GetSpellInfo(63165)),
+		icon = 63165,
+		class = "WARLOCK",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					unit = "player",
+					spell = GetSpellInfo(63165),
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffbe00",
+	},
 }
 
 local dbDefaults = {
