@@ -562,6 +562,23 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ffbe00",
 	},
+	[1031] = {
+		-- 44544 = Fingers of frost
+		name = L["%s!"]:format(GetSpellInfo(44544)),
+		icon = 44544,
+		class = "MAGE",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					["unit"] = "player",
+					["spell"] = GetSpellInfo(44544),
+					["auraType"] = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "005ba9",
+	},
 }
 
 local dbDefaults = {
