@@ -1,3 +1,8 @@
+v1.10.13:
+* add Triggers for "Fingers of Frost" and "Decimation"
+* add option to color names by class (for party/raid members)
+* only truncate the realm name from players.
+
 v1.10.12:
 * add missile-barrage to default-triggers
 * add item cooldown ready Trigger Condition
