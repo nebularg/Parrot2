@@ -111,6 +111,14 @@ local damageTypeString = function(info)
 	end
 end
 
+local classColorStrings = {}
+for k,v in pairs(RAID_CLASS_COLORS) do
+	local r = v.r*255
+	local g = v.g*255
+	local b = v.b*255
+	classColorStrings[k] = ("|cff%02x%02x%02x%%s|r"):format(r,g,b)
+end
+
 --[[
 -- functions to retrieve player-names (to hide realm-names)
 --]]
@@ -119,11 +127,15 @@ local function retrieveSourceName(info)
 	if db1.profile.hideUnitNames == true then
 		return "__NONAME__"
 	end
-	if Parrot.db1.profile.showNameRealm then
-		return info.sourceName
-	else
-		return info.sourceName:gsub("-.*", "")
+	local result = info.sourceName
+	if not Parrot.db1.profile.showNameRealm then
+		result = result:gsub("-.*", "")
 	end
+	if UnitIsPlayer(result) and db1.profile.classcolor then
+		local _, class = UnitClass(result)
+		result = classColorStrings[class]:format(result)
+	end
+	return result
 end
 
 local function retrieveDestName(info)
@@ -131,11 +143,15 @@ local function retrieveDestName(info)
 	if db1.profile.hideUnitNames == true then
 		return "__NONAME__"
 	end
-	if Parrot.db1.profile.showNameRealm then
-		return info.recipientName
-	else
-		return info.recipientName:gsub("-.*", "")
+	local result = info.recipientName
+	if not Parrot.db1.profile.showNameRealm then
+		result = result:gsub("-.*", "")
 	end
+	if UnitIsPlayer(result) and db1.profile.classcolor then
+		local _, class = UnitClass(result)
+		result = classColorStrings[class]:format(result)
+	end
+	return result
 end
 
 --[[

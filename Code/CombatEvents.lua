@@ -67,6 +67,7 @@ local dbDefaults = {
 		hideFullOverheals = true,
 		hideSkillNames = false,
 		hideUnitNames = false,
+		classcolor = true,
 		damageTypes = {
 			color = true,
 			["Physical"] = "ffffff",
@@ -507,6 +508,15 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				get = function() return self.db1.profile.hideUnitNames end,
 				set = function(info, value)
 						self.db1.profile.hideUnitNames = value
+					end,
+			},
+			classcolor = {
+				type = 'toggle',
+				name = L["Color by class"],
+				desc = L["Color unit names by class"],
+				get = function() return self.db1.profile.classcolor end,
+				set = function(info, value)
+						self.db1.profile.classcolor = value
 					end,
 			},
 			cancelUIDSoon = {
