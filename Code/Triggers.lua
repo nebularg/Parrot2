@@ -1285,6 +1285,10 @@ local function showTrigger(t)
 	cooldowns[t.name] = GetTime()
 	local r, g, b = hexColorToTuple(t.color or 'ffffff')
 	local icon = getIconPath(t.icon)
+	if t.useflash then
+		local rf, gf, bf = hexColorToTuple(t.flashcolor or 'ffffff')
+		Parrot_Display:Flash(rf,gf,bf)
+	end
 
 	Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, icon)
 
@@ -1544,6 +1548,25 @@ function Parrot_Triggers:OnOptionsCreate()
 		info.arg.color = value
 	end
 
+	local function getFlashColor(t)
+		return hexColorToTuple(t.arg.flashcolor or "ffffff")
+	end
+	local function setFlashColor(t, r, g, b)
+		local color = tupleToHexColor(r, g, b)
+		if color == "ffffff" then
+			color = nil
+		end
+		t.arg.flashcolor = color
+	end
+
+	local function getUseFlash(info)
+		return info.arg.useflash
+	end
+	local function setUseFlash(info, value)
+		info.arg.useflash = value
+	end
+	
+
 	local function getClass(t, class)
 		local tmp = newSet((";"):split(t.arg.class))
 		local value = tmp[class]
@@ -1585,6 +1608,10 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		local r, g, b = hexColorToTuple(t.color or 'ffffff')
 		--TODO
+		if t.useflash then
+			local rf, gf, bf = hexColorToTuple(t.flashcolor or 'ffffff')
+			Parrot_Display:Flash(rf,gf,bf)
+		end
 		Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, figureIconPath(t.icon))
 		if t.sound then
 			local sound = SharedMedia:Fetch('sound', t.sound)
@@ -2015,6 +2042,24 @@ function Parrot_Triggers:OnOptionsCreate()
 					arg = t,
 					order = 4,
 				},
+				useflash = {
+					type = 'toggle',
+					name = "Use flash",
+					desc = L["Flash screen in specified color"],
+					get = getUseFlash,
+					set = setUseFlash,
+					arg = t,
+					order = 101,
+				},
+				flashcolor = {
+					type = 'color',
+					name = "Flash color",
+					desc = L["Color in which to flash"],
+					get = getFlashColor,
+					set = setFlashColor,
+					arg = t,
+					order = 102,
+				},
 				test = {
 					type = 'execute',
 					-- buttonText = L["Test"],
@@ -2022,6 +2067,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					desc = L["Test how the trigger will look and act."],
 					func = test,
 					arg = t,
+					order = -1,
 				},
 				font = {
 					type = 'group',
