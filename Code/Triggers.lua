@@ -265,6 +265,9 @@ local defaultTriggers = {
 			["Spell ready"] = {
 				[1] = GetSpellInfo(11585),
 			},
+			["Warrior stance"] = {
+				[1] = "Battle Stance",
+			},
 		},
 		sticky = true,
 		color = "7f007f",
