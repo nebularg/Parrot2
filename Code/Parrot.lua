@@ -20,7 +20,7 @@ DevTools_Dump = function(value)
 	DevTools_Dump = _G.DevTools_Dump
 	DevTools_Dump(value)
 end
-
+DEVTOOLS_DEPTH_CUTOFF = 2
 local function dump(value)
 	local orig = DEFAULT_CHAT_FRAME
 	DEFAULT_CHAT_FRAME = ChatFrame4
@@ -244,9 +244,9 @@ local dbDefaults = {
 		gameText = false,
 		gameDamage = false,
 		gameHealing = false,
-		totemDamage = true,
 	}
 }
+local db
 
 function Parrot:OnInitialize()
 	self:RegisterChatCommand("par", "ShowConfig")
@@ -259,7 +259,7 @@ function Parrot:OnInitialize()
 	self.db1.RegisterCallback(self, "OnProfileChanged", "UpdateModuleConfigs")
 	self.db1.RegisterCallback(self, "OnProfileCopied", "UpdateModuleConfigs")
 	self.db1.RegisterCallback(self, "OnProfileReset", "UpdateModuleConfigs")
-
+	db = self.db1.profile
 	Parrot.options = {
 		name = L["Parrot"],
 		desc = L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."],
@@ -292,7 +292,6 @@ function Parrot:UpdateModuleConfigs()
 end
 
 function Parrot.inheritFontChoices()
-
 	local t = newList()
 	for _,v in ipairs(SharedMedia:List('font')) do
 		t[v] = v
@@ -315,14 +314,12 @@ function Parrot:OnEnable()
 			end
 		end, true)
 	end
-	if Parrot.db1.profile.gameText then
-		SetCVar("CombatDamage", self.db1.profile.gameDamage and "1" or "0")
-		SetCVar("CombatHealing", self.db1.profile.gameHealing and "1" or "0")
+	if db.gameText then
+		SetCVar("CombatDamage", db.gameDamage and "1" or "0")
+		SetCVar("CombatHealing", db.gameHealing and "1" or "0")
 		SetCVar("CombatLogPeriodicSpells", 1)
 		SetCVar("PetMeleeDamage", 1)
 	end
-
-
 end
 
 Parrot.IsActive = Parrot.IsEnabled
@@ -420,6 +417,15 @@ function Parrot:OnBlizzardEvent(eventName, ...)
 	--Parrot:SaveDebug("Parrot-blizzevent", ...)
 end
 
+local function setOption(info, value)
+	local name = info[#info]
+	db[name] = value
+end
+local function getOption(info)
+	local name = info[#info]
+	return db[name]
+end
+
 function Parrot:OnOptionsCreate()
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
 	self.options.args.profiles.order = -1
@@ -436,30 +442,22 @@ function Parrot:OnOptionsCreate()
 				type = 'group',
 				inline = true,
 				name = L["Game options"],
+				set = setOption,
+				get = getOption,
 				args = {
-					control = {
+					gameText = {
 						type = 'toggle',
 						name = L["Control game options"],
-						desc = L[ [=[Whether Parrot should control the default interface's options below.
-These settings always override manual changes to the default interface options.]=] ],
-						get = function()
-							return Parrot.db1.profile.gameText
-						end,
-						set = function(info, value)
-							Parrot.db1.profile.gameText = value
-						end,
+						desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
 						order = 1,
 					},
 					gameDamage = {
 						type = 'toggle',
 						name = L["Game damage"],
 						desc = L["Whether to show damage over the enemy's heads."],
-						disabled = function() return not Parrot.db1.profile.gameText end,
-						get = function()
-							return Parrot.db1.profile.gameDamage
-						end,
+						disabled = function() return not db.gameText end,
 						set = function(info, value)
-							Parrot.db1.profile.gameDamage = value
+							setOption(info, value)
 							SetCVar("CombatDamage", value and "1" or "0")
 						end,
 						order = 2,
@@ -468,38 +466,15 @@ These settings always override manual changes to the default interface options.]
 						type = 'toggle',
 						name = L["Game healing"],
 						desc = L["Whether to show healing over the enemy's heads."],
-						disabled = function() return not Parrot.db1.profile.gameText end,
-						get = function()
-							return Parrot.db1.profile.gameHealing
-						end,
+						disabled = function() return not db.gameText end,
 						set = function(info, value)
-							Parrot.db1.profile.gameHealing = value
+							setOption(info, value)
 							SetCVar("CombatHealing", value and "1" or "0")
 						end,
 						order = 3,
 					},
 				},
 			},
-			totemDamage = {
-				type = 'toggle',
-				name = L["Show guardian events"],
-				desc = L["Whether events involving your guardian(s) (totems, ...) should be displayed"],
-				get = function()
-					return Parrot.db1.profile.totemDamage
-				end,
-				set = function(info, value)
-					Parrot.db1.profile.totemDamage = value
-				end,
-			},
-			showNameRealm = {
-				type = 'toggle',
-				name = L["Show realm name"],
-				desc = L["Display realm in player names (in battlegrounds)"],
-				get = function() return Parrot.db1.profile.showNameRealm end,
-				set = function(info, value)
-						Parrot.db1.profile.showNameRealm = value
-					end,
-			}
 		}
 	})
 end

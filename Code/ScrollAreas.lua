@@ -12,6 +12,11 @@ _G.Parrot_ScrollAreas = Parrot_ScrollAreas
 local scrollAreas
 
 local choices = {}
+local choicesBase = {
+	Incoming = L["Incoming"],
+	Outgoing = L["Outgoing"],
+	Notification = L["Notification"],
+}
 
 -- Parrot_ScrollAreas.db = Parrot:GetDatabaseNamespace("ScrollAreas")
 
@@ -59,11 +64,7 @@ local function rebuildChoices()
 	choices = del(choices)
 	choices = newList()
 	for k, v in pairs(scrollAreas) do
-		if k == "Notification" or k == "Incoming" or k == "Outgoing" then
-			choices[k] = L[k]
-		else
-			choices[k] = k
-		end
+		choices[k] = choicesBase[k] or k
 	end
 end
 
@@ -125,10 +126,7 @@ local function showOffsetBox(k)
 		offsetBoxes = {}
 	end
 	local offsetBox = offsetBoxes[k]
-	local name = k
-	if name == "Notification" or name == "Incoming" or name == "Outgoing" then
-		name = L[name]
-	end
+	local name = choicesBase[k] or k
 	if not offsetBox then
 		offsetBox = CreateFrame("Button", "Parrot_ScrollAreas_OffsetBox_" .. k, UIParent)
 		local midPoint = CreateFrame("Frame", "Parrot_ScrollAreas_OffsetBox_" .. k .. "_Midpoint", offsetBox)
@@ -307,8 +305,8 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 	local scrollAreas_opt
 	local function getName(info)
 		local name = info.arg
-		if name == "Notification" or name == "Incoming" or name == "Outgoing" then
-			name = L[name]
+		if choicesBase[name] then
+			name = choicesBase[name]
 		end
 		return name
 	end
@@ -326,8 +324,8 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		scrollAreas[new] = v
 		local opt = scrollAreas_opt.args[tostring(v)]
 		local name = new
-		if name == "Notification" or name == "Incoming" or name == "Outgoing" then
-			name = L[name]
+		if choicesBase[name] then
+			name = choicesBase[name]
 		end
 		choices[old] = nil
 		choices[new] = name
@@ -580,10 +578,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 	local function makeOption(k)
 		local SharedMedia = LibStub("LibSharedMedia-3.0")
 		local v = scrollAreas[k]
-		local name = k
-		if name == "Notification" or name == "Incoming" or name == "Outgoing" then
-			name = L[name]
-		end
+		local name = choicesBase[k] or k
 		local opt = {
 			type = 'group',
 			name = name,

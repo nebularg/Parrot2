@@ -7,7 +7,7 @@ _G.Parrot_Triggers = self
 --@end-debug@
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
-local CL = _G.LOCALIZED_CLASS_NAMES_MALE
+local LC = _G.LOCALIZED_CLASS_NAMES_MALE
 
 local newList = Parrot.newList
 local newSet = Parrot.newSet
@@ -1625,16 +1625,16 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 
 	local classChoices = {
-		DRUID = CL["DRUID"],
-		ROGUE = CL["ROGUE"],
-		SHAMAN = CL["SHAMAN"],
-		PALADIN = CL["PALADIN"],
-		MAGE = CL["MAGE"],
-		WARLOCK = CL["WARLOCK"],
-		PRIEST = CL["PRIEST"],
-		WARRIOR = CL["WARRIOR"],
-		HUNTER = CL["HUNTER"],
-		DEATHKNIGHT = CL["DEATHKNIGHT"],
+		DRUID = LC["DRUID"],
+		ROGUE = LC["ROGUE"],
+		SHAMAN = LC["SHAMAN"],
+		PALADIN = LC["PALADIN"],
+		MAGE = LC["MAGE"],
+		WARLOCK = LC["WARLOCK"],
+		PRIEST = LC["PRIEST"],
+		WARRIOR = LC["WARRIOR"],
+		HUNTER = LC["HUNTER"],
+		DEATHKNIGHT = LC["DEATHKNIGHT"],
 	}
 
 	local function getConditionValue(info)
@@ -1951,7 +1951,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					type = 'input',
 					name = L["Output"],
 					desc = L["The text that is shown"],
-					usage = L['<Text to show>'],
+					usage = L["<Text to show>"],
 					get = getName,
 					set = setName,
 					arg = t,
@@ -1961,7 +1961,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					type = 'input',
 					name = L["Icon"],
 					desc = L["The icon that is shown"],--Note: Spells that are not in the Spellbook (i.e. some Talents) can only be identified by SpellId (retrievable at www.wowhead.com, looking at the URL)
-					usage = L['<Spell name> or <Item name> or <Path> or <SpellId>'],
+					usage = L["<Spell name> or <Item name> or <Path> or <SpellId>"],
 					get = getIcon,
 					set = setIcon,
 					arg = t,

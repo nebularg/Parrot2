@@ -148,7 +148,7 @@ Notes:
 Example:
 	Parrot:RegisterPrimaryTriggerCondition {
 		name = "Incoming block",
-		localName = L["Incoming block"],
+		localName = L[ [=[Incoming block]=] ],
 		parserEvent = {
 			eventType = "Miss",
 			missType = "Block",
@@ -221,7 +221,7 @@ Notes:
 Example:
 	Parrot:RegisterSecondaryTriggerCondition {
 		name = "Minimum power amount",
-		localName = L["Minimum power amount"],
+		localName = L[ [=[Minimum power amount]=] ],
 		defaultParam = 0.5,
 		param = {
 			type = 'range',

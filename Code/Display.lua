@@ -26,22 +26,20 @@ local dbDefaults = {
 local Parrot_AnimationStyles
 local Parrot_Suppressions
 local Parrot_ScrollAreas
-
+local db
 function Parrot_Display:OnInitialize()
 	self.db1 = Parrot.db1:RegisterNamespace("Display", dbDefaults)
+	db = self.db1.profile
 end
 
---[[local lastTurn = 0
-local freq = 30
-local function checkTurn()
-	local now = math.floor(GetTime() * freq)
-	if now == lastTurn then
-		return false
-	else
-		lastTurn = now
-		return true
-	end
-end--]]
+local function setOption(info, value)
+	local name = info[#info]
+	db[name] = value
+end
+local function getOption(info)
+	local name = info[#info]
+	return db[name]
+end
 
 local function onUpdate()
 	Parrot_Display:OnUpdate()
@@ -93,6 +91,15 @@ local function getFontChoices()
 	return result
 end
 
+--[[local function setOption(info, value)
+	local name = info[#info]
+	db[name] = value
+end
+local function getOption(info)
+	local name = info[#info]
+	return db[name]
+end--]]
+
 function Parrot_Display:OnOptionsCreate()
 	local outlineChoices = {
 		NONE = L["None"],
@@ -109,12 +116,8 @@ function Parrot_Display:OnOptionsCreate()
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,
-		get = function()
-			return self.db1.profile.alpha
-		end,
-		set = function(info, value)
-			self.db1.profile.alpha = value
-		end
+		get = getOption,
+		set = setOption,
 	}
 	Parrot.options.args.general.args.iconAlpha = {
 		type = 'range',
@@ -125,107 +128,64 @@ function Parrot_Display:OnOptionsCreate()
 		step = 0.01,
 		bigStep = 0.05,
 		isPercent = true,
-		get = function()
-			return self.db1.profile.iconAlpha
-		end,
-		set = function(info, value)
-			self.db1.profile.iconAlpha = value
-		end
+		get = getOption,
+		set = setOption,
 	}
-	Parrot.options.args.general.args.enableIcons = {
+	Parrot.options.args.general.args.iconsEnabled = {
 		type = 'toggle',
 		name = L["Enable icons"],
 		desc = L["Set whether icons should be enabled or disabled altogether."],
-		get = function()
-			return self.db1.profile.iconsEnabled
-		end,
-		set = function(info, value)
-			self.db1.profile.iconsEnabled = value
-		end
+		get = getOption,
+		set = setOption,
 	}
 	Parrot.options.args.general.args.font = {
 		type = 'group',
 		name = L["Master font settings"],
 		desc = L["Master font settings"],
+		get = getOption,
+		set = setOption,
 		args = {
-			normalFace = {
+			font = {
 				type = 'select',
 				control = "LSM30_Font",
 				name = L["Normal font"],
 				desc = L["Normal font face."],
-				get = function()
-					return Parrot_Display.db1.profile.font
-				end,
-				set = function(info, value)
-					Parrot_Display.db1.profile.font = value
-				end,
 				values = getFontChoices(),
---				choiceFonts = SharedMedia:HashTable("font"),
 			},
-			normalSize = {
+			fontSize = {
 				type = 'range',
 				name = L["Normal font size"],
 				desc = L["Normal font size"],
 				min = 12,
 				max = 32,
 				step = 1,
-				get = function()
-					return Parrot_Display.db1.profile.fontSize
-				end,
-				set = function(info, value)
-					Parrot_Display.db1.profile.fontSize = value
-				end,
 			},
-			normalBorder = {
+			fontOutline = {
 				type = 'select',
 				name = L["Normal outline"],
 				desc = L["Normal outline"],
 				values = outlineChoices,
-				get = function()
-					return Parrot_Display.db1.profile.fontOutline
-				end,
-				set = function(info, value)
-					Parrot_Display.db1.profile.fontOutline = value
-				end,
 			},
-			stickyFace = {
+			stickyFont = {
 				type = 'select',
 				control = "LSM30_Font",
 				name = L["Sticky font"],
 				desc = L["Sticky font face."],
-				get = function()
-					return Parrot_Display.db1.profile.stickyFont
-				end,
-				set = function(info, value)
-					Parrot_Display.db1.profile.stickyFont = value
-				end,
 				values = getFontChoices(),
 			},
-			stickySize = {
+			stickyFontSize = {
 				type = 'range',
 				name = L["Sticky font size"],
 				desc = L["Sticky font size"],
 				min = 12,
 				max = 32,
 				step = 1,
-				get = function()
-					return Parrot_Display.db1.profile.stickyFontSize
-				end,
-				set = function(info, value)
-					Parrot_Display.db1.profile.stickyFontSize = value
-				end,
 			},
-			stickyBorder = {
+			stickyFontOutline = {
 				type = 'select',
 				name = L["Sticky outline"],
 				desc = L["Sticky outline"],
 				values = outlineChoices,
-				get = function()
-					return Parrot_Display.db1.profile.stickyFontOutline
-				end,
-				set = function(info, value)
-					Parrot_Display.db1.profile.stickyFontOutline = value
-				end,
 			},
 		}
 	}
@@ -329,7 +289,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	frame.fs = fs
 
 	local tex
-	if type(icon) == "string" and icon ~= "Interface\\Icons\\Temp" and scrollArea.iconSide ~= "DISABLE" and self.db1.profile.iconsEnabled then
+	if type(icon) == "string" and icon ~= "Interface\\Icons\\Temp" and scrollArea.iconSide ~= "DISABLE" and db.iconsEnabled then
 		tex = next(freeTextures)
 		if tex then
 			tex:Show()

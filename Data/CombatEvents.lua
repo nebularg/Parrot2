@@ -128,7 +128,7 @@ local function retrieveSourceName(info)
 		return "__NONAME__"
 	end
 	local result = info.sourceName
-	if not Parrot.db1.profile.showNameRealm and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
+	if Parrot.db1.profile.hideRealm and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
 		result = result:gsub("-.*", "")
 	end
 	if UnitIsPlayer(result) and db1.profile.classcolor then
@@ -144,7 +144,7 @@ local function retrieveDestName(info)
 		return "__NONAME__"
 	end
 	local result = info.recipientName
-	if not Parrot.db1.profile.showNameRealm and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
+	if not Parrot.db1.profile.hideRealm and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
 		result = result:gsub("-.*", "")
 	end
 	if UnitIsPlayer(result) and db1.profile.classcolor then
@@ -497,14 +497,14 @@ end
 -- check pet damage
 local function checkPetInc(_, _, _, dstGUID, _, dstFlags)
 	local good = checkFlags(dstFlags, PET_FLAGS)
-	if not good and Parrot.db1.profile.totemDamage then
+	if not good and db1.profile.totemEvents then
 		good = checkFlags(dstFlags, GUARDIAN_FLAGS)
 	end
 	return good
 end
 local function checkPetOut(srcGUID, _, srcFlags)
 	local good = checkFlags(srcFlags, PET_FLAGS)
-	if not good and Parrot.db1.profile.totemDamage then
+	if not good and db1.profile.totemEvents then
 		good = checkFlags(srcFlags, GUARDIAN_FLAGS)
 	end
 	return good
@@ -1037,6 +1037,20 @@ Parrot:RegisterCombatEvent{
 -- Melee-misses
 --============================================================================]]
 
+--[[
+locales for Babelfish.lua to catch
+L["Melee absorbs"]
+L["Melee blocks"]
+L["Melee dodges"]
+L["Melee evades"]
+L["Melee immunes"]
+L["Melee misses"]
+L["Melee parries"]
+L["Melee reflects"]
+L["Melee resists"]
+L["Melee deflects"]
+--]]
+
 for k,v in pairs(missTypes) do
 	local name = "Melee " .. v
 	local tag = k == "ABSORB" and "%s [Amount]!" or "%s!"
@@ -1064,6 +1078,19 @@ end
 -- Incoming Events:
 -- Spell-misses
 --============================================================================]]
+--[[
+locales for Babelfish.lua to catch
+L["Skill absorbs"]
+L["Skill blocks"]
+L["Skill dodges"]
+L["Skill evades"]
+L["Skill immunes"]
+L["Skill misses"]
+L["Skill parries"]
+L["Skill reflects"]
+L["Skill resists"]
+L["Skill deflects"]
+--]]
 
 for k,v in pairs(missTypes) do
 	local name = "Skill " .. v
@@ -1348,7 +1375,19 @@ local petMissColor = {
 	RESIST = "7f7fb2", -- blue-gray
 	EVADE = "7f7fff", -- light blue
 }
-
+--[[
+locales for Babelfish.lua to catch
+L["Pet melee absorbs"]
+L["Pet melee blocks"]
+L["Pet melee dodges"]
+L["Pet melee evades"]
+L["Pet melee immunes"]
+L["Pet melee misses"]
+L["Pet melee parries"]
+L["Pet melee reflects"]
+L["Pet melee resists"]
+L["Pet melee deflects"]
+--]]
 for k,v in pairs(missTypes) do
 	local name = "Pet melee " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]!" or "%s %s!"
@@ -1376,6 +1415,20 @@ end
 -- Incoming Pet Events:
 -- Spell-misses
 --============================================================================]]
+
+--[[
+locales for Babelfish.lua to catch
+L["Pet skill absorbs"]
+L["Pet skill blocks"]
+L["Pet skill dodges"]
+L["Pet skill evades"]
+L["Pet skill immunes"]
+L["Pet skill misses"]
+L["Pet skill parries"]
+L["Pet skill reflects"]
+L["Pet skill resists"]
+L["Pet skill deflects"]
+--]]
 
 for k,v in pairs(missTypes) do
 	local name = "Pet skill " .. v
