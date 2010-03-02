@@ -2160,14 +2160,14 @@ Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
 end--]]
 
 local function runEvent(category, name, info)
-	local db = Parrot_CombatEvents.db1.profile[category][name]
+	local cdb = Parrot_CombatEvents.db1.profile[category][name]
 	local data = combatEvents[category][name]
 
 	local throttle = data.throttle
 	local throttleSuffix
 	if throttle then
 		local throttleType = throttle[1]
-		if (Parrot_CombatEvents.db1.profile.throttles[throttleType] or throttleDefaultTimes[throttleType]) > 0 then
+		if (db.throttles[throttleType] or throttleDefaultTimes[throttleType]) > 0 then
 			local throttleCountData = throttle[3]
 			if throttleCountData then
 				local func = throttleCountData[#throttleCountData]
@@ -2178,15 +2178,15 @@ local function runEvent(category, name, info)
 
 	local sticky = false
 	if data.canCrit then
-		sticky = info.isCrit and Parrot_CombatEvents.db1.profile.stickyCrit
+		sticky = info.isCrit and db.stickyCrit
 	end
 	if not sticky then
-		sticky = db.sticky
+		sticky = cdb.sticky
 		if sticky == nil then
 			sticky = data.sticky
 		end
 	end
-	local text = db.tag or data.defaultTag
+	local text = cdb.tag or data.defaultTag
 	handler__translation = data.tagTranslations
 	handler__info = info
 	local icon
@@ -2298,14 +2298,14 @@ local function runEvent(category, name, info)
 	t = del(t)
 	handler__translation = nil
 	handler__info = nil
-	local r, g, b = hexColorToTuple(db.color or data.color)
+	local r, g, b = hexColorToTuple(cdb.color or data.color)
 
 	if throttleSuffix then
 		text = text .. throttleSuffix
 	end
-	Parrot_Display:ShowMessage(text, db.scrollArea or category, sticky, r, g, b, db.font, db.fontSize, db.fontOutline, icon)
-	if db.sound then
-		PlaySoundFile(SharedMedia:Fetch('sound', db.sound))
+	Parrot_Display:ShowMessage(text, cdb.scrollArea or category, sticky, r, g, b, cdb.font, cdb.fontSize, cdb.fontOutline, icon)
+	if cdb.sound then
+		PlaySoundFile(SharedMedia:Fetch('sound', cdb.sound))
 	end
 end
 
