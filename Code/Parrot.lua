@@ -284,6 +284,7 @@ function Parrot:OnInitialize()
 end
 
 function Parrot:UpdateModuleConfigs()
+	db = self.db1.profile
 	for k,v in Parrot:IterateModules() do
 		if type(v.ApplyConfig) == "function" then
 			v:ApplyConfig()

@@ -3,8 +3,6 @@ local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "Ac
 
 -- libs
 local SharedMedia = LibStub("LibSharedMedia-3.0")
-
-local _G = _G
 --[[
 -- localization
 --]]
@@ -444,6 +442,7 @@ local function getSoundChoices()
 end
 
 function Parrot_CombatEvents:ApplyConfig()
+	db = self.db1.profile
 	updateDB()
 	Parrot.options.args.events = del(Parrot.options.args.events)
 	Parrot_CombatEvents:OnOptionsCreate()

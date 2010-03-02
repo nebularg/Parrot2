@@ -32,6 +32,10 @@ function Parrot_Display:OnInitialize()
 	db = self.db1.profile
 end
 
+function Parrot_Display:ApplyConfig()
+	db = self.db1.profile
+end
+
 local function setOption(info, value)
 	local name = info[#info]
 	db[name] = value
@@ -240,23 +244,23 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	scrollArea = Parrot_ScrollAreas:GetScrollArea(scrollArea)
 	if not sticky then
 		if not font then
-			font = scrollArea.font or self.db1.profile.font
+			font = scrollArea.font or db.font
 		end
 		if not fontSize then
-			fontSize = scrollArea.fontSize or self.db1.profile.fontSize
+			fontSize = scrollArea.fontSize or db.fontSize
 		end
 		if not outline then
-			outline = scrollArea.fontOutline or self.db1.profile.fontOutline
+			outline = scrollArea.fontOutline or db.fontOutline
 		end
 	else
 		if not font then
-			font = scrollArea.stickyFont or self.db1.profile.stickyFont
+			font = scrollArea.stickyFont or db.stickyFont
 		end
 		if not fontSize then
-			fontSize = scrollArea.stickyFontSize or self.db1.profile.stickyFontSize
+			fontSize = scrollArea.stickyFontSize or db.stickyFontSize
 		end
 		if not outline then
-			outline = scrollArea.stickyFontOutline or self.db1.profile.stickyFontOutline
+			outline = scrollArea.stickyFontOutline or db.stickyFontOutline
 		end
 	end
 	if outline == "NONE" then
@@ -391,9 +395,9 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	if init then
 		init(frame, scrollArea.xOffset, scrollArea.yOffset, scrollArea.size, scrollArea[sticky and "stickyDirection" or "direction"] or aniStyle.defaultDirection, frameIDs_scrollArea_aniStyle)
 	end
-	fs:SetAlpha(self.db1.profile.alpha)
+	fs:SetAlpha(db.alpha)
 	if tex then
-		tex:SetAlpha(self.db1.profile.iconAlpha)
+		tex:SetAlpha(db.iconAlpha)
 	end
 	self:OnUpdate(scrollArea, aniStyle)
 end
@@ -442,9 +446,9 @@ function Parrot_Display:OnUpdate()
 				local percent = (now - start) / length
 				if percent >= 0.8 then
 					local alpha = (1-percent) * 5
-					frame.fs:SetAlpha(alpha * self.db1.profile.alpha)
+					frame.fs:SetAlpha(alpha * db.alpha)
 					if frame.icon then
-						frame.icon:SetAlpha(alpha * self.db1.profile.iconAlpha)
+						frame.icon:SetAlpha(alpha * db.iconAlpha)
 					end
 				end
 
