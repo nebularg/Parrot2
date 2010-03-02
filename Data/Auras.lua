@@ -1045,7 +1045,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
+		local name, _, _, count, _, _, _, unitCaster, _, _, spellId = UnitAura(param.unit, param.spell)
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -1090,14 +1090,21 @@ Parrot:RegisterSecondaryTriggerCondition {
 				desc = L["Only return true, if the Aura has been applied by yourself"],
 				type = 'toggle',
 			},
+			stackcount = {
+				name = L["Stack count"],
+				desc = L["The number of stacks of the buff"],
+				type = 'input',
+				save = saveSpell,
+				parse = parseSpell,
+			},
 		},
 	},
 	check = function(param)
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
-		if name then
+		local name, _, _, count, _, _, _, unitCaster, _, _, spellId = UnitAura(param.unit, param.spell)
+		if name and count == param.stackcount then
 			if param.byplayer == true then
 				return unitCaster == "player"
 			else
@@ -1106,7 +1113,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 		else
 			return false
 		end
---		return not UnitAura(param.unit, param.spell or "")
 	end,
 }
 

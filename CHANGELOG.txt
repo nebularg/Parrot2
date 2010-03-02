@@ -4,6 +4,7 @@ v1.10.13:
 * only truncate the realm name from players
 * add option to flash screen on triggers
 * add secondary condition "Battle stance" to Overpower trigger
+* add option to check the stackcount for "Buff active"-secondary Condition 
 
 v1.10.12:
 * add missile-barrage to default-triggers
