@@ -2355,14 +2355,12 @@ function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
 end
 
 local playerGUID
-local sfilters
 onEnableFuncs[#onEnableFuncs + 1] = function()
 	playerGUID = UnitGUID("player")
-	sfilters = db.sfilters
 end
 
 local function sfiltered(info)
-	local filter = sfilters[tostring(info.spellID)] or sfilters[info.abilityName]
+	local filter = db.sfilters[tostring(info.spellID)] or db.sfilters[info.abilityName]
 	if filter and (not filter.amount or (filter.amount > (info.realAmount or info.amount or 0))) then
 		if (filter.inc and playerGUID == info.recipientID) or
 			(filter.out and playerGUID == info.sourceID) then
