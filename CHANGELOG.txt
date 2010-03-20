@@ -1,3 +1,6 @@
+v1.10.14:
+* spell-filters should start working without reloading the interface now
+
 v1.10.13:
 * add Triggers for "Fingers of Frost" and "Decimation"
 * add option to color names by class (for party/raid members)
