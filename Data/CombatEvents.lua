@@ -550,7 +550,7 @@ local function checkPetIncHeal(srcGUID, _, _, dstGUID, _, dstFlags,_, _, _,
 		amount,	overheal)
 
 	local good = checkFlags(dstFlags, PET_FLAGS)
-	if not good and Parrot.db1.profile.totemDamage then
+	if not good and db1.profile.totemEvents then
 		good = checkFlags(dstFlags, GUARDIAN_FLAGS)
 	end
 	return good
@@ -560,7 +560,7 @@ local function checkPetOutHeal(srcGUID, _, srcFlags, dstGUID, _, _,_, _, _,
 	local good = srcGUID ~= dstGUID and dstGUID ~= playerGUID
 	if not good then return false end
 	good = checkFlags(srcFlags, PET_FLAGS)
-	if not good and Parrot.db1.profile.totemDamage then
+	if not good and db1.profile.totemEvents then
 		good = checkFlags(srcFlags, GUARDIAN_FLAGS)
 	end
 	return good
