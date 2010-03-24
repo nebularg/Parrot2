@@ -46,9 +46,7 @@ local dbDefaults = {
 		sfilters = {
 			[GetSpellInfo(34460)] = { inc = true, out = true, }, -- Ferocious Inspiration
 			[GetSpellInfo(30809)] = { inc = true, out = true, }, -- Unleashed Rage
-			[GetSpellInfo(53414)] = { inc = true, out = true, }, -- Elemental Oath
 			[GetSpellInfo(48090)] = { inc = true, out = true, }, -- Demonic Pact
-			[GetSpellInfo(30029)] = { inc = true, out = true, }, -- Rampage
 		},
 		throttles = {},
 		sthrottles = {
