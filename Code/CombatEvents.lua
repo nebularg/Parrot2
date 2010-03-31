@@ -643,7 +643,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				name = L["Throttle events"],
 				desc = L["Whether to merge mass events into single instances instead of excessive spam."],
 				args = {
-					useShortThrottleTexts = {
+					useShortThrottleText = {
 						type = 'toggle',
 						name = L["Short Texts"],
 						desc = L["Use short throttle-texts (like \"2++\" instead of \"2 crits\")"],
