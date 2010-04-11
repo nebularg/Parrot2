@@ -2090,10 +2090,8 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 							t[k] = v
 						elseif throttle[k] and t[k] ~= v then
 							t[k] = throttle[k]
-						elseif type(v) == "number" then
-							if(k ~= "spellID") then
-								t[k] = t[k] + v
-							end
+						elseif type(v) == "number" and k:match("[Aa]mount") then -- sum up amounts
+							t[k] = t[k] + v
 						end
 					end
 				end
