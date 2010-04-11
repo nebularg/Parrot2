@@ -68,17 +68,13 @@ local function rebuildChoices()
 	end
 end
 
-function Parrot_ScrollAreas:ApplyConfig()
+function Parrot_ScrollAreas:ChangeProfile()
 	initDB()
 	if Parrot.options.args.scrollAreas then
 		Parrot.options.args.scrollAreas = nil
 		self:OnOptionsCreate()
 	end
 	rebuildChoices()
-end
-
-function Parrot_ScrollAreas:OnEnable()
-	self:ApplyConfig()
 end
 
 local setConfigMode

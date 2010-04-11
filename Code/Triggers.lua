@@ -1116,10 +1116,12 @@ local function updateDB()
 	end
 end
 
-function Parrot_Triggers:ApplyConfig()
+function Parrot_Triggers:ChangeProfile()
 	updateDB()
-	Parrot.options.args.triggers = nil
-	self:OnOptionsCreate()
+	if Parrot.options.args.triggers then
+		Parrot.options.args.triggers = nil
+		self:OnOptionsCreate()
+	end
 	rebuildEffectiveRegistry()
 end
 local first = true

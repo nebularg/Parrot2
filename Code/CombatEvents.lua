@@ -438,7 +438,7 @@ local function getSoundChoices()
 	return t
 end
 
-function Parrot_CombatEvents:ApplyConfig()
+function Parrot_CombatEvents:ChangeProfile()
 	db = self.db1.profile
 	updateDB()
 	if next(Parrot.options.args) then

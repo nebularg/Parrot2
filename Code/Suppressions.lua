@@ -15,14 +15,18 @@ local dbDefaults = {
 		suppressions = {},
 	}
 }
-
+local db
 function Parrot_Suppressions:OnInitialize()
 	Parrot_Suppressions.db1 = Parrot.db1:RegisterNamespace("Suppressions", dbDefaults)
+	db = self.db1.profile
 end
 
-function Parrot_Suppressions:ApplyConfig()
-	Parrot.options.args.suppressions = nil
-	self:OnOptionsCreate()
+function Parrot_Suppressions:ChangeProfile()
+	db = self.db1.profile
+	if Parrot.options.args.suppressions then
+		Parrot.options.args.suppressions = nil
+		self:OnOptionsCreate()
+	end
 end
 
 local function optkey(table)
@@ -152,7 +156,7 @@ function Parrot_Suppressions:ShouldSuppress(text)
 	if not self:IsEnabled() then
 		return false
 	end
-	for suppression, escape in pairs(self.db1.profile.suppressions) do
+	for suppression, escape in pairs(db.suppressions) do
 		if suppression ~= '' then
 			local success, ret = pcall(string_find, text, suppression, nil, not not escape)
 			if success and ret then
