@@ -2425,7 +2425,6 @@ local legacyNames = {
 	spellSchool = "damageType",
 }
 
-_G.Codes = {}
 local function makeParseFunction(event)
 	local code = "function(info, ...) "
 	for k,v in ipairs(moreParams[event]) do
@@ -2437,7 +2436,6 @@ local function makeParseFunction(event)
 		code = code .. "info.realAmount = info.amount - info.overhealAmount;"
 	end
 	code = code .. "end"
-	Codes[event] = code
 	local luaString = "return " .. code
 	local createFunc, err = loadstring(luaString)
 	if createFunc then
