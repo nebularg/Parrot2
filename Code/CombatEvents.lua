@@ -441,8 +441,10 @@ end
 function Parrot_CombatEvents:ApplyConfig()
 	db = self.db1.profile
 	updateDB()
-	Parrot.options.args.events = del(Parrot.options.args.events)
-	Parrot_CombatEvents:OnOptionsCreate()
+	if next(Parrot.options.args) then
+		Parrot.options.args.events = del(Parrot.options.args.events)
+		Parrot_CombatEvents:OnOptionsCreate()
+	end
 end
 
 local function setOption(info, value)
