@@ -1506,7 +1506,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		return t.arg.sticky
 	end
 	local function setSticky(t, value)
-		t.arg.sticky = value or nil
+		t.arg.sticky = value
 	end
 	local function getName(t)
 		return t.arg.name
