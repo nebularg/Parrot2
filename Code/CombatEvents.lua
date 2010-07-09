@@ -438,11 +438,13 @@ local function getSoundChoices()
 	return t
 end
 
-function Parrot_CombatEvents:ApplyConfig()
+function Parrot_CombatEvents:ChangeProfile()
 	db = self.db1.profile
 	updateDB()
-	Parrot.options.args.events = del(Parrot.options.args.events)
-	Parrot_CombatEvents:OnOptionsCreate()
+	if next(Parrot.options.args) then
+		Parrot.options.args.events = del(Parrot.options.args.events)
+		Parrot_CombatEvents:OnOptionsCreate()
+	end
 end
 
 local function setOption(info, value)
@@ -1642,7 +1644,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 	if data.combatLogEvents then
 		for eventType, v in pairs(data.combatLogEvents) do
 			if type(v.func) ~= 'function' then
-				error(("Bad argument #2 to `RegisterCombatEvent'. func must be a %q, got %q."):format("function", type(v.func)))
+			--	error(("Bad argument #2 to `RegisterCombatEvent'. func must be a %q, got %q."):format("function", type(v.func)))
 			end
 			if not combatLogEvents[eventType] then
 				combatLogEvents[eventType] = {}
@@ -1978,7 +1980,7 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDone)
 	self = Parrot_CombatEvents -- so people can do Parrot:TriggerCombatEvent
-	if not self:IsEnabled() then
+	if not self:IsEnabled() then -- TODO remove
 		return
 	end
 	if cancelUIDSoon[info.uid] then
@@ -2088,10 +2090,8 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 							t[k] = v
 						elseif throttle[k] and t[k] ~= v then
 							t[k] = throttle[k]
-						elseif type(v) == "number" then
-							if(k ~= "spellID") then
-								t[k] = t[k] + v
-							end
+						elseif type(v) == "number" and k:match("[Aa]mount") then -- sum up amounts
+							t[k] = t[k] + v
 						end
 					end
 				end
@@ -2182,6 +2182,7 @@ local function runEvent(category, name, info)
 			sticky = data.sticky
 		end
 	end
+
 	local text = cdb.tag or data.defaultTag
 	handler__translation = data.tagTranslations
 	handler__info = info
@@ -2368,25 +2369,126 @@ local function sfiltered(info)
 	return false
 end
 
-function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType, ...)
-	if not self:IsEnabled() then
+local moreParams = {
+	DAMAGE_SHIELD = { "spellId", "spellName", "spellSchool", "amount",
+		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
+		"glancing", "crushing", },
+	DAMAGE_SPLIT = { "spellId", "spellName", "spellSchool", "amount",
+		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
+		"glancing", "crushing", },
+	ENVIRONMENTAL_DAMAGE = { "environmentalType", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
+	PARTY_KILL = { },
+	RANGE_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
+	RANGE_MISSED = { "spellId", "spellName", "spellSchool", "missType", "amountMissed", },
+	SPELL_BUILDING_DAMAGE = { "spellId", "spellName", "spellSchool", "amount",
+		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
+		"glancing", "crushing", },
+	SPELL_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
+	SPELL_DISPEL = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", "auraType", },
+	SPELL_DISPEL_FAILED = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", },
+	SPELL_DRAIN = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
+	SPELL_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
+	SPELL_EXTRA_ATTACKS = { "spellId", "spellName", "spellSchool", "amount", },
+	SPELL_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", },
+	SPELL_INTERRUPT = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", },
+	SPELL_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
+	SPELL_MISSED = { "spellId", "spellName", "spellSchool", "missType", "amountMissed", },
+	SPELL_PERIODIC_DAMAGE = { "spellId", "spellName", "spellSchool", "amount",
+		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
+		"glancing", "crushing", },
+	SPELL_PERIODIC_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
+	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", },
+	SPELL_PERIODIC_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
+	SPELL_PERIODIC_MISSED = { "spellId", "spellName", "spellSchool", "missType", "amountMissed", },
+	SPELL_STOLEN = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", "auraType", },
+	SWING_DAMAGE = { "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
+	SWING_MISSED = { "missType", "amountMissed", },
+	SPELL_AURA_APPLIED = { "spellId", "spellName", "spellSchool", "auraType", },
+	SPELL_AURA_APPLIED_DOSE = { "spellId", "spellName", "spellSchool", "auraType", "amount", },
+	SPELL_AURA_REMOVED = { "spellId", "spellName", "spellSchool", "auraType", },
+	ENCHANT_APPLIED = { "spellName", "itemID", "itemName", },
+	ENCHANT_REMOVED = { "spellName", "itemID", "itemName", },
+}
+
+local legacyNames = {
+	absorbed = "absorbAmount",
+	blocked = "blockAmount",
+	resisted = "resistAmount",
+	amountMissed = "amount",
+	critical = "isCrit",
+	crushing = "isCrushing",
+	glancing = "isGlancing",
+	spellId = "spellID",
+	spellName = "abilityName",
+	extraSpellName = "extraAbilityName",
+	overhealing = "overhealAmount",
+	spellSchool = "damageType",
+}
+
+local function makeParseFunction(event)
+	local code = "function(info, ...) "
+	for k,v in ipairs(moreParams[event]) do
+		code = code .. ("info.%s, "):format(legacyNames[v] or v)
+	end
+
+	code = code .. "_ = ...;"
+	if event:match("_HEAL") then
+		code = code .. "info.realAmount = info.amount - info.overhealAmount;"
+	end
+	code = code .. "end"
+	local luaString = "return " .. code
+	local createFunc, err = loadstring(luaString)
+	if createFunc then
+		return createFunc()
+	else
+		geterrorhandler()(err)
+	end
+end
+local combatLogParseFuncs = {}
+for k in pairs(moreParams) do
+	combatLogParseFuncs[k] = makeParseFunction(k)
+end
+
+wipe(moreParams)
+moreParams = nil
+makeParseFunction = nil
+
+local FLAGS_RELEVANT = bit.bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER)
+local bit_band = bit.band
+local function checkForRelevance(sourceFlags, destFlags)
+	return bit_band(sourceFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT or
+		bit_band(destFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT
+end
+
+function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType,
+		sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
+	if not self:IsEnabled() then -- TODO remove
 		return
 	end
-	local registeredHandlers = combatLogEvents[eventType]
-	if registeredHandlers then
-		for i, v in ipairs(registeredHandlers) do
-			if v.checkfunc(...) then
-				local info = v.infofunc(...)
-				if info then
-					if sfiltered(info) then
-						info = del(info)
-						return
+	if checkForRelevance(sourceFlags, destFlags) then
+		local registeredHandlers = combatLogEvents[eventType]
+		if registeredHandlers then
+			local info = newList()
+			info.sourceID = sourceGUID
+			info.sourceName = sourceName
+			info.sourceFlags = sourceFlags
+			info.recipientID = destGUID
+			info.recipientName = destName
+			info.destFlags = destFlags
+			local parseFunc = combatLogParseFuncs[eventType]
+			if not parseFunc then
+				debug("!!!!no parseFunc for ", eventType)
+			else
+				parseFunc(info, ...)
+				for i, v in ipairs(registeredHandlers) do
+					local check = v.checkfunc(sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
+					if check and not sfiltered(info) then
+						info.uid = uid
+						self:TriggerCombatEvent(v.category, v.name, info)
 					end
-					info.uid = uid
-					self:TriggerCombatEvent(v.category, v.name, info)
-					info = del(info)
 				end
 			end
+			info = del(info)
 		end
 	end
 end

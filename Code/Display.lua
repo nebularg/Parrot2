@@ -32,7 +32,7 @@ function Parrot_Display:OnInitialize()
 	db = self.db1.profile
 end
 
-function Parrot_Display:ApplyConfig()
+function Parrot_Display:ChangeProfile()
 	db = self.db1.profile
 end
 

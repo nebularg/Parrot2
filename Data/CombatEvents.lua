@@ -96,16 +96,18 @@ end
 
 local coloredDamageAmount = function(info)
 	local db = db1.profile.damageTypes
-	if db.color and db[info.damageType] then
-		return "|cff" .. db[info.damageType] .. info.amount .. "|r"
+	local damageType = SchoolParser[info.damageType]
+	if db.color and db[damageType] then
+		return "|cff" .. db[damageType] .. info.amount .. "|r"
 	else
 		return info.amount
 	end
 end
 
 local damageTypeString = function(info)
-	if info.damageType then
-		return LS[info.damageType] or tostring(info.damageType)
+	local damageType = SchoolParser[info.damageType]
+	if damageType then
+		return LS[damageType] or tostring(damageType)
 	else
 		return ""
 	end
@@ -117,6 +119,11 @@ for k,v in pairs(RAID_CLASS_COLORS) do
 	local g = v.g*255
 	local b = v.b*255
 	classColorStrings[k] = ("|cff%02x%02x%02x%%s|r"):format(r,g,b)
+end
+
+local powerTypeString = function(info)
+	local powerType = PowerTypeParser[info.powerType] or UNKNOWN
+	return powerType
 end
 
 --[[
@@ -611,7 +618,8 @@ local short_format_texts = {
 }
 
 local function damageThrottleFunc(info)
-	local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
+	--local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
+	local L = long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0
@@ -625,7 +633,7 @@ local function damageThrottleFunc(info)
 			return L[" (%d hit, %d crits)"]:format(1, numCrit)
 		end
 	elseif numNorm == 0 then
-		if numCrit == 1 then
+		if numCrit < 2 then
 			-- just one crit
 			return nil
 		else -- >= 2
@@ -653,7 +661,8 @@ local function missThrottleFunc(info)
 end
 
 local healThrottleFunc = function(info)
-	local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
+	--local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
+	local L = long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0
@@ -667,7 +676,7 @@ local healThrottleFunc = function(info)
 			return L[" (%d heal, %d crits)"]:format(1, numCrit)
 		end
 	elseif numNorm == 0 then
-		if numCrit == 1 then
+		if numCrit < 2 then
 			-- just one crit
 			return nil
 		else -- >= 2
@@ -1286,8 +1295,8 @@ Parrot:RegisterCombatEvent{
 		ENVIRONMENTAL_DAMAGE = { check = checkPlayerInc, func = parseEnvDamage, },
 	},
 	tagTranslations = {
-		Amount = coloredDamageAmount,
-		Type = "hazardTypeLocal",
+		Amount = "amount",
+		Type = "environmentalType",
 	},
 	tagTranslationsHelp = {
 		Amount = L["The amount of damage done."],
@@ -2091,7 +2100,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = {
 		Amount = "amount",
-		Type = "attributeLocal",
+		Type = powerTypeString,
 		Skill = retrieveAbilityName,
 		Name = function(info)
 				return info.recipientName or info.sourceName
@@ -2141,7 +2150,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = {
 		Amount = "amount",
-		Type = "attributeLocal",
+		Type = powerTypeString,
 		Skill = retrieveAbilityName,
 		Name = retrieveSourceName,
 		Icon = retrieveIconFromAbilityName,

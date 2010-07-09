@@ -246,7 +246,7 @@ local dbDefaults = {
 		gameHealing = false,
 	}
 }
-local db
+local dbpr
 
 function Parrot:OnInitialize()
 	self:RegisterChatCommand("par", "ShowConfig")
@@ -256,10 +256,10 @@ function Parrot:OnInitialize()
 	-- even without the RockDB-mixin, LibRock operates on self.db
 	self.db1 = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults, "Default")
 
-	self.db1.RegisterCallback(self, "OnProfileChanged", "UpdateModuleConfigs")
-	self.db1.RegisterCallback(self, "OnProfileCopied", "UpdateModuleConfigs")
-	self.db1.RegisterCallback(self, "OnProfileReset", "UpdateModuleConfigs")
-	db = self.db1.profile
+	self.db1.RegisterCallback(self, "OnProfileChanged", "ChangeProfile")
+	self.db1.RegisterCallback(self, "OnProfileCopied", "ChangeProfile")
+	self.db1.RegisterCallback(self, "OnProfileReset", "ChangeProfile")
+	dbpr = self.db1.profile
 	Parrot.options = {
 		name = L["Parrot"],
 		desc = L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."],
@@ -283,11 +283,11 @@ function Parrot:OnInitialize()
 	self:RegisterDebugSpace("BLIZZARD_EVENT")
 end
 
-function Parrot:UpdateModuleConfigs()
-	db = self.db1.profile
+function Parrot:ChangeProfile()
+	dbpr = self.db1.profile
 	for k,v in Parrot:IterateModules() do
-		if type(v.ApplyConfig) == "function" then
-			v:ApplyConfig()
+		if type(v.ChangeProfile) == 'function' then
+			v:ChangeProfile()
 		end
 	end
 end
@@ -315,12 +315,13 @@ function Parrot:OnEnable()
 			end
 		end, true)
 	end
-	if db.gameText then
-		SetCVar("CombatDamage", db.gameDamage and "1" or "0")
-		SetCVar("CombatHealing", db.gameHealing and "1" or "0")
+	if dbpr.gameText then
+		SetCVar("CombatDamage", dbpr.gameDamage and "1" or "0")
+		SetCVar("CombatHealing", dbpr.gameHealing and "1" or "0")
 		SetCVar("CombatLogPeriodicSpells", 1)
 		SetCVar("PetMeleeDamage", 1)
 	end
+	self:ChangeProfile()
 end
 
 Parrot.IsActive = Parrot.IsEnabled
@@ -420,11 +421,11 @@ end
 
 local function setOption(info, value)
 	local name = info[#info]
-	db[name] = value
+	dbpr[name] = value
 end
 local function getOption(info)
 	local name = info[#info]
-	return db[name]
+	return dbpr[name]
 end
 
 function Parrot:OnOptionsCreate()
@@ -456,7 +457,7 @@ function Parrot:OnOptionsCreate()
 						type = 'toggle',
 						name = L["Game damage"],
 						desc = L["Whether to show damage over the enemy's heads."],
-						disabled = function() return not db.gameText end,
+						disabled = function() return not dbpr.gameText end,
 						set = function(info, value)
 							setOption(info, value)
 							SetCVar("CombatDamage", value and "1" or "0")
@@ -467,7 +468,7 @@ function Parrot:OnOptionsCreate()
 						type = 'toggle',
 						name = L["Game healing"],
 						desc = L["Whether to show healing over the enemy's heads."],
-						disabled = function() return not db.gameText end,
+						disabled = function() return not dbpr.gameText end,
 						set = function(info, value)
 							setOption(info, value)
 							SetCVar("CombatHealing", value and "1" or "0")
