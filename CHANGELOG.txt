@@ -1,3 +1,13 @@
+v1.10.17:
+* remove the aura-polling-hack
+* fix bug that cause triggers to always go back to being sticky
+
+v1.10.16:
+* fix short text setting
+
+v1.10.15:
+* cleanup the default spellfilters
+
 v1.10.14:
 * spell-filters should start working without reloading the interface now
 
