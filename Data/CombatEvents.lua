@@ -620,8 +620,8 @@ local short_format_texts = {
 local function damageThrottleFunc(info)
 	--local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
 	local L = long_format_texts
-	local numNorm = info.throttleCount_isCrit_false or 0
-	local numCrit = info.throttleCount_isCrit_true or 0
+	local numNorm = info.throttleCount_isCrit_nil or 0
+	local numCrit = info.throttleCount_isCrit_1 or 0
 	info.isCrit = numCrit > 0
 	if numNorm == 1 then
 		if numCrit == 1 then
@@ -663,8 +663,8 @@ end
 local healThrottleFunc = function(info)
 	--local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
 	local L = long_format_texts
-	local numNorm = info.throttleCount_isCrit_false or 0
-	local numCrit = info.throttleCount_isCrit_true or 0
+	local numNorm = info.throttleCount_isCrit_nil or 0
+	local numCrit = info.throttleCount_isCrit_1 or 0
 	info.isCrit = numCrit > 0
 	if numNorm == 1 then
 		if numCrit == 1 then
