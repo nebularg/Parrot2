@@ -1283,6 +1283,10 @@ Parrot:RegisterCombatEvent{
 	color = "ffff00", -- yellow
 }
 
+local function parseEnvironmentalDamage(info)
+	return EnvironmentalParser[info.environmentalType]
+end
+
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Other"],
@@ -1294,7 +1298,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = {
 		Amount = "amount",
-		Type = "environmentalType",
+		Type = parseEnvironmentalDamage,
 	},
 	tagTranslationsHelp = {
 		Amount = L["The amount of damage done."],
