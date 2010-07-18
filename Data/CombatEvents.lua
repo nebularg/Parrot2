@@ -248,202 +248,6 @@ local defaultMissColor = {
 }
 
 --[[============================================================================
--- common parse-functions for several combat-events
---============================================================================]]
-
-local function parseSwingDamage(srcGUID, srcName, srcFlags, dstGUID, dstName,
-		dstFlags, amount, overkill, school, resisted, blocked, absorbed, critical,
-		glancing, crushing)
-
-	local info = newList()
-	info.damageType = SchoolParser[school]
-	info.recipientID = dstGUID
-	info.recipientName = dstName
-	info.sourceID = srcGUID
-	info.sourceName = srcName
-	info.amount = amount
-	info.overkill = overkill
-	info.absorbAmount = absorbed or 0
-	info.blockAmount = blocked or 0
-	info.resistAmount = resisted or 0
-	info.isCrit = (critical ~= nil)
-	info.isCrushing = (crushing ~= nil)
-	info.isGlancing = (glancing ~= nil)
-	return info
-end
-
-local function parseMissInfo( srcGUID, srcName, _, dstGUID, dstName, _,
-		missType, amountMissed )
-
-	local info = newList()
-	info.recipientID = dstGUID
-	info.recipientName = dstName
-	info.sourceID = srcGUID
-	info.sourceName = srcName
-	info.missType = missType
-	info.amount = amountMissed
-	return info
-end
-
-local function parseSpellDamage(srcGUID, srcName, srcFlags, dstGUID, dstName,
-		dstFlags, spellId, spellName, spellSchool, amount, overkill, school,
-		resisted, blocked, absorbed, critical, glancing, crushing)
-
-	local info = newList()
-	info.spellID = spellId
-	info.damageType = SchoolParser[spellSchool] or SchoolParser[school]
-	info.sourceID = srcGUID
-	info.sourceName = srcName
-	info.recipientID = dstGUID
-	info.recipientName = dstName
-	info.abilityName = spellName
-	info.absorbAmount = absorbed or 0
-	info.blockAmount = blocked or 0
-	info.resistAmount = resisted or 0
-	info.amount = amount
-	info.overkill = overkill
-	info.isCrit = (critical ~= nil)
-	info.isCrushing = (crushing ~= nil)
-	info.isGlancing = (glancing ~= nil)
-	return info
-end
-
-local function parseSpellMissInfo(srcGUID, srcName, srcFlags, dstGUID,
-	dstName, dstFlags, spellId, spellName, spellSchool, missType, amountMissed)
-
-	local info = newList()
-	info.spellID = spellId
-	info.recipientID = dstGUID
-	info.recipientName = dstName
-	info.sourceID = srcGUID
-	info.sourceName = srcName
-	info.abilityName = spellName
-	info.missType = missType
-	info.amount = amountMissed
-	return info
-end
-
-local function parseInterrupt(srcGUID, srcName, srcFlags, dstGUID, dstName,
-		dstFlags, spellId, spellName, spellSchool, extraSpellId, extraSpellName,
-		extraSpellSchool)
-
-	local info = newList()
-	info.spellID = spellId
-	info.extraSpellID = extraSpellId
-	info.damageType = SchoolParser[spellSchool]
-	info.recipientID = dstGUID
-	info.recipientName = dstName
-	info.sourceName = srcName
-	info.sourceID = srcGUID
-	info.abilityName = spellName
-	info.extraAbilityName = extraSpellName
-	return info
-end
-
-local function parseHeal(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags,
-		spellId, spellName, spellSchool, amount, overheal, absorbed, critical)
-
-	local info = newDict(
-		"damageType", SchoolParser[school],
-		"spellID", spellId,
-		"recipientID", dstGUID,
-		"recipientName", dstName,
-		"sourceID", srcGUID,
-		"sourceName", srcName,
-		"amount", amount,
-		"realAmount", amount - overheal,
-		"abilityName", spellName,
-		"isCrit", (critical ~= nil),
-		"overhealAmount", overheal,
-		"isHoT", false,
-		"absorbAmount", absorbed or 0)
-	return info
-end
-
--- recycle the parse-function for heals
-local function parseHoT(...)
-	local info = parseHeal(...)
-	info.isHoT = true
-	return info
-end
-
--- dispel
-local function parseDispel(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, extraSpellID, extraSpellName, extraSchool, auraType)
-	local info = newDict(
-		"spellID", spellId,
-		"sourceID", srcGUID,
-		"sourceName ", srcName,
-		"recipientID", dstGUID,
-		"recpientName", dstName,
-		"abilityName", spellName,
-		"extraAbilityName", extraSpellName,
-		"damageType", SchoolParser[school] or SchoolParser[spellSchool]
-	)
-	return info
-end
-
--- energize (Notifications)
-local function parseEnergize(srcGUID, srcName, srcFlags, dstGUID, dstName,
-		dstFlags, spellId, spellName, spellSchool, amount, powerType, extraAmount)
-	local info = newList()
-	info.spellID = spellId
-	info.damageType = SchoolParser[spellSchool]
-	info.recipientID = srcGUID
-	info.sourceName = srcName
-	info.sourceID = srcGUID
-	info.abilityName = spellName
-	info.attributeLocal = PowerTypeParser[powerType]
-	info.amount = amount
-	info.extraAmount = extraAmount
-	return info
-end
-
--- killing blows (Notifications)
-local function parsePartyKill(srcGUID, srcName, srcFlags, dstGUID, dstName)
-	local info = newList()
-	info.recipientID = dstGUID
-	info.recipientName = dstName
-	info.sourceID = srcGUID
-	info.sourceName = srcName
-	return info
-end
-
--- only used for player-incoming
-local function parseEnvDamage(srcGUID, srcName, srcFlags, dstGUID, dstName,
-		dstFlags, enviromentalType, amount, overkill, school, resisted, blocked,
-		absorbed, critical, glancing, crushing)
-
-	local info = newList()
-	info.damageType = SchoolParser[school]
-	info.recipientID = dstGUID
-	info.recipientName = dstName
-	info.sourceID = srcGUID
-	info.sourceName = srcName
-	info.absorbAmount = absorbed or 0
-	info.blockAmount = blocked or 0
-	info.resistAmount = resisted or 0
-	info.hazardTypeLocal = EnvironmentalParser[enviromentalType]
-	info.amount = amount
-	info.overkill = overkill
-	info.isCrit = (critical ~= nil)
-	info.isCrushing = (crushing ~= nil)
-	info.isGlancing = (glancing ~= nil)
-	return info
-end
-
--- only used for incoming DoT (because of the Shadowword: Death feedback damage
-local function parseIncDoT(srcGUID, srcName, srcFlags, dstGUID, dstName,
-		dstFlags, spellId, ...)
-
-	local info = parseSpellDamage(srcGUID, srcName, srcFlags, dstGUID, dstName,
-			dstFlags, spellId, ...)
-	if( spellId == 32409 and srcName == nil ) then
-		info.sourceName = dstName
-	end
-	return info
-end
-
---[[============================================================================
 -- some common check-functions
 --============================================================================]]
 
@@ -971,7 +775,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Melee damage"],
 	defaultTag = "([Name]) -[Amount]",
 	combatLogEvents = {
-		SWING_DAMAGE = { check = checkPlayerInc, func = parseSwingDamage, },
+		SWING_DAMAGE = { check = checkPlayerInc, },
 	},
 	tagTranslations = {
 		Name = retrieveSourceName,
@@ -994,7 +798,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Reactive skills"],
 	defaultTag = "([Name]) -[Amount]",
 	combatLogEvents = {
-		DAMAGE_SHIELD = { check = checkPlayerInc, func = parseSpellDamage, },
+		DAMAGE_SHIELD = { check = checkPlayerInc, },
 	},
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = incSkillDamageTagTranslationsHelp,
@@ -1011,9 +815,9 @@ Parrot:RegisterCombatEvent{
 	localName = L["Skill damage"],
 	defaultTag = "([Name]) -[Amount]",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPlayerInc, func = parseSpellDamage,	},
-		RANGE_DAMAGE = { check = checkPlayerInc, func = parseSpellDamage, },
-		DAMAGE_SPLIT = { check = checkPlayerInc, func = parseSpellDamage, },
+		SPELL_DAMAGE = { check = checkPlayerInc, },
+		RANGE_DAMAGE = { check = checkPlayerInc, },
+		DAMAGE_SPLIT = { check = checkPlayerInc, },
 	},
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = incSkillDamageTagTranslationsHelp,
@@ -1031,7 +835,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "([Name]) -[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_DAMAGE = { check = checkPlayerInc, func = parseIncDoT, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerInc, },
 	},
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = incSkillDamageTagTranslationsHelp,
@@ -1072,7 +876,7 @@ for k,v in pairs(missTypes) do
 		localName = L[name],
 		defaultTag = tag,
 		combatLogEvents = {
-			SWING_MISSED = { check = check, func = parseMissInfo, },
+			SWING_MISSED = { check = check, },
 		},
 		tagTranslations = incMissTagTranslations,
 		tagTranslationsHelp = incMissTagTranslationHelp,
@@ -1115,9 +919,9 @@ for k,v in pairs(missTypes) do
 		localName = L[name],
 		defaultTag = tag,
 		combatLogEvents = {
-			SPELL_MISSED = { check = check, func = parseSpellMissInfo, },
-			SPELL_PERIODIC_MISSED = { check = check, func = parseSpellMissInfo, },
-			RANGE_MISSED = { check = check, func = parseSpellMissInfo, },
+			SPELL_MISSED = { check = check, },
+			SPELL_PERIODIC_MISSED = { check = check, },
+			RANGE_MISSED = { check = check, },
 		},
 		tagTranslations = incSpellMissTagTranslations,
 		tagTranslationsHelp = incSpellMissTagTranslationsHelp,
@@ -1138,7 +942,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Heals"],
 	defaultTag = "([Skill] - [Name]) +[Amount]",
 	combatLogEvents = {
-		SPELL_HEAL = { check = checkPlayerIncHeal, func = parseHeal, },
+		SPELL_HEAL = { check = checkPlayerIncHeal, },
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = incHealTagTranslationsHelp,
@@ -1155,7 +959,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Self heals"],
 	defaultTag = "([Skill]) +[Amount]",
 	combatLogEvents = {
-		SPELL_HEAL = { check = checkPlayerSelfHeal, func = parseHeal, },
+		SPELL_HEAL = { check = checkPlayerSelfHeal, },
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = incHealTagTranslationsHelp,
@@ -1173,7 +977,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "([Skill] - [Name]) +[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPlayerIncHoT, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPlayerIncHoT, },
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = incHealTagTranslationsHelp,
@@ -1190,7 +994,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "([Skill]) +[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPlayerSelfHoT, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPlayerSelfHoT, },
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = incHealTagTranslationsHelp,
@@ -1212,7 +1016,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Dispel"],
 	defaultTag = "[Skill] -[ExtraSkill]",
 	combatLogEvents = {
-		SPELL_DISPEL = { check = checkPlayerInc, func = parseDispel, },
+		SPELL_DISPEL = { check = checkPlayerInc, },
 	},
 	tagTranslations = incDispelTagTranslations,
 	tagTranslationHelp = {
@@ -1230,7 +1034,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Dispel fail"],
 	defaultTag = L["%s failed"]:format("[Skill]"),
 	combatLogEvents = {
-		SPELL_DISPEL_FAILED = { check = checkPlayerInc, func = parseDispel, },
+		SPELL_DISPEL_FAILED = { check = checkPlayerInc, },
 	},
 	tagTranslations = incDispelTagTranslations,
 	tagTranslationHelp = {
@@ -1249,7 +1053,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Spell steal"],
 	defaultTag = L["%s stole %s"]:format("[Skill]", "[ExtraSkill]"),
 	combatLogEvents = {
-		SPELL_STOLEN = { check = checkPlayerInc, func = parseDispel, },
+		SPELL_STOLEN = { check = checkPlayerInc, },
 	},
 	tagTranslations = incDispelTagTranslations,
 	tagTranslationHelp = {
@@ -1272,7 +1076,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Skill interrupts"],
 	defaultTag = "([Skill]) " .. INTERRUPT .. "! {[ExtraSkill]}",
 	combatLogEvents = {
-		SPELL_INTERRUPT = { check = checkPlayerInc, func = parseInterrupt, },
+		SPELL_INTERRUPT = { check = checkPlayerInc, },
 	},
 	tagTranslations = incDispelTagTranslations,
 	tagTranslationsHelp = {
@@ -1294,7 +1098,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Environmental damage"],
 	defaultTag = "-[Amount] [Type]",
 	combatLogEvents = {
-		ENVIRONMENTAL_DAMAGE = { check = checkPlayerInc, func = parseEnvDamage, },
+		ENVIRONMENTAL_DAMAGE = { check = checkPlayerInc, },
 	},
 	tagTranslations = {
 		Amount = "amount",
@@ -1325,7 +1129,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Pet melee damage"],
 	defaultTag = PET .. " -[Amount]",
 	combatLogEvents = {
-		SWING_DAMAGE = { check = checkPetInc, func = parseSwingDamage, },
+		SWING_DAMAGE = { check = checkPetInc, },
 	},
 	tagTranslations = {
 		Name = retrieveSourceName,
@@ -1348,10 +1152,10 @@ Parrot:RegisterCombatEvent{
 	localName = L["Pet skill damage"],
 	defaultTag = PET .. " -[Amount]",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPetInc, func = parseSpellDamage, },
-		RANGE_DAMAGE = { check = checkPetInc, func = parseSpellDamage, },
-		DAMAGE_SPLIT = { check = checkPetInc, func = parseSpellDamage, },
-		DAMAGE_SHIELD = { check = checkPetInc, func = parseSpellDamage, },
+		SPELL_DAMAGE = { check = checkPetInc, },
+		RANGE_DAMAGE = { check = checkPetInc, },
+		DAMAGE_SPLIT = { check = checkPetInc, },
+		DAMAGE_SHIELD = { check = checkPetInc, },
 	},
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = petIncSkillDamageTagTranslationsHelp,
@@ -1369,7 +1173,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = PET .. " -[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_DAMAGE = { check = checkPetInc, func = parseSpellDamage, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPetInc, },
 	},
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = petIncSkillDamageTagTranslationsHelp,
@@ -1413,7 +1217,7 @@ for k,v in pairs(missTypes) do
 		localName = L[name],
 		defaultTag = tag,
 		combatLogEvents = {
-			SWING_MISSED = { check = check, func = parseMissInfo, },
+			SWING_MISSED = { check = check, },
 		},
 		tagTranslations = incMissTagTranslations,
 		tagTranslationsHelp = petIncMissTagTranslationsHelp,
@@ -1457,9 +1261,9 @@ for k,v in pairs(missTypes) do
 		localName = L[name],
 		defaultTag = tag,
 		combatLogEvents = {
-			SPELL_MISSED = { check = check, func = parseSpellMissInfo, },
-			SPELL_PERIODIC_MISSED = { check = check, func = parseSpellMissInfo, },
-			RANGE_MISSED = { check = check, func = parseSpellMissInfo, },
+			SPELL_MISSED = { check = check, },
+			SPELL_PERIODIC_MISSED = { check = check, },
+			RANGE_MISSED = { check = check, },
 		},
 		tagTranslations = incSpellMissTagTranslations,
 		tagTranslationsHelp = incPetSpellMissTagTranslationsHelp,
@@ -1480,7 +1284,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Pet heals"],
 	defaultTag = PET .. " +[Amount]",
 	combatLogEvents = {
-		SPELL_HEAL = { check = checkPetIncHeal, func = parseHeal, },
+		SPELL_HEAL = { check = checkPetIncHeal, },
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = petIncHealTagTranslationsHelp,
@@ -1498,7 +1302,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = PET .. " ([Skill] - [Name]) +[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPetIncHeal, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPetIncHeal, },
 	},
 	tagTranslations = incHealTagTranslations,
 	tagTranslationsHelp = petIncHealTagTranslationsHelp,
@@ -1519,7 +1323,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Pet skill interrupts"],
 	defaultTag = PET .. " ([Skill]) " .. INTERRUPT .. "! {[ExtraSkill]}",
 	combatLogEvents = {
-		SPELL_INTERRUPT = { check = checkPetInc, func = parseInterrupt, },
+		SPELL_INTERRUPT = { check = checkPetInc, },
 	},
 	tagTranslations = incDispelTagTranslations,
 	tagTranslationsHelp = {
@@ -1548,7 +1352,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Melee damage"],
 	defaultTag = "[Amount]",
 	combatLogEvents = {
-		SWING_DAMAGE = { check = checkPlayerOut, func = parseSwingDamage, },
+		SWING_DAMAGE = { check = checkPlayerOut, },
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
@@ -1571,7 +1375,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Reactive skills"],
 	defaultTag = "[Amount] ([Skill])",
 	combatLogEvents = {
-		DAMAGE_SHIELD = { check = checkPlayerOut, func = parseSpellDamage, },
+		DAMAGE_SHIELD = { check = checkPlayerOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
@@ -1588,9 +1392,9 @@ Parrot:RegisterCombatEvent{
 	localName = L["Skill damage"],
 	defaultTag = "[Amount] ([Skill])",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPlayerOut, func = parseSpellDamage,	},
-		RANGE_DAMAGE = { check = checkPlayerOut, func = parseSpellDamage, },
-		DAMAGE_SPLIT = { check = checkPlayerOut, func = parseSpellDamage, },
+		SPELL_DAMAGE = { check = checkPlayerOut,	},
+		RANGE_DAMAGE = { check = checkPlayerOut, },
+		DAMAGE_SPLIT = { check = checkPlayerOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
@@ -1608,7 +1412,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "[Amount] ([Skill])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_DAMAGE = { check = checkPlayerOut, func = parseSpellDamage, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
@@ -1624,7 +1428,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "[Amount] ([Skill])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_BUILDING_DAMAGE = { check = checkPlayerOut, func = parseSpellDamage, },
+		SPELL_BUILDING_DAMAGE = { check = checkPlayerOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
@@ -1651,7 +1455,7 @@ for k,v in pairs(missTypes) do
 		localName = L[name],
 		defaultTag = tag,
 		combatLogEvents = {
-			SWING_MISSED = { check = check, func = parseMissInfo, },
+			SWING_MISSED = { check = check, },
 		},
 		tagTranslations = outMissTagTranslations,
 		tagTranslationsHelp = outMissTagTranslationHelp,
@@ -1679,9 +1483,9 @@ for k,v in pairs(missTypes) do
 		localName = L[name],
 		defaultTag = tag,
 		combatLogEvents = {
-			SPELL_MISSED = { check = check, func = parseSpellMissInfo, },
-			SPELL_PERIODIC_MISSED = { check = check, func = parseSpellMissInfo, },
-			RANGE_MISSED = { check = check, func = parseSpellMissInfo, },
+			SPELL_MISSED = { check = check, },
+			SPELL_PERIODIC_MISSED = { check = check, },
+			RANGE_MISSED = { check = check, },
 		},
 		tagTranslations = outSpellMissTagTranslations,
 		tagTranslationsHelp = outSpellMissTagTranslationsHelp,
@@ -1702,7 +1506,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Heals"],
 	defaultTag = "+[Amount] ([Skill] - [Name])",
 	combatLogEvents = {
-		SPELL_HEAL = { check = checkPlayerOutHeal, func = parseHeal, },
+		SPELL_HEAL = { check = checkPlayerOutHeal, },
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = outHealTagTranslationsHelp,
@@ -1719,7 +1523,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Self heals"],
 	defaultTag = "+[Amount] ([Skill])",
 	combatLogEvents = {
-		SPELL_HEAL = { check = checkPlayerSelfHeal, func = parseHeal, },
+		SPELL_HEAL = { check = checkPlayerSelfHeal, },
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = outHealTagTranslationsHelp,
@@ -1738,7 +1542,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "+[Amount] ([Skill] - [Name])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPlayerOutHoT, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPlayerOutHoT, },
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = outHealTagTranslationsHelp,
@@ -1755,7 +1559,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "+[Amount] ([Skill])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPlayerSelfHoT, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPlayerSelfHoT, },
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = outHealTagTranslationsHelp,
@@ -1777,7 +1581,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Dispel"],
 	defaultTag = "[Skill] -[ExtraSkill]",
 	combatLogEvents = {
-		SPELL_DISPEL = { check = checkPlayerOut, func = parseDispel, },
+		SPELL_DISPEL = { check = checkPlayerOut, },
 	},
 	tagTranslations = outDispelTagTranslations,
 	tagTranslationHelp = {
@@ -1795,7 +1599,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Dispel fail"],
 	defaultTag = L["%s failed"]:format("[Skill]"),
 	combatLogEvents = {
-		SPELL_DISPEL_FAILED = { check = checkPlayerOut, func = parseDispel, },
+		SPELL_DISPEL_FAILED = { check = checkPlayerOut, },
 	},
 	tagTranslations = outDispelTagTranslations,
 	tagTranslationHelp = {
@@ -1814,7 +1618,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Spell steal"],
 	defaultTag = L["%s stole %s"]:format("[Skill]", "[ExtraSkill]"),
 	combatLogEvents = {
-		SPELL_STOLEN = { check = checkPlayerOut, func = parseDispel, },
+		SPELL_STOLEN = { check = checkPlayerOut, },
 	},
 	tagTranslations = outDispelTagTranslations,
 	tagTranslationHelp = {
@@ -1837,7 +1641,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Skill interrupts"],
 	defaultTag = "([Skill]) " .. INTERRUPT .. "! {[ExtraSkill]}",
 	combatLogEvents = {
-		SPELL_INTERRUPT = { check = checkPlayerOut, func = parseInterrupt, },
+		SPELL_INTERRUPT = { check = checkPlayerOut, },
 	},
 	tagTranslations = outDispelTagTranslations,
 	tagTranslationsHelp = {
@@ -1866,7 +1670,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Pet melee damage"],
 	defaultTag = PET .. " [Amount]",
 	combatLogEvents = {
-		SWING_DAMAGE = { check = checkPetOut, func = parseSwingDamage, },
+		SWING_DAMAGE = { check = checkPetOut, },
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
@@ -1888,10 +1692,10 @@ Parrot:RegisterCombatEvent{
 	localName = L["Pet skill damage"],
 	defaultTag = PET .. " [Amount] ([Skill])",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPetOut, func = parseSpellDamage, },
-		RANGE_DAMAGE = { check = checkPetOut, func = parseSpellDamage, },
-		DAMAGE_SPLIT = { check = checkPetOut, func = parseSpellDamage, },
-		DAMAGE_SHIELD = { check = checkPetOut, func = parseSpellDamage, },
+		SPELL_DAMAGE = { check = checkPetOut, },
+		RANGE_DAMAGE = { check = checkPetOut, },
+		DAMAGE_SPLIT = { check = checkPetOut, },
+		DAMAGE_SHIELD = { check = checkPetOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = petOutSkillDamageTagTranslationsHelp,
@@ -1910,7 +1714,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = PET .. " [Amount] ([Skill])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_DAMAGE = { check = checkPetOut, func = parseSpellDamage, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPetOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = petOutSkillDamageTagTranslationsHelp,
@@ -1926,7 +1730,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = PET .. " [Amount] ([Skill])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_BUILDING_DAMAGE = { check = checkPetOut, func = parseSpellDamage, },
+		SPELL_BUILDING_DAMAGE = { check = checkPetOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = petOutSkillDamageTagTranslationsHelp,
@@ -1955,7 +1759,7 @@ for k,v in pairs(missTypes) do
 		localName = L[name],
 		defaultTag = tag,
 		combatLogEvents = {
-			SWING_MISSED = { check = check, func = parseMissInfo, },
+			SWING_MISSED = { check = check, },
 		},
 		tagTranslations = outMissTagTranslations,
 		tagTranslationsHelp = {
@@ -1987,9 +1791,9 @@ for k,v in pairs(missTypes) do
 	localName = L[name],
 	defaultTag = tag,
 	combatLogEvents = {
-		SPELL_MISSED = { check = check, func = parseSpellMissInfo, },
-		SPELL_PERIODIC_MISSED = { check = check, func = parseSpellMissInfo, },
-		RANGE_MISSED = { check = check, func = parseSpellMissInfo, },
+		SPELL_MISSED = { check = check, },
+		SPELL_PERIODIC_MISSED = { check = check, },
+		RANGE_MISSED = { check = check, },
 	},
 	tagTranslations = outSpellMissTagTranslations,
 	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
@@ -2010,7 +1814,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Pet heals"],
 	defaultTag = PET .. " +[Amount]",
 	combatLogEvents = {
-		SPELL_HEAL = { check = checkPetOutHeal, func = parseHeal, },
+		SPELL_HEAL = { check = checkPetOutHeal, },
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = petOutHealTagTranslations,
@@ -2028,7 +1832,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = PET .. " ([Skill] - [Name]) +[Amount]",
 	canCrit = true, -- Pets cannot crit-heal (or can they?)
 	combatLogEvents = {
-		SPELL_PERIODIC_HEAL = { check = checkPetOutHeal, func = parseHoT, },
+		SPELL_PERIODIC_HEAL = { check = checkPetOutHeal, },
 	},
 	tagTranslations = outHealTagTranslations,
 	tagTranslationsHelp = petOutHealTagTranslations,
@@ -2049,7 +1853,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Pet skill interrupts"],
 	defaultTag = "([Skill]) " .. INTERRUPT .. "! {[ExtraSkill]}",
 	combatLogEvents = {
-		SPELL_INTERRUPT = { check = checkPetOut, func = parseInterrupt, },
+		SPELL_INTERRUPT = { check = checkPetOut, },
 	},
 	tagTranslations = outDispelTagTranslations,
 	tagTranslationsHelp = {
@@ -2095,10 +1899,10 @@ Parrot:RegisterCombatEvent{
 	localName = L["Power gain"],
 	defaultTag = "+[Amount] [Type]",
 	combatLogEvents = {
-		SPELL_ENERGIZE = { check = checkPlayerInc, func = parseEnergize, },
-		SPELL_PERIODIC_ENERGIZE = { check = checkPlayerInc, func = parseEnergize, },
-		SPELL_LEECH = { check = checkPlayerOut, func = parseEnergize, },
-		SPELL_PERIODIC_LEECH = { check = checkPlayerOut, func = parseEnergize, },
+		SPELL_ENERGIZE = { check = checkPlayerInc, },
+		SPELL_PERIODIC_ENERGIZE = { check = checkPlayerInc, },
+		SPELL_LEECH = { check = checkPlayerOut, },
+		SPELL_PERIODIC_LEECH = { check = checkPlayerOut, },
 	},
 	tagTranslations = {
 		Amount = "amount",
@@ -2146,9 +1950,9 @@ Parrot:RegisterCombatEvent{
 	localName = L["Power loss"],
 	defaultTag = "-[Amount] [Type]",
 	combatLogEvents = {
-		SPELL_DRAIN = { check = checkPlayerInc, func = parseEnergize, },
-		SPELL_LEECH = { check = checkPlayerInc, func = parseEnergize, },
-		SPELL_PERIODIC_LEECH = { check = checkPlayerInc, func = parseEnergize, },
+		SPELL_DRAIN = { check = checkPlayerInc, },
+		SPELL_LEECH = { check = checkPlayerInc, },
+		SPELL_PERIODIC_LEECH = { check = checkPlayerInc, },
 	},
 	tagTranslations = {
 		Amount = "amount",
@@ -2403,7 +2207,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Player killing blows"],
 	defaultTag = L["Killing Blow!"] .. " ([Name])",
 	combatLogEvents = {
-		PARTY_KILL = { check = checkKillPvP, func = parsePartyKill, },
+		PARTY_KILL = { check = checkKillPvP, },
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
@@ -2425,7 +2229,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["NPC killing blows"],
 	defaultTag = L["Killing Blow!"] .. " ([Name])",
 	combatLogEvents = {
-		PARTY_KILL = { check = checkKillNPC, func = parsePartyKill, },
+		PARTY_KILL = { check = checkKillNPC, },
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
@@ -2450,7 +2254,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Extra attacks"],
 	defaultTag = L["%s!"]:format("[Skill]"),
 	combatLogEvents = {
-		SPELL_EXTRA_ATTACKS = { check = checkPlayerOut, func = parseSpellDamage, },
+		SPELL_EXTRA_ATTACKS = { check = checkPlayerOut, },
 	},
 	tagTranslations = {
 		Skill = retrieveAbilityName,
