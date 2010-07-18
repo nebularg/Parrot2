@@ -2389,15 +2389,15 @@ local moreParams = {
 	SPELL_DRAIN = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
 	SPELL_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
 	SPELL_EXTRA_ATTACKS = { "spellId", "spellName", "spellSchool", "amount", },
-	SPELL_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", },
+	SPELL_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
 	SPELL_INTERRUPT = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", },
 	SPELL_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
 	SPELL_MISSED = { "spellId", "spellName", "spellSchool", "missType", "amountMissed", },
 	SPELL_PERIODIC_DAMAGE = { "spellId", "spellName", "spellSchool", "amount",
 		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
-		"glancing", "crushing", },
+		"glancing", "crushing", extra = { "if( info.spellID == 32409 and info.sourceName == nil ) then info.sourceName = info.recipientName end" } },
 	SPELL_PERIODIC_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
-	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", },
+	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
 	SPELL_PERIODIC_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
 	SPELL_PERIODIC_MISSED = { "spellId", "spellName", "spellSchool", "missType", "amountMissed", },
 	SPELL_STOLEN = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", "auraType", },
@@ -2427,17 +2427,23 @@ local legacyNames = {
 
 local function makeParseFunction(event)
 	local code = "function(info, ...) "
-	for k,v in ipairs(moreParams[event]) do
+	for _,v in ipairs(moreParams[event]) do
 		code = code .. ("info.%s, "):format(legacyNames[v] or v)
 	end
 
 	code = code .. "_ = ...;"
-	if event:match("_HEAL") then
-		code = code .. "info.realAmount = info.amount - info.overhealAmount;"
+
+	local extras = moreParams[event].extra
+	if extras then
+		for _,v in ipairs(extras) do
+			code = code .. v .. ";"
+		end
 	end
+
 	code = code .. "end"
 	local luaString = "return " .. code
 	local createFunc, err = loadstring(luaString)
+
 	if createFunc then
 		return createFunc()
 	else
