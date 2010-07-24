@@ -96,7 +96,7 @@ end
 
 local coloredDamageAmount = function(info)
 	local db = db1.profile.damageTypes
-	local damageType = SchoolParser[info.damageType]
+	local damageType = SchoolParser[info.damageType or 1]
 	if db.color and db[damageType] then
 		return "|cff" .. db[damageType] .. info.amount .. "|r"
 	else
