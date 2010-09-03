@@ -43,11 +43,7 @@ local dbDefaults = {
 		           -- with no dbver run through all update-functions
 		cancelUIDSoon = true,
 		filters = {},
-		sfilters = {
-			[GetSpellInfo(34460)] = { inc = true, out = true, }, -- Ferocious Inspiration
-			[GetSpellInfo(30809)] = { inc = true, out = true, }, -- Unleashed Rage
-			[GetSpellInfo(48090)] = { inc = true, out = true, }, -- Demonic Pact
-		},
+		sfilters = {},
 		throttles = {},
 		sthrottles = {
 			[GetSpellInfo(57669)] = { time = 5, }, -- Replenishment
