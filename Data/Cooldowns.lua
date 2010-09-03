@@ -1,3 +1,5 @@
+-- disabled for now
+-- GetSpellName is gone
 if true then return end
 
 local Parrot = Parrot
