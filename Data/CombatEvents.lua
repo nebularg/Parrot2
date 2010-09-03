@@ -396,7 +396,7 @@ local long_format_texts = {
 	[" (%d hits, %d crits)"] = L[" (%d hits, %d crits)"],
 	[" (%d hits)"] = L[" (%d hits)"],
 	[" (%d crits)"] = L[" (%d crits)"],
-	
+
 	[" (%d heal, %d crit)"] = L[" (%d heal, %d crit)"],
 	[" (%d heal, %d crits)"] = L[" (%d heal, %d crits)"],
 	[" (%d heals, %d crit)"] = L[" (%d heals, %d crit)"],
@@ -412,7 +412,7 @@ local short_format_texts = {
 	[" (%d hits, %d crits)"] = " (%dx, %d++)",
 	[" (%d hits)"] = " (%dx)",
 	[" (%d crits)"] = " (%d++)",
-	
+
 	[" (%d heal, %d crit)"] = " (%dx, %d++)",
 	[" (%d heal, %d crits)"] = " (%dx, %d++)",
 	[" (%d heals, %d crit)"] = " (%dx, %d++)",
@@ -2036,6 +2036,7 @@ Parrot:RegisterCombatEvent{
 --============================================================================]]
 
 -- Honor
+--[[ -- redo for cata
 local currentHonor = 0
 table.insert(onEnableFuncs, function() currentHonor = GetHonorCurrency() end)
 
@@ -2065,7 +2066,7 @@ Parrot:RegisterCombatEvent{
 	blizzardEvents = {
 		HONOR_CURRENCY_UPDATE = { parse = parseHonorUpdate, },
 	}
-}
+}--]]
 
 -- Reputation
 function parseRepGain(chatmsg)

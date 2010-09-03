@@ -65,85 +65,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ffff00",
 	},
-	[1003] = {
-		-- 27067 = Counterattack
-		name = L["%s!"]:format(GetSpellInfo(27067)),
-		icon = 27067,
-		class = "HUNTER",
-		conditions = {
-			["Incoming miss"] = { "PARRY",	},
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(27067),
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	},
-	[1004] = {
-		-- 25236 = Execute
-		name = L["%s!"]:format(GetSpellInfo(25236)),
-		icon = 25236,
-		class = "WARRIOR",
-		conditions = {
-			["Unit health"] = {
-				{
-					unit = "target",
-					amount = 0.20,
-					comparator = "<",
-					friendly = 0,
-				},
-			},
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(25236),
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	},
-	[1005] = {
-		-- Frostbite = 12497
-		name = L["%s!"]:format(GetSpellInfo(12497)),
-		icon = 12497,
-		class = "MAGE",
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(12497),
-					unit = "target",
-					auraType = "DEBUFF",
-				}
-			}
-		},
-		sticky = true,
-		color = "0000ff",
-	},
-	[1006] = {
-		-- 27180 - Hammer of Wrath
-		name = L["%s!"]:format(GetSpellInfo(27180)),
-		icon = 27180,
-		class = "PALADIN",
-		conditions = {
-			["Unit health"] = {
-				{
-					unit = "target",
-					amount = 0.20,
-					comparator = "<",
-					friendly = 0,
-				},
-			},
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(27180),
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	},
 	[1007] = {
 		-- Impact = 11103
 		name = L["%s!"]:format(GetSpellInfo(11103)),
@@ -253,45 +174,6 @@ local defaultTriggers = {
 		disabled = true,
 		color = "ff0000",
 	},
-	[1013] = {
-		-- Overpower = 11585
-		name = L["%s!"]:format(GetSpellInfo(11585)),
-		icon = 11585,
-		class = "WARRIOR",
-		conditions = {
-			["Outgoing miss"] = { "DODGE", },
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(11585),
-			},
-			["Warrior stance"] = {
-				[1] = "Battle Stance",
-			},
-		},
-		sticky = true,
-		color = "7f007f",
-	},
-	[1014] = {
-		-- Revenge = 30357
-		name = L["%s!"]:format(GetSpellInfo(30357)),
-		icon = 30357,
-		class = "WARRIOR",
-		conditions = {
-			["Incoming miss"] = { "BLOCK", "DODGE", "PARRY", },
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(30357),
-			},
-			["Warrior stance"] = {
-				"Defensive Stance",
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-		disabled = true,
-	},
 	[1015] = {
 		-- Riposte = 14251
 		name = L["%s!"]:format(GetSpellInfo(14251)),
@@ -310,13 +192,13 @@ local defaultTriggers = {
 	},--]]
 	[1016] = {
 		-- Maelstrom Weapon = 51532
-		name = L["%s!"]:format(GetSpellInfo(51532)),
+		name = L["%s!"]:format(GetSpellInfo(53817)),
 		icon = 51532,
 		class = "SHAMAN",
 		conditions = {
 			["Aura stack gain"] = {
 				{
-					spell = GetSpellInfo(51532),
+					spell = GetSpellInfo(53817),
 					unit = "player",
 					auraType = "BUFF",
 					amount = 5,
@@ -344,23 +226,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "0000ff",
 	},
-	[1018] = {
-		-- Killing Machine	= 51130
-		name = L["%s!"]:format(GetSpellInfo(51130)),
-		icon = 51130,
-		class = "DEATHKNIGHT",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(51130),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "0000ff",
-	},
 	[1019] = {
 		-- Rune Strike = 56816
 		name = L["%s!"]:format(GetSpellInfo(56816)),
@@ -372,23 +237,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "0000ff",
 		disabled = true,
-	},
-	[1020] = {
-		-- Lock and Load = 56344
-		name = L["%s!"]:format(GetSpellInfo(56344)),
-		icon = 56344,
-		class = "HUNTER",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(56344),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff0000",
 	},
 	[1021] = {
 		-- Brain Freeze = 57761
@@ -423,57 +271,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff0000",
-	},
-	[1023] = {
-		-- Eclipse
-		id = 28,
-		name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48518), GetSpellInfo(48465))), -- Starfire
-		icon = 48518,
-		class = "DRUID",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = 48518,
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffffff",
-	},
-	[1024] = {
-		name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48517), GetSpellInfo(48461))), -- Wrath
-		icon = 48517,
-		class = "DRUID",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = 48517,
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffffff",
-	},
-	[1025] = {
-		-- The Art of War
-		name = L["%s!"]:format(GetSpellInfo(53489)),
-		icon = 53489,
-		class = "PALADIN",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(53489),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffff00",
 	},
 	[1026] = {
 		name = L["%s!"]:format(GetSpellInfo(53351)),
@@ -512,41 +309,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "7f007f",
-	},
-	[1028] = { -- Serendipity
-		name = L["%s!"]:format(GetSpellInfo(63734)),
-		icon = 63734,
-		class = "PRIEST",
-		conditions = {
-			["Aura stack gain"] = {
-				[1] = {
-					["unit"] = "player",
-					["spell"] = GetSpellInfo(63734),
-					["auraType"] = "BUFF",
-					["amount"] = 3,
-				},
-			},
-		},
-		sticky = true,
-		disabled = true,
-		color = "00c0ff",
-	},
-	[1029] = {
-		-- 44401 = Missile Barrage
-		name = L["%s!"]:format(GetSpellInfo(44401)),
-		icon = 44401,
-		class = "MAGE",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					["unit"] = "player",
-					["spell"] = GetSpellInfo(44401),
-					["auraType"] = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "cc00cc",
 	},
 	[1030] = {
 		-- 63165 Decimation
@@ -1570,7 +1332,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function setUseFlash(info, value)
 		info.arg.useflash = value
 	end
-	
+
 
 	local function getClass(t, class)
 		local tmp = newSet((";"):split(t.arg.class))

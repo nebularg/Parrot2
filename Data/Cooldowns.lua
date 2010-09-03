@@ -1,3 +1,5 @@
+if true then return end
+
 local Parrot = Parrot
 
 local mod = Parrot:NewModule("Cooldowns", "AceEvent-3.0", "AceTimer-3.0")
@@ -109,20 +111,6 @@ function mod:ResetSpells()
 end
 
 local groups = {
-	[GetSpellInfo(14311)] = L["Frost traps"], -- "Freezing Trap"
-	[GetSpellInfo(13809)] = L["Frost traps"], -- "Frost Trap"
-
-	[GetSpellInfo(27023)] = L["Fire traps"], -- "Immolation Trap"
-	[GetSpellInfo(27025)] = L["Fire traps"], -- "Explosive Trap"
-	[GetSpellInfo(63668)] = L["Fire traps"], -- "Black Arrow"
-
-	[GetSpellInfo(25464)] = L["Shocks"], -- "Frost Shock"
-	[GetSpellInfo(25457)] = L["Shocks"], -- "Flame Shock"
-	[GetSpellInfo(25454)] = L["Shocks"], -- "Earth Shock"
-
-	[GetSpellInfo(53407)] = L["Judgements"], -- Judgement of Justice
-	[GetSpellInfo(20271)] = L["Judgements"], -- Judgement of Light
-	[GetSpellInfo(53408)] = L["Judgements"], -- Judgement of Wisdom
 }
 
 local itemCooldowns = {}
