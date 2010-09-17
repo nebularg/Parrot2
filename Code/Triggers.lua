@@ -1481,7 +1481,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		return not t.arg.disabled
 	end
 	local function setEnabled(t, value)
-		t.arg.disabled = not value or nil
+		t.arg.disabled = not value
 		rebuildEffectiveRegistry()
 	end
 	local function getScrollArea(t)
@@ -1570,7 +1570,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function setUseFlash(info, value)
 		info.arg.useflash = value
 	end
-	
+
 
 	local function getClass(t, class)
 		local tmp = newSet((";"):split(t.arg.class))
