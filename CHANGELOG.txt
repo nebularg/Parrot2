@@ -1,5 +1,6 @@
 v1.10.18:
 * slightly improve combatlog-parsing cpu-usage
+* make sure triggers that are default-disabled stay enabled
 
 v1.10.17:
 * remove the aura-polling-hack
