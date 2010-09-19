@@ -560,6 +560,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						name = L["Color by class"],
 						desc = L["Color unit names by class"],
 					},
+					shortenAmount = {
+						type = 'toggle',
+						name = L["Shorten Amounts"],
+						desc = L["Abbrivate number values displayed (26000 -> 26k)"],
+					},
 				},
 			},
 			totemEvents = {
