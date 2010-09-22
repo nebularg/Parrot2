@@ -1,7 +1,3 @@
--- disabled for now
--- GetSpellName is gone
-if true then return end
-
 local Parrot = Parrot
 
 local mod = Parrot:NewModule("Cooldowns", "AceEvent-3.0", "AceTimer-3.0")
@@ -30,7 +26,6 @@ end
 
 function mod:OnEnable()
 	self:ResetSpells()
-
 	self:ScheduleRepeatingTimer("OnUpdate", 0.1)
 	self:RegisterEvent("SPELLS_CHANGED", "ResetSpells")
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN")
@@ -105,15 +100,31 @@ function mod:ResetSpells()
 		local _, _, offset, num = GetSpellTabInfo(i)
 		for j = 1, num do
 			local id = offset+j
-			local spell = GetSpellName(id, "spell")
-			spellNameToTree[spell] = i
+			local spell = GetSpellBookItemName(id, "spell")
+			if GetSpellInfo(spell) then
+				spellNameToTree[spell] = i
+			end
 		end
 	end
 	mod:OnUpdate(true)
 end
 
-local groups = {
-}
+local groups = {}
+local function addSpellToGroup(spellId, group)
+	local name = GetSpellInfo(spellId)
+	if not name then
+		debug("could not find spell with id ", spellId)
+		return
+	end
+	groups[name] = group
+end
+
+addSpellToGroup(17364, L["Strikes"]) -- "Stormstrike"
+addSpellToGroup(73899, L["Strikes"]) -- "Primal Strike"
+
+addSpellToGroup(8042, L["Shocks"]) -- Earth Shock
+addSpellToGroup(8050, L["Shocks"]) -- Flame Shock
+addSpellToGroup(8056, L["Shocks"]) -- Frost Shock
 
 local itemCooldowns = {}
 local function checkItems()
