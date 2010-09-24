@@ -2035,20 +2035,10 @@ Parrot:RegisterCombatEvent{
 -- Point gains
 --============================================================================]]
 
--- Honor
---[[ -- redo for cata
-local currentHonor = 0
-table.insert(onEnableFuncs, function() currentHonor = GetHonorCurrency() end)
-
-local function parseHonorUpdate()
-	local newHonor = GetHonorCurrency()
-	if newHonor > currentHonor then
-		local info = newDict(
-			"amount", (newHonor - currentHonor)
-		)
-		currentHonor = newHonor
-		return info
-	end
+local function parseHonorUpdate(event, amount)
+  if event == "HONOR_GAINED" then
+    return newDict("amount", amount)
+  end
 end
 
 Parrot:RegisterCombatEvent{
@@ -2064,7 +2054,7 @@ Parrot:RegisterCombatEvent{
 	},
 	color = "7f7fb2", -- blue-gray
 	blizzardEvents = {
-		HONOR_CURRENCY_UPDATE = { parse = parseHonorUpdate, },
+		COMBAT_TEXT_UPDATE = { parse = parseHonorUpdate, },
 	}
 }--]]
 
