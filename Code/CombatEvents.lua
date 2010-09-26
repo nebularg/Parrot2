@@ -1782,13 +1782,13 @@ end
 
 local function shortenAmount(val)
 	if(val >= 1e7) then
-		return ("%dm"):format(round(val / 1e6))
+		return ("%sm"):format(round(val / 1e6))
 	elseif(val >= 1e6) then
-		return ("%sm"):format(round(val / 1e6), 1)
+		return ("%sm"):format(round(val / 1e6, 2))
 	elseif(val >= 1e5) then
-		return ("%dk"):format(round(val / 1e3))
-	elseif(val >= 1e3) then
-		return ("%dk"):format(round(val / 1e3), 1)
+		return ("%sk"):format(round(val / 1e3))
+	elseif(val >= 1e4) then
+		return ("%sk"):format(round(val / 1e3, 1))
 	else
 		return val
 	end
@@ -1798,6 +1798,8 @@ function Parrot_CombatEvents:ShortenAmount(val)
   if not self.db1.profile.shortenAmount then
     return val
   end
+  debug("pre: ", val / 1e3)
+  debug(val, " shortened: ", shortenAmount(val))
   return shortenAmount(val)
 end
 

@@ -96,20 +96,6 @@ end
 -- start helper-functions
 --============================================================================]]
 
-local function shortenAmount(val)
-	if(val >= 1e7) then
-		return ("%dm"):format(round(val / 1e6))
-	elseif(val >= 1e6) then
-		return ("%sm"):format(round(val / 1e6), 1)
-	elseif(val >= 1e5) then
-		return ("%dk"):format(round(val / 1e3))
-	elseif(val >= 1e3) then
-		return ("%dk"):format(round(val / 1e3), 1)
-	else
-		return val
-	end
-end
-
 local coloredDamageAmount = function(info)
 	local db = db1.profile.damageTypes
 	local damageType = SchoolParser[info.damageType or 1]
