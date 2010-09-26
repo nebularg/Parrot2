@@ -1775,6 +1775,11 @@ local function handler(literal)
 	end
 end
 
+local function round(num, idp)
+  local mult = 10^(idp or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
 local function shortenAmount(val)
 	if(val >= 1e7) then
 		return ("%dm"):format(round(val / 1e6))
