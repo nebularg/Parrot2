@@ -730,7 +730,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		'overheal', L["Overheals"],
 		'overkill', L["Overkills"]
 	)
-	
+
 	local handler__tagTranslations
 	local function handler(literal)
 		local inner = literal:sub(2, -2)
@@ -1775,82 +1775,68 @@ local function handler(literal)
 	end
 end
 
-local modifierTranslations = {
-	absorb = { Amount = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|cff" .. db.absorb.color .. info.absorbAmount .. "|r"
-		else
-			return info.absorbAmount
-		end
-	end },
-	block = { Amount = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|cff" .. db.block.color .. info.blockAmount .. "|r"
-		else
-			return info.blockAmount
-		end
-	end },
-	resist = { Amount = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|cff" .. db.resist.color .. info.resistAmount .. "|r"
-		else
-			return info.resistAmount
-		end
-	end },
-	vulnerable = { Amount = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|cff" .. db.vulnerable.color .. info.vulnerableAmount .. "|r"
-		else
-			return info.vulnerableAmount
-		end
-	end },
-	overheal = { Amount = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|cff" .. db.overheal.color .. info.overhealAmount .. "|r"
-		else
-			return info.overhealAmount
-		end
-	end },
-	--
-	overkill = { Amount = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|cff" .. db.overkill.color .. info.overkill .. "|r"
-		else
-			return info.overkillAmount
-		end
-	end },
-	--
-	glancing = { Text = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|r" .. info[1] .. "|cff" .. db.glancing.color
-		else
-			return info[1]
-		end
-	end },
-	crushing = { Text = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|r" .. info[1] .. "|cff" .. db.crushing.color
-		else
-			return info[1]
-		end
-	end },
-	crit = { Text = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		if db.color then
-			return "|r" .. info[1] .. "|cff" .. db.crit.color
-		else
-			return info[1]
-		end
-	end },
+local function shortenAmount(val)
+	if(val >= 1e7) then
+		return ("%dm"):format(round(val / 1e6))
+	elseif(val >= 1e6) then
+		return ("%sm"):format(round(val / 1e6), 1)
+	elseif(val >= 1e5) then
+		return ("%dk"):format(round(val / 1e3))
+	elseif(val >= 1e3) then
+		return ("%dk"):format(round(val / 1e3), 1)
+	else
+		return val
+	end
+end
+
+function Parrot_CombatEvents:ShortenAmount(val)
+  if not self.db1.profile.shortenAmount then
+    return val
+  end
+  return shortenAmount(val)
+end
+
+local modifiersWithAmount = {
+	absorb = "absorbAmount",
+	block = "blockAmount",
+	resist = "resistAmount",
+	vulnerable = "vulnerable",
+	overheal = "overhealAmount",
+	overkill = "overkill",
 }
+
+local modifiersWithFlag = {
+  "glancing",
+  "crushing",
+  "crit",
+}
+
+local modifierTranslations = {}
+
+for k,v in pairs(modifiersWithAmount) do
+	-- local valAmountKey = v .. "Amount"
+	modifierTranslations[k] = { Amount = function(info)
+		local db = Parrot_CombatEvents.db1.profile.modifier
+		local val = Parrot_CombatEvents:ShortenAmount(info[v])
+		if db.color then
+			return "|cff" .. db[k].color .. val .. "|r"
+		else
+			return val
+		end
+	end }
+end
+
+for _,v in ipairs(modifiersWithFlag) do
+  modifierTranslations[v] = { Text = function(info)
+    local db = Parrot_CombatEvents.db1.profile.modifier
+    if db.color then
+      return "|r" .. info[1] .. "|cff" .. db[v].color
+    else
+      return info[1]
+    end
+  end }
+end
+
 modifierTranslationHelps = {
 	absorb = { Amount = L["The amount of damage absorbed."] },
 	block = { Amount = L["The amount of damage blocked."] },

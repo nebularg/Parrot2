@@ -1,6 +1,8 @@
 local Parrot = Parrot
 local mod = Parrot:NewModule("CombatEventsData")
 
+local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
+
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 local deformat = LibStub("LibDeformat-3.0")
 local db1
@@ -111,14 +113,8 @@ end
 local coloredDamageAmount = function(info)
 	local db = db1.profile.damageTypes
 	local damageType = SchoolParser[info.damageType or 1]
-	local amount = info.amount
-	if db1.profile.shortenAmount then
-		debug("shortning")
-		amount = shortenAmount(amount)
-		debug(amount)
-	else
-		debug("not shortining")
-	end
+	local amount = Parrot_CombatEvents:ShortenAmount(info.amount)
+
 	if db.color and db[damageType] then
 		return "|cff" .. db[damageType] .. amount .. "|r"
 	else
@@ -418,7 +414,7 @@ local long_format_texts = {
 	[" (%d hits, %d crits)"] = L[" (%d hits, %d crits)"],
 	[" (%d hits)"] = L[" (%d hits)"],
 	[" (%d crits)"] = L[" (%d crits)"],
-	
+
 	[" (%d heal, %d crit)"] = L[" (%d heal, %d crit)"],
 	[" (%d heal, %d crits)"] = L[" (%d heal, %d crits)"],
 	[" (%d heals, %d crit)"] = L[" (%d heals, %d crit)"],
@@ -434,7 +430,7 @@ local short_format_texts = {
 	[" (%d hits, %d crits)"] = " (%dx, %d++)",
 	[" (%d hits)"] = " (%dx)",
 	[" (%d crits)"] = " (%d++)",
-	
+
 	[" (%d heal, %d crit)"] = " (%dx, %d++)",
 	[" (%d heal, %d crits)"] = " (%dx, %d++)",
 	[" (%d heals, %d crit)"] = " (%dx, %d++)",
