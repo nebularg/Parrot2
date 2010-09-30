@@ -57,6 +57,7 @@ local dbDefaults = {
 		hideFullOverheals = true,
 		hideSkillNames = false,
 		hideUnitNames = false,
+		shortenAmount = false,
 		classcolor = true,
 		totemDamage = true,
 		hideRealm = true,
