@@ -188,6 +188,7 @@ function mod:OnUpdate(force)
 				end
 			end
 			local name, texture = GetSpellTabInfo(tree)
+			debug(tree, " - ", name)
 			local info = newList(L["%s Tree"]:format(name), texture)
 			Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
 			info = del(info)
@@ -208,7 +209,8 @@ function mod:OnUpdate(force)
 	end
 	groupsToTrigger = del(groupsToTrigger)
 	for name in pairs(expired2) do
-		local info = newList(name, GetSpellTexture(name, "spell"))
+		local _, _, texture = GetSpellInfo(name)
+		local info = newList(name, texture)
 		Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
 		info = del(info)
 	end
