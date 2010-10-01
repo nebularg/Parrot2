@@ -108,22 +108,24 @@ function mod:ResetSpells()
 	mod:OnUpdate(true)
 end
 
-local groups = {
-	[GetSpellInfo(14311)] = L["Frost traps"], -- "Freezing Trap"
-	[GetSpellInfo(13809)] = L["Frost traps"], -- "Frost Trap"
+local groups = {}
 
-	[GetSpellInfo(27023)] = L["Fire traps"], -- "Immolation Trap"
-	[GetSpellInfo(27025)] = L["Fire traps"], -- "Explosive Trap"
-	[GetSpellInfo(63668)] = L["Fire traps"], -- "Black Arrow"
+local function addGroup(name, ...)
+	for i=1,select('#', ...) do
+		local id = select(i, ...)
+		local spell = GetSpellInfo(id)
+		if spell then
+			groups[spell] = name
+		else
+			debug("spell is missing: ", id)
+		end
+	end
+end
 
-	[GetSpellInfo(25464)] = L["Shocks"], -- "Frost Shock"
-	[GetSpellInfo(25457)] = L["Shocks"], -- "Flame Shock"
-	[GetSpellInfo(25454)] = L["Shocks"], -- "Earth Shock"
-
-	[GetSpellInfo(53407)] = L["Judgements"], -- Judgement of Justice
-	[GetSpellInfo(20271)] = L["Judgements"], -- Judgement of Light
-	[GetSpellInfo(53408)] = L["Judgements"], -- Judgement of Wisdom
-}
+addGroup(L["Frost traps"], 14311, 13809) -- "Freezing Trap", "Frost Trap"
+addGroup(L["Fire traps"], 27023, 27025, 63668) -- "Immolation Trap", "Explosive Trap", "Black Arrow"
+addGroup(L["Shocks"], 25464, 25457, 25454) -- "Frost Shock", "Flame Shock", "Earth Shock"
+addGroup(L["Judgements"], 53407, 20271, 53408) -- Judgement of Justice, Judgement of Light, Judgement of Wisdom
 
 local itemCooldowns = {}
 local function checkItems()
