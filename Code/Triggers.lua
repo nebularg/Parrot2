@@ -31,7 +31,7 @@ local SharedMedia = LibStub("LibSharedMedia-3.0")
 --]]
 
 local defaultTriggers = {
-	[1001] = {
+	[1001] = [[{
 		-- 34939 = Backlash
 		name = L["%s!"]:format(GetSpellInfo(34939)),
 		icon = 34939,
@@ -47,8 +47,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff00ff",
-	},
-	[1002] = {
+	}]],
+	[1002] = [[{
 		-- 16246 = Clearcasting (Priest) TODO
 		name = L["%s!"]:format(GetSpellInfo(16246)),
 		icon = 16246,
@@ -64,8 +64,87 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ffff00",
-	},
-	[1007] = {
+	}]],
+	[1003] = [[{
+		-- 27067 = Counterattack
+		name = L["%s!"]:format(GetSpellInfo(27067)),
+		icon = 27067,
+		class = "HUNTER",
+		conditions = {
+			["Incoming miss"] = { "PARRY",	},
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(27067),
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	}]],
+	[1004] = [[{
+		-- 25236 = Execute
+		name = L["%s!"]:format(GetSpellInfo(25236)),
+		icon = 25236,
+		class = "WARRIOR",
+		conditions = {
+			["Unit health"] = {
+				{
+					unit = "target",
+					amount = 0.20,
+					comparator = "<",
+					friendly = 0,
+				},
+			},
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(25236),
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	}]],
+	[1005] = [[{
+		-- Frostbite = 12497
+		name = L["%s!"]:format(GetSpellInfo(12497)),
+		icon = 12497,
+		class = "MAGE",
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(12497),
+					unit = "target",
+					auraType = "DEBUFF",
+				}
+			}
+		},
+		sticky = true,
+		color = "0000ff",
+	}]],
+	[1006] = [[{
+		-- 27180 - Hammer of Wrath
+		name = L["%s!"]:format(GetSpellInfo(27180)),
+		icon = 27180,
+		class = "PALADIN",
+		conditions = {
+			["Unit health"] = {
+				{
+					unit = "target",
+					amount = 0.20,
+					comparator = "<",
+					friendly = 0,
+				},
+			},
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(27180),
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	}]],
+	[1007] = [[{
 		-- Impact = 11103
 		name = L["%s!"]:format(GetSpellInfo(11103)),
 		icon = 11103,
@@ -81,8 +160,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff0000",
-	},
-	[1008] = {
+	}]],
+	[1008] = [[{
 		name = L["Low Health!"],
 		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT",
 		conditions = {
@@ -100,8 +179,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff7f7f",
-	},
-	[1009] = {
+	}]],
+	[1009] = [[{
 		name = L["Low Mana!"],
 		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
 		conditions = {
@@ -120,8 +199,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "7f7fff",
-	},
-	[1010] = {
+	}]],
+	[1010] = [[{
 		name = L["Low Pet Health!"],
 		class = "HUNTER;MAGE;WARLOCK;DEATHKNIGHT",
 		conditions = {
@@ -138,8 +217,8 @@ local defaultTriggers = {
 			["Trigger cooldown"] = 3,
 		},
 		color = "ff7f7f",
-	},
-	[1011] = {
+	}]],
+	[1011] = [[{
 		-- 18095 = Nightfall
 		name = L["%s!"]:format(GetSpellInfo(18095)),
 		icon = 18095,
@@ -155,8 +234,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "7f007f",
-	},
-	[1012] = {
+	}]],
+	[1012] = [[{
 		-- 33154 Surge of Light
 		name = L["%s!"]:format(GetSpellInfo(33154)),
 		icon = 25364,
@@ -173,8 +252,47 @@ local defaultTriggers = {
 		sticky = true,
 		disabled = true,
 		color = "ff0000",
-	},
-	[1015] = {
+	}]],
+	[1013] = [[{
+		-- Overpower = 11585
+		name = L["%s!"]:format(GetSpellInfo(11585)),
+		icon = 11585,
+		class = "WARRIOR",
+		conditions = {
+			["Outgoing miss"] = { "DODGE", },
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(11585),
+			},
+			["Warrior stance"] = {
+				[1] = "Battle Stance",
+			},
+		},
+		sticky = true,
+		color = "7f007f",
+	}]],
+	[1014] = [[{
+		-- Revenge = 30357
+		name = L["%s!"]:format(GetSpellInfo(30357)),
+		icon = 30357,
+		class = "WARRIOR",
+		conditions = {
+			["Incoming miss"] = { "BLOCK", "DODGE", "PARRY", },
+		},
+		secondaryConditions = {
+			["Spell ready"] = {
+				[1] = GetSpellInfo(30357),
+			},
+			["Warrior stance"] = {
+				"Defensive Stance",
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+		disabled = true,
+	}]],
+	[1015] = [[{
 		-- Riposte = 14251
 		name = L["%s!"]:format(GetSpellInfo(14251)),
 		icon = 14251,
@@ -189,8 +307,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ffff00",
-	},--]]
-	[1016] = {
+	}]],--]]
+	[1016] = [[{
 		-- Maelstrom Weapon = 51532
 		name = L["%s!"]:format(GetSpellInfo(53817)),
 		icon = 51532,
@@ -207,9 +325,9 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "0000ff",
-	},
+	}]],
 	-- Deathknight-triggers by waallen
-	[1017] = {
+	[1017] = [[{
 		-- Freezing Fog = 59052
 		name = L["%s!"]:format(GetSpellInfo(59052)),
 		icon = 59052,
@@ -225,8 +343,25 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "0000ff",
-	},
-	[1019] = {
+	}]],
+	[1018] = [[{
+		-- Killing Machine	= 51130
+		name = L["%s!"]:format(GetSpellInfo(51130)),
+		icon = 51130,
+		class = "DEATHKNIGHT",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(51130),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "0000ff",
+	}]],
+	[1019] = [[{
 		-- Rune Strike = 56816
 		name = L["%s!"]:format(GetSpellInfo(56816)),
 		icon = 56816,
@@ -237,8 +372,25 @@ local defaultTriggers = {
 		sticky = true,
 		color = "0000ff",
 		disabled = true,
-	},
-	[1021] = {
+	}]],
+	[1020] = [[{
+		-- Lock and Load = 56344
+		name = L["%s!"]:format(GetSpellInfo(56344)),
+		icon = 56344,
+		class = "HUNTER",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(56344),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff0000",
+	}]],
+	[1021] = [[{
 		-- Brain Freeze = 57761
 		name = L["%s!"]:format(GetSpellInfo(44549)),
 		icon = 57761,
@@ -254,8 +406,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "0000ff",
-	},
-	[1022] = {
+	}]],
+	[1022] = [[{
 		-- Sudden Death 52437
 		name = L["%s!"]:format(GetSpellInfo(52437)),
 		icon = 52437,
@@ -271,8 +423,59 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff0000",
-	},
-	[1026] = {
+	}]],
+	[1023] = [[{
+		-- Eclipse
+		id = 28,
+		name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48518), GetSpellInfo(48465))), -- Starfire
+		icon = 48518,
+		class = "DRUID",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = 48518,
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffffff",
+	}]],
+	[1024] = [[{
+		name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48517), GetSpellInfo(48461))), -- Wrath
+		icon = 48517,
+		class = "DRUID",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = 48517,
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffffff",
+	}]],
+	[1025] = [[{
+		-- The Art of War
+		name = L["%s!"]:format(GetSpellInfo(53489)),
+		icon = 53489,
+		class = "PALADIN",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					spell = GetSpellInfo(53489),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	}]],
+	[1026] = [[{
 		name = L["%s!"]:format(GetSpellInfo(53351)),
 		icon = 53351,
 		class = "HUNTER",
@@ -293,8 +496,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff0000",
-	},
-	[1027] = { -- Molten Core
+	}]],
+	[1027] = [[{ -- Molten Core
 		name = L["%s!"]:format(GetSpellInfo(71165)),
 		icon = 71165,
 		class = "WARLOCK",
@@ -309,8 +512,43 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "7f007f",
-	},
-	[1030] = {
+	}]],
+	[1028] = [[{ -- Serendipity
+		name = L["%s!"]:format(GetSpellInfo(63734)),
+		icon = 63734,
+		class = "PRIEST",
+		conditions = {
+			["Aura stack gain"] = {
+				[1] = {
+					["unit"] = "player",
+					["spell"] = GetSpellInfo(63734),
+					["auraType"] = "BUFF",
+					["amount"] = 3,
+				},
+			},
+		},
+		sticky = true,
+		disabled = true,
+		color = "00c0ff",
+	}]],
+	[1029] = [[{
+		-- 44401 = Missile Barrage
+		name = L["%s!"]:format(GetSpellInfo(44401)),
+		icon = 44401,
+		class = "MAGE",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					["unit"] = "player",
+					["spell"] = GetSpellInfo(44401),
+					["auraType"] = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "cc00cc",
+	}]],
+	[1030] = [[{
 		-- 63165 Decimation
 		name = L["%s!"]:format(GetSpellInfo(63165)),
 		icon = 63165,
@@ -326,8 +564,8 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ffbe00",
-	},
-	[1031] = {
+	}]],
+	[1031] = [[{
 		-- 44544 = Fingers of frost
 		name = L["%s!"]:format(GetSpellInfo(44544)),
 		icon = 44544,
@@ -343,15 +581,39 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "005ba9",
-	},
+	}]],
 }
 
 local dbDefaults = {
 	profile = {
-		triggers2 = defaultTriggers,
+		triggers2 = {},
 		dbver = 0,
 	},
 }
+
+local ScriptEnv = setmetatable({}, {__index = _G})
+ScriptEnv.L = L
+
+local function checkCodeForMissingSpellIds(code)
+	for x in code:gmatch("GetSpellInfo%((%d+)%)") do
+		if not GetSpellInfo(x) then
+			debug("cannot create trigger because spell with ID ", x, " is missing")
+			return false
+		end
+	end
+	return true
+end
+
+local function makeDefaultTrigger(index, code)
+	if not checkCodeForMissingSpellIds(code) then return end
+	local func = loadstring(("return %s"):format(code))
+	setfenv(func, ScriptEnv)
+	dbDefaults.profile.triggers2[index] = func()
+end
+
+for k,v in pairs(defaultTriggers) do
+	makeDefaultTrigger(k,v)
+end
 
 local effectiveRegistry = {}
 local periodicCheckTimer
@@ -1243,7 +1505,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		return not t.arg.disabled
 	end
 	local function setEnabled(t, value)
-		t.arg.disabled = not value or nil
+		t.arg.disabled = not value
 		rebuildEffectiveRegistry()
 	end
 	local function getScrollArea(t)

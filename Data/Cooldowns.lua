@@ -110,21 +110,23 @@ function mod:ResetSpells()
 end
 
 local groups = {}
-local function addSpellToGroup(spellId, group)
-	local name = GetSpellInfo(spellId)
-	if not name then
-		debug("could not find spell with id ", spellId)
-		return
+local function addGroup(name, ...)
+	for i=1,select('#', ...) do
+		local id = select(i, ...)
+		local spell = GetSpellInfo(id)
+		if spell then
+			groups[spell] = name
+		else
+			debug("spell is missing: ", id)
+		end
 	end
-	groups[name] = group
 end
 
-addSpellToGroup(17364, L["Strikes"]) -- "Stormstrike"
-addSpellToGroup(73899, L["Strikes"]) -- "Primal Strike"
-
-addSpellToGroup(8042, L["Shocks"]) -- Earth Shock
-addSpellToGroup(8050, L["Shocks"]) -- Flame Shock
-addSpellToGroup(8056, L["Shocks"]) -- Frost Shock
+addGroup(L["Frost traps"], 14311, 13809) -- "Freezing Trap", "Frost Trap"
+addGroup(L["Fire traps"], 27023, 27025, 63668) -- "Immolation Trap", "Explosive Trap", "Black Arrow"
+addGroup(L["Shocks"], 8042, 8050, 8056) -- Earth Shock, Flame Shock, Frost Shock
+addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
+addGroup(L["Judgements"], 53407, 20271, 53408) -- Judgement of Justice, Judgement of Light, Judgement of Wisdom
 
 local itemCooldowns = {}
 local function checkItems()

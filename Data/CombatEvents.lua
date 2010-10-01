@@ -1,6 +1,8 @@
 local Parrot = Parrot
 local mod = Parrot:NewModule("CombatEventsData")
 
+local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
+
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 local deformat = LibStub("LibDeformat-3.0")
 local db1
@@ -97,10 +99,12 @@ end
 local coloredDamageAmount = function(info)
 	local db = db1.profile.damageTypes
 	local damageType = SchoolParser[info.damageType or 1]
+	local amount = Parrot_CombatEvents:ShortenAmount(info.amount)
+
 	if db.color and db[damageType] then
-		return "|cff" .. db[damageType] .. info.amount .. "|r"
+		return "|cff" .. db[damageType] .. amount .. "|r"
 	else
-		return info.amount
+		return amount
 	end
 end
 
