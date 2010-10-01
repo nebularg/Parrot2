@@ -29,19 +29,8 @@ local PET_FLAGS = bit.bor(
 	AFFILIATION_MINE
 )
 
-local function parseAura(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-
-	local info = newList()
-	info.spellID = spellId
-	info.abilityName = spellName
-	info.sourceID = srcGUID
-	info.sourceName = srcName
-	info.recipientID = dstGUID
-	info.recipientName = dstName
-	info.icon = select(3, GetSpellInfo(spellId))
-	info.amount = amount
-	return info
-
+local function getIcon(info)
+	return select(3, GetSpellInfo(info.spellID))
 end
 
 local function retrieveDestName(info)
@@ -68,12 +57,11 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("player")
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the buff gained."],
@@ -92,12 +80,11 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the debuff gained."],
@@ -117,12 +104,11 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("player")
 				end,
-			func = parseAura,
 		}
 	},
 	tagTranslations = {
 		Name = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 		Amount = "amount",
 	},
 	tagTranslationsHelp = {
@@ -143,12 +129,11 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
 				end,
-			func = parseAura,
 		}
 	},
 	tagTranslations = {
 		Name = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 		Amount = "amount",
 	},
 	tagTranslationsHelp = {
@@ -169,12 +154,11 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("player")
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the buff lost."],
@@ -193,12 +177,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
 				end,
-			func = parseAura,
+
 		},
 	},
 	tagTranslations = {
 		Name = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the debuff lost."],
@@ -220,12 +204,11 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("target")
 				end,
-			func = parseAura,
 		}
 	},
 	tagTranslations = {
 		Buffname = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 		Unitname = "recipientName",
 	},
 	tagTranslationsHelp = {
@@ -247,13 +230,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
 					return auraType == "BUFF" and dstGUID == UnitGUID("target")
 				end,
-			func = parseAura,
 		}
 	},
 
 	tagTranslations = {
 		Buffname = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 		Amount = "amount",
 		Unitname = "dstName",
 	},
@@ -281,13 +263,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
 					return auraType == "BUFF" and checkFlags(dstFlags, PET_FLAGS)
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
 		Spell = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the pet that gained the buff"],
@@ -308,13 +289,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
 					return auraType == "DEBUFF" and checkFlags(dstFlags, PET_FLAGS)
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
 		Spell = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the pet that gained the debuff"],
@@ -335,13 +315,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
 					return auraType == "BUFF" and checkFlags(dstFlags, PET_FLAGS)
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
 		Spell = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the pet that lost the buff"],
@@ -363,13 +342,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
 					return auraType == "DEBUFF" and checkFlags(dstFlags, PET_FLAGS)
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
 		Spell = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the pet that lost the debuff"],
@@ -394,13 +372,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
 					return auraType == "BUFF" and checkFlags(dstFlags, HOSTILE)
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
 		Spell = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The enemy that gained the buff"],
@@ -421,13 +398,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
 					return auraType == "DEBUFF" and checkFlags(dstFlags, HOSTILE)
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
 		Spell = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The enemy that gained the debuff"],
@@ -448,13 +424,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
 					return auraType == "BUFF" and checkFlags(dstFlags, HOSTILE)
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
 		Spell = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The enemy that lost the buff"],
@@ -476,13 +451,12 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
 					return auraType == "DEBUFF" and checkFlags(dstFlags, HOSTILE)
 				end,
-			func = parseAura,
 		},
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
 		Spell = "abilityName",
-		Icon = "icon",
+		Icon = getIcon,
 	},
 	tagTranslationsHelp = {
 		Name = L["The enemy that lost the debuff"],
