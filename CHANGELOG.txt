@@ -1,3 +1,10 @@
+v1.10.19:
+* fix icons showing in aura- and cooldowns-notifications
+* prevent parrot from completely failing when spellIds are missing
+    (this means, that parrot will kind of work when the patch hits US.
+    The real 4.0-update will be pushed on when it hits EU)
+* add option to shorten amounts and modifiers (like 26k)
+
 v1.10.18:
 * slightly improve combatlog-parsing cpu-usage
 * make sure triggers that are default-disabled stay enabled
