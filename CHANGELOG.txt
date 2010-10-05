@@ -4,6 +4,7 @@ v1.10.19:
     (this means, that parrot will kind of work when the patch hits US.
     The real 4.0-update will be pushed on when it hits EU)
 * add option to shorten amounts and modifiers (like 26k)
+* fix behaviour of the hide-realm-option
 
 v1.10.18:
 * slightly improve combatlog-parsing cpu-usage
