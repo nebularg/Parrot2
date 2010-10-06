@@ -1,3 +1,6 @@
+v1.10.19a:
+* fix lua-error when casting Shadow Word: Death
+
 v1.10.19:
 * fix icons showing in aura- and cooldowns-notifications
 * prevent parrot from completely failing when spellIds are missing

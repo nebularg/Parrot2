@@ -2390,7 +2390,7 @@ local moreParams = {
 	SPELL_MISSED = { "spellId", "spellName", "spellSchool", "missType", "amountMissed", },
 	SPELL_PERIODIC_DAMAGE = { "spellId", "spellName", "spellSchool", "amount",
 		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
-		"glancing", "crushing", extra = { "if( info.spellID == 32409 and info.sourceName == nil ) then info.sourceName = info.recipientName end" } },
+		"glancing", "crushing", extra = { "if( info.spellID == 32409 and info.sourceName == nil ) then info.sourceName = info.recipientName; info.sourceID = info.recipientID end" } },
 	SPELL_PERIODIC_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
 	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
 	SPELL_PERIODIC_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
