@@ -139,7 +139,7 @@ local function retrieveSourceName(info)
 		return "__NONAME__"
 	end
 	local result = info.sourceName
-	if Parrot_CombatEvents.db1.profile.hideRealm and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
+	if Parrot_CombatEvents.db1.profile.hideRealm and (not info.sourceID or GetPlayerInfoByGUID(info.sourceID)) then -- it's a player
 		result = result:gsub("-.*", "")
 	end
 	if UnitIsPlayer(result) and db1.profile.classcolor then
@@ -155,7 +155,7 @@ local function retrieveDestName(info)
 		return "__NONAME__"
 	end
 	local result = info.recipientName
-	if Parrot_CombatEvents.db1.profile.hideRealm and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
+	if Parrot_CombatEvents.db1.profile.hideRealm and (not info.sourceID or GetPlayerInfoByGUID(info.recipientID)) then -- it's a player
 		result = result:gsub("-.*", "")
 	end
 	if UnitIsPlayer(result) and db1.profile.classcolor then
