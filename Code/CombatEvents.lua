@@ -45,9 +45,7 @@ local dbDefaults = {
 		filters = {},
 		sfilters = {},
 		throttles = {},
-		sthrottles = {
-			[GetSpellInfo(57669)] = { time = 5, }, -- Replenishment
-		},
+		sthrottles = {},
 		useShortThrottleText = true,
 		abbreviateStyle = "abbreviate",
 		abbreviateLength = 30,
@@ -124,6 +122,15 @@ local dbDefaults = {
 		},
 	},
 }
+
+local function addDefaultWithSpellIdIndex(tab, spellId, value)
+	local spell = GetSpellInfo(spellId)
+	if not spell then return end
+	tab[spell] = value
+end
+
+addDefaultWithSpellIdIndex(dbDefaults.profile.sthrottles, 57669, { time = 5, }) -- Replenishment
+
 local db
 --[[
 -- to upgrade the DB from previous.
@@ -230,6 +237,7 @@ function Parrot_CombatEvents:OnEnable(first)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "check_raid_instance")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD", "check_raid_instance")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "check_raid_instance")
+	self:RegisterEvent("COMBAT_TEXT_UPDATE")
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end

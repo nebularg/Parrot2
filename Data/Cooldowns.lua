@@ -26,7 +26,6 @@ end
 
 function mod:OnEnable()
 	self:ResetSpells()
-
 	self:ScheduleRepeatingTimer("OnUpdate", 0.1)
 	self:RegisterEvent("SPELLS_CHANGED", "ResetSpells")
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN")
@@ -101,15 +100,16 @@ function mod:ResetSpells()
 		local _, _, offset, num = GetSpellTabInfo(i)
 		for j = 1, num do
 			local id = offset+j
-			local spell = GetSpellName(id, "spell")
-			spellNameToTree[spell] = i
+			local spell = GetSpellBookItemName(id, "spell")
+			if GetSpellInfo(spell) then
+				spellNameToTree[spell] = i
+			end
 		end
 	end
 	mod:OnUpdate(true)
 end
 
 local groups = {}
-
 local function addGroup(name, ...)
 	for i=1,select('#', ...) do
 		local id = select(i, ...)
@@ -124,7 +124,8 @@ end
 
 addGroup(L["Frost traps"], 14311, 13809) -- "Freezing Trap", "Frost Trap"
 addGroup(L["Fire traps"], 27023, 27025, 63668) -- "Immolation Trap", "Explosive Trap", "Black Arrow"
-addGroup(L["Shocks"], 25464, 25457, 25454) -- "Frost Shock", "Flame Shock", "Earth Shock"
+addGroup(L["Shocks"], 8042, 8050, 8056) -- Earth Shock, Flame Shock, Frost Shock
+addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
 addGroup(L["Judgements"], 53407, 20271, 53408) -- Judgement of Justice, Judgement of Light, Judgement of Wisdom
 
 local itemCooldowns = {}

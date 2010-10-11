@@ -310,13 +310,13 @@ local defaultTriggers = {
 	}]],--]]
 	[1016] = [[{
 		-- Maelstrom Weapon = 51532
-		name = L["%s!"]:format(GetSpellInfo(51532)),
+		name = L["%s!"]:format(GetSpellInfo(53817)),
 		icon = 51532,
 		class = "SHAMAN",
 		conditions = {
 			["Aura stack gain"] = {
 				{
-					spell = GetSpellInfo(51532),
+					spell = GetSpellInfo(53817),
 					unit = "player",
 					auraType = "BUFF",
 					amount = 5,
