@@ -1,3 +1,6 @@
+v1.10.20:
+* make compatible with 4.0 (port cooldown-module and honor-notifications)
+
 v1.10.19a:
 * fix lua-error when casting Shadow Word: Death
 
