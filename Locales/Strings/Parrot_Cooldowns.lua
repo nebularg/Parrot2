@@ -14,6 +14,7 @@ L["Shocks"] = true
 L["Skill cooldown finish"] = true
 L["Spell ready"] = true
 L["Spell usable"] = true
+L["Strikes"] = true
 L["The name of the spell or ability which is ready to be used."] = true
 L["Threshold"] = true
 L["[[Spell] ready!]"] = true
