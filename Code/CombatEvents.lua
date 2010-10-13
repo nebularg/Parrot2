@@ -237,7 +237,6 @@ function Parrot_CombatEvents:OnEnable(first)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "check_raid_instance")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD", "check_raid_instance")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "check_raid_instance")
-	self:RegisterEvent("COMBAT_TEXT_UPDATE")
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
