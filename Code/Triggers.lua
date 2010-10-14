@@ -706,19 +706,30 @@ local dbDefaults = {
 
 local ScriptEnv = setmetatable({}, {__index = _G})
 ScriptEnv.L = L
+local safeGetSpellInfo = function(id, ...)
+	if _G.GetSpellInfo(id, ...) then
+		return _G.GetSpellInfo(id, ...)
+	else
+		return "_Unknown SpellId " .. id
+	end
+end
 
-local function checkCodeForMissingSpellIds(code)
+local function hasMissingSpellIds(code)
 	for x in code:gmatch("GetSpellInfo%((%d+)%)") do
 		if not GetSpellInfo(x) then
 			debug("cannot create trigger because spell with ID ", x, " is missing")
-			return false
+			return true
 		end
 	end
-	return true
+	return false
 end
 
 local function makeDefaultTrigger(index, code)
-	if not checkCodeForMissingSpellIds(code) then return end
+	if hasMissingSpellIds(code) then
+		ScriptEnv.GetSpellInfo = safeGetSpellInfo
+	else
+		ScriptEnv.GetSpellInfo = _G.GetSpellInfo
+	end
 	local func = loadstring(("return %s"):format(code))
 	setfenv(func, ScriptEnv)
 	dbDefaults.profile.triggers2[index] = func()
