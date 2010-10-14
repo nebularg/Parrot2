@@ -582,6 +582,22 @@ local defaultTriggers = {
 		sticky = true,
 		color = "005ba9",
 	}]],
+	[1032] = [[{
+		name = L["%s!"]:format(GetSpellInfo(50782)),
+		icon = 46916,
+		class = "WARRIOR",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					unit = "player",
+					spell = GetSpellInfo(46916),
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff0000",
+	}]],
 }
 
 local dbDefaults = {
