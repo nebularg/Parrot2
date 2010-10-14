@@ -1,3 +1,6 @@
+v1.10.20a:
+* fix possible nil-errors in Triggers
+
 v1.10.20:
 * make compatible with 4.0 (port cooldown-module and honor-notifications)
 
