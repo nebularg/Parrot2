@@ -374,14 +374,14 @@ local defaultTriggers = {
 		disabled = true,
 	}]],
 	[1020] = [[{
-		-- Lock and Load = 56344
-		name = L["%s!"]:format(GetSpellInfo(56344)),
-		icon = 56344,
+		-- Lock and Load = 56453
+		name = L["%s!"]:format(GetSpellInfo(56453)),
+		icon = 56453,
 		class = "HUNTER",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
-					spell = GetSpellInfo(56344),
+					spell = GetSpellInfo(56453),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -630,6 +630,70 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "00ff00",
+	}]],
+	[1035] = [[{
+		name = L["%s!"]:format(GetSpellInfo(82692)),
+		icon = 82692,
+		class = "HUNTER",
+		conditions = {
+			["Aura stack gain"] = {
+				[1] = {
+					unit = "pet",
+					spell = GetSpellInfo(19615),
+					auraType = "BUFF",
+					amount = 5,
+				},
+			},
+		},
+		sticky = true,
+		color = "ff7563",
+	}]],
+	--[==[ [1036] = [[{
+		name = L["%s!"]:format(GetSpellInfo(94006)),
+		icon = 94006,
+		class = "HUNTER",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					unit = "player",
+					spell = GetSpellInfo(94006),
+					auraType = "BUFF",
+				},
+			},
+			["Spell ready"] = {
+				GetSpellInfo(34026),
+			},
+		},
+		secondaryConditions = {
+			["Buff active"] = {
+				[1] = {
+					spell = GetSpellInfo(94006),
+					unit = "player",
+				}
+			},
+			["Spell ready"] = {
+				GetSpellInfo(34026),
+			}
+		}
+		sticky = true,
+		color = "ffab96",
+	}]],--]==]
+	[1037] = [[{
+		name = L["%s!"]:format(GetSpellInfo(82925)),
+		icon = 82925,
+		class = "HUNTER",
+		conditions = {
+			["Aura stack gain"] = {
+				{
+					spell = GetSpellInfo(82925),
+					unit = "player",
+					auraType = "BUFF",
+					amount = 5,
+				},
+			},
+		},
+		sticky = true,
+		color = "00cc00",
 	}]],
 }
 
