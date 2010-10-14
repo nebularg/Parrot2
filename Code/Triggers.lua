@@ -598,6 +598,39 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff0000",
 	}]],
+	[1033] = [[{
+		name = L["%s!"]:format(GetSpellInfo(81141)),
+		icon = 81141,
+		class = "DEATHKNIGHT",
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					unit = "player",
+					spell = GetSpellInfo(81141),
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff0000",
+	}]],
+	[1034] = [[{
+		name = L["%s!"]:format(GetSpellInfo(91342)),
+		icon = 91342,
+		class = "DEATHKNIGHT",
+		conditions = {
+			["Aura stack gain"] = {
+				[1] = {
+					unit = "pet",
+					spell = GetSpellInfo(91342),
+					auraType = "BUFF",
+					amount = 5,
+				},
+			},
+		},
+		sticky = true,
+		color = "00ff00",
+	}]],
 }
 
 local dbDefaults = {
