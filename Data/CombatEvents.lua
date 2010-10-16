@@ -65,6 +65,9 @@ local PowerTypeParser = {
 	[4] = HAPPINESS,
 	[5] = RUNES,
 	[6] = RUNIC_POWER,
+	[7] = SOUL_SHARDS,
+	[8] = ECLIPSE,
+	[9] = HOLY_POWER,
 }
 
 -- lookup-table for damage-types
