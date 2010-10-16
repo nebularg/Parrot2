@@ -427,7 +427,7 @@ local defaultTriggers = {
 	[1023] = [[{
 		-- Eclipse
 		id = 28,
-		name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48518), GetSpellInfo(48465))), -- Starfire
+		name = L["%s!"]:format(GetSpellInfo(48518)), -- Starfire
 		icon = 48518,
 		class = "DRUID",
 		conditions = {
@@ -443,7 +443,7 @@ local defaultTriggers = {
 		color = "ffffff",
 	}]],
 	[1024] = [[{
-		name = L["%s!"]:format(("%s %s"):format(GetSpellInfo(48517), GetSpellInfo(48461))), -- Wrath
+		name = L["%s!"]:format(GetSpellInfo(48517)), -- Wrath
 		icon = 48517,
 		class = "DRUID",
 		conditions = {
