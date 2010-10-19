@@ -258,14 +258,8 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 	},
 	events = {
-		UNIT_MANA = ret,
-		UNIT_MAXMANA = ret,
-		UNIT_DISPLAYPOWER = ret,
-		UNIT_RUNIC_POWER = ret,
-		UNIT_ENERGY = ret,
-		UNIT_HAPPINESS = ret,
-		UNIT_FOCUS = ret,
-		UNIT_RAGE = ret,
+		UNIT_POWER = ret,
+		UNIT_MAX_POWER = ret,
 	},
 	check = function(ref, info)
 			-- check if ref is complete
