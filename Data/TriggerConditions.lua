@@ -171,8 +171,10 @@ local powerTypeChoices = {
 	["FOCUS"] = FOCUS,
 	["ENERGY"] = ENERGY,
 	["HAPPINESS"] = HAPPINESS,
---	["RUNES"] = RUNES,
 	["RUNIC_POWER"] = RUNIC_POWER,
+	["SOUL_SHARDS"] = SOUL_SHARDS,
+	["ECLIPSE"] = ECLIPSE,
+	["HOLY_POWER"] = HOLY_POWER,
 }
 
 local unitPowerStates = {
