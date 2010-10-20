@@ -182,7 +182,7 @@ local defaultTriggers = {
 	}]],
 	[1009] = [[{
 		name = L["Low Mana!"],
-		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
+		class = "DRUID;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
 		conditions = {
 			["Unit power"] = {
 				{
@@ -476,6 +476,7 @@ local defaultTriggers = {
 		color = "ffff00",
 	}]],
 	[1026] = [[{
+		-- Kill shot
 		name = L["%s!"]:format(GetSpellInfo(53351)),
 		icon = 53351,
 		class = "HUNTER",
@@ -583,14 +584,14 @@ local defaultTriggers = {
 		color = "005ba9",
 	}]],
 	[1032] = [[{
-		name = L["%s!"]:format(GetSpellInfo(50782)),
+		name = L["%s!"]:format(GetSpellInfo(50782)), -- Slam!
 		icon = 46916,
 		class = "WARRIOR",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
 					unit = "player",
-					spell = GetSpellInfo(46916),
+					spell = GetSpellInfo(46916), -- Bloodsurge
 					auraType = "BUFF",
 				},
 			},
@@ -599,7 +600,7 @@ local defaultTriggers = {
 		color = "ff0000",
 	}]],
 	[1033] = [[{
-		name = L["%s!"]:format(GetSpellInfo(81141)),
+		name = L["%s!"]:format(GetSpellInfo(81141)), -- Blood Swarm
 		icon = 81141,
 		class = "DEATHKNIGHT",
 		conditions = {
@@ -615,7 +616,7 @@ local defaultTriggers = {
 		color = "ff0000",
 	}]],
 	[1034] = [[{
-		name = L["%s!"]:format(GetSpellInfo(91342)),
+		name = L["%s!"]:format(GetSpellInfo(91342)), -- Shadow Infusion
 		icon = 91342,
 		class = "DEATHKNIGHT",
 		conditions = {
@@ -632,7 +633,7 @@ local defaultTriggers = {
 		color = "00ff00",
 	}]],
 	[1035] = [[{
-		name = L["%s!"]:format(GetSpellInfo(82692)),
+		name = L["%s!"]:format(GetSpellInfo(82692)), -- Focus Fire
 		icon = 82692,
 		class = "HUNTER",
 		conditions = {
@@ -679,7 +680,7 @@ local defaultTriggers = {
 		color = "ffab96",
 	}]],--]==]
 	[1037] = [[{
-		name = L["%s!"]:format(GetSpellInfo(82925)),
+		name = L["%s!"]:format(GetSpellInfo(82925)), -- Ready, Set, Aim...
 		icon = 82925,
 		class = "HUNTER",
 		conditions = {

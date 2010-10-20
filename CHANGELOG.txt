@@ -1,3 +1,14 @@
+v1.10.21:
+* fix triggers for Eclipse
+* add new powertypes to options
+* add new Triggers for:
+    + Slam! (Warrior)
+    + Blood Swarm (Deathknight)
+    + Shadow Infusion (Deathknight)
+    + Focus Fire (Hunter)
+    + Ready, Set, Aim... (Hunter)
+* fix Trigger Lock and Load
+
 v1.10.20a:
 * fix possible nil-errors in Triggers
 
