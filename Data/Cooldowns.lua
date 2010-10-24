@@ -122,8 +122,8 @@ local function addGroup(name, ...)
 	end
 end
 
-addGroup(L["Frost traps"], 14311, 13809) -- "Freezing Trap", "Frost Trap"
-addGroup(L["Fire traps"], 27023, 27025, 63668) -- "Immolation Trap", "Explosive Trap", "Black Arrow"
+addGroup(L["Frost traps"], 1499, 80018) -- "Freezing Trap", "Frost Trap"
+addGroup(L["Fire traps"], 13795, 13813, 20733) -- "Immolation Trap", "Explosive Trap", "Black Arrow"
 addGroup(L["Shocks"], 8042, 8050, 8056) -- Earth Shock, Flame Shock, Frost Shock
 addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
 addGroup(L["Judgements"], 53407, 20271, 53408) -- Judgement of Justice, Judgement of Light, Judgement of Wisdom

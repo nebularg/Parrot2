@@ -1,3 +1,8 @@
+v1.10.22:
+* fix missing spell-ids
+* remove no longer valid triggers
+* round honor-gains to 3 digits
+
 v1.10.21:
 * fix triggers for Eclipse
 * add new powertypes to options
