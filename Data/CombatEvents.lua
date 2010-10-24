@@ -2042,9 +2042,14 @@ Parrot:RegisterCombatEvent{
 -- Point gains
 --============================================================================]]
 
+function round(num, idp)
+	local mult = 10^(idp or 0)
+	return math.floor(num * mult + 0.5) / mult
+end
+
 local function parseHonorUpdate(event, amount)
   if event == "HONOR_GAINED" then
-    return newDict("amount", amount)
+    return newDict("amount", round(amount, 3))
   end
 end
 
