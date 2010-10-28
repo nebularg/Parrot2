@@ -1200,12 +1200,36 @@ end
 --]]
 local function resetLowManaPowerType()
 	self.db1.profile.triggers2[1009].conditions["Unit power"][1].
-		powerType = "MANA"
+		powerType = SPELL_POWER_MANA
 end
 
 --[[============================================================================
 * End of 1.9->1.10 conversion code
 ============================================================================--]]
+
+local function doConvertPowerValues(cond)
+	for _,v in ipairs(cond) do
+		local oldAmount = v.amount
+		if oldAmount <= 1 then
+			v.amount = oldAmount*100 .. "%"
+		else
+			v.amount = tostring(oldAmount)
+		end
+		local oldType = v.powerType
+		if type(oldType) ~= 'number' then
+			v.powerType = _G["SPELL_POWER_" .. oldType]
+		end
+	end
+end
+
+local function convertPowerValues()
+	for k,trigger in pairs(self.db1.profile.triggers) do
+		local cond = trigger.conditions["Unit Power"]
+		if cond then doConvertPowerValues(cond) end
+		local cond = trigger.secondaryConditions["Unit Power"]
+		if cond then doConvertPowerValues(cond) end
+	end
+end
 
 --[[
 * General purpose update-db-functions
@@ -1218,6 +1242,8 @@ local updateFuncs = {
 			Parrot_Triggers.db1.profile.triggers2[1005] = nil
 			Parrot_Triggers.db1.profile.triggers2[1029] = nil
 		end,
+	[5] = resetLowManaPowerType,
+	[6] = convertPowerValues,
 }
 
 function Parrot_Triggers:OnNewProfile(t, key)
