@@ -170,7 +170,7 @@ local defaultTriggers = {
 			["Unit power"] = {
 				{
 					unit = "player",
-					amount = 0.35,
+					amount = "35%",
 					comparator = "<=",
 					friendly = 1,
 					powerType = "MANA",

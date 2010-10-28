@@ -54,28 +54,6 @@ local function compare(val1, comparator, val2)
 	return comparatorFunc[comparator](val1, val2)
 end
 
-local function parseAmount(arg)
-	if not arg then
-		return ""
-	elseif arg <= 1 then
-		return (arg*100) .. "%"
-	else
-		return tostring(arg)
-	end
-end
-
-local function saveAmount(arg)
-	if arg:match("%d+%%") then
-		local percent = tonumber(arg:sub(1,arg:len()-1))
-		if percent then
-			return percent/100
-		end
-		return
-	else
-		return tonumber(arg)
-	end
-end
-
 local unitHealthStates = {
 	player = {},
 	target = {},
@@ -142,39 +120,39 @@ Parrot:RegisterPrimaryTriggerCondition {
 				return false
 			end
 			-- only check the unit
-			local good = ref.unit == info
+			if ref.unit ~= info then return end
 			-- check the friendly-flag
-			if good and ref.friendly >= 0 then
-				good = ref.friendly == 0 and (UnitIsFriend("player", info) == nil) or
-					ref.friendly == UnitIsFriend("player", info)
+			if ref.friendly >= 0 then
+				local friendly = UnitIsFriend("player", info) or 1
+				if ref.friendly ~= friendly then
+						return false
+				end
 			end
 			-- everything fits, check the amount
-			if good then
-				local amount = ref.amount
-				if amount <= 1 then
-					amount = UnitHealthMax(info) * ref.amount
-				end
-				good = compare(UnitHealth(info), ref.comparator, amount)
-				-- check if the state has changed
-				if good ~= unitHealthStates[ref.unit][ref] then
-					unitHealthStates[ref.unit][ref] = good
-					return good
-				end
+			local amount = ref.amount
+			if amount <= 1 then
+				amount = UnitHealthMax(info) * ref.amount
+			end
+			local good = compare(UnitHealth(info), ref.comparator, amount)
+			-- check if the state has changed
+			if good ~= unitHealthStates[ref.unit][ref] then
+				unitHealthStates[ref.unit][ref] = good
+				return good
 			end
 		end,
 }
 
 local powerTypeChoices = {
-	["*"] = L["Any"],
-	["MANA"] = MANA,
-	["RAGE"] = RAGE,
-	["FOCUS"] = FOCUS,
-	["ENERGY"] = ENERGY,
-	["HAPPINESS"] = HAPPINESS,
-	["RUNIC_POWER"] = RUNIC_POWER,
-	["SOUL_SHARDS"] = SOUL_SHARDS,
-	["ECLIPSE"] = ECLIPSE,
-	["HOLY_POWER"] = HOLY_POWER,
+	[-1] = L["Any"],
+	[SPELL_POWER_MANA] = MANA,
+	[SPELL_POWER_RAGE] = RAGE,
+	[SPELL_POWER_FOCUS] = FOCUS,
+	[SPELL_POWER_ENERGY] = ENERGY,
+	[SPELL_POWER_HAPPINESS] = HAPPINESS,
+	[SPELL_POWER_RUNIC_POWER] = RUNIC_POWER,
+	[SPELL_POWER_SOUL_SHARDS] = SOUL_SHARDS,
+	[SPELL_POWER_ECLIPSE] = ECLIPSE,
+	[SPELL_POWER_HOLY_POWER] = HOLY_POWER,
 }
 
 local unitPowerStates = {
@@ -213,15 +191,37 @@ table.insert(onEnableFuncs, function()
 	end
 )
 
+local function checkPower(ref, unit)
+	local powerType = ref.powerType
+	if powerType == -1 then
+		powerType = nil
+	end
+	-- check the friendly-flag
+	if ref.friendly >= 0 then
+		local friendly = UnitIsFriend("player", ref.unit) or 1
+		if ref.friendly ~= friendly then
+				return false
+		end
+	end
+	-- everything fits, check the amount
+	local amount, percent = (ref.amount):match("(%d+)(%%)")
+	if percent then
+		amount = UnitPowerMax(unit, powerType) * amount
+	else
+		amount = tonumber(ref.amount)
+	end
+	local actualAmount = UnitPower(unit, powerType)
+	return compare(actualAmount, ref.comparator, amount)
+end
+
 Parrot:RegisterPrimaryTriggerCondition {
 	name = "Unit power",
 	localName = L["Unit power"],
 	defaultParam = {
 		unit = "player",
 		friendly = -1,
-		amount = 0.5,
+		amount = "50%",
 		comparator = "<=",
-		powerType = "MANA",
 	},
 	param = {
 		type = 'group',
@@ -242,8 +242,6 @@ Parrot:RegisterPrimaryTriggerCondition {
 				type = 'string',
 				name = L["Amount"],
 				desc = L["Amount of health to compare"],
-				parse = parseAmount,
-				save = saveAmount,
 			},
 			comparator = {
 				type = 'select',
@@ -268,31 +266,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 			if not (ref.unit and ref.amount and ref.friendly and ref.comparator and ref.powerType) then
 				return false
 			end
-			-- only check the unit
-			local good = ref.unit == info
-
-			-- check the powertype
-			if good then
-				good = ref.powerType == "*" or
-					ref.powerType == select(2, UnitPowerType(ref.unit))
-			end
+			if ref.unit ~= info then return end
 			-- check the friendly-flag
 			if good and ref.friendly >= 0 then
 				good = ref.friendly == 0 and (UnitIsFriend("player", info) == nil) or
 					ref.friendly == UnitIsFriend("player", info)
 			end
-			-- everything fits, check the amount
-			if good then
-				local amount = ref.amount
-				if amount <= 1 then
-					amount = UnitPowerMax(info) * ref.amount
-				end
-				good = compare(UnitPower(info), ref.comparator, amount)
-				-- check if the state has changed
-				if good ~= unitPowerStates[ref.unit][ref] then
-					unitPowerStates[ref.unit][ref] = good
-					return good
-				end
+			local good = checkPower(ref, info)
+			if good ~= unitPowerStates[ref.unit][ref] then
+				unitPowerStates[ref.unit][ref] = good
+				return good
 			end
 		end,
 }
@@ -693,9 +676,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 	defaultParam = {
 		unit = "player",
 		comparator = "<=",
-		amount = 0.4,
+		amount = "40%",
 		friendly = -1,
-		powerType = "MANA",
 	},
 	param = {
 		type = 'group',
@@ -739,21 +721,26 @@ Parrot:RegisterSecondaryTriggerCondition {
 								and ref.powerType) then
 				return false
 			end
-			local good = ref.powerType == "*" or
-					ref.powerType == select(2, UnitPowerType(ref.unit))
+			local powerType = ref.powerType
+			if powerType == -1 then
+				powerType = nil
+			end
 			-- check the friendly-flag
-			if good and ref.friendly >= 0 then
-				good = ref.friendly == 0 and (UnitIsFriend("player", ref.unit) == nil) or
-					ref.friendly == UnitIsFriend("player", ref.unit)
+			if ref.friendly >= 0 then
+				local friendly = UnitIsFriend("player", ref.unit) or 1
+				if ref.friendly ~= friendly then
+						return false
+				end
 			end
 			-- everything fits, check the amount
-			if good then
-				local amount = ref.amount
-				if amount <= 1 then
-					amount = UnitPowerMax(ref.unit) * ref.amount
-				end
-				return compare(UnitPower(ref.unit), ref.comparator, amount)
+			local amount = tonumber((ref.amount):match("(%d+)(%%)"))
+			if amount then
+				amount = UnitPowerMax(ref.unit, powerType) * ref.amount
+			else
+				amount = tonumber(ref.amount)
 			end
+			local actualAmount = UnitPower(ref.unit, powerType)
+			return compare(actualAmount, ref.comparator, amount)
 		end,
 }
 
