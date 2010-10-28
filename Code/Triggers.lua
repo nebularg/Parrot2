@@ -1223,11 +1223,13 @@ local function doConvertPowerValues(cond)
 end
 
 local function convertPowerValues()
-	for k,trigger in pairs(self.db1.profile.triggers) do
+	for k,trigger in pairs(Parrot_Triggers.db1.profile.triggers2) do
 		local cond = trigger.conditions["Unit Power"]
 		if cond then doConvertPowerValues(cond) end
-		local cond = trigger.secondaryConditions["Unit Power"]
-		if cond then doConvertPowerValues(cond) end
+		if trigger.secondaryConditions then
+			local cond = trigger.secondaryConditions["Unit Power"]
+			if cond then doConvertPowerValues(cond) end
+		end
 	end
 end
 
