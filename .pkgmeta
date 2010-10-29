@@ -42,3 +42,4 @@ externals:
 manual-changelog: CHANGELOG.txt
 ignore:
     - Locales/Strings
+    - Locales/Babelfish.lua
