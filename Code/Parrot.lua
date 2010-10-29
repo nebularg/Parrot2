@@ -278,9 +278,6 @@ function Parrot:OnInitialize()
 
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("Parrot_bliz", bliz_options)
 	AceConfigDialog:AddToBlizOptions("Parrot_bliz", "Parrot")
-
-	self:RegisterDebugSpace("COMBATLOG_EVENT")
-	self:RegisterDebugSpace("BLIZZARD_EVENT")
 end
 
 function Parrot:ChangeProfile()
@@ -369,7 +366,6 @@ function Parrot:COMBAT_LOG_EVENT_UNFILTERED(...)
 	for _, v in ipairs(combatLogHandlers) do
 		v:HandleCombatlogEvent(uid, ...)
 	end
-	--Parrot:SaveDebug("Parrot-combatlog", ...)
 end
 
 local blizzardEventHandlers = {}
@@ -416,7 +412,6 @@ function Parrot:OnBlizzardEvent(eventName, ...)
 	for k,v in pairs(blizzardEventHandlers[eventName]) do
 			k[v](k, uid, eventName, ...)
 	end
-	--Parrot:SaveDebug("Parrot-blizzevent", ...)
 end
 
 local function setOption(info, value)

@@ -21,7 +21,6 @@ embeds.xml
 Locales\locales.xml
 
 Code\Parrot.lua
-Code\Debug.lua
 Code\Broker.lua
 Code\AnimationStyles.lua
 Code\CombatEvents.lua
