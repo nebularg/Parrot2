@@ -61,6 +61,29 @@ local unitHealthStates = {
 	focus = {},
 }
 
+
+local function parseAmount(arg)
+	if not arg then
+		return ""
+	elseif arg <= 1 then
+		return (arg*100) .. "%"
+	else
+		return tostring(arg)
+	end
+end
+
+local function saveAmount(arg)
+	if arg:match("%d+%%") then
+		local percent = tonumber(arg:sub(1,arg:len()-1))
+		if percent then
+			return percent/100
+		end
+		return
+	else
+		return tonumber(arg)
+	end
+end
+
 Parrot:RegisterPrimaryTriggerCondition {
 	name = "Unit health",
 	localName = L["Unit health"],
@@ -698,8 +721,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 				type = 'string',
 				name = L["Amount"],
 				desc = L["Amount of power to compare"],
-				save = saveAmount,
-				parse = parseAmount,
 			},
 			powerType = {
 				type = 'select',

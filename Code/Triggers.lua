@@ -1210,13 +1210,13 @@ end
 local function doConvertPowerValues(cond)
 	for _,v in ipairs(cond) do
 		local oldAmount = v.amount
-		if oldAmount <= 1 then
+		if type(oldAmount) == 'number' and oldAmount <= 1 then
 			v.amount = oldAmount*100 .. "%"
 		else
 			v.amount = tostring(oldAmount)
 		end
 		local oldType = v.powerType
-		if type(oldType) ~= 'number' then
+		if oldType and type(oldType) ~= 'number' then
 			v.powerType = _G["SPELL_POWER_" .. oldType]
 		end
 	end
@@ -1224,10 +1224,12 @@ end
 
 local function convertPowerValues()
 	for k,trigger in pairs(Parrot_Triggers.db1.profile.triggers2) do
-		local cond = trigger.conditions["Unit Power"]
-		if cond then doConvertPowerValues(cond) end
+		local cond = trigger.conditions["Unit power"]
+		if cond then
+			doConvertPowerValues(cond)
+		end
 		if trigger.secondaryConditions then
-			local cond = trigger.secondaryConditions["Unit Power"]
+			local cond = trigger.secondaryConditions["Unit power"]
 			if cond then doConvertPowerValues(cond) end
 		end
 	end
