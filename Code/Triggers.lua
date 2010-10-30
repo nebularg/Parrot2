@@ -1248,6 +1248,11 @@ local updateFuncs = {
 		end,
 	[5] = resetLowManaPowerType,
 	[6] = convertPowerValues,
+	[7] = function()
+			-- exexute them again for the alpha-users
+			resetLowManaPowerType()
+			convertPowerValues()
+		end,
 }
 
 function Parrot_Triggers:OnNewProfile(t, key)
