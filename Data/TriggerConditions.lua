@@ -214,14 +214,15 @@ table.insert(onEnableFuncs, function()
 	end
 )
 
-local function checkPower(ref, unit)
+local function checkPower(ref)
 	local powerType = ref.powerType
 	if powerType == -1 then
 		powerType = nil
 	end
+	local unit = ref.unit
 	-- check the friendly-flag
 	if ref.friendly >= 0 then
-		local friendly = UnitIsFriend("player", ref.unit) or 1
+		local friendly = UnitIsFriend("player", unit) or 1
 		if ref.friendly ~= friendly then
 				return false
 		end
@@ -229,7 +230,7 @@ local function checkPower(ref, unit)
 	-- everything fits, check the amount
 	local amount, percent = (ref.amount):match("(%d+)(%%)")
 	if percent then
-		amount = UnitPowerMax(unit, powerType) * amount
+		amount = UnitPowerMax(unit, powerType) * amount / 100
 	else
 		amount = tonumber(ref.amount)
 	end
@@ -290,12 +291,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				return false
 			end
 			if ref.unit ~= info then return end
-			-- check the friendly-flag
-			if good and ref.friendly >= 0 then
-				good = ref.friendly == 0 and (UnitIsFriend("player", info) == nil) or
-					ref.friendly == UnitIsFriend("player", info)
-			end
-			local good = checkPower(ref, info)
+			local good = checkPower(ref)
 			if good ~= unitPowerStates[ref.unit][ref] then
 				unitPowerStates[ref.unit][ref] = good
 				return good
@@ -742,26 +738,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 								and ref.powerType) then
 				return false
 			end
-			local powerType = ref.powerType
-			if powerType == -1 then
-				powerType = nil
-			end
-			-- check the friendly-flag
-			if ref.friendly >= 0 then
-				local friendly = UnitIsFriend("player", ref.unit) or 1
-				if ref.friendly ~= friendly then
-						return false
-				end
-			end
-			-- everything fits, check the amount
-			local amount = tonumber((ref.amount):match("(%d+)(%%)"))
-			if amount then
-				amount = UnitPowerMax(ref.unit, powerType) * ref.amount
-			else
-				amount = tonumber(ref.amount)
-			end
-			local actualAmount = UnitPower(ref.unit, powerType)
-			return compare(actualAmount, ref.comparator, amount)
+			return checkPower(ref)
 		end,
 }
 
