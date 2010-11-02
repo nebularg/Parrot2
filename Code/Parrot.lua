@@ -299,19 +299,6 @@ function Parrot.inheritFontChoices()
 end
 function Parrot:OnEnable()
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	_G.SHOW_COMBAT_TEXT = "0"
-	if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
-	   _G.CombatText_UpdateDisplayedMessages()
-	end
-
-	if _G.CombatText_OnEvent then
-		self:RawHook("CombatText_OnEvent", function()
-			_G.SHOW_COMBAT_TEXT = "0"
-			if type(_G.CombatText_UpdateDisplayedMessages) == "function" then
-			   _G.CombatText_UpdateDisplayedMessages()
-			end
-		end, true)
-	end
 	if dbpr.gameText then
 		SetCVar("CombatDamage", dbpr.gameDamage and "1" or "0")
 		SetCVar("CombatHealing", dbpr.gameHealing and "1" or "0")
@@ -324,10 +311,6 @@ end
 Parrot.IsActive = Parrot.IsEnabled
 
 function Parrot:OnDisable()
-	SetCVar("CombatDamage", "1")
-	SetCVar("CombatHealing", "1")
-	_G.SHOW_COMBAT_TEXT = "1"
-
 	for name, module in self:IterateModules() do
 		self:DisableModule(module)
 	end
