@@ -8,7 +8,6 @@ L["Frost traps"] = true
 L["Ignore"] = true
 L["Ignore Cooldown"] = true
 L["Item cooldown ready"] = true
-L["Judgements"] = true
 L["Minimum time the cooldown must have (in seconds)"] = true
 L["Shocks"] = true
 L["Skill cooldown finish"] = true
