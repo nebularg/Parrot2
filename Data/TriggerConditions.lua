@@ -508,6 +508,57 @@ Parrot:RegisterPrimaryTriggerCondition {
 		-- usage = L["<Skill name>"],
 	},
 }
+		
+Parrot:RegisterPrimaryTriggerCondition {
+	name = "Cast started",
+	localName = L["Cast started"],
+	combatLogEvents = {
+		{
+			eventType = "SPELL_CAST_START",
+			triggerData = function (_, srcName, _, _, dstName, _, spellId, spellName)
+					local data = newList()
+					data.srcName = srcName
+					data.spellName = spellName
+					data.spellId = spellId
+					return data
+				end,
+		},
+	},
+	defaultParam = {
+		unit = "target",
+		spell = "",
+	},
+	param = {
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that started the cast"],
+				type = 'select',
+				values = unitChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Spell name or spell id"],
+				type = 'input',
+			},
+		},
+	},
+	check = function(ref, info)
+			if not ref.unit then
+				return false
+			end
+			if info.srcName ~= UnitName(ref.unit) then
+				return false
+			end
+			local spellid = tonumber(ref.spell)
+			if spellid then
+				return info.spellId == spellid
+			else
+				return info.spellName == ref.spell
+			end
+		end,
+}
 
 local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical, _, _)
 	local data = newList()
