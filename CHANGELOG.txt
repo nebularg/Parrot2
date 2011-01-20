@@ -1,3 +1,6 @@
+v1.10.23:
+* add "Cast started"-Trigger condition
+
 v1.10.22:
 * fix missing spell-ids
 * remove no longer valid triggers
