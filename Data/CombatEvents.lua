@@ -56,7 +56,13 @@ local EnvironmentalParser = {
 	["SLIME"] = "Slime"
 }
 
-local PowerTypeParser = {
+local function retrieveAlternatePowerName(self, key)
+  if key == ALTERNATE_POWER_INDEX then
+    return UnitAlternatePowerInfo("player")
+  end
+end
+
+local PowerTypeParser = setmetatable({
 	[-2] = HEALTH,
 	[0] = MANA,
 	[1] = RAGE,
@@ -68,7 +74,7 @@ local PowerTypeParser = {
 	[7] = SOUL_SHARDS,
 	[8] = ECLIPSE,
 	[9] = HOLY_POWER,
-}
+}, { __index = retrieveAlternatePowerName, })
 
 -- lookup-table for damage-types
 local LS = {
