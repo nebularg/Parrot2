@@ -393,7 +393,7 @@ end
 function Parrot:OnBlizzardEvent(eventName, ...)
 	local uid = nextUID()
 	for k,v in pairs(blizzardEventHandlers[eventName]) do
-			k[v](k, uid, eventName, ...)
+		k[v](k, uid, eventName, ...)
 	end
 end
 
@@ -410,52 +410,52 @@ function Parrot:OnOptionsCreate()
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
 	self.options.args.profiles.order = -1
 	self:AddOption('general', {
-		type = 'group',
-		name = L["General"],
-		desc = L["General settings"],
-		disabled = function()
-			return not self:IsEnabled()
-		end,
-		order = 1,
-		args = {
-			gameText = {
-				type = 'group',
-				inline = true,
-				name = L["Game options"],
-				set = setOption,
-				get = getOption,
-				args = {
-					gameText = {
-						type = 'toggle',
-						name = L["Control game options"],
-						desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
-						order = 1,
-					},
-					gameDamage = {
-						type = 'toggle',
-						name = L["Game damage"],
-						desc = L["Whether to show damage over the enemy's heads."],
-						disabled = function() return not dbpr.gameText end,
-						set = function(info, value)
-							setOption(info, value)
-							SetCVar("CombatDamage", value and "1" or "0")
-						end,
-						order = 2,
-					},
-					gameHealing = {
-						type = 'toggle',
-						name = L["Game healing"],
-						desc = L["Whether to show healing over the enemy's heads."],
-						disabled = function() return not dbpr.gameText end,
-						set = function(info, value)
-							setOption(info, value)
-							SetCVar("CombatHealing", value and "1" or "0")
-						end,
-						order = 3,
+			type = 'group',
+			name = L["General"],
+			desc = L["General settings"],
+			disabled = function()
+				return not self:IsEnabled()
+			end,
+			order = 1,
+			args = {
+				gameText = {
+					type = 'group',
+					inline = true,
+					name = L["Game options"],
+					set = setOption,
+					get = getOption,
+					args = {
+						gameText = {
+							type = 'toggle',
+							name = L["Control game options"],
+							desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
+							order = 1,
+						},
+						gameDamage = {
+							type = 'toggle',
+							name = L["Game damage"],
+							desc = L["Whether to show damage over the enemy's heads."],
+							disabled = function() return not dbpr.gameText end,
+							set = function(info, value)
+								setOption(info, value)
+								SetCVar("CombatDamage", value and "1" or "0")
+							end,
+							order = 2,
+						},
+						gameHealing = {
+							type = 'toggle',
+							name = L["Game healing"],
+							desc = L["Whether to show healing over the enemy's heads."],
+							disabled = function() return not dbpr.gameText end,
+							set = function(info, value)
+								setOption(info, value)
+								SetCVar("CombatHealing", value and "1" or "0")
+							end,
+							order = 3,
+						},
 					},
 				},
-			},
-		}
+			}
 	})
 end
 

@@ -55,7 +55,7 @@ local function RefreshEvents()
 				if not event_ev then
 					event_ns, event_ev = "Blizzard", event_ns
 				end
-			Parrot:RegisterBlizzardEvent(self, event_ev, "EventHandler")
+				Parrot:RegisterBlizzardEvent(self, event_ev, "EventHandler")
 			end
 		end
 	end
@@ -63,7 +63,6 @@ end
 
 -- #NODOC
 function Parrot_TriggerConditions:EventHandler(uid, event, arg1, ...)
---	local fullEvent = namespace == "Blizzard" and event or namespace .. ";" .. event
 	local fullEvent = event
 	for k, v in pairs(conditions) do
 		if v.events then
@@ -158,7 +157,6 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
 	self = Parrot_TriggerConditions -- in case someone calls Parrot:RegisterPrimaryTriggerCondition
---	AceLibrary.argCheck(self, data, 2, "table") -- TODO
 	local name = data.name
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. name must be a %q, got %q."):format("string", type(name)), 2)
@@ -240,7 +238,6 @@ Example:
 ------------------------------------------------------------------------------------]]
 function Parrot_TriggerConditions:RegisterSecondaryTriggerCondition(data)
 	self = Parrot_TriggerConditions -- in case someone calls Parrot:RegisterSecondaryTriggerCondition
---	AceLibrary.argCheck(self, data, 2, "table") -- TODO
 	local name = data.name
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. name must be a %q, got %q."):format("string", type(name)), 2)
@@ -270,8 +267,6 @@ end
 
 -- #NODOC
 function Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
---	AceLibrary.argCheck(self, name, 2, "string") -- TODO
-
 	local data = conditions[name]
 	if not data then
 		return
@@ -285,8 +280,6 @@ end
 
 -- #NODOC
 function Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
---	AceLibrary.argCheck(self, name, 2, "string") -- TODO
-
 	local data = secondaryConditions[name]
 	if not data then
 		if name:find("^~") then
@@ -328,7 +321,6 @@ end
 
 -- #NODOC
 function Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, arg)
---	AceLibrary.argCheck(self, name, 2, "string") -- TODO
 	local notted = false
 	if name:find("^~") then
 		notted = true

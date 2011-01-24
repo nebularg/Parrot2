@@ -28,7 +28,7 @@ local comparatorChoices = {
 	["=="] = "==",
 	[">="] = ">=",
 	[">"] = ">",
---	["~="] = "~=",
+	--	["~="] = "~=",
 }
 local friendlyChoices = {
 	[1] = FRIENDLY,
@@ -42,7 +42,7 @@ local comparatorFunc = {
 	["=="] = function(arg1, arg2) return arg1 == arg2 end,
 	[">="] = function(arg1, arg2) return arg1 >= arg2 end,
 	[">"] = function(arg1, arg2) return arg1 > arg2 end,
---	["~="] = function(arg1, arg2) return arg1 ~= arg2 end,
+	--	["~="] = function(arg1, arg2) return arg1 ~= arg2 end,
 }
 
 local function ret(arg)
@@ -50,7 +50,7 @@ local function ret(arg)
 end
 
 local function compare(val1, comparator, val2)
---	debug("compare: ", val1, comparator, val2, " = ", comparatorFunc[comparator](val1, val2))
+	--	debug("compare: ", val1, comparator, val2, " = ", comparatorFunc[comparator](val1, val2))
 	return comparatorFunc[comparator](val1, val2)
 end
 
@@ -128,41 +128,41 @@ Parrot:RegisterPrimaryTriggerCondition {
 		if not UnitExists("target") or not UnitCanAttack("player", "target") or UnitIsDeadOrGhost("target") then
 			return nil
 		else
-		 	return UnitHealth("target")/UnitHealthMax("target")
+			return UnitHealth("target")/UnitHealthMax("target")
 		end
 	end,
 	events = {
 		UNIT_HEALTH = ret,
 		UNIT_MAXHEALTH = ret,
 		UNIT_FACTION = ret,
---		PLAYER_TARGET_CHANGED = true,
+		--		PLAYER_TARGET_CHANGED = true,
 	},
 	check = function(ref, info)
-			-- check if ref is complete
-			if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
+		-- check if ref is complete
+		if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
+			return false
+		end
+		-- only check the unit
+		if ref.unit ~= info then return end
+		-- check the friendly-flag
+		if ref.friendly >= 0 then
+			local friendly = UnitIsFriend("player", info) or 1
+			if ref.friendly ~= friendly then
 				return false
 			end
-			-- only check the unit
-			if ref.unit ~= info then return end
-			-- check the friendly-flag
-			if ref.friendly >= 0 then
-				local friendly = UnitIsFriend("player", info) or 1
-				if ref.friendly ~= friendly then
-						return false
-				end
-			end
-			-- everything fits, check the amount
-			local amount = ref.amount
-			if amount <= 1 then
-				amount = UnitHealthMax(info) * ref.amount
-			end
-			local good = compare(UnitHealth(info), ref.comparator, amount)
-			-- check if the state has changed
-			if good ~= unitHealthStates[ref.unit][ref] then
-				unitHealthStates[ref.unit][ref] = good
-				return good
-			end
-		end,
+		end
+		-- everything fits, check the amount
+		local amount = ref.amount
+		if amount <= 1 then
+			amount = UnitHealthMax(info) * ref.amount
+		end
+		local good = compare(UnitHealth(info), ref.comparator, amount)
+		-- check if the state has changed
+		if good ~= unitHealthStates[ref.unit][ref] then
+			unitHealthStates[ref.unit][ref] = good
+			return good
+		end
+	end,
 }
 
 local powerTypeChoices = {
@@ -198,7 +198,7 @@ table.insert(onEnableFuncs, function()
 )
 table.insert(onEnableFuncs, function()
 		mod:RegisterEvent("PLAYER_FOCUS_CHANGED", function()
---				debug("wipe focus states")
+				--				debug("wipe focus states")
 				wipe(unitHealthStates.focus)
 				wipe(unitPowerStates.focus)
 			end
@@ -224,7 +224,7 @@ local function checkPower(ref)
 	if ref.friendly >= 0 then
 		local friendly = UnitIsFriend("player", unit) or 1
 		if ref.friendly ~= friendly then
-				return false
+			return false
 		end
 	end
 	-- everything fits, check the amount
@@ -286,17 +286,17 @@ Parrot:RegisterPrimaryTriggerCondition {
 		UNIT_MAX_POWER = ret,
 	},
 	check = function(ref, info)
-			-- check if ref is complete
-			if not (ref.unit and ref.amount and ref.friendly and ref.comparator and ref.powerType) then
-				return false
-			end
-			if ref.unit ~= info then return end
-			local good = checkPower(ref)
-			if good ~= unitPowerStates[ref.unit][ref] then
-				unitPowerStates[ref.unit][ref] = good
-				return good
-			end
-		end,
+		-- check if ref is complete
+		if not (ref.unit and ref.amount and ref.friendly and ref.comparator and ref.powerType) then
+			return false
+		end
+		if ref.unit ~= info then return end
+		local good = checkPower(ref)
+		if good ~= unitPowerStates[ref.unit][ref] then
+			unitPowerStates[ref.unit][ref] = good
+			return good
+		end
+	end,
 }
 
 local missTypeChoices = {
@@ -508,7 +508,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		-- usage = L["<Skill name>"],
 	},
 }
-		
+
 Parrot:RegisterPrimaryTriggerCondition {
 	name = "Cast started",
 	localName = L["Cast started"],
@@ -516,12 +516,12 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_CAST_START",
 			triggerData = function (_, srcName, _, _, dstName, _, spellId, spellName)
-					local data = newList()
-					data.srcName = srcName
-					data.spellName = spellName
-					data.spellId = spellId
-					return data
-				end,
+				local data = newList()
+				data.srcName = srcName
+				data.spellName = spellName
+				data.spellId = spellId
+				return data
+			end,
 		},
 	},
 	defaultParam = {
@@ -545,19 +545,19 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 	},
 	check = function(ref, info)
-			if not ref.unit then
-				return false
-			end
-			if info.srcName ~= UnitName(ref.unit) then
-				return false
-			end
-			local spellid = tonumber(ref.spell)
-			if spellid then
-				return info.spellId == spellid
-			else
-				return info.spellName == ref.spell
-			end
-		end,
+		if not ref.unit then
+			return false
+		end
+		if info.srcName ~= UnitName(ref.unit) then
+			return false
+		end
+		local spellid = tonumber(ref.spell)
+		if spellid then
+			return info.spellId == spellid
+		else
+			return info.spellName == ref.spell
+		end
+	end,
 }
 
 local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical, _, _)
@@ -587,29 +587,29 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_DAMAGE",
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			triggerData = parseSwingDamage,
 		},
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			triggerData = parseSpellDamage,
 		},
 		{
 			eventType = "SPELL_DAMAGE",
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			triggerData = parseSpellDamage,
 		},
 		{
 			eventType = "RANGE_DAMAGE",
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			triggerData = parseSpellDamage,
 		},
 	},
@@ -643,19 +643,19 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 	},
 	check = function(ref, info)
-			if not ref.unit then
+		if not ref.unit then
+			return false
+		end
+		local good = ref.unit == info.srcName or info.srcName == UnitName(ref.unit)
+		if good and ref.amount then
+			if not ref.comparator then
 				return false
+			else
+				good = compare(info.amount, ref.comparator, ref.amount)
 			end
-			local good = ref.unit == info.srcName or info.srcName == UnitName(ref.unit)
-			if good and ref.amount then
-				if not ref.comparator then
-					return false
-				else
-					good = compare(info.amount, ref.comparator, ref.amount)
-				end
-			end
-			return good
-		end,
+		end
+		return good
+	end,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -665,29 +665,29 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_DAMAGE",
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			triggerData = parseSwingDamage,
 		},
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			triggerData = parseSpellDamage,
 		},
 		{
 			eventType = "SPELL_DAMAGE",
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			triggerData = parseSpellDamage,
 		},
 		{
 			eventType = "RANGE_DAMAGE",
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			triggerData = parseSpellDamage,
 		},
 	},
@@ -721,19 +721,19 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 	},
 	check = function(ref, info)
-			if not ref.unit then
+		if not ref.unit then
+			return false
+		end
+		local good = ref.unit == info.dstName or info.dstName == UnitName(ref.unit)
+		if good and ref.amount then
+			if not ref.comparator then
 				return false
+			else
+				good = compare(info.amount, ref.comparator, ref.amount)
 			end
-			local good = ref.unit == info.dstName or info.dstName == UnitName(ref.unit)
-			if good and ref.amount then
-				if not ref.comparator then
-					return false
-				else
-					good = compare(info.amount, ref.comparator, ref.amount)
-				end
-			end
-			return good
-		end,
+		end
+		return good
+	end,
 }
 
 local function manastep()
@@ -784,13 +784,13 @@ Parrot:RegisterSecondaryTriggerCondition {
 		},
 	},
 	check = function(ref)
-			-- check if ref is complete
-			if not (ref.unit and ref.amount and ref.friendly and ref.comparator
-								and ref.powerType) then
-				return false
-			end
-			return checkPower(ref)
-		end,
+		-- check if ref is complete
+		if not (ref.unit and ref.amount and ref.friendly and ref.comparator
+		and ref.powerType) then
+			return false
+		end
+		return checkPower(ref)
+	end,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
@@ -833,26 +833,26 @@ Parrot:RegisterSecondaryTriggerCondition {
 		},
 	},
 	check = function(ref)
-			-- check if ref is complete
-			if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
-				return false
+		-- check if ref is complete
+		if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
+			return false
+		end
+		local good = true
+		-- check the friendly-flag
+		if ref.friendly >= 0 then
+			good = ref.friendly == 0 and (UnitIsFriend("player", ref.unit) == nil) or
+			ref.friendly == UnitIsFriend("player", ref.unit)
+		end
+		-- everything fits, check the amount
+		if good then
+			local amount = ref.amount
+			if amount <= 1 then
+				debug("checking percent amount")
+				amount = UnitHealthMax(ref.unit) * ref.amount
 			end
-			local good = true
-			-- check the friendly-flag
-			if ref.friendly >= 0 then
-				good = ref.friendly == 0 and (UnitIsFriend("player", ref.unit) == nil) or
-					ref.friendly == UnitIsFriend("player", ref.unit)
-			end
-			-- everything fits, check the amount
-			if good then
-				local amount = ref.amount
-				if amount <= 1 then
-					debug("checking percent amount")
-					amount = UnitHealthMax(ref.unit) * ref.amount
-				end
-				return compare(UnitHealth(ref.unit), ref.comparator, amount)
-			end
-		end,
+			return compare(UnitHealth(ref.unit), ref.comparator, amount)
+		end
+	end,
 }
 
 
@@ -959,32 +959,32 @@ Parrot:RegisterSecondaryTriggerCondition {
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
-  name = "Grouped",
-  localName = L["In a Group or Raid"],
-  check = function()
-      return GetNumPartyMembers() > 0 or UnitInRaid("player")
-  end,
- 	exclusive = true,
+	name = "Grouped",
+	localName = L["In a Group or Raid"],
+	check = function()
+		return GetNumPartyMembers() > 0 or UnitInRaid("player")
+	end,
+	exclusive = true,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
-    name = "Mounted",
-    localName = L["Mounted"],
-    notLocalName = L["Not mounted"],
-    check = function()
-        return IsMounted()
-    end,
-    exclusive = true,
+	name = "Mounted",
+	localName = L["Mounted"],
+	notLocalName = L["Not mounted"],
+	check = function()
+		return IsMounted()
+	end,
+	exclusive = true,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
-    name = "InVehicle",
-    localName = L["In vehicle"],
-    notLocalName = L["Not in vehicle"],
-    check = function()
-        return UnitInVehicle("player")
-    end,
-   	exclusive = true
+	name = "InVehicle",
+	localName = L["In vehicle"],
+	notLocalName = L["Not in vehicle"],
+	check = function()
+		return UnitInVehicle("player")
+	end,
+	exclusive = true
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -1067,6 +1067,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 		},
 	},
 	check = function(param)
-			return GetActiveTalentGroup() == param
-		end,
+		return GetActiveTalentGroup() == param
+	end,
 }

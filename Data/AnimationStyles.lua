@@ -236,396 +236,396 @@ Parrot:RegisterAnimationStyle {
 }
 
 Parrot:RegisterAnimationStyle({
-	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
-	name = "Rainbow",
-	localName = L["Rainbow"],
-	init = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.leftRoot = 1 + (math.random()-0.5) / 5
-		frame.rightRoot = -0.5 + (math.random()-0.5) / 5
-	end,
-	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-		local xDiff = size/2 * percent
-		local yDiff = size * (-16/9 * (percent - frame.leftRoot) * (percent - frame.rightRoot) - 0.5)
-		local vert, horiz = (";"):split(direction)
-		if vert == "UP" then
-			yDiff = -yDiff
-		end
-		local point = "LEFT"
-		if horiz == "LEFT" or (horiz == "ALT" and uid%2 == 0) then
-			xDiff = -xDiff
-			point = "RIGHT"
-		end
-		local y = yOffset + yDiff
-		local x = xOffset + xDiff
-		frame:SetPoint(point, UIParent, "CENTER", x, y)
-	end,
-	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.leftRoot = nil
-		frame.rightRoot = nil
-	end,
-	overlap = false,
-	defaultDirection = "DOWN;ALT",
-	directions = {
-		["UP;LEFT"] = L["Up, left"],
-		["UP;RIGHT"] = L["Up, right"],
-		["UP;ALT"] = L["Up, alternating"],
-		["DOWN;LEFT"] = L["Down, left"],
-		["DOWN;RIGHT"] = L["Down, right"],
-		["DOWN;ALT"] = L["Down, alternating"],
-	},
+		-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
+		name = "Rainbow",
+		localName = L["Rainbow"],
+		init = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.leftRoot = 1 + (math.random()-0.5) / 5
+			frame.rightRoot = -0.5 + (math.random()-0.5) / 5
+		end,
+		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+			local xDiff = size/2 * percent
+			local yDiff = size * (-16/9 * (percent - frame.leftRoot) * (percent - frame.rightRoot) - 0.5)
+			local vert, horiz = (";"):split(direction)
+			if vert == "UP" then
+				yDiff = -yDiff
+			end
+			local point = "LEFT"
+			if horiz == "LEFT" or (horiz == "ALT" and uid%2 == 0) then
+				xDiff = -xDiff
+				point = "RIGHT"
+			end
+			local y = yOffset + yDiff
+			local x = xOffset + xDiff
+			frame:SetPoint(point, UIParent, "CENTER", x, y)
+		end,
+		cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.leftRoot = nil
+			frame.rightRoot = nil
+		end,
+		overlap = false,
+		defaultDirection = "DOWN;ALT",
+		directions = {
+			["UP;LEFT"] = L["Up, left"],
+			["UP;RIGHT"] = L["Up, right"],
+			["UP;ALT"] = L["Up, alternating"],
+			["DOWN;LEFT"] = L["Down, left"],
+			["DOWN;RIGHT"] = L["Down, right"],
+			["DOWN;ALT"] = L["Down, alternating"],
+		},
 })
 
 Parrot:RegisterAnimationStyle({
-	-- makes a path going straight to the right with a random y.
-	name = "Horizontal",
-	localName = L["Horizontal"],
-	init = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.y = math.random() - 0.5
-	end,
-	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-		local xDiff = size * percent
-		local point = "LEFT"
-		if direction == "LEFT" or (direction == "ALT" and uid%2 == 0) then
-			xDiff = -xDiff
-			point = "RIGHT"
-		end
-		local y = yOffset + size * frame.y
-		local x = xOffset + xDiff
-		frame:SetPoint(point, UIParent, "CENTER", x, y)
-	end,
-	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.y = nil
-	end,
-	overlap = false,
-	defaultDirection = "ALT",
-	directions = {
-		["LEFT"] = L["Left"],
-		["RIGHT"] = L["Right"],
-		["ALT"] = L["Alternating"],
-	},
+		-- makes a path going straight to the right with a random y.
+		name = "Horizontal",
+		localName = L["Horizontal"],
+		init = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.y = math.random() - 0.5
+		end,
+		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+			local xDiff = size * percent
+			local point = "LEFT"
+			if direction == "LEFT" or (direction == "ALT" and uid%2 == 0) then
+				xDiff = -xDiff
+				point = "RIGHT"
+			end
+			local y = yOffset + size * frame.y
+			local x = xOffset + xDiff
+			frame:SetPoint(point, UIParent, "CENTER", x, y)
+		end,
+		cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.y = nil
+		end,
+		overlap = false,
+		defaultDirection = "ALT",
+		directions = {
+			["LEFT"] = L["Left"],
+			["RIGHT"] = L["Right"],
+			["ALT"] = L["Alternating"],
+		},
 })
 
 local math_max, math_min = math.max, math.min
 Parrot:RegisterAnimationStyle({
-	-- Zoom in from the center, linger, zoom out towards the edge
-	name = "Action",
-	localName = L["Action"], --L["Horizontal"],
-	init = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.startY = math.random() - 0.5
-	end,
-	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-		mod_percent = math.pow(percent, 6)
-		local xDiff = size * mod_percent * 6
-		local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
-		local point = "LEFT"
-		if direction == "LEFT" or (direction == "ALT" and uid%2 == 0) then
-			xDiff = -xDiff
-			point = "RIGHT"
-		end
-		local x, y = xOffset, yOffset
-		x = xOffset + xDiff
-		y = yOffset + (frame.startY * size)
-		frame:SetScale(math_max(0.1, math_min(percent / 0.1, 1)))
-		frame:SetPoint(point, UIParent, "CENTER", x, y)
-	end,
-	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.y = nil
-	end,
-	overlap = false,
-	defaultDirection = "ALT",
-	directions = {
-		["LEFT"] = L["Left"],
-		["RIGHT"] = L["Right"],
-		["ALT"] = L["Alternating"],
-	},
-})
-
-Parrot:RegisterAnimationStyle({
-	-- Zoom in from the corner, linger, zoom out towards the edge
-	name = "Action Sticky",
-	localName = L["Action Sticky"], --L["Horizontal"],
-	init = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.startY = math.random() - 0.5
-	end,
-	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-		mod_percent = math.pow(percent, 6)
-		local xDiff = size * mod_percent * 6
-		local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
-		local point = "LEFT"
-		if direction == "LEFT" or (direction == "ALT" and uid%2 == 0) then
-			xDiff = -xDiff
-			point = "RIGHT"
-		end
-		local x, y = xOffset, yOffset
-		x = xOffset + xDiff
-		y = yOffset + (frame.startY * size)
-		frame:SetScale(math_max(1, 1 + ((0.1 - percent) / 0.1)))
-		frame:SetPoint(point, UIParent, "CENTER", x, y)
-	end,
-	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.y = nil
-	end,
-	overlap = false,
-	defaultDirection = "ALT",
-	directions = {
-		["LEFT"] = L["Left"],
-		["RIGHT"] = L["Right"],
-		["ALT"] = L["Alternating"],
-	},
-})
-
-Parrot:RegisterAnimationStyle({
-	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
-	name = "Angled",
-	localName = L["Angled"],
-	init = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.finishX = size/2 * (math.random()/2 + 0.75)
-		frame.finishY = size/2 * (math.random()/2 + 0.75)
-	end,
-	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-		local xDiff, yDiff
-		if percent < 0.3 then
-			xDiff = percent/0.3 * frame.finishX
-			yDiff = -percent/0.3 * frame.finishY
-		elseif percent < 0.8 then
-			local now = GetTime()
-			if not frame.nextSquiggle or now > frame.nextSquiggle then
-				frame.nextSquiggle = now + 0.05
-				frame.squiggleX = math.random(-1, 1)
-				frame.squiggleY = math.random(-1, 1)
+		-- Zoom in from the center, linger, zoom out towards the edge
+		name = "Action",
+		localName = L["Action"], --L["Horizontal"],
+		init = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.startY = math.random() - 0.5
+		end,
+		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+			mod_percent = math.pow(percent, 6)
+			local xDiff = size * mod_percent * 6
+			local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
+			local point = "LEFT"
+			if direction == "LEFT" or (direction == "ALT" and uid%2 == 0) then
+				xDiff = -xDiff
+				point = "RIGHT"
 			end
-			xDiff = frame.finishX + frame.squiggleX
-			yDiff = -frame.finishY + frame.squiggleY
-		else
-			xDiff = ((percent - 0.8)/0.2 + 1) * frame.finishX
-			yDiff = -(1 - percent)/0.2 * frame.finishY
-		end
-
-		local vert, horiz = (";"):split(direction)
-		if vert == "UP" then
-			yDiff = -yDiff
-		end
-		local point = "LEFT"
-		if horiz == "LEFT" or (horiz == "ALT" and uid%2 == 0) then
-			xDiff = -xDiff
-			point = "RIGHT"
-		end
-		local y = yOffset + yDiff
-		local x = xOffset + xDiff
-		frame:SetPoint(point, UIParent, "CENTER", x, y)
-	end,
-	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.nextSquiggle = nil
-		frame.squiggleX = nil
-		frame.squiggleY = nil
-		frame.finishX = nil
-		frame.finishY = nil
-	end,
-	overlap = false,
-	defaultDirection = "DOWN;ALT",
-	directions = {
-		["UP;LEFT"] = L["Up, left"],
-		["UP;RIGHT"] = L["Up, right"],
-		["UP;ALT"] = L["Up, alternating"],
-		["DOWN;LEFT"] = L["Down, left"],
-		["DOWN;RIGHT"] = L["Down, right"],
-		["DOWN;ALT"] = L["Down, alternating"],
-	},
+			local x, y = xOffset, yOffset
+			x = xOffset + xDiff
+			y = yOffset + (frame.startY * size)
+			frame:SetScale(math_max(0.1, math_min(percent / 0.1, 1)))
+			frame:SetPoint(point, UIParent, "CENTER", x, y)
+		end,
+		cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.y = nil
+		end,
+		overlap = false,
+		defaultDirection = "ALT",
+		directions = {
+			["LEFT"] = L["Left"],
+			["RIGHT"] = L["Right"],
+			["ALT"] = L["Alternating"],
+		},
 })
 
 Parrot:RegisterAnimationStyle({
-	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
-	name = "Angled2",
-	localName = L["Angled"] .. "2",
-	init = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.finishX = size/2 * (math.random()/2 + 0.75)
-		frame.finishY = size/2 * (math.random()/2 + 0.75)
-	end,
-	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-		local xDiff, yDiff
-		if percent < 0.3 then
-			xDiff = percent/0.3 * frame.finishX
-			yDiff = -percent/0.3 * frame.finishY
-		elseif percent < 0.8 then
-			local now = GetTime()
-			xDiff = frame.finishX
-			yDiff = -frame.finishY
-		else
-			xDiff = ((percent - 0.8)/0.2 + 1) * frame.finishX
-			yDiff = -(1 - percent)/0.2 * frame.finishY
-		end
-
-		local vert, horiz = (";"):split(direction)
-		if vert == "UP" then
-			yDiff = -yDiff
-		end
-		local point = "LEFT"
-		if horiz == "LEFT" or (horiz == "ALT" and uid%2 == 0) then
-			xDiff = -xDiff
-			point = "RIGHT"
-		end
-		local y = yOffset + yDiff
-		local x = xOffset + xDiff
-		frame:SetPoint(point, UIParent, "CENTER", x, y)
-	end,
-	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.nextSquiggle = nil
-		frame.squiggleX = nil
-		frame.squiggleY = nil
-		frame.finishX = nil
-		frame.finishY = nil
-	end,
-	overlap = false,
-	defaultDirection = "DOWN;ALT",
-	directions = {
-		["UP;LEFT"] = L["Up, left"],
-		["UP;RIGHT"] = L["Up, right"],
-		["UP;ALT"] = L["Up, alternating"],
-		["DOWN;LEFT"] = L["Down, left"],
-		["DOWN;RIGHT"] = L["Down, right"],
-		["DOWN;ALT"] = L["Down, alternating"],
-	},
-})
-
-Parrot:RegisterAnimationStyle({
-	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
-	name = "Sprinkler",
-	localName = L["Sprinkler"],
-	init = function(frame, xOffset, yOffset, size, direction, uid)
-		local dir, clock = (";"):split(direction)
-		local base
-		if dir == "RIGHT" then
-			base = 0
-		elseif dir == "TOP" then
-			base = 90
-		elseif dir == "LEFT" then
-			base = 180
-		else -- bottom
-			base = 270
-		end
-		local slices = math.floor(size / frame.fs:GetHeight() / 2)
-		local diff = (uid%slices)*(120/(slices - 1)) - 60
-		if clock == "CCW" then
-			diff = -diff
-		end
-		frame.angle = base + diff
-	end,
-	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-		local xDiff, yDiff
-		if percent < 0.3 then
-			xDiff = percent/0.3 * size/2 * cos(frame.angle)
-			yDiff = percent/0.3 * size/2 * sin(frame.angle)
-		elseif percent < 0.8 then
-			local now = GetTime()
-			if not frame.nextSquiggle or now > frame.nextSquiggle then
-				frame.nextSquiggle = now + 0.05
-				frame.squiggleX = math.random(-1, 1)
-				frame.squiggleY = math.random(-1, 1)
+		-- Zoom in from the corner, linger, zoom out towards the edge
+		name = "Action Sticky",
+		localName = L["Action Sticky"], --L["Horizontal"],
+		init = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.startY = math.random() - 0.5
+		end,
+		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+			mod_percent = math.pow(percent, 6)
+			local xDiff = size * mod_percent * 6
+			local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
+			local point = "LEFT"
+			if direction == "LEFT" or (direction == "ALT" and uid%2 == 0) then
+				xDiff = -xDiff
+				point = "RIGHT"
 			end
-			xDiff = size/2 * cos(frame.angle) + frame.squiggleX
-			yDiff = size/2 * sin(frame.angle) + frame.squiggleY
-		else
-			xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
-			yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
-		end
-
-		local y = yOffset + yDiff
-		local x = xOffset + xDiff
-		local dir, clock = (";"):split(direction)
-		local point = "CENTER"
-		if dir == "LEFT" then
-			point = "RIGHT"
-		elseif dir == "RIGHT" then
-			point = "LEFT"
-		end
-		frame:SetPoint(point, UIParent, "CENTER", x, y)
-	end,
-	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.nextSquiggle = nil
-		frame.squiggleX = nil
-		frame.squiggleY = nil
-		frame.finishX = nil
-		frame.finishY = nil
-	end,
-	overlap = false,
-	defaultDirection = "UP;CCW",
-	directions = {
-		["UP;CW"] = L["Up, clockwise"],
-		["DOWN;CW"] = L["Down, clockwise"],
-		["LEFT;CW"] = L["Left, clockwise"],
-		["RIGHT;CW"] = L["Right, clockwise"],
-		["UP;CCW"] = L["Up, counter-clockwise"],
-		["DOWN;CCW"] = L["Down, counter-clockwise"],
-		["LEFT;CCW"] = L["Left, counter-clockwise"],
-		["RIGHT;CCW"] = L["Right, counter-clockwise"],
-	},
+			local x, y = xOffset, yOffset
+			x = xOffset + xDiff
+			y = yOffset + (frame.startY * size)
+			frame:SetScale(math_max(1, 1 + ((0.1 - percent) / 0.1)))
+			frame:SetPoint(point, UIParent, "CENTER", x, y)
+		end,
+		cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.y = nil
+		end,
+		overlap = false,
+		defaultDirection = "ALT",
+		directions = {
+			["LEFT"] = L["Left"],
+			["RIGHT"] = L["Right"],
+			["ALT"] = L["Alternating"],
+		},
 })
 
 Parrot:RegisterAnimationStyle({
-	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
-	name = "Sprinkler2",
-	localName = L["Sprinkler"] .. "2",
-	init = function(frame, xOffset, yOffset, size, direction, uid)
-		local dir, clock = (";"):split(direction)
-		local base
-		if dir == "RIGHT" then
-			base = 0
-		elseif dir == "TOP" then
-			base = 90
-		elseif dir == "LEFT" then
-			base = 180
-		else -- bottom
-			base = 270
-		end
-		local slices = math.floor(size / frame.fs:GetHeight() / 2)
-		local diff = (uid%slices)*(120/(slices - 1)) - 60
-		if clock == "CCW" then
-			diff = -diff
-		end
-		frame.angle = base + diff
-	end,
-	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-		local xDiff, yDiff
-		if percent < 0.3 then
-			xDiff = percent/0.3 * size/2 * cos(frame.angle)
-			yDiff = percent/0.3 * size/2 * sin(frame.angle)
-		elseif percent < 0.8 then
-			local now = GetTime()
-			xDiff = size/2 * cos(frame.angle)
-			yDiff = size/2 * sin(frame.angle)
-		else
-			xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
-			yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
-		end
+		-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
+		name = "Angled",
+		localName = L["Angled"],
+		init = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.finishX = size/2 * (math.random()/2 + 0.75)
+			frame.finishY = size/2 * (math.random()/2 + 0.75)
+		end,
+		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+			local xDiff, yDiff
+			if percent < 0.3 then
+				xDiff = percent/0.3 * frame.finishX
+				yDiff = -percent/0.3 * frame.finishY
+			elseif percent < 0.8 then
+				local now = GetTime()
+				if not frame.nextSquiggle or now > frame.nextSquiggle then
+					frame.nextSquiggle = now + 0.05
+					frame.squiggleX = math.random(-1, 1)
+					frame.squiggleY = math.random(-1, 1)
+				end
+				xDiff = frame.finishX + frame.squiggleX
+				yDiff = -frame.finishY + frame.squiggleY
+			else
+				xDiff = ((percent - 0.8)/0.2 + 1) * frame.finishX
+				yDiff = -(1 - percent)/0.2 * frame.finishY
+			end
 
-		local y = yOffset + yDiff
-		local x = xOffset + xDiff
-		local dir, clock = (";"):split(direction)
-		local point = "CENTER"
-		if dir == "LEFT" then
-			point = "RIGHT"
-		elseif dir == "RIGHT" then
-			point = "LEFT"
-		end
-		frame:SetPoint(point, UIParent, "CENTER", x, y)
-	end,
-	cleanup = function(frame, xOffset, yOffset, size, direction, uid)
-		frame.nextSquiggle = nil
-		frame.squiggleX = nil
-		frame.squiggleY = nil
-		frame.finishX = nil
-		frame.finishY = nil
-	end,
-	overlap = false,
-	defaultDirection = "UP;CCW",
-	directions = {
-		["UP;CW"] = L["Up, clockwise"],
-		["DOWN;CW"] = L["Down, clockwise"],
-		["LEFT;CW"] = L["Left, clockwise"],
-		["RIGHT;CW"] = L["Right, clockwise"],
-		["UP;CCW"] = L["Up, counter-clockwise"],
-		["DOWN;CCW"] = L["Down, counter-clockwise"],
-		["LEFT;CCW"] = L["Left, counter-clockwise"],
-		["RIGHT;CCW"] = L["Right, counter-clockwise"],
-	},
+			local vert, horiz = (";"):split(direction)
+			if vert == "UP" then
+				yDiff = -yDiff
+			end
+			local point = "LEFT"
+			if horiz == "LEFT" or (horiz == "ALT" and uid%2 == 0) then
+				xDiff = -xDiff
+				point = "RIGHT"
+			end
+			local y = yOffset + yDiff
+			local x = xOffset + xDiff
+			frame:SetPoint(point, UIParent, "CENTER", x, y)
+		end,
+		cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.nextSquiggle = nil
+			frame.squiggleX = nil
+			frame.squiggleY = nil
+			frame.finishX = nil
+			frame.finishY = nil
+		end,
+		overlap = false,
+		defaultDirection = "DOWN;ALT",
+		directions = {
+			["UP;LEFT"] = L["Up, left"],
+			["UP;RIGHT"] = L["Up, right"],
+			["UP;ALT"] = L["Up, alternating"],
+			["DOWN;LEFT"] = L["Down, left"],
+			["DOWN;RIGHT"] = L["Down, right"],
+			["DOWN;ALT"] = L["Down, alternating"],
+		},
+})
+
+Parrot:RegisterAnimationStyle({
+		-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
+		name = "Angled2",
+		localName = L["Angled"] .. "2",
+		init = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.finishX = size/2 * (math.random()/2 + 0.75)
+			frame.finishY = size/2 * (math.random()/2 + 0.75)
+		end,
+		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+			local xDiff, yDiff
+			if percent < 0.3 then
+				xDiff = percent/0.3 * frame.finishX
+				yDiff = -percent/0.3 * frame.finishY
+			elseif percent < 0.8 then
+				local now = GetTime()
+				xDiff = frame.finishX
+				yDiff = -frame.finishY
+			else
+				xDiff = ((percent - 0.8)/0.2 + 1) * frame.finishX
+				yDiff = -(1 - percent)/0.2 * frame.finishY
+			end
+
+			local vert, horiz = (";"):split(direction)
+			if vert == "UP" then
+				yDiff = -yDiff
+			end
+			local point = "LEFT"
+			if horiz == "LEFT" or (horiz == "ALT" and uid%2 == 0) then
+				xDiff = -xDiff
+				point = "RIGHT"
+			end
+			local y = yOffset + yDiff
+			local x = xOffset + xDiff
+			frame:SetPoint(point, UIParent, "CENTER", x, y)
+		end,
+		cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.nextSquiggle = nil
+			frame.squiggleX = nil
+			frame.squiggleY = nil
+			frame.finishX = nil
+			frame.finishY = nil
+		end,
+		overlap = false,
+		defaultDirection = "DOWN;ALT",
+		directions = {
+			["UP;LEFT"] = L["Up, left"],
+			["UP;RIGHT"] = L["Up, right"],
+			["UP;ALT"] = L["Up, alternating"],
+			["DOWN;LEFT"] = L["Down, left"],
+			["DOWN;RIGHT"] = L["Down, right"],
+			["DOWN;ALT"] = L["Down, alternating"],
+		},
+})
+
+Parrot:RegisterAnimationStyle({
+		-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
+		name = "Sprinkler",
+		localName = L["Sprinkler"],
+		init = function(frame, xOffset, yOffset, size, direction, uid)
+			local dir, clock = (";"):split(direction)
+			local base
+			if dir == "RIGHT" then
+				base = 0
+			elseif dir == "TOP" then
+				base = 90
+			elseif dir == "LEFT" then
+				base = 180
+			else -- bottom
+				base = 270
+			end
+			local slices = math.floor(size / frame.fs:GetHeight() / 2)
+			local diff = (uid%slices)*(120/(slices - 1)) - 60
+			if clock == "CCW" then
+				diff = -diff
+			end
+			frame.angle = base + diff
+		end,
+		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+			local xDiff, yDiff
+			if percent < 0.3 then
+				xDiff = percent/0.3 * size/2 * cos(frame.angle)
+				yDiff = percent/0.3 * size/2 * sin(frame.angle)
+			elseif percent < 0.8 then
+				local now = GetTime()
+				if not frame.nextSquiggle or now > frame.nextSquiggle then
+					frame.nextSquiggle = now + 0.05
+					frame.squiggleX = math.random(-1, 1)
+					frame.squiggleY = math.random(-1, 1)
+				end
+				xDiff = size/2 * cos(frame.angle) + frame.squiggleX
+				yDiff = size/2 * sin(frame.angle) + frame.squiggleY
+			else
+				xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
+				yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
+			end
+
+			local y = yOffset + yDiff
+			local x = xOffset + xDiff
+			local dir, clock = (";"):split(direction)
+			local point = "CENTER"
+			if dir == "LEFT" then
+				point = "RIGHT"
+			elseif dir == "RIGHT" then
+				point = "LEFT"
+			end
+			frame:SetPoint(point, UIParent, "CENTER", x, y)
+		end,
+		cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.nextSquiggle = nil
+			frame.squiggleX = nil
+			frame.squiggleY = nil
+			frame.finishX = nil
+			frame.finishY = nil
+		end,
+		overlap = false,
+		defaultDirection = "UP;CCW",
+		directions = {
+			["UP;CW"] = L["Up, clockwise"],
+			["DOWN;CW"] = L["Down, clockwise"],
+			["LEFT;CW"] = L["Left, clockwise"],
+			["RIGHT;CW"] = L["Right, clockwise"],
+			["UP;CCW"] = L["Up, counter-clockwise"],
+			["DOWN;CCW"] = L["Down, counter-clockwise"],
+			["LEFT;CCW"] = L["Left, counter-clockwise"],
+			["RIGHT;CCW"] = L["Right, counter-clockwise"],
+		},
+})
+
+Parrot:RegisterAnimationStyle({
+		-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
+		name = "Sprinkler2",
+		localName = L["Sprinkler"] .. "2",
+		init = function(frame, xOffset, yOffset, size, direction, uid)
+			local dir, clock = (";"):split(direction)
+			local base
+			if dir == "RIGHT" then
+				base = 0
+			elseif dir == "TOP" then
+				base = 90
+			elseif dir == "LEFT" then
+				base = 180
+			else -- bottom
+				base = 270
+			end
+			local slices = math.floor(size / frame.fs:GetHeight() / 2)
+			local diff = (uid%slices)*(120/(slices - 1)) - 60
+			if clock == "CCW" then
+				diff = -diff
+			end
+			frame.angle = base + diff
+		end,
+		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+			local xDiff, yDiff
+			if percent < 0.3 then
+				xDiff = percent/0.3 * size/2 * cos(frame.angle)
+				yDiff = percent/0.3 * size/2 * sin(frame.angle)
+			elseif percent < 0.8 then
+				local now = GetTime()
+				xDiff = size/2 * cos(frame.angle)
+				yDiff = size/2 * sin(frame.angle)
+			else
+				xDiff = ((percent - 0.8)/0.2 + 1) * size/2 * cos(frame.angle)
+				yDiff = ((percent - 0.8)/0.2 + 1) * size/2 * sin(frame.angle)
+			end
+
+			local y = yOffset + yDiff
+			local x = xOffset + xDiff
+			local dir, clock = (";"):split(direction)
+			local point = "CENTER"
+			if dir == "LEFT" then
+				point = "RIGHT"
+			elseif dir == "RIGHT" then
+				point = "LEFT"
+			end
+			frame:SetPoint(point, UIParent, "CENTER", x, y)
+		end,
+		cleanup = function(frame, xOffset, yOffset, size, direction, uid)
+			frame.nextSquiggle = nil
+			frame.squiggleX = nil
+			frame.squiggleY = nil
+			frame.finishX = nil
+			frame.finishY = nil
+		end,
+		overlap = false,
+		defaultDirection = "UP;CCW",
+		directions = {
+			["UP;CW"] = L["Up, clockwise"],
+			["DOWN;CW"] = L["Down, clockwise"],
+			["LEFT;CW"] = L["Left, clockwise"],
+			["RIGHT;CW"] = L["Right, clockwise"],
+			["UP;CCW"] = L["Up, counter-clockwise"],
+			["DOWN;CCW"] = L["Down, counter-clockwise"],
+			["LEFT;CCW"] = L["Left, counter-clockwise"],
+			["RIGHT;CCW"] = L["Right, counter-clockwise"],
+		},
 })

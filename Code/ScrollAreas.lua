@@ -86,8 +86,8 @@ end
 
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
 CONFIGMODE_CALLBACKS["Parrot"] = function(state)
-		Parrot:SetConfigMode(state == "ON")
-	end
+	Parrot:SetConfigMode(state == "ON")
+end
 
 
 --[[----------------------------------------------------------------------------------
@@ -152,25 +152,25 @@ local function showOffsetBox(k)
 		bottomText:SetPoint("TOP", offsetBox, "BOTTOM", 0, -5)
 
 		offsetBox:SetScript("OnDragStart", function(this)
-			midPoint:StartMoving()
-			this.moving = true
+				midPoint:StartMoving()
+				this.moving = true
 		end)
 
 		offsetBox:SetScript("OnDragStop", function(this)
-			this:GetScript("OnUpdate")(this)
-			this.moving = nil
-			midPoint:StopMovingOrSizing()
+				this:GetScript("OnUpdate")(this)
+				this.moving = nil
+				midPoint:StopMovingOrSizing()
 		end)
 
 		offsetBox:SetScript("OnUpdate", function(this)
-			if this.moving then
-				local x, y = this:GetCenter()
-				x = x - GetScreenWidth()/2
-				y = y - GetScreenHeight()/2
-				scrollAreas[k].xOffset = x
-				scrollAreas[k].yOffset = y
-				this.bottomText:SetText(L["Position: %d, %d"]:format(x, y))
-			end
+				if this.moving then
+					local x, y = this:GetCenter()
+					x = x - GetScreenWidth()/2
+					y = y - GetScreenHeight()/2
+					scrollAreas[k].xOffset = x
+					scrollAreas[k].yOffset = y
+					this.bottomText:SetText(L["Position: %d, %d"]:format(x, y))
+				end
 		end)
 
 		offsetBox:SetMovable(true)
@@ -362,7 +362,6 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		local kind, k = info.arg[1], info.arg[2]
 		local font = scrollAreas[k][kind == "normal" and "font" or "stickyFont"]
 		if font == nil then
---			return L["Inherit"]
 			return "1"
 		else
 			return font

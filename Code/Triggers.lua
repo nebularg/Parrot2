@@ -729,7 +729,7 @@ local function rebuildEffectiveRegistry()
 	end
 	if containsPeriodic then
 		periodicCheckTimer = self:ScheduleRepeatingTimer(function()
-			Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
+				Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
 		end, 0.1)
 	end
 end
@@ -764,282 +764,282 @@ end
 ============================================================================--]]
 local triggers2translation = {
 	["Self buff gain"] = function(spell)
-			local arg = {
-				auraType = "BUFF",
-				unit = "player",
-				spell = spell,
-			}
-			return "Aura gain", arg
-		end,
+		local arg = {
+			auraType = "BUFF",
+			unit = "player",
+			spell = spell,
+		}
+		return "Aura gain", arg
+	end,
 	["Self buff stacks gain"] = function(string)
-			local spell, amount = (","):split(string)
-			local arg = {
-				auraType = "BUFF",
-				unit = "player",
-				spell = spell,
-				amount = tonumber(amount),
-			}
-			return "Aura stack gain", arg
-		end,
+		local spell, amount = (","):split(string)
+		local arg = {
+			auraType = "BUFF",
+			unit = "player",
+			spell = spell,
+			amount = tonumber(amount),
+		}
+		return "Aura stack gain", arg
+	end,
 	["Self buff fade"] = function(spell)
-			local arg = {
-				auraType = "BUFF",
-				unit = "player",
-				spell = spell,
-			}
-			return "Aura fade", arg
-		end,
+		local arg = {
+			auraType = "BUFF",
+			unit = "player",
+			spell = spell,
+		}
+		return "Aura fade", arg
+	end,
 	["Self debuff gain"] = function(spell)
-			local arg = {
-				auraType = "DEBUFF",
-				unit = "player",
-				spell = spell,
-			}
-			return "Aura gain", arg
-		end,
+		local arg = {
+			auraType = "DEBUFF",
+			unit = "player",
+			spell = spell,
+		}
+		return "Aura gain", arg
+	end,
 	["Self debuff fade"] = function(spell)
-			local arg = {
-				auraType = "DEBUFF",
-				unit = "player",
-				spell = spell,
-			}
-			return "Aura fade", arg
-		end,
+		local arg = {
+			auraType = "DEBUFF",
+			unit = "player",
+			spell = spell,
+		}
+		return "Aura fade", arg
+	end,
 	["Target buff gain"] = function(spell)
-			local arg = {
-				auraType = "BUFF",
-				unit = "target",
-				spell = spell,
-			}
-			return "Aura gain", arg
-		end,
+		local arg = {
+			auraType = "BUFF",
+			unit = "target",
+			spell = spell,
+		}
+		return "Aura gain", arg
+	end,
 	["Target buff fade"] = function(spell)
-			local arg = {
-				auraType = "BUFF",
-				unit = "target",
-				spell = spell,
-			}
-			return "Aura fade", arg
-		end,
+		local arg = {
+			auraType = "BUFF",
+			unit = "target",
+			spell = spell,
+		}
+		return "Aura fade", arg
+	end,
 	["Target debuff gain"] = function(spell)
-			local arg = {
-				auraType = "DEBUFF",
-				unit = "target",
-				spell = spell,
-			}
-			return "Aura gain", arg
-		end,
+		local arg = {
+			auraType = "DEBUFF",
+			unit = "target",
+			spell = spell,
+		}
+		return "Aura gain", arg
+	end,
 	["Target debuff fade"] = function(spell)
-			local arg = {
-				auraType = "DEBUFF",
-				unit = "target",
-				spell = spell,
-			}
-			return "Aura fade", arg
-		end,
+		local arg = {
+			auraType = "DEBUFF",
+			unit = "target",
+			spell = spell,
+		}
+		return "Aura fade", arg
+	end,
 	["Focus buff gain"] = function(spell)
-			local arg = {
-				auraType = "BUFF",
-				unit = "focus",
-				spell = spell,
-			}
-			return "Aura gain", arg
-		end,
+		local arg = {
+			auraType = "BUFF",
+			unit = "focus",
+			spell = spell,
+		}
+		return "Aura gain", arg
+	end,
 	["Focus buff fade"] = function(spell)
-			local arg = {
-				auraType = "BUFF",
-				unit = "focus",
-				spell = spell,
-			}
-			return "Aura fade", arg
-		end,
+		local arg = {
+			auraType = "BUFF",
+			unit = "focus",
+			spell = spell,
+		}
+		return "Aura fade", arg
+	end,
 	["Focus debuff gain"] = function(spell)
-			local arg = {
-				auraType = "DEBUFF",
-				unit = "focus",
-				spell = spell,
-			}
-			return "Aura gain", arg
-		end,
+		local arg = {
+			auraType = "DEBUFF",
+			unit = "focus",
+			spell = spell,
+		}
+		return "Aura gain", arg
+	end,
 	["Focus debuff fade"] = function(spell)
-			local arg = {
-				auraType = "DEBUFF",
-				unit = "focus",
-				spell = spell,
-			}
-			return "Aura fade", arg
-		end,
+		local arg = {
+			auraType = "DEBUFF",
+			unit = "focus",
+			spell = spell,
+		}
+		return "Aura fade", arg
+	end,
 	["Enter combat"] = true,
 	["Leave combat"] = true,
 	["Spell ready"] = function(spell)
-			return "Spell ready", spell
-		end,
+		return "Spell ready", spell
+	end,
 
 	["Enemy target health percent"] = function(param)
-			local arg = {
-				unit = "target",
-				friendly = 0,
-				amount = param,
-				comparator = "<=",
-			}
-			return "Unit health", arg
-		end,
+		local arg = {
+			unit = "target",
+			friendly = 0,
+			amount = param,
+			comparator = "<=",
+		}
+		return "Unit health", arg
+	end,
 	["Friendly target health percent"] = function(param)
-			local arg = {
-				unit = "target",
-				friendly = 1,
-				amount = param,
-				comparator = "<=",
-			}
-			return "Unit health", arg
-		end,
+		local arg = {
+			unit = "target",
+			friendly = 1,
+			amount = param,
+			comparator = "<=",
+		}
+		return "Unit health", arg
+	end,
 	["Self health percent"] = function(param)
-			local arg = {
-				unit = "player",
-				friendly = 1,
-				amount = param,
-				comparator = "<=",
-			}
-			return "Unit health", arg
-		end,
+		local arg = {
+			unit = "player",
+			friendly = 1,
+			amount = param,
+			comparator = "<=",
+		}
+		return "Unit health", arg
+	end,
 	["Self mana percent"] = function(param)
-			local arg = {
-				unit = "player",
-				friendly = 1,
-				amount = param,
-				comparator = "<=",
-				powerType = "MANA",
-			}
-			return "Unit power", arg
-		end,
+		local arg = {
+			unit = "player",
+			friendly = 1,
+			amount = param,
+			comparator = "<=",
+			powerType = "MANA",
+		}
+		return "Unit power", arg
+	end,
 	["Pet health percent"] = function(param)
-			local arg = {
-				unit = "pet",
-				friendly = 1,
-				amount = param,
-				comparator = "<=",
-			}
-			return "Unit health", arg
-		end,
+		local arg = {
+			unit = "pet",
+			friendly = 1,
+			amount = param,
+			comparator = "<=",
+		}
+		return "Unit health", arg
+	end,
 	["Pet mana percent"] = function(param)
-			local arg = {
-				unit = "pet",
-				friendly = 1,
-				amount = param,
-				comparator = "<=",
-				powerType = "MANA",
-			}
-			return "Unit power", arg
-		end,
+		local arg = {
+			unit = "pet",
+			friendly = 1,
+			amount = param,
+			comparator = "<=",
+			powerType = "MANA",
+		}
+		return "Unit power", arg
+	end,
 	["Incoming Block"] = function()
-			return "Incoming miss", "BLOCK"
-		end,
+		return "Incoming miss", "BLOCK"
+	end,
 	["Incoming Dodge"] = function()
-			return "Incoming miss", "DODGE"
-		end,
+		return "Incoming miss", "DODGE"
+	end,
 	["Incoming Parry"] = function()
-			return "Incoming miss", "PARRY"
-		end,
+		return "Incoming miss", "PARRY"
+	end,
 	["Outgoing Block"] = function()
-			return "Outgoing miss", "BLOCK"
-		end,
+		return "Outgoing miss", "BLOCK"
+	end,
 	["Outgoing Dodge"] = function()
-			return "Outgoing miss", "DODGE"
-		end,
+		return "Outgoing miss", "DODGE"
+	end,
 	["Outgoing Parry"] = function()
-			return "Outgoing miss", "PARRY"
-		end,
+		return "Outgoing miss", "PARRY"
+	end,
 	["Incoming crit"] = true,
 	["Outgoing crit"] = true,
 	["Outgoing cast"] = function(param)
-			return "Outgoing cast", param
-		end,
+		return "Outgoing cast", param
+	end,
 	["Incoming cast"] = function(param)
-			return "Incoming cast", param
-		end,
+		return "Incoming cast", param
+	end,
 	["Successful spell cast"] = function(param)
-			return "Successful spell cast", {}
-		end,
+		return "Successful spell cast", {}
+	end,
 	["Check every XX seconds"] = true,
 	["Self item buff gain"] = function(param)
-			local arg = {
-				unit = "player",
-				spell = param,
-			}
-			return "Item buff gain", arg
-		end,
+		local arg = {
+			unit = "player",
+			spell = param,
+		}
+		return "Item buff gain", arg
+	end,
 	["Self Item buff fade"] = function(param)
-			local arg = {
-				unit = "player",
-				spell = param,
-			}
-			return "Item buff fade", arg
-		end,
+		local arg = {
+			unit = "player",
+			spell = param,
+		}
+		return "Item buff fade", arg
+	end,
 }
 
 local triggers2secondary = {
 	["Buff inactive"] = function(param)
-			local arg = {
-				unit = "player",
-				byplayer = false,
-				spell = param,
-			}
-			return "Buff inactive", arg
-		end,
+		local arg = {
+			unit = "player",
+			byplayer = false,
+			spell = param,
+		}
+		return "Buff inactive", arg
+	end,
 	["~Buff inactive"] = function(param)
-			local arg = {
-				unit = "player",
-				byplayer = false,
-				spell = param,
-			}
-			return "Aura active", arg
-		end,
+		local arg = {
+			unit = "player",
+			byplayer = false,
+			spell = param,
+		}
+		return "Aura active", arg
+	end,
 	["In combat"] = true,
 	["~In combat"] = true,
 	["Spell ready"] = function(param)
-			return "Spell ready", param
-		end,
+		return "Spell ready", param
+	end,
 	["Spell usable"] = function(param)
-			return "Spell usable", param
-		end,
+		return "Spell usable", param
+	end,
 	["Minimum power amount"] = function(param)
-			local arg = {
-				unit = "player",
-				amount = param,
-				friendly = 1,
-				comparator = ">=",
-				powerType = "MANA",
-			}
-			return "Unit power", arg
-		end,
+		local arg = {
+			unit = "player",
+			amount = param,
+			friendly = 1,
+			comparator = ">=",
+			powerType = "MANA",
+		}
+		return "Unit power", arg
+	end,
 	["Minimum power percent"] = function(param)
-			local arg = {
-				unit = "player",
-				amount = param,
-				friendly = 1,
-				comparator = ">=",
-				powerType = "MANA",
-			}
-			return "Unit power", arg
-		end,
+		local arg = {
+			unit = "player",
+			amount = param,
+			friendly = 1,
+			comparator = ">=",
+			powerType = "MANA",
+		}
+		return "Unit power", arg
+	end,
 	["Warrior stance"] = function(param)
-			return "Warrior stance", param
-		end,
+		return "Warrior stance", param
+	end,
 	["~Warrior stance"] = function(param)
-			return "~Warrior stance", param
-		end,
+		return "~Warrior stance", param
+	end,
 	["Druid Form"] = function(param)
-			return "Druid Form", param
-		end,
+		return "Druid Form", param
+	end,
 	["~Druid Form"] = function(param)
-			return "~Druid Form", param
-		end,
+		return "~Druid Form", param
+	end,
 	["Deathknight presence"] = function(param)
-			return "Deathknight presence", param
-		end,
+		return "Deathknight presence", param
+	end,
 	["~Deathknight presence"] = function(param)
-			return "~Deathknight presence", param
-		end,
+		return "~Deathknight presence", param
+	end,
 	["Grouped"] = true,
 	["Mounted"] = true,
 	["InVehicle"] = true,
@@ -1049,35 +1049,35 @@ local triggers2secondary = {
 	["~InVehicle"] = true,
 	["~Target is player"] = true,
 	["Lua function"] = function(arg)
-			return "Lua function", arg
-		end,
+		return "Lua function", arg
+	end,
 	["Minimum target health"] = function(param)
-			local arg = {
-				unit = "target",
-				amount = param,
-				friendly = -1,
-				comparator = ">=",
-			}
-			return "Unit health", arg
-		end,
+		local arg = {
+			unit = "target",
+			amount = param,
+			friendly = -1,
+			comparator = ">=",
+		}
+		return "Unit health", arg
+	end,
 	["Minimum target health percent"] = function(param)
-			local arg = {
-				unit = "target",
-				amount = param,
-				friendly = -1,
-				comparator = ">=",
-			}
-			return "Unit health", arg
-		end,
+		local arg = {
+			unit = "target",
+			amount = param,
+			friendly = -1,
+			comparator = ">=",
+		}
+		return "Unit health", arg
+	end,
 	["Maximum target health percent"] = function(param)
-			local arg = {
-				unit = "target",
-				amount = param,
-				friendly = -1,
-				comparator = "<=",
-			}
-			return "Unit health", arg
-		end,
+		local arg = {
+			unit = "target",
+			amount = param,
+			friendly = -1,
+			comparator = "<=",
+		}
+		return "Unit health", arg
+	end,
 	["Trigger cooldown"] = true,
 }
 
@@ -1146,34 +1146,34 @@ local function convertTriggers2()
 			table.insert(self.db1.profile.triggers2, tmp)
 		end
 		-- deleting old triggers
---		self.db1.profile.triggers = nil
-			self.db1.profile.version = nil
+		--		self.db1.profile.triggers = nil
+		self.db1.profile.version = nil
 	end
 end
 
 alpha2alpah1translate = {
 	["Aura inactive"] = function(param)
-			local arg = {}
-			for k,v in ipairs(param) do
-				arg[k] = {
-					unit = "player",
-					byplayer = false,
-					spell = v,
-				}
-			end
-			return "Buff inactive", arg
-		end,
+		local arg = {}
+		for k,v in ipairs(param) do
+			arg[k] = {
+				unit = "player",
+				byplayer = false,
+				spell = v,
+			}
+		end
+		return "Buff inactive", arg
+	end,
 	["~Aura inactive"] = function(param)
-			local arg = {}
-			for k,v in ipairs(param) do
-				arg[k] = {
-					unit = "player",
-					byplayer = false,
-					spell = v,
-				}
-			end
-			return "Buff active", arg
-		end,
+		local arg = {}
+		for k,v in ipairs(param) do
+			arg[k] = {
+				unit = "player",
+				byplayer = false,
+				spell = v,
+			}
+		end
+		return "Buff active", arg
+	end,
 }
 
 local function alpha2alpha1()
@@ -1200,7 +1200,7 @@ end
 --]]
 local function resetLowManaPowerType()
 	self.db1.profile.triggers2[1009].conditions["Unit power"][1].
-		powerType = SPELL_POWER_MANA
+	powerType = SPELL_POWER_MANA
 end
 
 --[[============================================================================
@@ -1243,16 +1243,16 @@ local updateFuncs = {
 	[2] = alpha2alpha1,
 	[3] = resetLowManaPowerType,
 	[4] = function()
-			Parrot_Triggers.db1.profile.triggers2[1005] = nil
-			Parrot_Triggers.db1.profile.triggers2[1029] = nil
-		end,
+		Parrot_Triggers.db1.profile.triggers2[1005] = nil
+		Parrot_Triggers.db1.profile.triggers2[1029] = nil
+	end,
 	[5] = resetLowManaPowerType,
 	[6] = convertPowerValues,
 	[7] = function()
-			-- exexute them again for the alpha-users
-			resetLowManaPowerType()
-			convertPowerValues()
-		end,
+		-- exexute them again for the alpha-users
+		resetLowManaPowerType()
+		convertPowerValues()
+	end,
 }
 
 function Parrot_Triggers:OnNewProfile(t, key)
@@ -1298,7 +1298,7 @@ function Parrot_Triggers:OnEnable()
 			exclusive = true,
 			check = function(param)
 				-- special handling
-					return true
+				return true
 			end,
 		}
 
@@ -1495,7 +1495,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 						if k == "Trigger cooldown" then
 							good = checkTriggerCooldown(t, v) and good
 						elseif type(v) == 'table' and #v > 0 then
-						-- if the condition is not exclusive there may be multiple matchers
+							-- if the condition is not exclusive there may be multiple matchers
 							for _,cond in pairs(v) do
 								if not checkSecondaryCondition(k,cond) then
 									good = false
@@ -1551,7 +1551,6 @@ function Parrot_Triggers:OnOptionsCreate()
 		args = {
 			new = {
 				type = 'execute',
---				buttonText = L["Create"],
 				name = L["New trigger"],
 				desc = L["Create a new trigger"],
 				func = function()
@@ -1795,7 +1794,7 @@ function Parrot_Triggers:OnOptionsCreate()
 
 	local function getConditionValue(info)
 		local t, name, field, index, parse = info.arg.t, info.arg.name, info.arg.field,
-				info.arg.index, info.arg.parse
+		info.arg.index, info.arg.parse
 		local result
 		if not field then
 			if index then
@@ -1818,7 +1817,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 	local function setConditionValue(info, value)
 		local t, name, field, index, save = info.arg.t, info.arg.name, info.arg.field,
-				info.arg.index, info.arg.save
+		info.arg.index, info.arg.save
 		if save then
 			value = save(value)
 		end
@@ -1839,7 +1838,7 @@ function Parrot_Triggers:OnOptionsCreate()
 
 	local function getSecondaryConditionValue(info)
 		local t, name, field, index, parse = info.arg.t, info.arg.name, info.arg.field,
-				info.arg.index, info.arg.parse
+		info.arg.index, info.arg.parse
 		local result
 		if not field then
 			if index then
@@ -1862,7 +1861,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 	local function setSecondaryConditionValue(info, value)
 		local t, name, field, index, save = info.arg.t, info.arg.name, info.arg.field,
-				info.arg.index, info.arg.save
+		info.arg.index, info.arg.save
 		if save then
 			value = save(value)
 		end
@@ -2023,7 +2022,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				if not periodicCheckTimer then
 					periodicCheckTimer = self:ScheduleRepeatingTimer(function()
 							Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
-						end, 0.1)
+					end, 0.1)
 				end
 			end
 		else
@@ -2083,10 +2082,10 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do
-		local kpos = k:gsub("^~", "")
+			local kpos = k:gsub("^~", "")
 			if Parrot_TriggerConditions:SecondaryIsExclusive(kpos) then
 				if not t.secondaryConditions[k] and not t.secondaryConditions["~" .. k]
-						and not t.secondaryConditions[kpos] then
+				and not t.secondaryConditions[kpos] then
 					tmp[k] = v
 				end
 			else
@@ -2140,7 +2139,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					func = remove,
 					arg = t,
 					-- TODO confirm
---					confirm = L["Are you sure?"],
+					-- confirm = L["Are you sure?"],
 					order = -2,
 				},
 				color = {
@@ -2239,7 +2238,7 @@ function Parrot_Triggers:OnOptionsCreate()
 							name = L["Font face"],
 							desc = L["Font face"],
 							values = Parrot.inheritFontChoices,
---							choiceFonts = SharedMedia:HashTable('font'),
+							--							choiceFonts = SharedMedia:HashTable('font'),
 							get = getFontFace,
 							set = setFontFace,
 							arg = t,
@@ -2281,7 +2280,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				},
 				primary = {
 					type = 'group',
---					inline = true,
+					--					inline = true,
 					name = L["Primary conditions"],
 					desc = L["When any of these conditions apply, the secondary conditions are checked."],
 					args = {
@@ -2299,7 +2298,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				},
 				secondary = {
 					type = 'group',
---					inline = true,
+					--					inline = true,
 					name = L["Secondary conditions"],
 					desc = L["When all of these conditions apply, the trigger will be shown."],
 					args = {

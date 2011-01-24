@@ -57,24 +57,24 @@ local EnvironmentalParser = {
 }
 
 local function retrieveAlternatePowerName(self, key)
-  if key == ALTERNATE_POWER_INDEX then
-    return UnitAlternatePowerInfo("player")
-  end
+	if key == ALTERNATE_POWER_INDEX then
+		return UnitAlternatePowerInfo("player")
+	end
 end
 
 local PowerTypeParser = setmetatable({
-	[-2] = HEALTH,
-	[0] = MANA,
-	[1] = RAGE,
-	[2] = FOCUS,
-	[3] = ENERGY,
-	[4] = HAPPINESS,
-	[5] = RUNES,
-	[6] = RUNIC_POWER,
-	[7] = SOUL_SHARDS,
-	[8] = ECLIPSE,
-	[9] = HOLY_POWER,
-}, { __index = retrieveAlternatePowerName, })
+		[-2] = HEALTH,
+		[0] = MANA,
+		[1] = RAGE,
+		[2] = FOCUS,
+		[3] = ENERGY,
+		[4] = HAPPINESS,
+		[5] = RUNES,
+		[6] = RUNIC_POWER,
+		[7] = SOUL_SHARDS,
+		[8] = ECLIPSE,
+		[9] = HOLY_POWER,
+	}, { __index = retrieveAlternatePowerName, })
 
 -- lookup-table for damage-types
 local LS = {
@@ -336,7 +336,7 @@ end
 
 -- check if the it's a full overheal and should be hidden
 local function checkFullOverheal(_, _, _, _, _, _,_, _, _, amount,
-		overheal)
+	overheal)
 	if db1.profile.hideFullOverheals ~= true then
 		return true
 	else
@@ -346,7 +346,7 @@ end
 
 -- check player's heals
 local function checkPlayerIncHeal(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, _, _, amount,
-		overheal)
+	overheal)
 	return srcGUID ~= dstGUID and dstGUID == playerGUID
 end
 local function checkPlayerIncHoT(...)
@@ -354,7 +354,7 @@ local function checkPlayerIncHoT(...)
 end
 
 local function checkPlayerOutHeal(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, amount,
-		overheal)
+	overheal)
 	return srcGUID ~= dstGUID and srcGUID == playerGUID and not checkFlags(dstFlags, PET_FLAGS)
 end
 local function checkPlayerOutHoT(...)
@@ -362,7 +362,7 @@ local function checkPlayerOutHoT(...)
 end
 
 local function checkPlayerSelfHeal(srcGUID, _, _, dstGUID, _, _,_, _, _, amount,
-		overheal)
+	overheal)
 	return srcGUID == dstGUID and dstGUID == playerGUID
 end
 local function checkPlayerSelfHoT(...)
@@ -371,7 +371,7 @@ end
 
 -- check pet heal
 local function checkPetIncHeal(srcGUID, _, _, dstGUID, _, dstFlags,_, _, _,
-		amount,	overheal)
+	amount,	overheal)
 
 	local good = checkFlags(dstFlags, PET_FLAGS)
 	if not good and db1.profile.totemEvents then
@@ -380,7 +380,7 @@ local function checkPetIncHeal(srcGUID, _, _, dstGUID, _, dstFlags,_, _, _,
 	return good
 end
 local function checkPetOutHeal(srcGUID, _, srcFlags, dstGUID, _, _,_, _, _,
-		amount,	overheal)
+	amount,	overheal)
 	local good = srcGUID ~= dstGUID and dstGUID ~= playerGUID
 	if not good then return false end
 	good = checkFlags(srcFlags, PET_FLAGS)
@@ -515,7 +515,7 @@ local function killingBlowThrottleFunc(info)
 		-- just one hit
 		return nil
 	else -- >= 2
-		 return string.format(" (%d)",format(numNorm))
+		return string.format(" (%d)",format(numNorm))
 	end
 end
 
@@ -561,10 +561,10 @@ local meleeThrottle = {
 }
 
 local missThrottle = {
-	 "Avoids",
-	 'missType',
-	 { 'throttleCount', missThrottleFunc, },
-	 sourceName = L["Multiple"],
+	"Avoids",
+	'missType',
+	{ 'throttleCount', missThrottleFunc, },
+	sourceName = L["Multiple"],
 }
 
 local skillThrottle = {
@@ -1798,21 +1798,21 @@ for k,v in pairs(missTypes) do
 	end
 
 	Parrot:RegisterCombatEvent{
-	category = "Outgoing",
-	subCategory = L["Pet misses"],
-	name = name,
-	localName = L[name],
-	defaultTag = tag,
-	combatLogEvents = {
-		SPELL_MISSED = { check = check, },
-		SPELL_PERIODIC_MISSED = { check = check, },
-		RANGE_MISSED = { check = check, },
-	},
-	tagTranslations = outSpellMissTagTranslations,
-	tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
-	throttle = missThrottle,
-	color = petMissColor[k] or defaultMissColor[k],
-}
+		category = "Outgoing",
+		subCategory = L["Pet misses"],
+		name = name,
+		localName = L[name],
+		defaultTag = tag,
+		combatLogEvents = {
+			SPELL_MISSED = { check = check, },
+			SPELL_PERIODIC_MISSED = { check = check, },
+			RANGE_MISSED = { check = check, },
+		},
+		tagTranslations = outSpellMissTagTranslations,
+		tagTranslationsHelp = petOutSpellMissTagTranslationsHelp,
+		throttle = missThrottle,
+		color = petMissColor[k] or defaultMissColor[k],
+	}
 end
 
 --[[============================================================================
@@ -1922,8 +1922,8 @@ Parrot:RegisterCombatEvent{
 		Type = powerTypeString,
 		Skill = retrieveAbilityName,
 		Name = function(info)
-				return info.recipientName or info.sourceName
-			end,
+			return info.recipientName or info.sourceName
+		end,
 		Icon = retrieveIconFromAbilityName,
 	},
 	tagTranslationsHelp = {
@@ -1935,7 +1935,7 @@ Parrot:RegisterCombatEvent{
 	color = "ffff00", -- yellow
 	throttle = powerGainThrottle,
 	filterType = { "Power gain", function(info)
-		return info.amountGained or info.amount
+			return info.amountGained or info.amount
 	end}
 }
 
@@ -2054,9 +2054,9 @@ function round(num, idp)
 end
 
 local function parseHonorUpdate(event, amount)
-  if event == "HONOR_GAINED" then
-    return newDict("amount", round(amount, 3))
-  end
+	if event == "HONOR_GAINED" then
+		return newDict("amount", round(amount, 3))
+	end
 end
 
 Parrot:RegisterCombatEvent{

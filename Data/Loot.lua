@@ -24,9 +24,9 @@ local function parse_CHAT_MSG_LOOT(chatmsg)
 	if not itemLink then
 		itemLink, amount = Deformat(chatmsg, LOOT_ITEM_PUSHED_SELF_MULTIPLE)
 	end
---	if not itemLink then
---		itemLink, amount = Deformat(chatmsg, LOOT_ITEM_CREATED_SELF_MULTIPLE)
---	end
+	--	if not itemLink then
+	--		itemLink, amount = Deformat(chatmsg, LOOT_ITEM_CREATED_SELF_MULTIPLE)
+	--	end
 
 	-- check for single-itemloot
 	if not itemLink then
@@ -35,9 +35,9 @@ local function parse_CHAT_MSG_LOOT(chatmsg)
 	if not itemLink then
 		itemLink, amount = Deformat(chatmsg, LOOT_ITEM_PUSHED_SELF)
 	end
---	if not itemLink then
---		itemLink, amount = Deformat(chatmsg, LOOT_ITEM_CREATED_SELF)
---	end
+	--	if not itemLink then
+	--		itemLink, amount = Deformat(chatmsg, LOOT_ITEM_CREATED_SELF)
+	--	end
 
 	-- if something has been looted
 	if itemLink then
@@ -58,7 +58,7 @@ if select(2,UnitClass("player")) == "WARLOCK" then
 		local itemLink = Deformat(chatmsg, LOOT_ITEM_CREATED_SELF)
 		if itemLink and itemLink:match(SOULSHARDNAME) then
 			return  newDict("itemLink", itemLink,
-					"itemName", SOULSHARDNAME)
+			"itemName", SOULSHARDNAME)
 		end
 	end
 
@@ -194,9 +194,9 @@ Parrot:RegisterCombatEvent{
 				return ("%d|cffeda55f%s|r"):format(value, COPPER_ABBR)
 			end
 		end,
---		Icon = function()
---			return ""
---		end
+		--		Icon = function()
+		--			return ""
+		--		end
 	},
 	tagTranslationHelp = {
 		Amount = L["The amount of gold looted."],
@@ -205,16 +205,16 @@ Parrot:RegisterCombatEvent{
 	blizzardEvents = {
 		["CHAT_MSG_MONEY"] = {
 			parse = function(chatmsg)
-					local moneystring = Deformat(chatmsg, LOOT_MONEY_SPLIT) or Deformat(chatmsg, YOU_LOOT_MONEY)
-					if moneystring then
-						local gold = (Deformat(chatmsg:match(GOLD_AMOUNT_inv) or "", GOLD_AMOUNT)) or 0
-						local silver = (Deformat(chatmsg:match(SILVER_AMOUNT_inv) or "", SILVER_AMOUNT)) or 0
-						local copper = (Deformat(chatmsg:match(COPPER_AMOUNT_inv) or "", COPPER_AMOUNT)) or 0
-						return {
-							amount = 10000*gold + 100 * silver + copper
-						}
-					end
-				end,
+				local moneystring = Deformat(chatmsg, LOOT_MONEY_SPLIT) or Deformat(chatmsg, YOU_LOOT_MONEY)
+				if moneystring then
+					local gold = (Deformat(chatmsg:match(GOLD_AMOUNT_inv) or "", GOLD_AMOUNT)) or 0
+					local silver = (Deformat(chatmsg:match(SILVER_AMOUNT_inv) or "", SILVER_AMOUNT)) or 0
+					local copper = (Deformat(chatmsg:match(COPPER_AMOUNT_inv) or "", COPPER_AMOUNT)) or 0
+					return {
+						amount = 10000*gold + 100 * silver + copper
+					}
+				end
+			end,
 		}
 	}
 }

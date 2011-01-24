@@ -44,9 +44,6 @@ function Parrot_Suppressions:OnOptionsCreate()
 		args = {},
 		order = 10,
 	}
---	local function ret(...)
---		return ...
---	end
 	local function makeValidateString(key)
 		return function(value)
 			if key == value then

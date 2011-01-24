@@ -516,22 +516,22 @@ local function makeflasher()
 	flasher:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",})
 	flasher:SetAllPoints( UIParent)
 	flasher:SetScript("OnShow", function (self)
-		self.elapsed = 0
-		self:SetAlpha(0)
+			self.elapsed = 0
+			self:SetAlpha(0)
 	end)
 	flasher:SetScript("OnUpdate", function (self, elapsed)
-		elapsed = self.elapsed + elapsed
-		if elapsed >= 1 then
-			self:Hide()
-			self:SetAlpha(0)
-			return
-		end
-		local alpha = 1 - math.abs(elapsed - 0.5)
-		if elapsed > 0.2 then
-			--alpha = 0.4 - alpha
-		end
-		self:SetAlpha(alpha * 0.7)
-		self.elapsed = elapsed
+			elapsed = self.elapsed + elapsed
+			if elapsed >= 1 then
+				self:Hide()
+				self:SetAlpha(0)
+				return
+			end
+			local alpha = 1 - math.abs(elapsed - 0.5)
+			if elapsed > 0.2 then
+				--alpha = 0.4 - alpha
+			end
+			self:SetAlpha(alpha * 0.7)
+			self.elapsed = elapsed
 	end)
 	flasher:Hide()
 end

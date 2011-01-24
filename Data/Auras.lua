@@ -55,8 +55,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-					return auraType == "BUFF" and dstGUID == UnitGUID("player")
-				end,
+				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+			end,
 		},
 	},
 	tagTranslations = {
@@ -78,8 +78,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
-				end,
+				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+			end,
 		},
 	},
 	tagTranslations = {
@@ -102,8 +102,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-					return auraType == "BUFF" and dstGUID == UnitGUID("player")
-				end,
+				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+			end,
 		}
 	},
 	tagTranslations = {
@@ -127,8 +127,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
-				end,
+				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+			end,
 		}
 	},
 	tagTranslations = {
@@ -152,8 +152,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-					return auraType == "BUFF" and dstGUID == UnitGUID("player")
-				end,
+				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+			end,
 		},
 	},
 	tagTranslations = {
@@ -175,8 +175,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-					return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
-				end,
+				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+			end,
 
 		},
 	},
@@ -202,8 +202,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-					return auraType == "BUFF" and dstGUID == UnitGUID("target")
-				end,
+				return auraType == "BUFF" and dstGUID == UnitGUID("target")
+			end,
 		}
 	},
 	tagTranslations = {
@@ -228,8 +228,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-					return auraType == "BUFF" and dstGUID == UnitGUID("target")
-				end,
+				return auraType == "BUFF" and dstGUID == UnitGUID("target")
+			end,
 		}
 	},
 
@@ -261,8 +261,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
-					return auraType == "BUFF" and checkFlags(dstFlags, PET_FLAGS)
-				end,
+				return auraType == "BUFF" and checkFlags(dstFlags, PET_FLAGS)
+			end,
 		},
 	},
 	tagTranslations = {
@@ -287,8 +287,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
-					return auraType == "DEBUFF" and checkFlags(dstFlags, PET_FLAGS)
-				end,
+				return auraType == "DEBUFF" and checkFlags(dstFlags, PET_FLAGS)
+			end,
 		},
 	},
 	tagTranslations = {
@@ -313,8 +313,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
-					return auraType == "BUFF" and checkFlags(dstFlags, PET_FLAGS)
-				end,
+				return auraType == "BUFF" and checkFlags(dstFlags, PET_FLAGS)
+			end,
 		},
 	},
 	tagTranslations = {
@@ -340,8 +340,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
-					return auraType == "DEBUFF" and checkFlags(dstFlags, PET_FLAGS)
-				end,
+				return auraType == "DEBUFF" and checkFlags(dstFlags, PET_FLAGS)
+			end,
 		},
 	},
 	tagTranslations = {
@@ -370,8 +370,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
-					return auraType == "BUFF" and checkFlags(dstFlags, HOSTILE)
-				end,
+				return auraType == "BUFF" and checkFlags(dstFlags, HOSTILE)
+			end,
 		},
 	},
 	tagTranslations = {
@@ -396,8 +396,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
-					return auraType == "DEBUFF" and checkFlags(dstFlags, HOSTILE)
-				end,
+				return auraType == "DEBUFF" and checkFlags(dstFlags, HOSTILE)
+			end,
 		},
 	},
 	tagTranslations = {
@@ -422,8 +422,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
-					return auraType == "BUFF" and checkFlags(dstFlags, HOSTILE)
-				end,
+				return auraType == "BUFF" and checkFlags(dstFlags, HOSTILE)
+			end,
 		},
 	},
 	tagTranslations = {
@@ -449,8 +449,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, dstFlags, _, _, _, auraType)
-					return auraType == "DEBUFF" and checkFlags(dstFlags, HOSTILE)
-				end,
+				return auraType == "DEBUFF" and checkFlags(dstFlags, HOSTILE)
+			end,
 		},
 	},
 	tagTranslations = {
@@ -470,7 +470,7 @@ Parrot:RegisterCombatEvent{
 -- Item Buffs
 --============================================================================]]
 local function parseItembuff(srcGUID, srcName, srcFlags, dstGUID, dstName,
-		dstFlags, spellName, itemId, itemName)
+	dstFlags, spellName, itemId, itemName)
 	local info = newList()
 	info.itemId = itemId
 	info.abilityName = spellName
@@ -487,8 +487,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		ENCHANT_APPLIED = {
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			func = parseItembuff,
 		},
 	},
@@ -515,8 +515,8 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		ENCHANT_REMOVED = {
 			check = function(_, _, _, dstGUID)
-					return dstGUID == UnitGUID("player")
-				end,
+				return dstGUID == UnitGUID("player")
+			end,
 			func = parseItembuff,
 		},
 	},
@@ -677,11 +677,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 	},
 	check = function(ref, info)
-			if not ref.amount then
-				return false
-			end
-			return compareUnitAndSpell(ref, info) and ref.amount == info.amount
-		end,
+		if not ref.amount then
+			return false
+		end
+		return compareUnitAndSpell(ref, info) and ref.amount == info.amount
+	end,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {
@@ -821,7 +821,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 	subCategory = L["Auras"],
 	name = "Buff inactive",
 	localName = L["Buff inactive"],
---	notLocalName = L["Aura active"],
+	--	notLocalName = L["Aura active"],
 	defaultParam = {
 		unit = "player",
 	},
@@ -872,7 +872,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 	subCategory = L["Auras"],
 	name = "Buff active",
 	localName = L["Buff active"],
---	notLocalName = L["Aura active"],
+	--	notLocalName = L["Aura active"],
 	defaultParam = {
 		unit = "player",
 	},
@@ -978,7 +978,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 	subCategory = L["Auras"],
 	name = "Debuff active",
 	localName = L["Debuff active"],
---	notLocalName = L["Aura active"],
+	--	notLocalName = L["Aura active"],
 	defaultParam = {
 		unit = "player",
 	},
@@ -1020,7 +1020,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		else
 			return false
 		end
---		return not UnitAura(param.unit, param.spell or "")
+		--		return not UnitAura(param.unit, param.spell or "")
 	end,
 }
 

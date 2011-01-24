@@ -39,8 +39,8 @@ local dbDefaults = {
 		['*'] = {
 			['*'] = {}
 		},
-		dbver = 0, -- this must remain 0 so that users upgrading from verions
-		           -- with no dbver run through all update-functions
+		dbver = 0, --[[this must remain 0 so that users upgrading from verions
+		with no dbver run through all update-functions --]]
 		cancelUIDSoon = true,
 		filters = {},
 		sfilters = {},
@@ -139,23 +139,23 @@ local db
 --]]
 local updateDBFuncs = {
 	[1] = function()
-			local entry = db.Notification["Skill cooldown finish"]
-			if entry and entry.tag then
-				entry.tag = entry.tag:gsub("%[Skill%]","[Spell]")
-			end
-		end,
+		local entry = db.Notification["Skill cooldown finish"]
+		if entry and entry.tag then
+			entry.tag = entry.tag:gsub("%[Skill%]","[Spell]")
+		end
+	end,
 	[2] = function()
-			local entry = db.Notification["Skill gains"]
-			if entry and entry.tag then
-				entry.tag = entry.tag:gsub("%[Skill%]","[Skillname]")
-			end
-		end,
+		local entry = db.Notification["Skill gains"]
+		if entry and entry.tag then
+			entry.tag = entry.tag:gsub("%[Skill%]","[Skillname]")
+		end
+	end,
 	[3] = function()
-			db.hideRealm = not Parrot.db1.profile.showNameRealm
-			Parrot.db1.profile.showNameRealm = nil
-			db.totemEvents = Parrot.db1.profile.totemDamage
-			Parrot.db1.profile.totemDamage = nil
-		end,
+		db.hideRealm = not Parrot.db1.profile.showNameRealm
+		Parrot.db1.profile.showNameRealm = nil
+		db.totemEvents = Parrot.db1.profile.totemDamage
+		Parrot.db1.profile.totemDamage = nil
+	end,
 }
 
 function Parrot_CombatEvents:OnNewProfile(t, key)
@@ -240,7 +240,7 @@ function Parrot_CombatEvents:OnEnable(first)
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
---	Parrot:RegisterOnUpdate(self.OnUpdate)
+	--	Parrot:RegisterOnUpdate(self.OnUpdate)
 end
 
 local onDisableFuncs = {}
@@ -392,7 +392,7 @@ local function refreshEventRegistration(category, name)
 	else
 		if blizzardEvent then
 			Parrot:RegisterBlizzardEvent(self, blizzardEvent_ev, function(uid, event, ...)
---					debug("bla: ", ...)
+					--					debug("bla: ", ...)
 					local info = newList(...)
 					info.uid = uid
 					info.event = event
@@ -400,7 +400,7 @@ local function refreshEventRegistration(category, name)
 					info = del(info)
 				end
 			)
---[[			Parrot_CombatEvents:AddEventListener(blizzardEvent_ev, function(ns, event, ...)
+			--[[			Parrot_CombatEvents:AddEventListener(blizzardEvent_ev, function(ns, event, ...)
 --			Parrot_CombatEvents:AddEventListener(blizzardEvent_ns, blizzardEvent_ev, function(ns, event, ...)
 				local info = newList(...)
 				info.namespace = ns
@@ -523,18 +523,18 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						name = L["Disable in 10-man raids"],
 						desc = L["Disable CombatEvents when in a 10-man raid instance"],
 						set = function(info, value)
-								setOption(info, value)
-								Parrot_CombatEvents:check_raid_instance()
-							end,
+							setOption(info, value)
+							Parrot_CombatEvents:check_raid_instance()
+						end,
 					},
 					disable_in_25man = {
 						type = 'toggle',
 						name = L["Disable in 25-man raids"],
 						desc = L["Disable CombatEvents when in a 25-man raid instance"],
 						set = function(info, value)
-								setOption(info, value)
-								Parrot_CombatEvents:check_raid_instance()
-							end,
+							setOption(info, value)
+							Parrot_CombatEvents:check_raid_instance()
+						end,
 					},
 				},
 			},
@@ -585,9 +585,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				name = L["Hide events used in triggers"],
 				desc = L["Hides combat events when they were used in triggers"],
 				set = function(info, value)
-						setOption(info, value)
-						cancelUIDSoonEnabled = value
-					end,
+					setOption(info, value)
+					cancelUIDSoonEnabled = value
+				end,
 			},
 			Incoming = {
 				type = 'group',
@@ -720,7 +720,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							L["Do not shorten spell names."], L["Abbreviate"],
 							L["Gift of the Wild => GotW."], L["Truncate"],
 							L["Gift of the Wild => Gift of t..."]),
-							order = 3,
+						order = 3,
 					},
 				},
 			},
@@ -1479,7 +1479,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				},
 				-- TODO what to do when table-entry is active
 				-- disable for now
---[[				waitStyle = {
+				--[[				waitStyle = {
 					type = 'toggle',
 					name = "TODO waitStyle",
 					desc = "TODO waitStyle",
@@ -1653,7 +1653,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 	if data.combatLogEvents then
 		for eventType, v in pairs(data.combatLogEvents) do
 			if type(v.func) ~= 'function' then
-			--	error(("Bad argument #2 to `RegisterCombatEvent'. func must be a %q, got %q."):format("function", type(v.func)))
+				--	error(("Bad argument #2 to `RegisterCombatEvent'. func must be a %q, got %q."):format("function", type(v.func)))
 			end
 			if not combatLogEvents[eventType] then
 				combatLogEvents[eventType] = {}
@@ -1784,8 +1784,8 @@ local function handler(literal)
 end
 
 local function round(num, idp)
-  local mult = 10^(idp or 0)
-  return math.floor(num * mult + 0.5) / mult
+	local mult = 10^(idp or 0)
+	return math.floor(num * mult + 0.5) / mult
 end
 
 local function shortenAmount(val)
@@ -1803,12 +1803,12 @@ local function shortenAmount(val)
 end
 
 function Parrot_CombatEvents:ShortenAmount(val)
-  if not self.db1.profile.shortenAmount then
-    return val
-  end
-  debug("pre: ", val / 1e3)
-  debug(val, " shortened: ", shortenAmount(val))
-  return shortenAmount(val)
+	if not self.db1.profile.shortenAmount then
+		return val
+	end
+	debug("pre: ", val / 1e3)
+	debug(val, " shortened: ", shortenAmount(val))
+	return shortenAmount(val)
 end
 
 local modifiersWithAmount = {
@@ -1821,9 +1821,9 @@ local modifiersWithAmount = {
 }
 
 local modifiersWithFlag = {
-  "glancing",
-  "crushing",
-  "crit",
+	"glancing",
+	"crushing",
+	"crit",
 }
 
 local modifierTranslations = {}
@@ -1831,25 +1831,25 @@ local modifierTranslations = {}
 for k,v in pairs(modifiersWithAmount) do
 	-- local valAmountKey = v .. "Amount"
 	modifierTranslations[k] = { Amount = function(info)
-		local db = Parrot_CombatEvents.db1.profile.modifier
-		local val = Parrot_CombatEvents:ShortenAmount(info[v])
-		if db.color then
-			return "|cff" .. db[k].color .. val .. "|r"
-		else
-			return val
-		end
+			local db = Parrot_CombatEvents.db1.profile.modifier
+			local val = Parrot_CombatEvents:ShortenAmount(info[v])
+			if db.color then
+				return "|cff" .. db[k].color .. val .. "|r"
+			else
+				return val
+			end
 	end }
 end
 
 for _,v in ipairs(modifiersWithFlag) do
-  modifierTranslations[v] = { Text = function(info)
-    local db = Parrot_CombatEvents.db1.profile.modifier
-    if db.color then
-      return "|r" .. info[1] .. "|cff" .. db[v].color
-    else
-      return info[1]
-    end
-  end }
+	modifierTranslations[v] = { Text = function(info)
+			local db = Parrot_CombatEvents.db1.profile.modifier
+			if db.color then
+				return "|r" .. info[1] .. "|cff" .. db[v].color
+			else
+				return info[1]
+			end
+	end }
 end
 
 modifierTranslationHelps = {
@@ -1957,11 +1957,11 @@ function Parrot_CombatEvents:CancelEventsWithUID(uid)
 	end
 	local i = #nextFrameCombatEvents
 	while i >= 1 do
-		     local v = nextFrameCombatEvents[i]
-		     if v and uid == v[3].uid then
-		             table.remove(nextFrameCombatEvents, i)
-		     end
-		     i = i - 1
+		local v = nextFrameCombatEvents[i]
+		if v and uid == v[3].uid then
+			table.remove(nextFrameCombatEvents, i)
+		end
+		i = i - 1
 	end
 	cancelUIDSoon[uid] = true
 end
@@ -2144,7 +2144,7 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 
 	if #nextFrameCombatEvents == 0 then
 		combatTimerFrame:Show()
---		Parrot_CombatEvents:ScheduleRepeatingTimer(runCachedEvents, 0.1)
+		--		Parrot_CombatEvents:ScheduleRepeatingTimer(runCachedEvents, 0.1)
 	end
 
 	nextFrameCombatEvents[#nextFrameCombatEvents+1] = newList(category, name, infoCopy)
@@ -2339,7 +2339,7 @@ function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
 	if handlers then
 		for i,v in ipairs(handlers) do
 			if type(v.check) ~= 'function' then
---				debug(uid, " ", eventName)
+				--				debug(uid, " ", eventName)
 			end
 			if v.check(...) then
 				local info = v.parse(...)
@@ -2363,7 +2363,7 @@ local function sfiltered(info)
 	local filter = db.sfilters[tostring(info.spellID)] or db.sfilters[info.abilityName]
 	if filter and (not filter.amount or (filter.amount > (info.realAmount or info.amount or 0))) then
 		if (filter.inc and playerGUID == info.recipientID) or
-			(filter.out and playerGUID == info.sourceID) then
+		(filter.out and playerGUID == info.sourceID) then
 			return true
 		end
 	end
@@ -2374,17 +2374,17 @@ end
 local moreParams = {
 	DAMAGE_SHIELD = { "spellId", "spellName", "spellSchool", "amount",
 		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
-		"glancing", "crushing", },
+	"glancing", "crushing", },
 	DAMAGE_SPLIT = { "spellId", "spellName", "spellSchool", "amount",
 		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
-		"glancing", "crushing", },
+	"glancing", "crushing", },
 	ENVIRONMENTAL_DAMAGE = { "environmentalType", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
 	PARTY_KILL = { },
 	RANGE_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
 	RANGE_MISSED = { "spellId", "spellName", "spellSchool", "missType", "amountMissed", },
 	SPELL_BUILDING_DAMAGE = { "spellId", "spellName", "spellSchool", "amount",
 		"overkill", "school", "resisted", "blocked", "absorbed", "critical",
-		"glancing", "crushing", },
+	"glancing", "crushing", },
 	SPELL_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
 	SPELL_DISPEL = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", "auraType", },
 	SPELL_DISPEL_FAILED = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", },
@@ -2465,11 +2465,11 @@ local FLAGS_RELEVANT = bit.bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJE
 local bit_band = bit.band
 local function checkForRelevance(sourceFlags, destFlags)
 	return bit_band(sourceFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT or
-		bit_band(destFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT
+	bit_band(destFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT
 end
 
 function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType,
-		sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
+	sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
 	if not self:IsEnabled() then -- TODO remove
 		return
 	end
