@@ -1,3 +1,6 @@
+v1.10.24:
+* properly display alternate powertypes (like Sound or Corruption)
+
 v1.10.23:
 * add "Cast started"-Trigger condition
 
