@@ -58,7 +58,7 @@ local EnvironmentalParser = {
 
 local function retrieveAlternatePowerName(self, key)
 	if key == ALTERNATE_POWER_INDEX then
-		return UnitAlternatePowerInfo("player")
+		return select(10, UnitAlternatePowerInfo("player"))
 	end
 end
 
