@@ -994,15 +994,61 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_CAST_SUCCESS",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName )
-				return ("%s,%s,%s"):format(srcName or "", dstName or "", spellName or "")
+				local info = newList()
+				info.srcGUID = srcGUID
+				info.spellId = spellId
+				info.spellName = spellName
+				return info
 			end,
 		},
 	},
-	-- TODO
 	param = {
-		type = 'string',
-		usage = L["<Sourcename>,<Destinationname>,<Spellname>"],
+		type = 'group',
+		args = {
+			unit = {
+				name = L["Unit"],
+				desc = L["The unit that casted the spell"],
+				type = 'select',
+				values = unitChoices,
+			},
+			friendly = {
+				type = 'select',
+				name = L["Hostility"],
+				desc = L["Whether the unit should be friendly or hostile"],
+				values = friendlyChoices,
+			},
+			spell = {
+				name = L["Spell"],
+				desc = L["Spell name or spell id"],
+				type = 'input',
+			},
+		},
 	},
+	check = function(ref, info)
+		debug("checking")
+		-- check if ref is complete
+		if not (ref.unit and ref.friendly and ref.spell) then
+			return false
+		end
+		if UnitGUID(ref.unit) ~= info.srcGUID then
+			return
+		end
+		-- check the friendly-flag
+		if ref.friendly >= 0 then
+			if not (ref.friendly == 0 and (UnitIsFriend("player", ref.unit) == nil)) then
+				return
+			end
+			if ref.friendly ~= UnitIsFriend("player", ref.unit) then
+				return
+			end
+		end
+		local spell = tonumber(ref.spell)
+		if spell then
+			return info.spellId == spell
+		else
+			return info.spellName == ref.spell
+		end
+	end,
 }
 
 Parrot:RegisterSecondaryTriggerCondition {
