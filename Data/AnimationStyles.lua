@@ -496,7 +496,7 @@ Parrot:RegisterAnimationStyle({
 			local base
 			if dir == "RIGHT" then
 				base = 0
-			elseif dir == "TOP" then
+			elseif dir == "UP" then
 				base = 90
 			elseif dir == "LEFT" then
 				base = 180
@@ -570,7 +570,7 @@ Parrot:RegisterAnimationStyle({
 			local base
 			if dir == "RIGHT" then
 				base = 0
-			elseif dir == "TOP" then
+			elseif dir == "UP" then
 				base = 90
 			elseif dir == "LEFT" then
 				base = 180
