@@ -335,44 +335,37 @@ local function checkPetOut(srcGUID, _, srcFlags)
 end
 
 -- check if the it's a full overheal and should be hidden
-local function checkFullOverheal(_, _, _, _, _, _,_, _, _, amount,
-	overheal)
-	if db1.profile.hideFullOverheals ~= true then
-		return true
-	else
-		return (amount - overheal) > 0
-	end
+local function checkFullOverheal(t, amount, overheal)
+	return bit_band(db1.profile.hideFullOverheals, t) == 0 or (amount - overheal) > 0
 end
 
 -- check player's heals
-local function checkPlayerIncHeal(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, _, _, amount,
-	overheal)
-	return srcGUID ~= dstGUID and dstGUID == playerGUID
+local function checkPlayerIncHeal(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, _, _, amount, overheal)
+	return srcGUID ~= dstGUID and dstGUID == playerGUID and checkFullOverheal(2, amount, overheal)
 end
-local function checkPlayerIncHoT(...)
-	return checkPlayerIncHeal(...) and checkFullOverheal(...)
+local function checkPlayerIncHoT(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, _, _, amount, overheal)
+	return srcGUID ~= dstGUID and dstGUID == playerGUID and checkFullOverheal(1, amount, overheal)
 end
 
 local function checkPlayerOutHeal(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, amount,
 	overheal)
-	return srcGUID ~= dstGUID and srcGUID == playerGUID and not checkFlags(dstFlags, PET_FLAGS)
+	return srcGUID ~= dstGUID and srcGUID == playerGUID and not checkFlags(dstFlags, PET_FLAGS) and checkFullOverheal(2, amount, overheal)
 end
-local function checkPlayerOutHoT(...)
-	return checkPlayerOutHeal(...) and checkFullOverheal(...)
+local function checkPlayerOutHoT(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, _, _, amount, overheal)
+	return srcGUID ~= dstGUID and srcGUID == playerGUID and not checkFlags(dstFlags, PET_FLAGS) and checkFullOverheal(1, amount, overheal)
 end
 
 local function checkPlayerSelfHeal(srcGUID, _, _, dstGUID, _, _,_, _, _, amount,
 	overheal)
-	return srcGUID == dstGUID and dstGUID == playerGUID
+	return srcGUID == dstGUID and dstGUID == playerGUID and checkFullOverheal(2, amount, overheal)
 end
-local function checkPlayerSelfHoT(...)
-	return checkPlayerSelfHeal(...) and checkFullOverheal(...)
+local function checkPlayerSelfHoT(srcGUID, _, srcFlags, dstGUID, _, dstFlags,_, _, _, amount, overheal)
+	return srcGUID == dstGUID and dstGUID == playerGUID and checkFullOverheal(1, amount, overheal)
 end
 
 -- check pet heal
 local function checkPetIncHeal(srcGUID, _, _, dstGUID, _, dstFlags,_, _, _,
 	amount,	overheal)
-
 	local good = checkFlags(dstFlags, PET_FLAGS)
 	if not good and db1.profile.totemEvents then
 		good = checkFlags(dstFlags, GUARDIAN_FLAGS)

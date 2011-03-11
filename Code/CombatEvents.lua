@@ -52,7 +52,7 @@ local dbDefaults = {
 		stickyCrit = true,
 		disable_in_10man = false,
 		disable_in_25man = false,
-		hideFullOverheals = true,
+		hideFullOverheals = 1,
 		hideSkillNames = false,
 		hideUnitNames = false,
 		shortenAmount = false,
@@ -544,9 +544,15 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				inline = true,
 				args = {
 					hideFullOverheals = {
-						type = 'toggle',
+						type = 'select',
 						name = L["Hide full overheals"],
 						desc = L["Do not show heal events when 100% of the amount is overheal"],
+						values = {
+							[0] = L["Off"],
+							[1] = L["Only HoTs"],
+							[2] = L["Only direct Heals"],
+							[3] = L["On"],
+						}
 					},
 					hideSkillNames = {
 						type = 'toggle',
