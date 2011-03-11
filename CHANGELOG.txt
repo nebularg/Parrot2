@@ -1,3 +1,7 @@
+v1.10.25:
+* fix bug in alternate power bars text
+* extended options to hide full overheals (Hots/direct heals)
+
 v1.10.24:
 * properly display alternate powertypes (like Sound or Corruption)
 
