@@ -2041,31 +2041,34 @@ Parrot:RegisterCombatEvent{
 -- Point gains
 --============================================================================]]
 
-local function round(num, idp)
-	local mult = 10^(idp or 0)
-	return math.floor(num * mult + 0.5) / mult
-end
-
-local function parseHonorUpdate(event, amount)
-	if event == "HONOR_GAINED" then
-		return newDict("amount", round(amount, 3))
+local function parseCurrencyUpdate(message)
+	local currency, amount = deformat(message, CURRENCY_GAINED_MULTIPLE)
+	if not currency then
+		currency = deformat(message, CURRENCY_GAINED)
+		if not currency then
+			return
+		end
+		amount = 1
 	end
+	return newDict("currency", currency, "amount", amount)
 end
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",
-	name = "Honor gains",
-	localName = L["Honor gains"],
-	defaultTag = "+[Amount] " .. HONOR_CONTRIBUTION_POINTS,
+	name = "Currency gains",
+	localName = L["Currency gains"],
+	defaultTag = "+[Amount] [Currency]",
 	tagTranslations = {
 		Amount = "amount",
+		Currency = "currency",
 	},
 	tagTranslationHelp = {
-		Amount = L["The amount of honor gained."],
+		Amount = L["The amount of currency gained."],
+		Name = L["Name of the currency"],
 	},
 	color = "7f7fb2", -- blue-gray
 	blizzardEvents = {
-		COMBAT_TEXT_UPDATE = { parse = parseHonorUpdate, },
+		CHAT_MSG_CURRENCY = { parse = parseCurrencyUpdate, },
 	}
 }--]]
 
