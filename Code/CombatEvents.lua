@@ -1158,7 +1158,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					type = 'range',
 					name = L["Font size"],
 					desc = L["Font size"],
-					min = 12,
+					min = 6,
 					max = 30,
 					step = 1,
 					get = getFontSize,
