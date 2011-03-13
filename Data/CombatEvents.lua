@@ -2041,6 +2041,13 @@ Parrot:RegisterCombatEvent{
 -- Point gains
 --============================================================================]]
 
+local currencies = { 241, 402, 390, 81, 61, 398, 384, 393, 392, 361, 395, 400, 394, 397, 391, 401, 385, 396, 399, }
+local currencyIcons = {}
+for _,v in ipairs(currencies) do
+	local name, amount, icon = GetCurrencyInfo(v)
+	currencyIcons[name] = [[Interface\Icons\]] .. icon
+end
+
 local function parseCurrencyUpdate(message)
 	local currency, amount = deformat(message, CURRENCY_GAINED_MULTIPLE)
 	if not currency then
@@ -2050,7 +2057,8 @@ local function parseCurrencyUpdate(message)
 		end
 		amount = 1
 	end
-	return newDict("currency", currency, "amount", amount)
+	local icon = currencyIcons[currency]
+	return newDict("currency", currency, "amount", amount, "icon", icon)
 end
 
 Parrot:RegisterCombatEvent{
@@ -2061,10 +2069,12 @@ Parrot:RegisterCombatEvent{
 	tagTranslations = {
 		Amount = "amount",
 		Currency = "currency",
+		Icon = "icon",
 	},
 	tagTranslationHelp = {
 		Amount = L["The amount of currency gained."],
 		Name = L["Name of the currency"],
+		
 	},
 	color = "7f7fb2", -- blue-gray
 	blizzardEvents = {
