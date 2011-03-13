@@ -10,7 +10,6 @@ L["Classes affected by this trigger."] = true
 L["Color"] = true
 L["Color in which to flash"] = true
 L["Color of the text for this trigger."] = true
-L["Create"] = true
 L["Create a new trigger"] = true
 L["Custom font"] = true
 L["Enabled"] = true

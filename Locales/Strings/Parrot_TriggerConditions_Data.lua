@@ -1,5 +1,4 @@
 L["<Skill name>"] = true
-L["<Sourcename>,<Destinationname>,<Spellname>"] = true
 L["Active talents"] = true
 L["Amount"] = true
 L["Amount of damage to compare with"] = true
@@ -40,6 +39,7 @@ L["Successful spell cast"] = true
 L["Target is NPC"] = true
 L["Target is player"] = true
 L["The unit that attacked you"] = true
+L["The unit that casted the spell"] = true
 L["The unit that is affected"] = true
 L["The unit that started the cast"] = true
 L["The unit that you attacked"] = true
