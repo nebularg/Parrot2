@@ -156,6 +156,11 @@ local updateDBFuncs = {
 		db.totemEvents = Parrot.db1.profile.totemDamage
 		Parrot.db1.profile.totemDamage = nil
 	end,
+	[4] = function()
+		if db.hideFullOverheals == false then
+			db.hideFullOverheals = 0
+		end
+	end,
 }
 
 function Parrot_CombatEvents:OnNewProfile(t, key)
