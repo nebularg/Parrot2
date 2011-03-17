@@ -2480,7 +2480,11 @@ local function checkForRelevance(sourceFlags, destFlags)
 end
 
 function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType,
-	sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
+	_, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
+	debug("sourceGUID ", sourceGUID)
+	debug("sourceName: ", sourceName)
+	debug("sourceFlags: ", sourceFlags)
+
 	if not self:IsEnabled() then -- TODO remove
 		return
 	end
