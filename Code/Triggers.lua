@@ -218,24 +218,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "7f007f",
 	}]],
-	[1012] = [[{
-		-- 33154 Surge of Light
-		name = L["%s!"]:format(GetSpellInfo(33154)),
-		icon = 25364,
-		class = "PRIEST",
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(33154),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		disabled = true,
-		color = "ff0000",
-	}]],
 	[1013] = [[{
 		-- Overpower = 7384
 		name = L["%s!"]:format(GetSpellInfo(7384)),
@@ -1253,6 +1235,9 @@ local updateFuncs = {
 		resetLowManaPowerType()
 		convertPowerValues()
 	end,
+	[8] = function()
+			Parrot_Triggers.db1.profile.triggers2[1012] = nil
+		end,
 }
 
 function Parrot_Triggers:OnNewProfile(t, key)
