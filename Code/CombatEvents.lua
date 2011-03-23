@@ -2481,9 +2481,6 @@ end
 
 function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType,
 	_, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
-	debug("sourceGUID ", sourceGUID)
-	debug("sourceName: ", sourceName)
-	debug("sourceFlags: ", sourceFlags)
 
 	if not self:IsEnabled() then -- TODO remove
 		return
