@@ -1,3 +1,6 @@
+v1.10.26:
+* compatibility to WoW 4.1
+
 v1.10.25:
 * fix bug in alternate power bars text
 * extended options to hide full overheals (Hots/direct heals)
