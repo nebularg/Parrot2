@@ -341,11 +341,11 @@ function Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, arg)
 	end
 end
 
-function Parrot_TriggerConditions:HandleCombatlogEvent(uid, _, timestamp, eventType, _, ...)
+function Parrot_TriggerConditions:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
 	local registeredHandlers = self.combatLogEvents[eventType]
 	if registeredHandlers then
 		for _,v in ipairs(registeredHandlers) do
-			local arg = v.triggerData(...)
+			local arg = v.triggerData(sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
 			if arg == true then
 				self:FirePrimaryTriggerCondition(v.name, nil, uid)
 			else
