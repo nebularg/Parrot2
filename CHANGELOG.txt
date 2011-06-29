@@ -1,3 +1,7 @@
+v1.10.27:
+* compatibility to WoW 4.2
+* fix problem with user-settings that might be left behind after removing default-triggers
+
 v1.10.26:
 * compatibility to WoW 4.1
 
