@@ -1248,6 +1248,13 @@ local function updateDB()
 	if not self.db1.profile.dbver then
 		self.db1.profile.dbver = 0
 	end
+	local triggers = self.db1.profile.triggers2
+	-- delete user-settings from triggers that are no longer available
+	for k,v in pairs(triggers) do
+		if not v.name then
+			triggers[k] = nil
+		end
+	end
 	for i = (self.db1.profile.dbver + 1), #updateFuncs do
 		Parrot:Print(("updating DB %d->%d"):format(i-1, i))
 		updateFuncs[i]()
