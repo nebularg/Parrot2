@@ -2480,7 +2480,7 @@ local function checkForRelevance(sourceFlags, destFlags)
 end
 
 function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType,
-	_, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
+	_, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
 
 	if not self:IsEnabled() then -- TODO remove
 		return
@@ -2501,6 +2501,8 @@ function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType,
 			else
 				parseFunc(info, ...)
 				for i, v in ipairs(registeredHandlers) do
+					-- TODO use raid-flags introduced in 4.2 here
+					-- seems dirty otherwise
 					local check = v.checkfunc(sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
 					if check and not sfiltered(info) then
 						info.uid = uid
