@@ -1021,7 +1021,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	end
 	local function setSound(info, value)
 		local category, name = getArgs(info)
-		PlaySoundFile(SharedMedia:Fetch('sound', value))
+		PlaySoundFile(SharedMedia:Fetch('sound', value), "MASTER")
 		if value == "None" then
 			value = nil
 		end
@@ -2315,7 +2315,7 @@ local function runEvent(category, name, info)
 	end
 	Parrot_Display:ShowMessage(text, cdb.scrollArea or category, sticky, r, g, b, cdb.font, cdb.fontSize, cdb.fontOutline, icon)
 	if cdb.sound then
-		PlaySoundFile(SharedMedia:Fetch('sound', cdb.sound))
+		PlaySoundFile(SharedMedia:Fetch('sound', cdb.sound), "MASTER")
 	end
 end
 

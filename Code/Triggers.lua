@@ -1446,7 +1446,7 @@ local function showTrigger(t)
 	if t.sound then
 		local sound = SharedMedia:Fetch('sound', t.sound)
 		if sound then
-			PlaySoundFile(sound)
+			PlaySoundFile(sound, "MASTER")
 		end
 	end
 end
@@ -1744,7 +1744,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 
 	local function setSound(t, value)
-		PlaySoundFile(SharedMedia:Fetch('sound', value))
+		PlaySoundFile(SharedMedia:Fetch('sound', value), "MASTER")
 		if value == "None" then
 			value = nil
 		end
@@ -1766,7 +1766,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		if t.sound then
 			local sound = SharedMedia:Fetch('sound', t.sound)
 			if sound then
-				PlaySoundFile(sound)
+				PlaySoundFile(sound, "MASTER")
 			end
 		end
 	end
