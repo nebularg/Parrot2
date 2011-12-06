@@ -1,3 +1,8 @@
+v1.10.28:
+* mark compatible with WoW 4.3
+* play all sounds on master-channel
+* increase max-value for filters to 100000 (from 1000)
+
 v1.10.27:
 * compatibility to WoW 4.2
 * fix problem with user-settings that might be left behind after removing default-triggers
