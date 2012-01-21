@@ -206,6 +206,7 @@ end
 local enabled = false
 local disabled_by_raid = false
 function Parrot_CombatEvents:check_raid_instance()
+	if self.db1.profile.disabled then return end
 	if (not enabled) and (not disabled_by_raid) then
 		return
 	end
@@ -237,6 +238,9 @@ local combatEvents = {}
 local onEnableFuncs = {}
 local active = false
 function Parrot_CombatEvents:OnEnable(first)
+	if self.db1.profile.disabled then
+		self:Disable()
+	end
 	enabled = true
 	updateDB()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "check_raid_instance")
