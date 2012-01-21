@@ -1424,6 +1424,7 @@ Parrot:RegisterCombatEvent{
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
 	color = "ffff00", -- yellow
 	throttle = dotThrottle,
+	filterType = { "Outgoing damage", 'amount' },
 }
 
 Parrot:RegisterCombatEvent{
@@ -1440,6 +1441,7 @@ Parrot:RegisterCombatEvent{
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
 	color = "ff0000", -- red
 	throttle = skillThrottle,
+	filterType = { "Outgoing damage", 'amount' },
 }
 
 --[[============================================================================
