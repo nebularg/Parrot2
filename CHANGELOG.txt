@@ -1,3 +1,7 @@
+v1.10.29:
+* fix filters for outgoing DoTs
+* fix automatic renabling after login
+
 v1.10.28:
 * mark compatible with WoW 4.3
 * play all sounds on master-channel
