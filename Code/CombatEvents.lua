@@ -161,6 +161,10 @@ local updateDBFuncs = {
 			db.hideFullOverheals = 0
 		end
 	end,
+	[5] = function()
+		-- reenable because a bugfix made it behave properly
+		db.disabled = nil
+	end,
 }
 
 function Parrot_CombatEvents:OnNewProfile(t, key)
