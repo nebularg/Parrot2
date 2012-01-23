@@ -163,7 +163,7 @@ local updateDBFuncs = {
 	end,
 	[5] = function()
 		-- reenable because a bugfix made it behave properly
-		db.disabled = nil
+		db.disabled = false
 	end,
 }
 
@@ -242,7 +242,7 @@ local combatEvents = {}
 local onEnableFuncs = {}
 local active = false
 function Parrot_CombatEvents:OnEnable(first)
-	if self.db1.profile.disabled then
+	if self.db1.profile.disabled == true then
 		self:Disable()
 	end
 	enabled = true
