@@ -1,3 +1,6 @@
+v1.10.30:
+* [223] fix combat-events not being enabled properly
+
 v1.10.29:
 * fix filters for outgoing DoTs
 * fix automatic renabling after login
