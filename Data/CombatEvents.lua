@@ -68,12 +68,17 @@ local PowerTypeParser = setmetatable({
 		[1] = RAGE,
 		[2] = FOCUS,
 		[3] = ENERGY,
-		[4] = HAPPINESS,
+		[4] = CHI,
 		[5] = RUNES,
 		[6] = RUNIC_POWER,
 		[7] = SOUL_SHARDS,
 		[8] = ECLIPSE,
 		[9] = HOLY_POWER,
+		[11] = DARK_FORCE,
+		[12] = CHI_POWER,
+		[13] = SHADOW_ORBS,
+		[14] = BURNING_EMBERS,
+		[15] = DEMONIC_FURY,
 	}, { __index = retrieveAlternatePowerName, })
 
 -- lookup-table for damage-types
