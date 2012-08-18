@@ -44,9 +44,12 @@ local function parse_CHAT_MSG_LOOT(chatmsg)
 		if not amount then
 			amount = 1
 		end
+		local oldTotal = GetItemCount(itemLink)
+		local total = oldTotal + amount
 		return newDict(
 			"itemLink", itemLink,
-			"amount", amount
+			"amount", amount,
+			"total", total
 		)
 	end
 end
@@ -108,8 +111,7 @@ Parrot:RegisterCombatEvent{
 		end,
 		Amount = "amount",
 		Total = function(info)
-			local oldTotal = GetItemCount(info.itemLink or info.itemName)
-			return oldTotal + info.amount
+			return info.total
 		end,
 		Icon = function(info)
 			local itemLink = info.itemLink
