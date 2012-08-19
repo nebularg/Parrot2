@@ -324,6 +324,24 @@ Parrot:RegisterPrimaryTriggerCondition {
 				return missType
 			end,
 		},
+		{
+			eventType = "SPELL_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType, amountMissed )
+					if dstGUID ~= UnitGUID("player") then
+							return nil
+					end
+					return missType
+			end,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+					if dstGUID ~= UnitGUID("player") then
+							return nil
+					end
+					return missType
+			end,
+		},
 	},
 	param = {
 		type = 'select',
@@ -344,6 +362,24 @@ Parrot:RegisterPrimaryTriggerCondition {
 					return nil
 				end
 				return missType
+			end,
+		},
+		{
+			eventType = "SPELL_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType, amountMissed )
+				if srcGUID ~= UnitGUID("player") then
+						return nil
+				end
+				return missType
+			end,
+		},
+		{
+			eventType = "RANGE_MISSED",
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+					if srcGUID ~= UnitGUID("player") then
+							return nil
+					end
+					return missType
 			end,
 		},
 	},
