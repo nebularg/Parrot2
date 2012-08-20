@@ -1,3 +1,9 @@
+v1.10.31:
+* adapt new powertypes from MoP
+* improve accuracy of loot-events
+* also fire Miss-Triggers for other melee-misses
+* fix missing missed-amounts
+
 v1.10.30:
 * [223] fix combat-events not being enabled properly
 
