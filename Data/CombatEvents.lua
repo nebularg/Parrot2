@@ -47,15 +47,6 @@ local SchoolParser = {
 	[64] = "Arcane"
 }
 
-local EnvironmentalParser = {
-	["DROWNING"] = "Drowning",
-	["FALLING"] = "Falling",
-	["FATIGUE"] = "Fatigue",
-	["FIRE"] = "Fire",
-	["LAVA"] = "Lava",
-	["SLIME"] = "Slime"
-}
-
 local function retrieveAlternatePowerName(self, key)
 	if key == ALTERNATE_POWER_INDEX then
 		return select(10, UnitAlternatePowerInfo("player"))
@@ -1099,7 +1090,7 @@ Parrot:RegisterCombatEvent{
 }
 
 local function parseEnvironmentalDamage(info)
-	return EnvironmentalParser[info.environmentalType]
+	return info.environmentalType
 end
 
 Parrot:RegisterCombatEvent{
