@@ -31,23 +31,6 @@ local SharedMedia = LibStub("LibSharedMedia-3.0")
 --]]
 
 local defaultTriggers = {
-	[1001] = [[{
-		-- 34939 = Backlash
-		name = L["%s!"]:format(GetSpellInfo(34939)),
-		icon = 34939,
-		class = "WARLOCK",
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(34939),
-					unit = "player",
-					auraType = "BUFF",
-				}
-			},
-		},
-		sticky = true,
-		color = "ff00ff",
-	}]],
 	[1002] = [[{
 		-- 16246 = Clearcasting (Priest) TODO
 		name = L["%s!"]:format(GetSpellInfo(16246)),
@@ -60,22 +43,6 @@ local defaultTriggers = {
 					unit = "player",
 					auraType = "BUFF",
 				}
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
-	[1003] = [[{
-		-- 19306 = Counterattack
-		name = L["%s!"]:format(GetSpellInfo(19306)),
-		icon = 19306,
-		class = "HUNTER",
-		conditions = {
-			["Incoming miss"] = { "PARRY",	},
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(19306),
 			},
 		},
 		sticky = true,
@@ -126,23 +93,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ffff00",
-	}]],
-	[1007] = [[{
-		-- Impact = 11103
-		name = L["%s!"]:format(GetSpellInfo(11103)),
-		icon = 11103,
-		class = "MAGE",
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(11103),
-					unit = "target",
-					auraType = "DEBUFF",
-				}
-			},
-		},
-		sticky = true,
-		color = "ff0000",
 	}]],
 	[1008] = [[{
 		name = L["Low Health!"],
@@ -201,23 +151,6 @@ local defaultTriggers = {
 		},
 		color = "ff7f7f",
 	}]],
-	[1011] = [[{
-		-- 18095 = Nightfall
-		name = L["%s!"]:format(GetSpellInfo(18095)),
-		icon = 18095,
-		class = "WARLOCK",
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(17941),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "7f007f",
-	}]],
 	[1013] = [[{
 		-- Overpower = 7384
 		name = L["%s!"]:format(GetSpellInfo(7384)),
@@ -257,22 +190,6 @@ local defaultTriggers = {
 		color = "ffff00",
 		disabled = true,
 	}]],
-	[1015] = [[{
-		-- Riposte = 14251
-		name = L["%s!"]:format(GetSpellInfo(14251)),
-		icon = 14251,
-		class = "ROGUE",
-		conditions = {
-			["Incoming miss"] = { "PARRY", },
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(14251),
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],--]]
 	[1016] = [[{
 		-- Maelstrom Weapon = 51532
 		name = L["%s!"]:format(GetSpellInfo(53817)),
@@ -463,22 +380,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff0000",
 	}]],
-	[1027] = [[{ -- Molten Core
-		name = L["%s!"]:format(GetSpellInfo(71165)),
-		icon = 71165,
-		class = "WARLOCK",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					unit = "player",
-					spell = GetSpellInfo(71165),
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "7f007f",
-	}]],
 	[1028] = [[{ -- Serendipity
 		name = L["%s!"]:format(GetSpellInfo(63733)),
 		icon = 63733,
@@ -497,23 +398,6 @@ local defaultTriggers = {
 		disabled = true,
 		color = "00c0ff",
 	}]],
-	[1030] = [[{
-		-- 63165 Decimation
-		name = L["%s!"]:format(GetSpellInfo(63165)),
-		icon = 63165,
-		class = "WARLOCK",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					unit = "player",
-					spell = GetSpellInfo(63165),
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffbe00",
-	}]],
 	[1031] = [[{
 		-- 44544 = Fingers of frost
 		name = L["%s!"]:format(GetSpellInfo(44544)),
@@ -530,22 +414,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "005ba9",
-	}]],
-	[1032] = [[{
-		name = L["%s!"]:format(GetSpellInfo(50782)), -- Slam!
-		icon = 46916,
-		class = "WARRIOR",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					unit = "player",
-					spell = GetSpellInfo(46916), -- Bloodsurge
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff0000",
 	}]],
 	[1033] = [[{
 		name = L["%s!"]:format(GetSpellInfo(81141)), -- Blood Swarm
@@ -1321,7 +1189,6 @@ end
 -- to find the icon for old saved variables
 
 local oldIconName = {
-	["Backlash"] = 34939,
 	["Clearcasting"] = 16246,
 	["Counterattack"] = 27067,
 	["Frostbite"] = 12497,
