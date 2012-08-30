@@ -1148,6 +1148,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 		},
 	},
 	check = function(param)
-		return GetActiveTalentGroup() == param
+		return GetActiveSpecGroup() == param
 	end,
 }
