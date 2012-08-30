@@ -1,3 +1,7 @@
+v1.10.32:
+* update for patch 5.0.4
+* localize environmental damage
+
 v1.10.31:
 * adapt new powertypes from MoP
 * improve accuracy of loot-events
