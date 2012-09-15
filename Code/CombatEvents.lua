@@ -2418,7 +2418,7 @@ local moreParams = {
 	SPELL_PERIODIC_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
 	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
 	SPELL_PERIODIC_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
-	SPELL_PERIODIC_MISSED = { "spellId", "spellName", "spellSchool", "missType", "amountMissed", },
+	SPELL_PERIODIC_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffhand", "amountMissed", },
 	SPELL_STOLEN = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", "auraType", },
 	SWING_DAMAGE = { "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
 	SWING_MISSED = { "missType", "isOffHand",  "amountMissed", },
