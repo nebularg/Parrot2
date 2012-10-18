@@ -512,6 +512,22 @@ local defaultTriggers = {
 		sticky = true,
 		color = "00cc00",
 	}]],
+	[1038] = [[{
+		name = L["%s!"]:format(GetSpellInfo(122510)), -- Ultimatum
+		icon = 122510,
+		class = "WARRIOR",
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(122510),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "00d0ff",
+	}]],
 }
 
 local dbDefaults = {
