@@ -1,4 +1,9 @@
 v1.10.32:
+* fix frost-trap-spell ids
+* fix absorb-amount for Periodic damage
+* update for patch 5.1.0
+
+v1.10.32:
 * update for patch 5.0.4
 * localize environmental damage
 
