@@ -1665,6 +1665,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		WARRIOR = LC["WARRIOR"],
 		HUNTER = LC["HUNTER"],
 		DEATHKNIGHT = LC["DEATHKNIGHT"],
+		MONK = LC["MONK"],
 	}
 
 	local function getConditionValue(info)
