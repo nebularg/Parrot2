@@ -2031,16 +2031,20 @@ function Parrot_Triggers:OnOptionsCreate()
 		local class = t[#t]:gsub("-$", "")
 		return not doGetClass(t.arg.class, class)
 	end
+	
+	local function doGetSpec(value, specid)
+		if not value then
+			return true
+		end
+		local tmp = newSet((";"):split(value))
+		local result = tmp[specid]
+		tmp = del(tmp)
+		return not result
+	end
 
 	local function getSpec(info)
 		local specid = info[#info]
-		if not info.arg.spec then
-			return true
-		end
-		local tmp = newSet((";"):split(info.arg.spec))
-		local value = tmp[specid]
-		tmp = del(tmp)
-		return not value
+		return doGetSpec(info.arg.spec, specid)
 	end
 
 	local function setSpec(t, value)
@@ -2064,12 +2068,23 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 	end
 
+	local function getColoredName(info)
+		if not info.arg.disabled and doGetClass(info.arg.class, playerClass) then
+			if doGetSpec(info.arg.spec, getPlayerSpec()) then
+				return ("|c0000dd00%s|r"):format(info.arg.name)
+			end
+			return ("|c01006600%s|r"):format(info.arg.name)
+		end
+		return ("|c02888888%s|r"):format(info.arg.name)
+	end
+	
 	function makeOption(t)
 		local opt = {
 			type = 'group',
-			name = t.name,
+			name = getColoredName,
 			desc = t.name,
 			order = t.name == L["New trigger"] and -110 or -100,
+			arg = t,
 			args = {
 				output = {
 					type = 'input',
