@@ -156,15 +156,13 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(7384)),
 		icon = 7384,
 		class = "WARRIOR",
+		spec = "72;73",
 		conditions = {
 			["Outgoing miss"] = { "DODGE", },
 		},
 		secondaryConditions = {
 			["Spell ready"] = {
 				[1] = GetSpellInfo(7384),
-			},
-			["Warrior stance"] = {
-				[1] = "Battle Stance",
 			},
 		},
 		sticky = true,
@@ -175,15 +173,13 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(6572)),
 		icon = 6572,
 		class = "WARRIOR",
+		spec = "71;72",
 		conditions = {
 			["Incoming miss"] = { "BLOCK", "DODGE", "PARRY", },
 		},
 		secondaryConditions = {
 			["Spell ready"] = {
 				[1] = GetSpellInfo(6572),
-			},
-			["Warrior stance"] = {
-				"Defensive Stance",
 			},
 		},
 		sticky = true,
@@ -195,6 +191,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(53817)),
 		icon = 51532,
 		class = "SHAMAN",
+		specs = "262;264",
 		conditions = {
 			["Aura stack gain"] = {
 				{
@@ -214,6 +211,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(59052)),
 		icon = 59052,
 		class = "DEATHKNIGHT",
+		spec = "250;252",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -231,6 +229,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(51128)),
 		icon = 51130,
 		class = "DEATHKNIGHT",
+		spec = "250;252",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -248,6 +247,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(56816)),
 		icon = 56816,
 		class = "DEATHKNIGHT",
+		spec = "251;252",
 		conditions = {
 			["Incoming miss"] = { "DODGE", "PARRY", },
 		},
@@ -260,6 +260,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(56453)),
 		icon = 56453,
 		class = "HUNTER",
+		spec = "253;254",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -277,6 +278,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(44549)),
 		icon = 57761,
 		class = "MAGE",
+		spec = "62;63",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -294,6 +296,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(52437)),
 		icon = 52437,
 		class = "WARRIOR",
+		spec = "72;73",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -312,6 +315,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(48518)), -- Starfire
 		icon = 48518,
 		class = "DRUID",
+		spec = "103;104;105",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -328,6 +332,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(48517)), -- Wrath
 		icon = 48517,
 		class = "DRUID",
+		spec = "103;104;105",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -345,6 +350,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(59578)),
 		icon = 59578,
 		class = "PALADIN",
+		spec = "65;66",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -384,6 +390,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(63733)),
 		icon = 63733,
 		class = "PRIEST",
+		spec = "256;258",
 		conditions = {
 			["Aura stack gain"] = {
 				[1] = {
@@ -403,6 +410,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(44544)),
 		icon = 44544,
 		class = "MAGE",
+		spec = "62;63",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -419,6 +427,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(81141)), -- Blood Swarm
 		icon = 81141,
 		class = "DEATHKNIGHT",
+		spec = "251;252",
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -435,6 +444,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(91342)), -- Shadow Infusion
 		icon = 91342,
 		class = "DEATHKNIGHT",
+		spec = "250;251",
 		conditions = {
 			["Aura stack gain"] = {
 				[1] = {
@@ -452,6 +462,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(82692)), -- Focus Fire
 		icon = 82692,
 		class = "HUNTER",
+		spec = "254;255",
 		conditions = {
 			["Aura stack gain"] = {
 				[1] = {
@@ -465,40 +476,11 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff7563",
 	}]],
-	--[==[ [1036] = [[{
-		name = L["%s!"]:format(GetSpellInfo(94006)),
-		icon = 94006,
-		class = "HUNTER",
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					unit = "player",
-					spell = GetSpellInfo(94006),
-					auraType = "BUFF",
-				},
-			},
-			["Spell ready"] = {
-				GetSpellInfo(34026),
-			},
-		},
-		secondaryConditions = {
-			["Buff active"] = {
-				[1] = {
-					spell = GetSpellInfo(94006),
-					unit = "player",
-				}
-			},
-			["Spell ready"] = {
-				GetSpellInfo(34026),
-			}
-		}
-		sticky = true,
-		color = "ffab96",
-	}]],--]==]
 	[1037] = [[{
 		name = L["%s!"]:format(GetSpellInfo(82925)), -- Ready, Set, Aim...
 		icon = 82925,
 		class = "HUNTER",
+		spec = "253;255",
 		conditions = {
 			["Aura stack gain"] = {
 				{
@@ -516,6 +498,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(122510)), -- Ultimatum
 		icon = 122510,
 		class = "WARRIOR",
+		spec = "71;72",
 		conditions = {
 			["Aura gain"] = {
 				{
@@ -564,6 +547,9 @@ local function makeDefaultTrigger(index, code)
 		ScriptEnv.GetSpellInfo = _G.GetSpellInfo
 	end
 	local func = loadstring(("return %s"):format(code))
+	if not func then
+		debug("func ", index, " could not be loaded")
+	end
 	setfenv(func, ScriptEnv)
 	dbDefaults.profile.triggers2[index] = func()
 end
