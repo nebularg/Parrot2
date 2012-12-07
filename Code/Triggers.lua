@@ -1,5 +1,5 @@
 local Parrot = Parrot
-local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0")
+local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0", "AceEvent-3.0")
 local self = Parrot_Triggers
 
 --@debug@
@@ -572,9 +572,14 @@ for k,v in pairs(defaultTriggers) do
 	makeDefaultTrigger(k,v)
 end
 
+local function getPlayerSpec()
+	return tostring(GetSpecializationInfo(GetSpecialization()))
+end
+
 local effectiveRegistry = {}
 local periodicCheckTimer
 local function rebuildEffectiveRegistry()
+	local playerspec = getPlayerSpec()
 	for i = 1, #effectiveRegistry do
 		effectiveRegistry[i] = nil
 	end
@@ -584,7 +589,8 @@ local function rebuildEffectiveRegistry()
 	for _,v in pairs(Parrot_Triggers.db1.profile.triggers2) do
 		if not v.disabled then
 			local classes = newSet((';'):split(v.class))
-			if classes[playerClass] then
+			local specs = v.spec and newSet((';'):split(v.spec))
+			if classes[playerClass] and (not specs or not specs[playerspec]) then
 				effectiveRegistry[#effectiveRegistry+1] = v
 				if v.conditions["Check every XX seconds"] then
 					containsPeriodic = true
@@ -622,6 +628,7 @@ function Parrot_Triggers:OnInitialize()
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
 	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", rebuildEffectiveRegistry)
 end
 
 --[[============================================================================
@@ -1598,30 +1605,6 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function setUseFlash(info, value)
 		info.arg.useflash = value
 	end
-
-
-	local function getClass(t, class)
-		local tmp = newSet((";"):split(t.arg.class))
-		local value = tmp[class]
-		tmp = del(tmp)
-		return value
-	end
-
-	local function setClass(t, class, value)
-		local tmp = newSet((";"):split(t.arg.class))
-		tmp[class] = value or nil
-		local tmp2 = newList()
-		for k in pairs(tmp) do
-			tmp2[#tmp2+1] = k
-		end
-		tmp = del(tmp)
-		t.arg.class = table.concat(tmp2, ";")
-		tmp2 = del(tmp2)
-		if class == playerClass then
-			rebuildEffectiveRegistry()
-		end
-	end
-
 	local function getSound(t)
 		return t.arg.sound or "None"
 	end
@@ -1666,6 +1649,65 @@ function Parrot_Triggers:OnOptionsCreate()
 		HUNTER = LC["HUNTER"],
 		DEATHKNIGHT = LC["DEATHKNIGHT"],
 		MONK = LC["MONK"],
+	}
+
+	local specChoices = {
+		DRUID = {
+			102, -- Balance
+			103, -- Feral Combat
+			104, -- Guardian
+			105, -- Restoration
+		},
+		ROGUE = {
+			259, -- Assassination
+			260, -- Combat
+			261, -- Subtlety
+		},
+		SHAMAN = {
+			262, -- Elemental
+			263, -- Enhancement
+			264, -- Restoration
+		},
+		PALADIN = {
+			65, -- Holy
+			66, -- Protection
+			70, -- Retribution
+		},
+		MAGE = {
+			62, -- Arcane
+			63, -- Fire
+			64, -- Frost
+		},
+		WARLOCK = {
+			265, -- Affliction
+			266, -- Demonology
+			267, -- Destruction
+		},
+		PRIEST = {
+			256, --Discipline
+			257, --Holy
+			258, --Shadow
+		},
+		WARRIOR = {
+			71, -- Arms
+			72, -- Furry
+			73, -- Protection
+		},
+		HUNTER = {
+			253, -- Beast Mastery
+			254, -- Marksmanship
+			255, -- Survival
+		},
+		DEATHKNIGHT = {
+			250, -- Blood
+			251, -- Frost
+			252, -- Unholy
+		},
+		MONK = {
+			268, -- Brewmaster
+			269, -- Windwalker
+			270, -- Mistweaver
+		},
 	}
 
 	local function getConditionValue(info)
@@ -1971,6 +2013,71 @@ function Parrot_Triggers:OnOptionsCreate()
 		return tmp
 	end
 
+	local function doGetClass(value, class)
+		local tmp = newSet((";"):split(value))
+		local value = tmp[class]
+		tmp = del(tmp)
+		return value
+	end
+
+	local function getClass(info)
+		local class = info[#info]
+		return doGetClass(info.arg.class, class)
+	end
+
+	local function setClass(t, value)
+		local class = t[#t]
+		local tmp = newSet((";"):split(t.arg.class))
+		tmp[class] = value or nil
+		local tmp2 = newList()
+		for k in pairs(tmp) do
+			tmp2[#tmp2+1] = k
+		end
+		tmp = del(tmp)
+		t.arg.class = table.concat(tmp2, ";")
+		tmp2 = del(tmp2)
+		if class == playerClass then
+			rebuildEffectiveRegistry()
+		end
+	end
+
+	local function notIsClass(t)
+		local class = t[#t]:gsub("-$", "")
+		return not doGetClass(t.arg.class, class)
+	end
+
+	local function getSpec(info)
+		local specid = info[#info]
+		if not info.arg.spec then
+			return true
+		end
+		local tmp = newSet((";"):split(info.arg.spec))
+		local value = tmp[specid]
+		tmp = del(tmp)
+		return not value
+	end
+
+	local function setSpec(t, value)
+		local specid = t[#t]
+		local tmp
+		if not t.arg.spec then
+			tmp = newSet()
+		else
+			tmp = newSet((";"):split(t.arg.spec))
+		end
+		tmp[specid] = not value or nil
+		local tmp2 = newList()
+		for k in pairs(tmp) do
+			tmp2[#tmp2+1] = k
+		end
+		tmp = del(tmp)
+		t.arg.spec = table.concat(tmp2, ";")
+		tmp2 = del(tmp2)
+		if specid == getPlayerSpec() then
+			rebuildEffectiveRegistry()
+		end
+	end
+
 	function makeOption(t)
 		local opt = {
 			type = 'group',
@@ -2009,14 +2116,12 @@ function Parrot_Triggers:OnOptionsCreate()
 					order = -2,
 				},
 				classes = {
-					type = 'multiselect',
-					values = classChoices,
+					type = 'group',
 					name = L["Classes"],
 					desc = L["Classes affected by this trigger."],
-					get = getClass,
-					set = setClass,
-					arg = t,
 					order = 7,
+					inline = true,
+					args = {},
 				},
 				style = {
 					type = 'group',
@@ -2200,6 +2305,42 @@ function Parrot_Triggers:OnOptionsCreate()
 				},
 			}
 		}
+		local i = 0
+		for class, localized in pairs(classChoices) do
+			i = i + 1
+			opt.args.classes.args[class] = {
+				type = 'toggle',
+				name = localized,
+				desc = localized,
+				get = getClass,
+				set = setClass,
+				arg = t,
+				order = i * 10,
+			}
+			opt.args.classes.args[class .. "-"] = {
+				type = 'group',
+				inline = true,
+				width = 'half',
+				name = localized,
+				desc = localized,
+				hidden = notIsClass,
+				arg = t,
+				order = i * 10 + 1,
+				args = {}
+			}
+			for i,v in ipairs(specChoices[class]) do
+				local _, name, desc = GetSpecializationInfoByID(v)
+				opt.args.classes.args[class .. "-"].args[tostring(v)] = {
+					type = 'toggle',
+					name = name,
+					desc = desc,
+					arg = t,
+					get = getSpec,
+					set = setSpec,
+					hidden = false,
+				}
+			end
+		end
 		triggers_opt.args[tostring(t)] = opt
 		for k,v in pairs(t.conditions) do
 			if type(v) == 'table' then
