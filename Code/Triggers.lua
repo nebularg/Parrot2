@@ -1869,11 +1869,21 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 	-- not local, declared above
 	function remove(info)
-		local id = getTriggerId(info)
-		wipe(triggers_opt.args[tostring(id)])
-		triggers_opt.args[tostring(id)] = nil
-		del(self.db1.profile.triggers2[tonumber(id)])
-		self.db1.profile.triggers2[tonumber(id)] = nil
+		local idstring = getTriggerId(info)
+		local id = tonumber(idstring)
+		-- first remove it from DB
+		local triggers = self.db1.profile.triggers2
+		del(triggers[tonumber(id)])
+		table.remove(triggers, tonumber(id))
+		-- then remove it from options
+		triggers_opt.args[idstring] = del(triggers_opt.args[idstring])
+		-- and fix ids for other triggers
+		while triggers_opt.args[tostring(id+1)] do
+			local nextoptid = tostring(id + 1)
+			triggers_opt.args[tostring(id)] = triggers_opt.args[nextoptid]
+			triggers_opt.args[nextoptid] = nil
+			id = id + 1
+		end
 		rebuildEffectiveRegistry()
 	end
 	local function getSticky(info)
