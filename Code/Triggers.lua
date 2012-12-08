@@ -532,6 +532,48 @@ local defaultTriggers = {
 		sticky = true,
 		color = "00d0ff",
 	}]],
+	[1039] = [[{
+		name = L["%s!"]:format(GetSpellInfo(46916)), -- Bloodsurge
+		icon = 46916,
+		class = "WARRIOR",
+		spec = { WARRIOR = "72" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(46916),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff0300",
+	}]],
+	[1040] = [[{
+		name = L["%s!"]:format(GetSpellInfo(131116)), -- Raging Blow!
+		icon = 131116,
+		class = "WARRIOR",
+		spec = { WARRIOR = "72" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(131116),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+			["Aura stack gain"] = {
+				{
+					spell = GetSpellInfo(131116),
+					unit = "player",
+					auraType = "BUFF",
+					amount = 2,
+				},
+			},
+		},
+		sticky = true,
+		color = "6e0511",
+	}]],
 }
 
 local specChoices = {
