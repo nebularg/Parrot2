@@ -1641,7 +1641,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		wipe(triggers_opt.args[tostring(id)])
 		triggers_opt.args[tostring(id)] = nil
 		del(self.db1.profile.triggers2[tonumber(id)])
-		table.remove(self.db1.profile.triggers2, tonumber(id))
+		self.db1.profile.triggers2[tonumber(id)] = nil
 		rebuildEffectiveRegistry()
 	end
 	local function getSticky(info)
