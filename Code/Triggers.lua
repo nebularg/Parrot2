@@ -1293,6 +1293,9 @@ end
 
 local function hexColorToTuple(color)
 	local num = tonumber(color, 16)
+	if not num then
+		return 0, 0, 0
+	end
 	return math.floor(num / 256^2)/255, math.floor((num / 256)%256)/255, (num%256)/255
 end
 
@@ -1683,6 +1686,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		return getTriggerTable(info).color
 	end
 	local function setColor2(info, value)
+		if not tonumber(value, 16) then return end
 		getTriggerTable(info).color = value
 	end
 
