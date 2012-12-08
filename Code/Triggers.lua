@@ -59,7 +59,7 @@ local defaultTriggers = {
 		spec = {
 			SHAMAN = "262",
 			DRUID = "105",
-		}
+		},
 		conditions = {
 			["Aura gain"] = {
 				{
@@ -129,13 +129,13 @@ local defaultTriggers = {
 			MAGE = "62;63;64",
 			PALADIN = "65;66;70",
 			PRIEST = "256;257;258",
-			ROGUE = " "259;260;261",
+			ROGUE = "259;260;261",
 			SHAMAN = "262;263;264",
 			WARLOCK = "265;266;267",
 			WARRIOR = "71;72;73",
 			DEATHKNIGHT = "250;251;252",
 			MONK = "268;269;270",
-		}
+		},
 		conditions = {
 			["Unit health"] = {
 				{
@@ -162,7 +162,7 @@ local defaultTriggers = {
 			PRIEST = "256;257;258",
 			SHAMAN = "262;263;264",
 			WARLOCK = "265;266;267",
-		}
+		},
 		conditions = {
 			["Unit power"] = {
 				{
@@ -188,7 +188,7 @@ local defaultTriggers = {
 			MAGE = "64",
 			WARLOCK = "265;266;267",
 			DEATHKNIGHT = "250;251;252",
-		}
+		},
 		conditions = {
 			["Unit health"] = {
 				[1] = {
