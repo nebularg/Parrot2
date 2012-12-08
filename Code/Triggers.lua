@@ -15,6 +15,26 @@ local newDict = Parrot.newDict
 local del = Parrot.del
 local unpackDictAndDel= Parrot.unpackDictAndDel
 
+local function setToList(set)
+	local tmp = newList()
+	for k in pairs(set) do
+		table.insert(tmp, k)
+	end
+	del(set)
+	return tmp
+end
+
+local function deserializeSet(setstring)
+	return newSet((";"):split(setstring))
+end
+
+local function serializeSet(set)
+	local list = setToList(set)
+	local result = table.concat(list, ";")
+	del(list)
+	return result
+end
+
 local debug = Parrot.debug
 local deepCopy = Parrot.deepCopy
 
@@ -156,7 +176,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(7384)),
 		icon = 7384,
 		class = "WARRIOR",
-		spec = "72;73",
+		spec = { WARRIOR = "71" },
 		conditions = {
 			["Outgoing miss"] = { "DODGE", },
 		},
@@ -173,7 +193,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(6572)),
 		icon = 6572,
 		class = "WARRIOR",
-		spec = "71;72",
+		spec = { WARRIOR = "73" },
 		conditions = {
 			["Incoming miss"] = { "BLOCK", "DODGE", "PARRY", },
 		},
@@ -191,7 +211,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(53817)),
 		icon = 51532,
 		class = "SHAMAN",
-		specs = "262;264",
+		specs = { SHAMAN = "263" },
 		conditions = {
 			["Aura stack gain"] = {
 				{
@@ -211,7 +231,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(59052)),
 		icon = 59052,
 		class = "DEATHKNIGHT",
-		spec = "250;252",
+		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -229,7 +249,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(51128)),
 		icon = 51130,
 		class = "DEATHKNIGHT",
-		spec = "250;252",
+		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -260,7 +280,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(56453)),
 		icon = 56453,
 		class = "HUNTER",
-		spec = "253;254",
+		spec = { HUNTER = "255" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -278,7 +298,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(44549)),
 		icon = 57761,
 		class = "MAGE",
-		spec = "62;63",
+		spec = { MAGE = "64" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -296,7 +316,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(52437)),
 		icon = 52437,
 		class = "WARRIOR",
-		spec = "72;73",
+		spec = { WARRIOR = "71" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -315,7 +335,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(48518)), -- Starfire
 		icon = 48518,
 		class = "DRUID",
-		spec = "103;104;105",
+		spec = { DRUID = "102" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -332,7 +352,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(48517)), -- Wrath
 		icon = 48517,
 		class = "DRUID",
-		spec = "103;104;105",
+		spec = { DRUID = "102" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -350,7 +370,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(59578)),
 		icon = 59578,
 		class = "PALADIN",
-		spec = "65;66",
+		spec = { PALADIN = "70" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -368,6 +388,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(53351)),
 		icon = 53351,
 		class = "HUNTER",
+		spec = { HUNTER = "253;254;255" },
 		conditions = {
 			["Unit health"] = {
 				[1] = {
@@ -390,7 +411,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(63733)),
 		icon = 63733,
 		class = "PRIEST",
-		spec = "256;258",
+		spec = { PRIEST = "257" },
 		conditions = {
 			["Aura stack gain"] = {
 				[1] = {
@@ -410,7 +431,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(44544)),
 		icon = 44544,
 		class = "MAGE",
-		spec = "62;63",
+		spec = { MAGE = "64" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -427,7 +448,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(81141)), -- Blood Swarm
 		icon = 81141,
 		class = "DEATHKNIGHT",
-		spec = "251;252",
+		spec = { DEATHKNIGHT = "250" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -444,7 +465,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(91342)), -- Shadow Infusion
 		icon = 91342,
 		class = "DEATHKNIGHT",
-		spec = "250;251",
+		spec = { DEATHKNIGHT = "250" },
 		conditions = {
 			["Aura stack gain"] = {
 				[1] = {
@@ -462,7 +483,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(82692)), -- Focus Fire
 		icon = 82692,
 		class = "HUNTER",
-		spec = "254;255",
+		spec = { HUNTER = "253" },
 		conditions = {
 			["Aura stack gain"] = {
 				[1] = {
@@ -480,7 +501,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(82925)), -- Ready, Set, Aim...
 		icon = 82925,
 		class = "HUNTER",
-		spec = "253;255",
+		spec = { HUNTER = "254" },
 		conditions = {
 			["Aura stack gain"] = {
 				{
@@ -498,7 +519,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(122510)), -- Ultimatum
 		icon = 122510,
 		class = "WARRIOR",
-		spec = "71;72",
+		spec = { WARRIOR = "73" },
 		conditions = {
 			["Aura gain"] = {
 				{
@@ -511,6 +532,65 @@ local defaultTriggers = {
 		sticky = true,
 		color = "00d0ff",
 	}]],
+}
+
+local specChoices = {
+	DRUID = {
+		102, -- Balance
+		103, -- Feral Combat
+		104, -- Guardian
+		105, -- Restoration
+	},
+	ROGUE = {
+		259, -- Assassination
+		260, -- Combat
+		261, -- Subtlety
+	},
+	SHAMAN = {
+		262, -- Elemental
+		263, -- Enhancement
+		264, -- Restoration
+	},
+	PALADIN = {
+		65, -- Holy
+		66, -- Protection
+		70, -- Retribution
+	},
+	MAGE = {
+		62, -- Arcane
+		63, -- Fire
+		64, -- Frost
+	},
+	WARLOCK = {
+		265, -- Affliction
+		266, -- Demonology
+		267, -- Destruction
+	},
+	PRIEST = {
+		256, --Discipline
+		257, --Holy
+		258, --Shadow
+	},
+	WARRIOR = {
+		71, -- Arms
+		72, -- Furry
+		73, -- Protection
+	},
+	HUNTER = {
+		253, -- Beast Mastery
+		254, -- Marksmanship
+		255, -- Survival
+	},
+	DEATHKNIGHT = {
+		250, -- Blood
+		251, -- Frost
+		252, -- Unholy
+	},
+	MONK = {
+		268, -- Brewmaster
+		269, -- Windwalker
+		270, -- Mistweaver
+	},
 }
 
 local dbDefaults = {
@@ -564,6 +644,21 @@ end
 
 local effectiveRegistry = {}
 local periodicCheckTimer
+
+local function checkTriggerEnabled(v)
+	if v.disabled then
+		return false
+	end
+	local specstring = v.spec[class]
+	if not specstring then
+		return false
+	end
+	local sets = deserializeSet(specstring)
+	local result = sets[getPlayerSpec()]
+	del(sets)
+	return result
+end
+
 local function rebuildEffectiveRegistry()
 	local playerspec = getPlayerSpec()
 	for i = 1, #effectiveRegistry do
@@ -573,16 +668,11 @@ local function rebuildEffectiveRegistry()
 	periodicCheckTimer = nil
 	local containsPeriodic = false
 	for _,v in pairs(Parrot_Triggers.db1.profile.triggers2) do
-		if not v.disabled then
-			local classes = newSet((';'):split(v.class))
-			local specs = v.spec and newSet((';'):split(v.spec))
-			if classes[playerClass] and (not specs or not specs[playerspec]) then
-				effectiveRegistry[#effectiveRegistry+1] = v
-				if v.conditions["Check every XX seconds"] then
-					containsPeriodic = true
-				end
+		if checkTriggerEnabled(v) then
+			effectiveRegistry[#effectiveRegistry+1] = v
+			if v.conditions["Check every XX seconds"] then
+				containsPeriodic = true
 			end
-			classes = del(classes)
 		end
 	end
 	if containsPeriodic then
@@ -1115,6 +1205,17 @@ local updateFuncs = {
 	[8] = function()
 			Parrot_Triggers.db1.profile.triggers2[1012] = nil
 		end,
+	[9] = function()
+			for _,v in pairs(Parrot_Triggers.db1.profile.triggers2) do
+				v.spec = {}
+				local classes = deserializeSet(v.class)
+				classes[""] = nil
+				for class in pairs(classes) do
+					v.spec[class] = table.concat(specChoices[class], ";")
+				end
+				del(classes)
+			end
+		end,
 }
 
 function Parrot_Triggers:OnNewProfile(t, key)
@@ -1424,7 +1525,9 @@ function Parrot_Triggers:OnOptionsCreate()
 				func = function()
 					local t = {
 						name = L["New trigger"],
-						class = select(2, UnitClass("player")),
+						spec = {
+							[playerClass] = table.concat(specChoices[playerClass], ";"),
+						},
 						conditions = {},
 					}
 					local registry = self.db1.profile.triggers2
@@ -1641,65 +1744,6 @@ function Parrot_Triggers:OnOptionsCreate()
 		HUNTER = LC["HUNTER"],
 		DEATHKNIGHT = LC["DEATHKNIGHT"],
 		MONK = LC["MONK"],
-	}
-
-	local specChoices = {
-		DRUID = {
-			102, -- Balance
-			103, -- Feral Combat
-			104, -- Guardian
-			105, -- Restoration
-		},
-		ROGUE = {
-			259, -- Assassination
-			260, -- Combat
-			261, -- Subtlety
-		},
-		SHAMAN = {
-			262, -- Elemental
-			263, -- Enhancement
-			264, -- Restoration
-		},
-		PALADIN = {
-			65, -- Holy
-			66, -- Protection
-			70, -- Retribution
-		},
-		MAGE = {
-			62, -- Arcane
-			63, -- Fire
-			64, -- Frost
-		},
-		WARLOCK = {
-			265, -- Affliction
-			266, -- Demonology
-			267, -- Destruction
-		},
-		PRIEST = {
-			256, --Discipline
-			257, --Holy
-			258, --Shadow
-		},
-		WARRIOR = {
-			71, -- Arms
-			72, -- Furry
-			73, -- Protection
-		},
-		HUNTER = {
-			253, -- Beast Mastery
-			254, -- Marksmanship
-			255, -- Survival
-		},
-		DEATHKNIGHT = {
-			250, -- Blood
-			251, -- Frost
-			252, -- Unholy
-		},
-		MONK = {
-			268, -- Brewmaster
-			269, -- Windwalker
-			270, -- Mistweaver
-		},
 	}
 
 	local function getConditionValue(info)
@@ -2009,75 +2053,60 @@ function Parrot_Triggers:OnOptionsCreate()
 		return tmp
 	end
 
-	local function doGetClass(value, class)
-		local tmp = newSet((";"):split(value))
-		local value = tmp[class]
-		tmp = del(tmp)
-		return value
-	end
-
 	local function getClass(info)
 		local class = info[#info]
 		local t = getTriggerTable(info)
-		return doGetClass(t.class, class)
+		return t.spec[class] ~= nil
 	end
 
-	local function setClass(info, value)
-		local class = info[#info]
-		local t = getTriggerTable(info)
-		local tmp = newSet((";"):split(t.class))
-		tmp[class] = value or nil
-		local tmp2 = newList()
-		for k in pairs(tmp) do
-			tmp2[#tmp2+1] = k
+	local function doSetClass(t, class, value)
+		if not value then
+			t.spec[class] = nil
+		else
+			t.spec[class] = table.concat(specChoices[class], ";")
 		end
-		tmp = del(tmp)
-		t.class = table.concat(tmp2, ";")
-		tmp2 = del(tmp2)
 		if class == playerClass then
 			rebuildEffectiveRegistry()
 		end
 	end
 
+	local function setClass(info, value)
+		local class = info[#info]
+		local t = getTriggerTable(info)
+		doSetClass(t, class, value)
+	end
+
 	local function notIsClass(info)
 		local class = info[#info]:gsub("-$", "")
 		local t = getTriggerTable(info)
-		return not doGetClass(t.class, class)
+		return t.spec[class] == nil
 	end
 	
-	local function doGetSpec(value, specid)
-		if not value then
-			return true
-		end
-		local tmp = newSet((";"):split(value))
-		local result = tmp[specid]
-		tmp = del(tmp)
-		return not result
+	local function doGetSpec(t, class, specid)
+		local specs = deserializeSet(t.spec[class])
+		local result = specs[specid]
+		del(specs)
+		return result
 	end
 
 	local function getSpec(info)
 		local specid = info[#info]:gsub("^Spec", "")
+		local class = info[#info-1]:gsub("-$", "")
 		local t = getTriggerTable(info)
-		return doGetSpec(t.spec, specid)
+		return doGetSpec(t, class, specid)
 	end
 
 	local function setSpec(info, value)
 		local specid = info[#info]:gsub("^Spec", "")
+		local class = info[#info-1]:gsub("-$", "")
 		local t = getTriggerTable(info)
-		local tmp
-		if not t.spec then
-			tmp = newSet()
+		local specs = deserializeSet(t.spec[class])
+		specs[specid] = value or nil
+		if not next(specs) then
+			t.spec[class] = nil
 		else
-			tmp = newSet((";"):split(t.spec))
+			t.spec[class] = serializeSet(specs)
 		end
-		tmp[specid] = not value or nil
-		local tmp2 = newList()
-		for k in pairs(tmp) do
-			tmp2[#tmp2+1] = k
-		end
-		tmp = del(tmp)
-		t.spec = table.concat(tmp2, ";")
-		tmp2 = del(tmp2)
 		if specid == getPlayerSpec() then
 			rebuildEffectiveRegistry()
 		end
@@ -2085,13 +2114,13 @@ function Parrot_Triggers:OnOptionsCreate()
 
 	local function getColoredName(info)
 		local t = getTriggerTable(info)
-		if not t.disabled and doGetClass(t.class, playerClass) then
-			if doGetSpec(t.spec, getPlayerSpec()) then
-				return ("|c0000dd00%s|r"):format(t.name)
-			end
-			return ("|c01006600%s|r"):format(t.name)
+		if t.disabled or not t.spec[playerClass] then
+			return ("|c02888888%s|r"):format(t.name)
 		end
-		return ("|c02888888%s|r"):format(t.name)
+		if doGetSpec(t, playerClass, getPlayerSpec()) then
+			return ("|c0000dd00%s|r"):format(t.name)
+		end
+		return ("|c01006600%s|r"):format(t.name)
 	end
 	
 	local tsharedopt = {
