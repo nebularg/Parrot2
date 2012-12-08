@@ -235,7 +235,7 @@ local defaultTriggers = {
 		-- Maelstrom Weapon = 51532
 		name = L["%s!"]:format(GetSpellInfo(53817)),
 		icon = 51532,
-		specs = { SHAMAN = "263" },
+		spec = { SHAMAN = "263" },
 		conditions = {
 			["Aura stack gain"] = {
 				{
@@ -1402,13 +1402,15 @@ local updateFuncs = {
 		end,
 	[9] = function()
 			for _,v in pairs(Parrot_Triggers.db1.profile.triggers2) do
-				v.spec = {}
-				local classes = deserializeSet(v.class)
-				classes[""] = nil
-				for class in pairs(classes) do
-					v.spec[class] = table.concat(specChoices[class], ";")
+				if v.class then
+					v.spec = {}
+					local classes = deserializeSet(v.class)
+					classes[""] = nil
+					for class in pairs(classes) do
+						v.spec[class] = table.concat(specChoices[class], ";")
+					end
+					del(classes)
 				end
-				del(classes)
 			end
 		end,
 }
