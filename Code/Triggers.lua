@@ -681,8 +681,12 @@ for k,v in pairs(defaultTriggers) do
 end
 
 local function getPlayerSpec()
+	if not GetSpecialization() then
+		return "0"
+	end
 	return tostring(GetSpecializationInfo(GetSpecialization()))
 end
+
 
 local effectiveRegistry = {}
 local periodicCheckTimer
@@ -691,7 +695,7 @@ local function checkTriggerEnabled(v)
 	if v.disabled then
 		return false
 	end
-	local specstring = v.spec[class]
+	local specstring = v.spec[playerClass]
 	if not specstring then
 		return false
 	end
