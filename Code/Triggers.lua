@@ -57,7 +57,7 @@ local defaultTriggers = {
 		icon = 16246,
 		spec = {
 			SHAMAN = "262",
-			DRUID = "105",
+			DRUID = "103;105",
 		},
 		conditions = {
 			["Aura gain"] = {
