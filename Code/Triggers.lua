@@ -508,7 +508,7 @@ local defaultTriggers = {
 					spell = GetSpellInfo(82925),
 					unit = "player",
 					auraType = "BUFF",
-					amount = 5,
+					amount = 3,
 				},
 			},
 		},
@@ -573,6 +573,159 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "6e0511",
+	}]],
+	[1041] = [[{
+		name = L["%s!"]:format(GetSpellInfo(81340)), -- Sudden Doom!
+		icon = 81340,
+		class = "DEATHKNIGHT",
+		spec = { DEATHKNIGHT = "252" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(81340),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "9b00b3",
+	}]],
+	[1042] = [[{
+		name = L["%s!"]:format(GetSpellInfo(7268)), -- Arcane Missiles!
+		icon = 7268,
+		class = "MAGE",
+		spec = { MAGE = "62" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(7268),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "59006c",
+	}]],
+	[1043] = [[{
+		name = L["%s!"]:format(GetSpellInfo(48108)), -- Pyroblast!
+		icon = 48108,
+		class = "MAGE",
+		spec = { MAGE = "63" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(48108),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "b33f00",
+	}]],
+	[1044] = [[{
+		name = L["%s!"]:format(GetSpellInfo(48107)), -- Heating Up
+		icon = 48107,
+		class = "MAGE",
+		spec = { MAGE = "63" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(48107),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff5900",
+	}]],
+	[1045] = [[{
+		name = L["%s!"]:format(GetSpellInfo(115636)), -- Combo Breaker
+		icon = 115636,
+		class = "MONK",
+		spec = { MONK = "269" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(115636),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "158f00",
+	}]],
+	[1046] = [[{
+		name = L["%s!"]:format(GetSpellInfo(85416)), -- Grand Crusader
+		icon = 85416,
+		class = "PALADIN",
+		spec = { PALADIN = "66" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(85416),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "0038cd",
+	}]],
+	[1047] = [[{
+		name = L["%s!"]:format(GetSpellInfo(77756)), -- Lava Surge
+		icon = 77756,
+		class = "SHAMAN",
+		spec = { SHAMAN = "262" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(77756),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ddb800",
+	}]],
+	[1048] = [[{
+		name = L["%s!"]:format(GetSpellInfo(122351)), -- Molten Core
+		icon = 122351,
+		class = "WARLOCK",
+		spec = { WARLOCK = "266" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(122351),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "8d2e00",
+	}]],
+	[1049] = [[{
+		name = L["%s!"]:format(GetSpellInfo(34936)), -- Backlash
+		icon = 34936,
+		class = "WARLOCK",
+		spec = { WARLOCK = "267" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(34936),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff8200",
 	}]],
 }
 
