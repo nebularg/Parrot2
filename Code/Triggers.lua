@@ -55,7 +55,11 @@ local defaultTriggers = {
 		-- 16246 = Clearcasting (Priest) TODO
 		name = L["%s!"]:format(GetSpellInfo(16246)),
 		icon = 16246,
-		class = "MAGE;PRIEST;SHAMAN",
+		class = "DRUID;SHAMAN",
+		spec = {
+			SHAMAN = "262",
+			DRUID = "105",
+		}
 		conditions = {
 			["Aura gain"] = {
 				{
@@ -73,6 +77,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(5308)),
 		icon = 5308,
 		class = "WARRIOR",
+		spec = { WARRIOR = "71;72;73", },
 		conditions = {
 			["Unit health"] = {
 				{
@@ -96,6 +101,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(24275)),
 		icon = 24275,
 		class = "PALADIN",
+		spec = { PALADIN = "66;70" },
 		conditions = {
 			["Unit health"] = {
 				{
@@ -116,7 +122,20 @@ local defaultTriggers = {
 	}]],
 	[1008] = [[{
 		name = L["Low Health!"],
-		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT",
+		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT;MONK",
+		spec = {
+			DRUID = "102;103;104;105",
+			HUNTER = "253;254;255",
+			MAGE = "62;63;64",
+			PALADIN = "65;66;70",
+			PRIEST = "256;257;258",
+			ROGUE = " "259;260;261",
+			SHAMAN = "262;263;264",
+			WARLOCK = "265;266;267",
+			WARRIOR = "71;72;73",
+			DEATHKNIGHT = "250;251;252",
+			MONK = "268;269;270",
+		}
 		conditions = {
 			["Unit health"] = {
 				{
@@ -136,6 +155,14 @@ local defaultTriggers = {
 	[1009] = [[{
 		name = L["Low Mana!"],
 		class = "DRUID;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
+		spec = {
+			DRUID = "102;103;104;105",
+			MAGE = "62;63;64",
+			PALADIN = "65;66;70",
+			PRIEST = "256;257;258",
+			SHAMAN = "262;263;264",
+			WARLOCK = "265;266;267",
+		}
 		conditions = {
 			["Unit power"] = {
 				{
@@ -156,6 +183,12 @@ local defaultTriggers = {
 	[1010] = [[{
 		name = L["Low Pet Health!"],
 		class = "HUNTER;MAGE;WARLOCK;DEATHKNIGHT",
+		spec = {
+			HUNTER = "253;254;255",
+			MAGE = "64",
+			WARLOCK = "265;266;267",
+			DEATHKNIGHT = "250;251;252",
+		}
 		conditions = {
 			["Unit health"] = {
 				[1] = {
@@ -267,7 +300,7 @@ local defaultTriggers = {
 		name = L["%s!"]:format(GetSpellInfo(56816)),
 		icon = 56816,
 		class = "DEATHKNIGHT",
-		spec = "251;252",
+		spec = { DEATHKNIGHT = "251;252" },
 		conditions = {
 			["Incoming miss"] = { "DODGE", "PARRY", },
 		},
