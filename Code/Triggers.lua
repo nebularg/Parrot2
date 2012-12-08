@@ -55,7 +55,6 @@ local defaultTriggers = {
 		-- 16246 = Clearcasting (Priest) TODO
 		name = L["%s!"]:format(GetSpellInfo(16246)),
 		icon = 16246,
-		class = "DRUID;SHAMAN",
 		spec = {
 			SHAMAN = "262",
 			DRUID = "105",
@@ -76,7 +75,6 @@ local defaultTriggers = {
 		-- 5308 = Execute
 		name = L["%s!"]:format(GetSpellInfo(5308)),
 		icon = 5308,
-		class = "WARRIOR",
 		spec = { WARRIOR = "71;72;73", },
 		conditions = {
 			["Unit health"] = {
@@ -100,7 +98,6 @@ local defaultTriggers = {
 		-- 24275 - Hammer of Wrath
 		name = L["%s!"]:format(GetSpellInfo(24275)),
 		icon = 24275,
-		class = "PALADIN",
 		spec = { PALADIN = "66;70" },
 		conditions = {
 			["Unit health"] = {
@@ -122,7 +119,6 @@ local defaultTriggers = {
 	}]],
 	[1008] = [[{
 		name = L["Low Health!"],
-		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR;DEATHKNIGHT;MONK",
 		spec = {
 			DRUID = "102;103;104;105",
 			HUNTER = "253;254;255",
@@ -154,7 +150,6 @@ local defaultTriggers = {
 	}]],
 	[1009] = [[{
 		name = L["Low Mana!"],
-		class = "DRUID;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
 		spec = {
 			DRUID = "102;103;104;105",
 			MAGE = "62;63;64",
@@ -182,7 +177,6 @@ local defaultTriggers = {
 	}]],
 	[1010] = [[{
 		name = L["Low Pet Health!"],
-		class = "HUNTER;MAGE;WARLOCK;DEATHKNIGHT",
 		spec = {
 			HUNTER = "253;254;255",
 			MAGE = "64",
@@ -208,7 +202,6 @@ local defaultTriggers = {
 		-- Overpower = 7384
 		name = L["%s!"]:format(GetSpellInfo(7384)),
 		icon = 7384,
-		class = "WARRIOR",
 		spec = { WARRIOR = "71" },
 		conditions = {
 			["Outgoing miss"] = { "DODGE", },
@@ -225,7 +218,6 @@ local defaultTriggers = {
 		-- Revenge = 6572
 		name = L["%s!"]:format(GetSpellInfo(6572)),
 		icon = 6572,
-		class = "WARRIOR",
 		spec = { WARRIOR = "73" },
 		conditions = {
 			["Incoming miss"] = { "BLOCK", "DODGE", "PARRY", },
@@ -243,7 +235,6 @@ local defaultTriggers = {
 		-- Maelstrom Weapon = 51532
 		name = L["%s!"]:format(GetSpellInfo(53817)),
 		icon = 51532,
-		class = "SHAMAN",
 		specs = { SHAMAN = "263" },
 		conditions = {
 			["Aura stack gain"] = {
@@ -263,7 +254,6 @@ local defaultTriggers = {
 		-- Freezing Fog = 59052
 		name = L["%s!"]:format(GetSpellInfo(59052)),
 		icon = 59052,
-		class = "DEATHKNIGHT",
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
@@ -281,7 +271,6 @@ local defaultTriggers = {
 		-- Killing Machine	= 51128
 		name = L["%s!"]:format(GetSpellInfo(51128)),
 		icon = 51130,
-		class = "DEATHKNIGHT",
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
@@ -299,7 +288,6 @@ local defaultTriggers = {
 		-- Rune Strike = 56816
 		name = L["%s!"]:format(GetSpellInfo(56816)),
 		icon = 56816,
-		class = "DEATHKNIGHT",
 		spec = { DEATHKNIGHT = "251;252" },
 		conditions = {
 			["Incoming miss"] = { "DODGE", "PARRY", },
@@ -312,7 +300,6 @@ local defaultTriggers = {
 		-- Lock and Load = 56453
 		name = L["%s!"]:format(GetSpellInfo(56453)),
 		icon = 56453,
-		class = "HUNTER",
 		spec = { HUNTER = "255" },
 		conditions = {
 			["Aura gain"] = {
@@ -330,7 +317,6 @@ local defaultTriggers = {
 		-- Brain Freeze = 57761
 		name = L["%s!"]:format(GetSpellInfo(44549)),
 		icon = 57761,
-		class = "MAGE",
 		spec = { MAGE = "64" },
 		conditions = {
 			["Aura gain"] = {
@@ -348,7 +334,6 @@ local defaultTriggers = {
 		-- Sudden Death 52437
 		name = L["%s!"]:format(GetSpellInfo(52437)),
 		icon = 52437,
-		class = "WARRIOR",
 		spec = { WARRIOR = "71" },
 		conditions = {
 			["Aura gain"] = {
@@ -367,7 +352,6 @@ local defaultTriggers = {
 		id = 28,
 		name = L["%s!"]:format(GetSpellInfo(48518)), -- Starfire
 		icon = 48518,
-		class = "DRUID",
 		spec = { DRUID = "102" },
 		conditions = {
 			["Aura gain"] = {
@@ -384,7 +368,6 @@ local defaultTriggers = {
 	[1024] = [[{
 		name = L["%s!"]:format(GetSpellInfo(48517)), -- Wrath
 		icon = 48517,
-		class = "DRUID",
 		spec = { DRUID = "102" },
 		conditions = {
 			["Aura gain"] = {
@@ -402,7 +385,6 @@ local defaultTriggers = {
 		-- The Art of War
 		name = L["%s!"]:format(GetSpellInfo(59578)),
 		icon = 59578,
-		class = "PALADIN",
 		spec = { PALADIN = "70" },
 		conditions = {
 			["Aura gain"] = {
@@ -420,7 +402,6 @@ local defaultTriggers = {
 		-- Kill shot
 		name = L["%s!"]:format(GetSpellInfo(53351)),
 		icon = 53351,
-		class = "HUNTER",
 		spec = { HUNTER = "253;254;255" },
 		conditions = {
 			["Unit health"] = {
@@ -443,7 +424,6 @@ local defaultTriggers = {
 	[1028] = [[{ -- Serendipity
 		name = L["%s!"]:format(GetSpellInfo(63733)),
 		icon = 63733,
-		class = "PRIEST",
 		spec = { PRIEST = "257" },
 		conditions = {
 			["Aura stack gain"] = {
@@ -463,7 +443,6 @@ local defaultTriggers = {
 		-- 44544 = Fingers of frost
 		name = L["%s!"]:format(GetSpellInfo(44544)),
 		icon = 44544,
-		class = "MAGE",
 		spec = { MAGE = "64" },
 		conditions = {
 			["Aura gain"] = {
@@ -480,7 +459,6 @@ local defaultTriggers = {
 	[1033] = [[{
 		name = L["%s!"]:format(GetSpellInfo(81141)), -- Blood Swarm
 		icon = 81141,
-		class = "DEATHKNIGHT",
 		spec = { DEATHKNIGHT = "250" },
 		conditions = {
 			["Aura gain"] = {
@@ -497,7 +475,6 @@ local defaultTriggers = {
 	[1034] = [[{
 		name = L["%s!"]:format(GetSpellInfo(91342)), -- Shadow Infusion
 		icon = 91342,
-		class = "DEATHKNIGHT",
 		spec = { DEATHKNIGHT = "250" },
 		conditions = {
 			["Aura stack gain"] = {
@@ -515,7 +492,6 @@ local defaultTriggers = {
 	[1035] = [[{
 		name = L["%s!"]:format(GetSpellInfo(82692)), -- Focus Fire
 		icon = 82692,
-		class = "HUNTER",
 		spec = { HUNTER = "253" },
 		conditions = {
 			["Aura stack gain"] = {
@@ -533,7 +509,6 @@ local defaultTriggers = {
 	[1037] = [[{
 		name = L["%s!"]:format(GetSpellInfo(82925)), -- Ready, Set, Aim...
 		icon = 82925,
-		class = "HUNTER",
 		spec = { HUNTER = "254" },
 		conditions = {
 			["Aura stack gain"] = {
@@ -551,7 +526,6 @@ local defaultTriggers = {
 	[1038] = [[{
 		name = L["%s!"]:format(GetSpellInfo(122510)), -- Ultimatum
 		icon = 122510,
-		class = "WARRIOR",
 		spec = { WARRIOR = "73" },
 		conditions = {
 			["Aura gain"] = {
@@ -568,7 +542,6 @@ local defaultTriggers = {
 	[1039] = [[{
 		name = L["%s!"]:format(GetSpellInfo(46916)), -- Bloodsurge
 		icon = 46916,
-		class = "WARRIOR",
 		spec = { WARRIOR = "72" },
 		conditions = {
 			["Aura gain"] = {
@@ -585,7 +558,6 @@ local defaultTriggers = {
 	[1040] = [[{
 		name = L["%s!"]:format(GetSpellInfo(131116)), -- Raging Blow!
 		icon = 131116,
-		class = "WARRIOR",
 		spec = { WARRIOR = "72" },
 		conditions = {
 			["Aura gain"] = {
@@ -610,7 +582,6 @@ local defaultTriggers = {
 	[1041] = [[{
 		name = L["%s!"]:format(GetSpellInfo(81340)), -- Sudden Doom!
 		icon = 81340,
-		class = "DEATHKNIGHT",
 		spec = { DEATHKNIGHT = "252" },
 		conditions = {
 			["Aura gain"] = {
@@ -627,7 +598,6 @@ local defaultTriggers = {
 	[1042] = [[{
 		name = L["%s!"]:format(GetSpellInfo(7268)), -- Arcane Missiles!
 		icon = 7268,
-		class = "MAGE",
 		spec = { MAGE = "62" },
 		conditions = {
 			["Aura gain"] = {
@@ -644,7 +614,6 @@ local defaultTriggers = {
 	[1043] = [[{
 		name = L["%s!"]:format(GetSpellInfo(48108)), -- Pyroblast!
 		icon = 48108,
-		class = "MAGE",
 		spec = { MAGE = "63" },
 		conditions = {
 			["Aura gain"] = {
@@ -661,7 +630,6 @@ local defaultTriggers = {
 	[1044] = [[{
 		name = L["%s!"]:format(GetSpellInfo(48107)), -- Heating Up
 		icon = 48107,
-		class = "MAGE",
 		spec = { MAGE = "63" },
 		conditions = {
 			["Aura gain"] = {
@@ -678,7 +646,6 @@ local defaultTriggers = {
 	[1045] = [[{
 		name = L["%s!"]:format(GetSpellInfo(115636)), -- Combo Breaker
 		icon = 115636,
-		class = "MONK",
 		spec = { MONK = "269" },
 		conditions = {
 			["Aura gain"] = {
@@ -695,7 +662,6 @@ local defaultTriggers = {
 	[1046] = [[{
 		name = L["%s!"]:format(GetSpellInfo(85416)), -- Grand Crusader
 		icon = 85416,
-		class = "PALADIN",
 		spec = { PALADIN = "66" },
 		conditions = {
 			["Aura gain"] = {
@@ -712,7 +678,6 @@ local defaultTriggers = {
 	[1047] = [[{
 		name = L["%s!"]:format(GetSpellInfo(77756)), -- Lava Surge
 		icon = 77756,
-		class = "SHAMAN",
 		spec = { SHAMAN = "262" },
 		conditions = {
 			["Aura gain"] = {
@@ -729,7 +694,6 @@ local defaultTriggers = {
 	[1048] = [[{
 		name = L["%s!"]:format(GetSpellInfo(122351)), -- Molten Core
 		icon = 122351,
-		class = "WARLOCK",
 		spec = { WARLOCK = "266" },
 		conditions = {
 			["Aura gain"] = {
@@ -746,7 +710,6 @@ local defaultTriggers = {
 	[1049] = [[{
 		name = L["%s!"]:format(GetSpellInfo(34936)), -- Backlash
 		icon = 34936,
-		class = "WARLOCK",
 		spec = { WARLOCK = "267" },
 		conditions = {
 			["Aura gain"] = {
