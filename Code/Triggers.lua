@@ -830,10 +830,9 @@ for k,v in pairs(defaultTriggers) do
 end
 
 local function getPlayerSpec()
-	if not GetSpecialization() then
-		return "0"
-	end
-	return tostring(GetSpecializationInfo(GetSpecialization()))
+	local spec = GetSpecialization()
+	local specId = spec and GetSpecializationInfo(spec) or 0
+	return tostring(specId)
 end
 
 
