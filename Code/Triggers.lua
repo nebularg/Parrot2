@@ -899,7 +899,6 @@ function Parrot_Triggers:OnInitialize()
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
 	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
-	self:RegisterEvent("PLAYER_TALENT_UPDATE", rebuildEffectiveRegistry)
 end
 
 --[[============================================================================
@@ -1484,7 +1483,7 @@ function Parrot_Triggers:OnEnable()
 		}
 		first = false
 	end
-
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", rebuildEffectiveRegistry)
 	rebuildEffectiveRegistry()
 end
 
