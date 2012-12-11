@@ -2445,23 +2445,23 @@ local legacyNames = {
 }
 
 local function makeParseFunction(event)
-	local code = "function(info, ...) "
-	for _,v in ipairs(moreParams[event]) do
-		code = code .. ("info.%s, "):format(legacyNames[v] or v)
+	local code = "return function(info, ...) "
+	if next(moreParams[event]) then
+		local paramCode = newList()
+		for _,v in ipairs(moreParams[event]) do
+			table.insert(paramCode, ("info.%s"):format(legacyNames[v] or v))
+		end
+		code = code .. table.concat(paramCode, ",") .. " = ...;"
+		del(paramCode)
 	end
-
-	code = code .. "_ = ...;"
 
 	local extras = moreParams[event].extra
 	if extras then
-		for _,v in ipairs(extras) do
-			code = code .. v .. ";"
-		end
+		code = code .. table.concat(extras, ";") .. ";"
 	end
 
 	code = code .. "end"
-	local luaString = "return " .. code
-	local createFunc, err = loadstring(luaString)
+	local createFunc, err = loadstring(code)
 
 	if createFunc then
 		return createFunc()
