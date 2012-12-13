@@ -664,7 +664,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				name = L["Amount"],
 				desc = L["Amount of stacks of the aura"],
 				type = 'number',
-				min = 1,
+				min = 0,
 				max = 100,
 				step = 1,
 			},
@@ -680,7 +680,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		if not ref.amount then
 			return false
 		end
-		return compareUnitAndSpell(ref, info) and ref.amount == info.amount
+		return compareUnitAndSpell(ref, info) and (ref.amount == 0 or ref.amount == info.amount)
 	end,
 }
 

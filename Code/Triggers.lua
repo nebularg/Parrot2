@@ -572,7 +572,7 @@ local defaultTriggers = {
 					spell = GetSpellInfo(131116),
 					unit = "player",
 					auraType = "BUFF",
-					amount = 2,
+					amount = 0,
 				},
 			},
 		},
