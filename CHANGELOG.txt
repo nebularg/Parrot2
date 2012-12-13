@@ -6,6 +6,7 @@ v1.11.0:
 * add error-handling to color-text-field
 * fix possible nil-error when 3rd party addons show messages way early
 * fix taint-bug that could break the glyph-UI
+* allow value 0 in aura-stack-count in triggers to fire on every stack gain
 * fix "Ready, Set, Aim..."-Trigger
 * added new default-triggers:
   + Warrior - Fury:
