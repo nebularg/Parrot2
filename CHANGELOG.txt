@@ -1,3 +1,34 @@
+v1.11.0:
+* add Monk as valid class
+* add option to enable triggers only for specific specs
+* color triggers in options according to whether they are active or not
+* extract "Style"-tab for triggers
+* add error-handling to color-text-field
+* fix possible nil-error when 3rd party addons show messages way early
+* fix taint-bug that could break the glyph-UI
+* fix "Ready, Set, Aim..."-Trigger
+* added new default-triggers:
+  + Warrior - Fury:
+    - Bloodsurge
+    - Raging Blow!
+  + Deathknight - Unholy:
+    - Sudden Doom
+  + Mage - Arcane:
+    - Arcane Missiles
+  + Mage - Fire:
+    - Pyroblast
+    - Heating Up
+  + Monk - Windwalker:
+    - Combo Breaker
+  + Paladin - Protection:
+    - Grand Crusader
+  + Shaman - Elemental:
+    - Lava Surge
+  + Warlock - Demonology:
+    - Molten Core
+  + Warlock - Destruction:
+    - Backlash
+
 v1.10.33:
 * fix frost-trap-spell ids
 * fix absorb-amount for Periodic damage
