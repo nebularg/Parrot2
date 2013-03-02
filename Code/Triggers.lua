@@ -844,7 +844,7 @@ local function checkTriggerEnabled(v)
 	if v.disabled then
 		return false
 	end
-	local specstring = v.spec[playerClass]
+	local specstring = v.spec and v.spec[playerClass]
 	if not specstring then
 		return false
 	end
