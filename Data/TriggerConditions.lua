@@ -143,10 +143,12 @@ Parrot:RegisterPrimaryTriggerCondition {
 			return false
 		end
 		-- only check the unit
-		if ref.unit ~= info then return end
+		if ref.unit ~= info then
+			return
+		end
 		-- check the friendly-flag
 		if ref.friendly >= 0 then
-			local friendly = UnitIsFriend("player", info) or 1
+			local friendly = UnitIsFriend("player", info) or 0
 			if ref.friendly ~= friendly then
 				return false
 			end
@@ -221,7 +223,7 @@ local function checkPower(ref)
 	local unit = ref.unit
 	-- check the friendly-flag
 	if ref.friendly >= 0 then
-		local friendly = UnitIsFriend("player", unit) or 1
+		local friendly = UnitIsFriend("player", unit) or 0
 		if ref.friendly ~= friendly then
 			return false
 		end
