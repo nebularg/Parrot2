@@ -1,3 +1,7 @@
+v1.11.1:
+* fix configuration-menu not working correctly
+* fix Friendly-check in UnitHealth and UnitPower triggerconditions
+
 v1.11.0:
 * add Monk as valid class
 * add option to enable triggers only for specific specs
