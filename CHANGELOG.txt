@@ -1,3 +1,6 @@
+v1.11.2:
+update for WoW 5.2
+
 v1.11.1:
 * fix configuration-menu not working correctly
 * fix Friendly-check in UnitHealth and UnitPower triggerconditions
