@@ -217,7 +217,7 @@ function Parrot_CombatEvents:check_raid_instance()
 	local is_she, instance_type = IsInInstance()
 	if is_she then
 		if instance_type == "raid" then
-			local diff = GetInstanceDifficulty()
+			local diff = GetRaidDifficultyID()
 			if diff == 2 or diff == 4 then
 				-- 25man or 25man-heroic
 				self:SetEnabledState(not db.disable_in_25man)
