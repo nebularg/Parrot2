@@ -1,5 +1,8 @@
+v1.11.3:
+* mark compatible with wow 5.3
+
 v1.11.2:
-update for WoW 5.2
+* mark update for WoW 5.2
 
 v1.11.1:
 * fix configuration-menu not working correctly
