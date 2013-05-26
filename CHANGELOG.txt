@@ -1,5 +1,6 @@
 v1.11.3:
 * mark compatible with wow 5.3
+* fix bug in raid-difficulty detection
 
 v1.11.2:
 * mark update for WoW 5.2
