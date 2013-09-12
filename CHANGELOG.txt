@@ -1,3 +1,6 @@
+v1.11.4:
+* mark compatible with wow 5.4
+
 v1.11.3:
 * mark compatible with wow 5.3
 * fix bug in raid-difficulty detection
