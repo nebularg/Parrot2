@@ -930,12 +930,10 @@ Parrot:RegisterSecondaryTriggerCondition {
 		type = 'select',
 		values = {
 			["Bear Form"] = GetSpellInfo(5487),
-			["Aquatic Form"] = GetSpellInfo(1066),
 			["Cat Form"] = GetSpellInfo(768),
 			["Travel Form"] = GetSpellInfo(783),
-			["Flight Form"] = GetSpellInfo(33943),
 			["Moonkin Form"] = GetSpellInfo(24858),
-			["Tree of Life"] = GetSpellInfo(33891),
+			--["Tree of Life"] = GetSpellInfo(48371),
 		}
 	},
 	check = function(param)
@@ -947,22 +945,13 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if form == 1 then
 			return param == "Bear Form"
 		elseif form == 2 then
-			return param == "Aquatic Form"
-		elseif form == 3 then
 			return param == "Cat Form"
-		elseif form == 4 then
+		elseif form == 3 then
 			return param == "Travel Form"
-		elseif form == 5 then
-			local real5 = GetShapeshiftFormInfo(5)
-			if real5 == GetSpellInfo(24858) then
-				return param == "Moonkin Form"
-			elseif real5 == GetSpellInfo(33891) then
-				return param == "Tree of Life"
-			elseif real5 == GetSpellInfo(40120) or real5 == GetSpellInfo(33943) then
-				return param == "Flight Form"
-			end
-		elseif form == 6 then
-			return param == "Flight Form"
+		elseif form == 4 then
+			return param == "Moonkin Form"
+		--elseif form == 5 then
+		--	return param == "Tree of Life"
 		end
 		return false
 	end,
