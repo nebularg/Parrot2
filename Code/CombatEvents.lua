@@ -191,18 +191,24 @@ local function updateDB()
 	end
 end
 
-local cancelUIDSoonEnabled
-
 -- module-dependencies
 local Parrot_Display
 local Parrot_ScrollAreas
 local Parrot_TriggerConditions
 
+-- checks if in a raid-instance and disables CombatEvents accordingly
+local enabled = false
+local function checkZone()
+	if db.disabled or not enabled then return end
+
+	local _, instance_type = IsInInstance()
+	Parrot_CombatEvents:SetEnabledState(instance_type ~= "raid" or not db.disable_in_raid)
+end
+
 function Parrot_CombatEvents:OnInitialize()
 	self.db1 = Parrot.db1:RegisterNamespace("CombatEvents", dbDefaults)
 	self.db1.RegisterCallback(self, "OnNewProfile", "OnNewProfile")
 	db = self.db1.profile
-	cancelUIDSoonEnabled = db.cancelUIDSoon
 
 	-- module dependencies
 	Parrot_Display = Parrot:GetModule("Display")
@@ -210,45 +216,22 @@ function Parrot_CombatEvents:OnInitialize()
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
 	-- Register with Addons CombatLogEvent-registry for uid-stuff
 	Parrot:RegisterCombatLog(self)
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", checkZone)
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", checkZone)
 end
 
--- checks if in a raid-instance and disables CombatEvents accordingly
-local enabled = false
-local disabled_by_raid = false
-function Parrot_CombatEvents:check_raid_instance()
-	if self.db1.profile.disabled then return end
-	if (not enabled) and (not disabled_by_raid) then
-		return
-	end
-	local is_she, instance_type = IsInInstance()
-	if is_she then
-		if instance_type == "raid" then
-			self:SetEnabledState(not db.disable_in_raid)
-		end
-		if not self:IsEnabled() then
-			disabled_by_raid = true
-		end
-	else
-		self:IsEnabled(true)
-		disabled_by_raid = false
-	end
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "check_raid_instance")
-	self:RegisterEvent("PLAYER_LEAVING_WORLD", "check_raid_instance")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "check_raid_instance")
-end
 -- used as table for data about combatEvents in the registry
 local combatEvents = {}
 local onEnableFuncs = {}
 local active = false
-function Parrot_CombatEvents:OnEnable(first)
-	if self.db1.profile.disabled == true then
+function Parrot_CombatEvents:OnEnable()
+	if db.disabled then
 		self:Disable()
+		return
 	end
 	enabled = true
 	updateDB()
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "check_raid_instance")
-	self:RegisterEvent("PLAYER_LEAVING_WORLD", "check_raid_instance")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "check_raid_instance")
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
@@ -526,18 +509,29 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						type = 'toggle',
 						name = L["Enabled"],
 						desc = L["Whether this module is enabled"],
-						disabled = function() return disabled_by_raid end,
 						get = function() return self:IsEnabled() end,
-						set = function(info, value) self:SetEnabledState(value) db.disabled = not value end,
+						set = function(info, value)
+							db.disabled = not value
+							self:SetEnabledState(value)
+						end,
+						disabled = function()
+							local _, instance_type = IsInInstance()
+							return instance_type == "raid" and db.disable_in_raid
+						end,
+						order = 1,
 					},
 					disable_in_raid = {
 						type = 'toggle',
 						name = L["Disable in raids"],
-						desc = L["Disable CombatEvents when in a raid instance"],
+						desc = L["Disable this module while in a raid instance"],
 						set = function(info, value)
 							setOption(info, value)
-							Parrot_CombatEvents:check_raid_instance()
+							checkZone()
 						end,
+						disabled = function()
+							return db.disabled
+						end,
+						order = 2,
 					},
 				},
 			},
@@ -570,7 +564,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					hideRealm = {
 						type = 'toggle',
 						name = L["Hide realm"],
-						desc = L["Hide realm in player names (in battlegrounds)"],
+						desc = L["Hide realm in player names"],
 					},
 					classcolor = {
 						type = 'toggle',
@@ -593,10 +587,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				type = 'toggle',
 				name = L["Hide events used in triggers"],
 				desc = L["Hides combat events when they were used in triggers"],
-				set = function(info, value)
-					setOption(info, value)
-					cancelUIDSoonEnabled = value
-				end,
+				width = "double",
 			},
 			Incoming = {
 				type = 'group',
@@ -1802,7 +1793,7 @@ local function shortenAmount(val)
 end
 
 function Parrot_CombatEvents:ShortenAmount(val)
-	if not self.db1.profile.shortenAmount then
+	if not db.shortenAmount then
 		return val
 	end
 	return shortenAmount(val)
@@ -1949,7 +1940,7 @@ local combatTimerFrame
 local cancelUIDSoon = {}
 
 function Parrot_CombatEvents:CancelEventsWithUID(uid)
-	if not cancelUIDSoonEnabled then
+	if not db.cancelUIDSoon then
 		return
 	end
 	local i = #nextFrameCombatEvents
@@ -2391,7 +2382,7 @@ local moreParams = {
 	SPELL_PERIODIC_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
 	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", "multistrike", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
 	SPELL_PERIODIC_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
-	SPELL_PERIODIC_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffhand", "multistrike", "amountMissed", },
+	SPELL_PERIODIC_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffHand", "multistrike", "amountMissed", },
 	SPELL_STOLEN = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", "auraType", },
 	SWING_DAMAGE = { "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand", "multistrike", },
 	SWING_MISSED = { "missType", "isOffHand", "multistrike",  "amountMissed", },
