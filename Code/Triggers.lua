@@ -51,26 +51,6 @@ local SharedMedia = LibStub("LibSharedMedia-3.0")
 --]]
 
 local defaultTriggers = {
-	[1002] = [[{
-		-- 16246 = Clearcasting (Priest) TODO
-		name = L["%s!"]:format(GetSpellInfo(16246)),
-		icon = 16246,
-		spec = {
-			SHAMAN = "262",
-			DRUID = "103;105",
-		},
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(16246),
-					unit = "player",
-					auraType = "BUFF",
-				}
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
 	[1004] = [[{
 		-- 5308 = Execute
 		name = L["%s!"]:format(GetSpellInfo(5308)),
@@ -198,22 +178,6 @@ local defaultTriggers = {
 		},
 		color = "ff7f7f",
 	}]],
-	[1013] = [[{
-		-- Overpower = 7384
-		name = L["%s!"]:format(GetSpellInfo(7384)),
-		icon = 7384,
-		spec = { WARRIOR = "71" },
-		conditions = {
-			["Outgoing miss"] = { "DODGE", },
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(7384),
-			},
-		},
-		sticky = true,
-		color = "7f007f",
-	}]],
 	[1014] = [[{
 		-- Revenge = 6572
 		name = L["%s!"]:format(GetSpellInfo(6572)),
@@ -232,9 +196,9 @@ local defaultTriggers = {
 		disabled = true,
 	}]],
 	[1016] = [[{
-		-- Maelstrom Weapon = 51532
+		-- Maelstrom Weapon = 53817
 		name = L["%s!"]:format(GetSpellInfo(53817)),
-		icon = 51532,
+		icon = 53817,
 		spec = { SHAMAN = "263" },
 		conditions = {
 			["Aura stack gain"] = {
@@ -284,35 +248,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "0000ff",
 	}]],
-	[1019] = [[{
-		-- Rune Strike = 56816
-		name = L["%s!"]:format(GetSpellInfo(56816)),
-		icon = 56816,
-		spec = { DEATHKNIGHT = "251;252" },
-		conditions = {
-			["Incoming miss"] = { "DODGE", "PARRY", },
-		},
-		sticky = true,
-		color = "0000ff",
-		disabled = true,
-	}]],
-	[1020] = [[{
-		-- Lock and Load = 56453
-		name = L["%s!"]:format(GetSpellInfo(56453)),
-		icon = 56453,
-		spec = { HUNTER = "255" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(56453),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff0000",
-	}]],
 	[1021] = [[{
 		-- Brain Freeze = 57761
 		name = L["%s!"]:format(GetSpellInfo(44549)),
@@ -347,43 +282,9 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff0000",
 	}]],
-	[1023] = [[{
-		-- Eclipse
-		id = 28,
-		name = L["%s!"]:format(GetSpellInfo(48518)), -- Starfire
-		icon = 48518,
-		spec = { DRUID = "102" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = 48518,
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffffff",
-	}]],
-	[1024] = [[{
-		name = L["%s!"]:format(GetSpellInfo(48517)), -- Wrath
-		icon = 48517,
-		spec = { DRUID = "102" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = 48517,
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffffff",
-	}]],
 	[1025] = [[{
 		-- The Art of War
-		name = L["%s!"]:format(GetSpellInfo(59578)),
+		name = GetSpellInfo(59578),
 		icon = 59578,
 		spec = { PALADIN = "70" },
 		conditions = {
@@ -457,7 +358,7 @@ local defaultTriggers = {
 		color = "005ba9",
 	}]],
 	[1033] = [[{
-		name = L["%s!"]:format(GetSpellInfo(81141)), -- Blood Swarm
+		name = L["%s!"]:format(GetSpellInfo(81141)), -- Crimson Scourge
 		icon = 81141,
 		spec = { DEATHKNIGHT = "250" },
 		conditions = {
@@ -506,23 +407,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff7563",
 	}]],
-	[1037] = [[{
-		name = L["%s!"]:format(GetSpellInfo(82925)), -- Ready, Set, Aim...
-		icon = 82925,
-		spec = { HUNTER = "254" },
-		conditions = {
-			["Aura stack gain"] = {
-				{
-					spell = GetSpellInfo(82925),
-					unit = "player",
-					auraType = "BUFF",
-					amount = 3,
-				},
-			},
-		},
-		sticky = true,
-		color = "00cc00",
-	}]],
 	[1038] = [[{
 		name = L["%s!"]:format(GetSpellInfo(122510)), -- Ultimatum
 		icon = 122510,
@@ -556,7 +440,7 @@ local defaultTriggers = {
 		color = "ff0300",
 	}]],
 	[1040] = [[{
-		name = L["%s!"]:format(GetSpellInfo(131116)), -- Raging Blow!
+		name = GetSpellInfo(131116), -- Raging Blow!
 		icon = 131116,
 		spec = { WARRIOR = "72" },
 		conditions = {
@@ -612,7 +496,7 @@ local defaultTriggers = {
 		color = "59006c",
 	}]],
 	[1043] = [[{
-		name = L["%s!"]:format(GetSpellInfo(48108)), -- Pyroblast!
+		name = GetSpellInfo(48108), -- Pyroblast!
 		icon = 48108,
 		spec = { MAGE = "63" },
 		conditions = {
@@ -644,13 +528,13 @@ local defaultTriggers = {
 		color = "ff5900",
 	}]],
 	[1045] = [[{
-		name = L["%s!"]:format(GetSpellInfo(115636)), -- Combo Breaker
-		icon = 115636,
+		name = L["%s!"]:format(GetSpellInfo(137384)), -- Combo Breaker
+		icon = 137384,
 		spec = { MONK = "269" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(115636),
+					spell = GetSpellInfo(137384),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -707,22 +591,7 @@ local defaultTriggers = {
 		sticky = true,
 		color = "8d2e00",
 	}]],
-	[1049] = [[{
-		name = L["%s!"]:format(GetSpellInfo(34936)), -- Backlash
-		icon = 34936,
-		spec = { WARLOCK = "267" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(34936),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff8200",
-	}]],
+	-- start new entries at 1050
 }
 
 local specChoices = {

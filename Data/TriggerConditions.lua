@@ -207,9 +207,11 @@ table.insert(onEnableFuncs, function()
 	end
 )
 table.insert(onEnableFuncs, function()
-		mod:RegisterEvent("PLAYER_PET", function()
-				wipe(unitHealthStates.pet)
-				wipe(unitPowerStates.pet)
+		mod:RegisterEvent("UNIT_PET", function(_, unit)
+				if unit == "player" then
+					wipe(unitHealthStates.pet)
+					wipe(unitPowerStates.pet)
+				end
 			end
 		)
 	end
@@ -328,7 +330,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 		{
 			eventType = "SPELL_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType, amountMissed )
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType )
 					if dstGUID ~= UnitGUID("player") then
 							return nil
 					end
@@ -337,7 +339,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 		{
 			eventType = "RANGE_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType )
 					if dstGUID ~= UnitGUID("player") then
 							return nil
 					end
@@ -377,7 +379,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 		{
 			eventType = "RANGE_MISSED",
-			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
+			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType )
 					if srcGUID ~= UnitGUID("player") then
 							return nil
 					end
@@ -597,23 +599,25 @@ Parrot:RegisterPrimaryTriggerCondition {
 	end,
 }
 
-local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical, _, _)
+local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical, _, _, _, multistrike)
 	local data = newList()
 	data.dstName = dstName
 	data.srcName = srcName
 	data.amount = amount
 	data.critical = not not critical
+	data.multistrike = not not multistrike
 	data.spellName = spellName
 	data.spellId = spellId
 	return data
 end
 
-local function parseSwingDamage(_, srcName, _, _, dstName, _, amount, _, _, _, _, _, critical)
+local function parseSwingDamage(_, srcName, _, _, dstName, _, amount, _, _, _, _, _, critical, _, _, _, multistrike)
 	local data = newList()
 	data.dstName = dstName
 	data.srcName = srcName
 	data.amount = amount
 	data.critical = not not critical
+	data.multistrike = not not multistrike
 	return data
 end
 
@@ -902,7 +906,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 		values = {
 			["Battle Stance"] = GetSpellInfo(2457),
 			["Defensive Stance"] = GetSpellInfo(71),
-			["Berserker Stance"] = GetSpellInfo(2458),
 		}
 	},
 	check = function(param)
@@ -914,8 +917,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 			return param == "Battle Stance"
 		elseif form == 2 then
 			return param == "Defensive Stance"
-		elseif form == 3 then
-			return param == "Berserker Stance"
 		end
 		return false
 	end,

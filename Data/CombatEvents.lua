@@ -188,12 +188,6 @@ end
 -- comabatlog to the spellID with the expected icon (spellbook, talent-tree)
 --]]
 local dumbIconOverride = {
-	[31818] = select(3, GetSpellInfo(27222)), -- Life Tap
-	[22482] = select(3, GetSpellInfo(13877)), -- Blade Flurry
-	[48665] = select(3, GetSpellInfo(34411)), -- Mutilate
-	[48664] = select(3, GetSpellInfo(34411)), -- Mutilate
-	[53254] = select(3, GetSpellInfo(53217)), -- Wild Quiver
-	[52042] = select(3, GetSpellInfo(58757)), -- Healing Stream Totem
 }
 
 --[[
@@ -201,8 +195,8 @@ local dumbIconOverride = {
 --]]
 local function retrieveIconFromAbilityName(info)
 	local icon
-	if(info.spellID) then
-		icon = dumbIconOverride[info.spellID] or select(3, GetSpellInfo(info.spellID))
+	if info.spellID then
+		icon = select(3, GetSpellInfo(info.spellID)) -- dumbIconOverride[info.spellID] or -- XXX table is empty now, skip the lookup attempt
 	elseif info.abilityName then
 		--shouldn't be needed though, but to be sure
 		icon = select(3, GetSpellInfo(info.abilityName))
