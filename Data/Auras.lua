@@ -1041,7 +1041,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param then
 			return false
 		end
-		local main, _, _, off = GetWeaponEnchantInfo()
+		local main, _, _, _, off = GetWeaponEnchantInfo()
 		if param == 0 then
 			return main == 1 or off == 1
 		elseif param == 1 then
