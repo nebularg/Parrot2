@@ -61,15 +61,17 @@ local function recalcCooldowns()
 	for spell, tree in pairs(spellNameToTree) do
 		local old = cooldowns[spell]
 		local start, duration = GetSpellCooldown(spell)
-		local check = start > 0 and duration > GCD and duration > db.profile.threshold
-		cooldowns[spell] = check or nil
-		if old and not check then -- cooldown expired
-			expired[spell] = tree
+		if start then
+			local check = start > 0 and duration > GCD and duration > db.profile.threshold
+			cooldowns[spell] = check or nil
+			if old and not check then -- cooldown expired
+				expired[spell] = tree
+			end
+			local exp = duration - GetTime() + start -- remaining Cooldown
+			if check and (not minCD or minCD > exp) then
+				minCD = exp
+			end
 		end
-		local exp = duration - GetTime() + start -- remaining Cooldown
-		if check and (not minCD or minCD > exp) then
-			minCD = exp
-		end -- if check
 	end -- for spell
 	nextUpdate = minCD and GetTime() + minCD or nil
 	lastRecalc = GetTime()
