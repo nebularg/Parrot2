@@ -50,8 +50,7 @@ local dbDefaults = {
 		abbreviateStyle = "abbreviate",
 		abbreviateLength = 30,
 		stickyCrit = true,
-		disable_in_10man = false,
-		disable_in_25man = false,
+		disable_in_raid = false,
 		hideFullOverheals = 1,
 		hideSkillNames = false,
 		hideUnitNames = false,
@@ -165,6 +164,13 @@ local updateDBFuncs = {
 		-- reenable because a bugfix made it behave properly
 		db.disabled = false
 	end,
+	[6] = function()
+		if db.disable_in_10man and db.disable_in_25man then
+			db.disable_in_raid = true
+		end
+		db.disable_in_10man = nil
+		db.disable_in_25man = nil
+	end,
 }
 
 function Parrot_CombatEvents:OnNewProfile(t, key)
@@ -217,14 +223,7 @@ function Parrot_CombatEvents:check_raid_instance()
 	local is_she, instance_type = IsInInstance()
 	if is_she then
 		if instance_type == "raid" then
-			local diff = GetRaidDifficultyID()
-			if diff == 2 or diff == 4 then
-				-- 25man or 25man-heroic
-				self:SetEnabledState(not db.disable_in_25man)
-			else
-				-- 10man (or maybe some old raid-instance)
-				self:SetEnabledState(not db.disable_in_10man)
-			end
+			self:SetEnabledState(not db.disable_in_raid)
 		end
 		if not self:IsEnabled() then
 			disabled_by_raid = true
@@ -531,19 +530,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						get = function() return self:IsEnabled() end,
 						set = function(info, value) self:SetEnabledState(value) db.disabled = not value end,
 					},
-					disable_in_10man = {
+					disable_in_raid = {
 						type = 'toggle',
-						name = L["Disable in 10-man raids"],
-						desc = L["Disable CombatEvents when in a 10-man raid instance"],
-						set = function(info, value)
-							setOption(info, value)
-							Parrot_CombatEvents:check_raid_instance()
-						end,
-					},
-					disable_in_25man = {
-						type = 'toggle',
-						name = L["Disable in 25-man raids"],
-						desc = L["Disable CombatEvents when in a 25-man raid instance"],
+						name = L["Disable in raids"],
+						desc = L["Disable CombatEvents when in a raid instance"],
 						set = function(info, value)
 							setOption(info, value)
 							Parrot_CombatEvents:check_raid_instance()
