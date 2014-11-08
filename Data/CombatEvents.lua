@@ -1977,7 +1977,7 @@ Parrot:RegisterCombatEvent{
 -- local variable to prevent double-combo-point-messages (?)
 local cur = 0
 local function parseCPGain()
-	local num = GetComboPoints("player", "target")
+	local num = UnitHasVehicleUI("player") and GetComboPoints("vehicle", "target") or UnitPower("player", 4)
 	if cur == num then return end
 	cur = num
 	if num > 0 and num < 5 then
@@ -1986,7 +1986,7 @@ local function parseCPGain()
 end
 
 local function parseCPFull()
-	local num = GetComboPoints("player", "target")
+	local num = UnitHasVehicleUI("player") and GetComboPoints("vehicle", "target") or UnitPower("player", 4)
 	if num == 5 then
 		return newList(num)
 	end
