@@ -404,12 +404,12 @@ local function refreshEventRegistration(category, name)
 		end
 	else
 		if blizzardEvent then
-			Parrot:RegisterBlizzardEvent(self, blizzardEvent_ev, function(uid, event, ...)
+			Parrot:RegisterBlizzardEvent(Parrot_CombatEvents, blizzardEvent_ev, function(uid, event, ...)
 					--					debug("bla: ", ...)
 					local info = newList(...)
 					info.uid = uid
 					info.event = event
-					self:TriggerCombatEvent(category, name, info)
+					Parrot_CombatEvents:TriggerCombatEvent(category, name, info)
 					info = del(info)
 				end
 			)
@@ -1111,10 +1111,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			name = L["Tag"],
 			desc = L["Tag to show for the current event."],
 			type = 'input',
-			usage = usage,
+			--usage = usage,
 			get = getTag,
 			set = setTag,
-			arg = arg,
 			order = 1,
 		},
 		color = {
@@ -1123,7 +1122,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			type = 'color',
 			get = getColor,
 			set = setColor,
-			arg = arg,
 		},
 		sound = {
 			type = 'select',
@@ -1132,7 +1130,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			desc = L["What sound to play when the current event occurs."],
 			get = getSound,
 			set = setSound,
-			arg = arg,
 		},
 		sticky = {
 			name = L["Sticky"],
@@ -1140,7 +1137,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			type = 'toggle',
 			get = getSticky,
 			set = setSticky,
-			arg = arg,
 		},
 		font = {
 			type = 'group',
@@ -1155,7 +1151,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					values = Parrot.inheritFontChoices,
 					get = getFontFace,
 					set = setFontFace,
-					arg = arg,
 					order = 1,
 				},
 				fontSizeInherit = {
@@ -1164,7 +1159,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					desc = L["Inherit font size"],
 					get = getFontSizeInherit,
 					set = setFontSizeInherit,
-					arg = arg,
 					order = 2,
 				},
 				fontSize = {
@@ -1177,7 +1171,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					get = getFontSize,
 					set = setFontSize,
 					disabled = getFontSizeInherit,
-					arg = arg,
 					order = 3,
 				},
 				fontOutline = {
@@ -1187,7 +1180,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					get = getFontOutline,
 					set = setFontOutline,
 					values = fontOutlineChoices,
-					arg = arg,
 					order = 4,
 				},
 			}
@@ -1199,7 +1191,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			desc = L["Enable the current event."],
 			get = getEnable,
 			set = setEnable,
-			arg = arg,
 		},
 		scrollArea = {
 			type = 'select',
@@ -1208,7 +1199,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			values = getScrollAreasChoices,
 			get = getScrollArea,
 			set = setScrollArea,
-			arg = arg,
 		},
 	}
 
@@ -1273,13 +1263,13 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				order = 1,
 			}
 		end
-		arg = newList(category, name)
 		events_opt.args[category].args[subcat].args[name] = {
 			type = 'group',
 			name = localName,
 			desc = localName,
 			args = combatEventArgs,
 		}
+		events_opt.args[category].args[subcat].args[name].args.tag.usage = usage
 	end
 
 	local function getTimespan(info)

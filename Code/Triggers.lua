@@ -1293,7 +1293,7 @@ local function convertTriggers2()
 	end
 end
 
-alpha2alpah1translate = {
+local alpha2alpah1translate = {
 	["Aura inactive"] = function(param)
 		local arg = {}
 		for k,v in ipairs(param) do

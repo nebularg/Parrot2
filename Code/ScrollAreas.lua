@@ -84,6 +84,7 @@ function Parrot_ScrollAreas:OnDisable()
 	end
 end
 
+-- Register ConfigMode callback (http://wowpedia.org/ConfigMode)
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
 CONFIGMODE_CALLBACKS["Parrot"] = function(state)
 	Parrot:SetConfigMode(state == "ON")

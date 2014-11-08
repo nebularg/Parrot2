@@ -172,7 +172,7 @@ function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
 		end
 		local getCurrent = data.getCurrent
 		if type(getCurrent) ~= "function" and type(getCurrent) ~= "nil" then
-			error(("Bad argument #2 to `RegisterCombatEvent'. localName must be a %q or nil, got %q."):format("function", type(check)), 2)
+			error(("Bad argument #2 to `RegisterCombatEvent'. localName must be a %q or nil, got %q."):format("function", type(getCurrent)), 2)
 		end
 	end
 	if conditions[name] then

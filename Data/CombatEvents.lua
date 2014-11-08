@@ -1821,7 +1821,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_HEAL = { check = checkPetOutHeal, },
 	},
 	tagTranslations = outHealTagTranslations,
-	tagTranslationsHelp = petOutHealTagTranslations,
+	tagTranslationsHelp = petOutHealTagTranslationsHelp,
 	color = "00ff00", -- green
 	canCrit = true,
 	filterType = { "Outgoing heals", 'realAmount' },
@@ -1839,7 +1839,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_PERIODIC_HEAL = { check = checkPetOutHeal, },
 	},
 	tagTranslations = outHealTagTranslations,
-	tagTranslationsHelp = petOutHealTagTranslations,
+	tagTranslationsHelp = petOutHealTagTranslationsHelp,
 	throttle = hotThrottle,
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
@@ -2081,7 +2081,7 @@ Parrot:RegisterCombatEvent{
 }--]]
 
 -- Reputation
-function parseRepGain(chatmsg)
+local function parseRepGain(chatmsg)
 	local faction, amount = deformat(chatmsg, FACTION_STANDING_INCREASED)
 	if faction and amount then
 		local info = newList()
@@ -2092,7 +2092,7 @@ function parseRepGain(chatmsg)
 	return nil
 end
 
-function parseRepLoss(chatmsg)
+local function parseRepLoss(chatmsg)
 	local faction, amount = deformat(chatmsg, FACTION_STANDING_DECREASED)
 	if faction and amount then
 		local info = newList()

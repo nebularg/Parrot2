@@ -314,7 +314,7 @@ Parrot:RegisterAnimationStyle({
 			frame.startY = math.random() - 0.5
 		end,
 		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-			mod_percent = math.pow(percent, 6)
+			local mod_percent = math.pow(percent, 6)
 			local xDiff = size * mod_percent * 6
 			local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
 			local point = "LEFT"
@@ -348,7 +348,7 @@ Parrot:RegisterAnimationStyle({
 			frame.startY = math.random() - 0.5
 		end,
 		func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
-			mod_percent = math.pow(percent, 6)
+			local mod_percent = math.pow(percent, 6)
 			local xDiff = size * mod_percent * 6
 			local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
 			local point = "LEFT"
