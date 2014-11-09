@@ -213,7 +213,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "0000ff",
 	}]],
-	-- Deathknight-triggers by waallen
 	[1017] = [[{
 		-- Freezing Fog = 59052
 		name = L["%s!"]:format(GetSpellInfo(59052)),
@@ -232,7 +231,7 @@ local defaultTriggers = {
 		color = "0000ff",
 	}]],
 	[1018] = [[{
-		-- Killing Machine	= 51128
+		-- Killing Machine = 51128
 		name = L["%s!"]:format(GetSpellInfo(51128)),
 		icon = 51130,
 		spec = { DEATHKNIGHT = "251" },
@@ -266,7 +265,7 @@ local defaultTriggers = {
 		color = "0000ff",
 	}]],
 	[1022] = [[{
-		-- Sudden Death 52437
+		-- Sudden Death = 52437
 		name = L["%s!"]:format(GetSpellInfo(52437)),
 		icon = 52437,
 		spec = { WARRIOR = "71" },
@@ -322,7 +321,8 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff0000",
 	}]],
-	[1028] = [[{ -- Serendipity
+	[1028] = [[{
+		-- Serendipity
 		name = L["%s!"]:format(GetSpellInfo(63733)),
 		icon = 63733,
 		spec = { PRIEST = "257" },
@@ -341,7 +341,7 @@ local defaultTriggers = {
 		color = "00c0ff",
 	}]],
 	[1031] = [[{
-		-- 44544 = Fingers of frost
+		-- Fingers of Frost
 		name = L["%s!"]:format(GetSpellInfo(44544)),
 		icon = 44544,
 		spec = { MAGE = "64" },
@@ -358,7 +358,8 @@ local defaultTriggers = {
 		color = "005ba9",
 	}]],
 	[1033] = [[{
-		name = L["%s!"]:format(GetSpellInfo(81141)), -- Crimson Scourge
+		-- Crimson Scourge
+		name = L["%s!"]:format(GetSpellInfo(81141)),
 		icon = 81141,
 		spec = { DEATHKNIGHT = "250" },
 		conditions = {
@@ -374,7 +375,8 @@ local defaultTriggers = {
 		color = "ff0000",
 	}]],
 	[1034] = [[{
-		name = L["%s!"]:format(GetSpellInfo(91342)), -- Shadow Infusion
+		-- Shadow Infusion
+		name = L["%s!"]:format(GetSpellInfo(91342)),
 		icon = 91342,
 		spec = { DEATHKNIGHT = "250" },
 		conditions = {
@@ -391,7 +393,8 @@ local defaultTriggers = {
 		color = "00ff00",
 	}]],
 	[1035] = [[{
-		name = L["%s!"]:format(GetSpellInfo(82692)), -- Focus Fire
+		-- Focus Fire
+		name = L["%s!"]:format(GetSpellInfo(82692)),
 		icon = 82692,
 		spec = { HUNTER = "253" },
 		conditions = {
@@ -408,7 +411,8 @@ local defaultTriggers = {
 		color = "ff7563",
 	}]],
 	[1038] = [[{
-		name = L["%s!"]:format(GetSpellInfo(122510)), -- Ultimatum
+		-- Ultimatum
+		name = L["%s!"]:format(GetSpellInfo(122510)), 
 		icon = 122510,
 		spec = { WARRIOR = "73" },
 		conditions = {
@@ -424,7 +428,8 @@ local defaultTriggers = {
 		color = "00d0ff",
 	}]],
 	[1039] = [[{
-		name = L["%s!"]:format(GetSpellInfo(46916)), -- Bloodsurge
+		-- Bloodsurge
+		name = L["%s!"]:format(GetSpellInfo(46916)), 
 		icon = 46916,
 		spec = { WARRIOR = "72" },
 		conditions = {
@@ -440,7 +445,8 @@ local defaultTriggers = {
 		color = "ff0300",
 	}]],
 	[1040] = [[{
-		name = GetSpellInfo(131116), -- Raging Blow!
+		-- Raging Blow!
+		name = GetSpellInfo(131116),
 		icon = 131116,
 		spec = { WARRIOR = "72" },
 		conditions = {
@@ -464,7 +470,8 @@ local defaultTriggers = {
 		color = "6e0511",
 	}]],
 	[1041] = [[{
-		name = L["%s!"]:format(GetSpellInfo(81340)), -- Sudden Doom!
+		-- Sudden Doom
+		name = L["%s!"]:format(GetSpellInfo(81340)),
 		icon = 81340,
 		spec = { DEATHKNIGHT = "252" },
 		conditions = {
@@ -480,7 +487,8 @@ local defaultTriggers = {
 		color = "9b00b3",
 	}]],
 	[1042] = [[{
-		name = L["%s!"]:format(GetSpellInfo(7268)), -- Arcane Missiles!
+		-- Arcane Missiles
+		name = L["%s!"]:format(GetSpellInfo(7268)),
 		icon = 7268,
 		spec = { MAGE = "62" },
 		conditions = {
@@ -496,7 +504,8 @@ local defaultTriggers = {
 		color = "59006c",
 	}]],
 	[1043] = [[{
-		name = GetSpellInfo(48108), -- Pyroblast!
+		-- Pyroblast!
+		name = GetSpellInfo(48108),
 		icon = 48108,
 		spec = { MAGE = "63" },
 		conditions = {
@@ -512,7 +521,8 @@ local defaultTriggers = {
 		color = "b33f00",
 	}]],
 	[1044] = [[{
-		name = L["%s!"]:format(GetSpellInfo(48107)), -- Heating Up
+		-- Heating Up
+		name = L["%s!"]:format(GetSpellInfo(48107)),
 		icon = 48107,
 		spec = { MAGE = "63" },
 		conditions = {
@@ -528,7 +538,8 @@ local defaultTriggers = {
 		color = "ff5900",
 	}]],
 	[1045] = [[{
-		name = L["%s!"]:format(GetSpellInfo(137384)), -- Combo Breaker
+		-- Combo Breaker
+		name = L["%s!"]:format(GetSpellInfo(137384)),
 		icon = 137384,
 		spec = { MONK = "269" },
 		conditions = {
@@ -544,7 +555,8 @@ local defaultTriggers = {
 		color = "158f00",
 	}]],
 	[1046] = [[{
-		name = L["%s!"]:format(GetSpellInfo(85416)), -- Grand Crusader
+		-- Grand Crusader
+		name = L["%s!"]:format(GetSpellInfo(85416)),
 		icon = 85416,
 		spec = { PALADIN = "66" },
 		conditions = {
@@ -560,7 +572,8 @@ local defaultTriggers = {
 		color = "0038cd",
 	}]],
 	[1047] = [[{
-		name = L["%s!"]:format(GetSpellInfo(77756)), -- Lava Surge
+		-- Lava Surge
+		name = L["%s!"]:format(GetSpellInfo(77756)),
 		icon = 77756,
 		spec = { SHAMAN = "262" },
 		conditions = {
@@ -576,7 +589,8 @@ local defaultTriggers = {
 		color = "ddb800",
 	}]],
 	[1048] = [[{
-		name = L["%s!"]:format(GetSpellInfo(122351)), -- Molten Core
+		-- Molten Core
+		name = L["%s!"]:format(GetSpellInfo(122351)),
 		icon = 122351,
 		spec = { WARLOCK = "266" },
 		conditions = {

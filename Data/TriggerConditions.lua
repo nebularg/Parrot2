@@ -782,10 +782,6 @@ Parrot:RegisterPrimaryTriggerCondition {
 	end,
 }
 
-local function manastep()
-	return math.min(50, UnitManaMax("player")/10)
-end
-
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Unit power",
 	localName = L["Unit power"],
