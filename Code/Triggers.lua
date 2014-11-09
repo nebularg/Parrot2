@@ -268,7 +268,7 @@ local defaultTriggers = {
 		-- Sudden Death = 52437
 		name = L["%s!"]:format(GetSpellInfo(52437)),
 		icon = 52437,
-		spec = { WARRIOR = "71" },
+		spec = { WARRIOR = "71;72;73" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
@@ -412,7 +412,7 @@ local defaultTriggers = {
 	}]],
 	[1038] = [[{
 		-- Ultimatum
-		name = L["%s!"]:format(GetSpellInfo(122510)), 
+		name = L["%s!"]:format(GetSpellInfo(122510)),
 		icon = 122510,
 		spec = { WARRIOR = "73" },
 		conditions = {
@@ -429,7 +429,7 @@ local defaultTriggers = {
 	}]],
 	[1039] = [[{
 		-- Bloodsurge
-		name = L["%s!"]:format(GetSpellInfo(46916)), 
+		name = L["%s!"]:format(GetSpellInfo(46916)),
 		icon = 46916,
 		spec = { WARRIOR = "72" },
 		conditions = {
@@ -757,6 +757,7 @@ local function rebuildEffectiveRegistry()
 				Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
 		end, 0.1)
 	end
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("Parrot")
 end
 
 -- so triggers can be enabled/disabled from outside
@@ -1639,11 +1640,11 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		return info[#info-i]
 	end
-	
+
 	local function getTriggerTable(info)
 		return self.db1.profile.triggers2[tonumber(getTriggerId(info))]
 	end
-	
+
 	local function getFontFace(info)
 		local t = getTriggerTable(info)
 		local font = t.font
@@ -2174,7 +2175,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		local t = getTriggerTable(info)
 		return t.spec[class] == nil
 	end
-	
+
 	local function doGetSpec(t, class, specid)
 		local specs = deserializeSet(t.spec[class])
 		local result = specs[specid]
@@ -2207,15 +2208,18 @@ function Parrot_Triggers:OnOptionsCreate()
 
 	local function getColoredName(info)
 		local t = getTriggerTable(info)
-		if t.disabled or not t.spec[playerClass] then
-			return ("|c02888888%s|r"):format(t.name)
+		if t.spec[playerClass] then
+			if not t.disabled and doGetSpec(t, playerClass, getPlayerSpec()) then
+				return ("|c0000dd00%s|r"):format(t.name) -- green
+			elseif not t.disabled then
+				return ("|c01006600%s|r"):format(t.name) -- dim green
+			else
+				return ("|c02cc1919%s|r"):format(t.name) -- dim red
+			end
 		end
-		if doGetSpec(t, playerClass, getPlayerSpec()) then
-			return ("|c0000dd00%s|r"):format(t.name)
-		end
-		return ("|c01006600%s|r"):format(t.name)
+		return ("|c03888888%s|r"):format(t.name) -- grey
 	end
-	
+
 	local tsharedopt = {
 		output = {
 			type = 'input',
@@ -2417,7 +2421,7 @@ function Parrot_Triggers:OnOptionsCreate()
 			}
 		end
 	end
-	
+
 	function makeOption(id, t)
 		local opt = {
 			type = 'group',
