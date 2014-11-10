@@ -80,7 +80,7 @@ if select(2,UnitClass("player")) == "WARLOCK" then
 				end
 			end
 		},
-		tagTranslationHelp = {
+		tagTranslationsHelp = {
 			Name = L["The name of the soul shard."],
 		},
 		blizzardEvents = {
@@ -121,7 +121,7 @@ Parrot:RegisterCombatEvent{
 			end
 		end,
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the item."],
 		Amount = L["The amount of items looted."],
 		Total = L["The total amount of items in inventory."],
@@ -200,7 +200,7 @@ Parrot:RegisterCombatEvent{
 		--			return ""
 		--		end
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Amount = L["The amount of gold looted."],
 	},
 	color = "ffffff", -- white

@@ -41,7 +41,7 @@ Parrot:RegisterCombatEvent{
 		Spell = 1,
 		Icon = 2,
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Spell = L["The name of the spell or ability which is ready to be used."],
 	},
 	color = "ffffff", -- white

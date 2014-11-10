@@ -727,6 +727,8 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		}
 	}
 	Parrot:AddOption('events', events_opt)
+
+	-- Event modifiers
 	local tmp = newDict(
 		'crit', L["Critical hits/heals"],
 		'crushing', L["Crushing blows"],
@@ -767,25 +769,19 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	end
 
 	for k,v in pairs(tmp) do
-		local usageT = newList(L["<Text>"])
+		local usage = L["<Tag>"]
 		local translationHelp = modifierTranslationHelps[k]
 		if translationHelp then
-			local tmp = newList()
-			for k in pairs(translationHelp) do
-				tmp[#tmp+1] = k
+			local tags = newList()
+			for tag in next, translationHelp do
+				tags[#tags+1] = tag
 			end
-			table.sort(tmp)
-			for _, k in ipairs(tmp) do
-				usageT[#usageT+1] = "\n"
-				usageT[#usageT+1] = "["
-				usageT[#usageT+1] = k
-				usageT[#usageT+1] = "] => "
-				usageT[#usageT+1] = translationHelp[k]
+			table.sort(tags)
+			for _, tag in ipairs(tags) do
+				usage = string.format("%s\n[%s] => %s", usage, tag, translationHelp[tag])
 			end
-			tmp = del(tmp)
+			tags = del(tags)
 		end
-		local usage = table.concat(usageT)
-		usageT = del(usageT)
 		events_opt.args.modifier.args[k] = {
 			type = 'group',
 			name = v,
@@ -821,6 +817,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	end
 	tmp = del(tmp)
 
+	-- Damage types
 	local tmp = newDict(
 		"Physical", LS["Physical"],
 		"Holy", LS["Holy"],
@@ -851,6 +848,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	end
 	tmp = del(tmp)
 
+	-- CombatEvents
 	local function getArgs(info)
 		local category = info[2]
 		local name = info[4]
@@ -868,7 +866,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		handler__tagTranslations = combatEvents[category][name].tagTranslations
 		value = value:gsub("(%b[])", handler)
 		handler__tagTranslations = nil
-		if combatEvents[category][name].defaultTag == value then
+		if value == "" or combatEvents[category][name].defaultTag == value then
 			value = nil
 		end
 		db[category][name].tag = value
@@ -1087,140 +1085,27 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		return tmp
 	end
 
-	local combatEventArgs = {
-		tag = {
-			name = L["Tag"],
-			desc = L["Tag to show for the current event."],
-			type = 'input',
-			--usage = usage,
-			get = getTag,
-			set = setTag,
-			order = 1,
-		},
-		color = {
-			name = L["Color"],
-			desc = L["Color of the text for the current event."],
-			type = 'color',
-			get = getColor,
-			set = setColor,
-		},
-		sound = {
-			type = 'select',
-			values = getSoundChoices,
-			name = L["Sound"],
-			desc = L["What sound to play when the current event occurs."],
-			get = getSound,
-			set = setSound,
-		},
-		sticky = {
-			name = L["Sticky"],
-			desc = L["Whether the current event should be classified as \"Sticky\""],
-			type = 'toggle',
-			get = getSticky,
-			set = setSticky,
-		},
-		font = {
-			type = 'group',
-			inline = true,
-			name = L["Custom font"],
-			desc = L["Custom font"],
-			args = {
-				fontface = {
-					type = 'select',
-					name = L["Font face"],
-					desc = L["Font face"],
-					values = Parrot.inheritFontChoices,
-					get = getFontFace,
-					set = setFontFace,
-					order = 1,
-				},
-				fontSizeInherit = {
-					type = 'toggle',
-					name = L["Inherit font size"],
-					desc = L["Inherit font size"],
-					get = getFontSizeInherit,
-					set = setFontSizeInherit,
-					order = 2,
-				},
-				fontSize = {
-					type = 'range',
-					name = L["Font size"],
-					desc = L["Font size"],
-					min = 6,
-					max = 30,
-					step = 1,
-					get = getFontSize,
-					set = setFontSize,
-					disabled = getFontSizeInherit,
-					order = 3,
-				},
-				fontOutline = {
-					type = 'select',
-					name = L["Font outline"],
-					desc = L["Font outline"],
-					get = getFontOutline,
-					set = setFontOutline,
-					values = fontOutlineChoices,
-					order = 4,
-				},
-			}
-		},
-		enable = {
-			order = -1,
-			type = 'toggle',
-			name = L["Enabled"],
-			desc = L["Enable the current event."],
-			get = getEnable,
-			set = setEnable,
-		},
-		scrollArea = {
-			type = 'select',
-			name = L["Scroll area"],
-			desc = L["Which scroll area to use."],
-			values = getScrollAreasChoices,
-			get = getScrollArea,
-			set = setScrollArea,
-		},
-	}
-
 	function createOption(category, name)
-		local localName = combatEvents[category][name].localName
-		local tagTranslationsHelp = combatEvents[category][name].tagTranslationsHelp
-		local usageT = newList(L["<Tag>"])
-		if tagTranslationsHelp then
-			local tmp = newList()
-			for k, v in pairs(tagTranslationsHelp) do
-				tmp[#tmp+1] = k
-			end
-			table.sort(tmp)
-			for _, k in ipairs(tmp) do
-				usageT[#usageT+1] = "\n"
-				usageT[#usageT+1] = "["
-				usageT[#usageT+1] = k
-				usageT[#usageT+1] = "] => "
-				usageT[#usageT+1] = tagTranslationsHelp[k]
-			end
-		end
-		local usage = table.concat(usageT)
-		usageT = del(usageT)
+		local data = combatEvents[category][name]
+
 		if not events_opt.args[category] then
 			events_opt.args[category] = {
 				type = 'group',
 				name = category,
-				desc = category,
+				--desc = category,
 				args = {},
 				order = 2,
 			}
 		end
 
-		local subcat = combatEvents[category][name].subCategory
+		local subcat = data.subCategory
 		local arg = newList(category, subcat)
 		-- added so that options get sorted into subcategories
 		if not events_opt.args[category].args[subcat] then
 			events_opt.args[category].args[subcat] = {
 				type = 'group',
 				name = subcat,
-				desc = subcat,
+				--desc = subcat,
 				args = {
 					enabled = {
 						name = L["Enabled"],
@@ -1244,15 +1129,123 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				order = 1,
 			}
 		end
+
+		local usage = L["<Tag>"]
+		if data.tagTranslationsHelp then
+			local tags = newList()
+			for tag in next, data.tagTranslationsHelp do
+				tags[#tags+1] = tag
+			end
+			table.sort(tags)
+			for _, tag in ipairs(tags) do
+				usage = string.format("%s\n[%s] => %s", usage, tag, data.tagTranslationsHelp[tag])
+			end
+			tags = del(tags)
+		end
+
 		events_opt.args[category].args[subcat].args[name] = {
 			type = 'group',
-			name = localName,
-			desc = localName,
-			args = combatEventArgs,
+			name = data.localName,
+			--desc = localName,
+			args = {
+				tag = {
+					name = L["Tag"],
+					desc = L["Tag to show for the current event."],
+					type = 'input',
+					usage = usage,
+					get = getTag,
+					set = setTag,
+					order = 1,
+				},
+				color = {
+					name = L["Color"],
+					desc = L["Color of the text for the current event."],
+					type = 'color',
+					get = getColor,
+					set = setColor,
+				},
+				sound = {
+					type = 'select',
+					values = getSoundChoices,
+					name = L["Sound"],
+					desc = L["What sound to play when the current event occurs."],
+					get = getSound,
+					set = setSound,
+				},
+				sticky = {
+					name = L["Sticky"],
+					desc = L["Whether the current event should be classified as \"Sticky\""],
+					type = 'toggle',
+					get = getSticky,
+					set = setSticky,
+				},
+				font = {
+					type = 'group',
+					inline = true,
+					name = L["Custom font"],
+					desc = L["Custom font"],
+					args = {
+						fontface = {
+							type = 'select',
+							name = L["Font face"],
+							desc = L["Font face"],
+							values = Parrot.inheritFontChoices,
+							get = getFontFace,
+							set = setFontFace,
+							order = 1,
+						},
+						fontSizeInherit = {
+							type = 'toggle',
+							name = L["Inherit font size"],
+							desc = L["Inherit font size"],
+							get = getFontSizeInherit,
+							set = setFontSizeInherit,
+							order = 2,
+						},
+						fontSize = {
+							type = 'range',
+							name = L["Font size"],
+							desc = L["Font size"],
+							min = 6,
+							max = 30,
+							step = 1,
+							get = getFontSize,
+							set = setFontSize,
+							disabled = getFontSizeInherit,
+							order = 3,
+						},
+						fontOutline = {
+							type = 'select',
+							name = L["Font outline"],
+							desc = L["Font outline"],
+							get = getFontOutline,
+							set = setFontOutline,
+							values = fontOutlineChoices,
+							order = 4,
+						},
+					}
+				},
+				enable = {
+					order = -1,
+					type = 'toggle',
+					name = L["Enabled"],
+					desc = L["Enable the current event."],
+					get = getEnable,
+					set = setEnable,
+				},
+				scrollArea = {
+					type = 'select',
+					name = L["Scroll area"],
+					desc = L["Which scroll area to use."],
+					values = getScrollAreasChoices,
+					get = getScrollArea,
+					set = setScrollArea,
+				},
+			},
 		}
-		events_opt.args[category].args[subcat].args[name].args.tag.usage = usage
 	end
 
+	-- Throttle
 	local function getTimespan(info)
 		local throttleType = info.arg
 		return db.throttles[throttleType] or throttleDefaultTimes[throttleType]

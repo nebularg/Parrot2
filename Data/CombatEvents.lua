@@ -1015,7 +1015,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_DISPEL = { check = checkPlayerInc, },
 	},
 	tagTranslations = incDispelTagTranslations,
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the unit that dispelled the spell from you"],
 		Skill = L["The name of the spell that has been used for dispelling."],
 		ExtraSkill = L["The name of the spell that has been dispelled."],
@@ -1033,7 +1033,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_DISPEL_FAILED = { check = checkPlayerInc, },
 	},
 	tagTranslations = incDispelTagTranslations,
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the unit that failed dispelling the spell from you"],
 		Skill = L["The name of the spell that has been used for dispelling."],
 		ExtraSkill = L["The name of the spell that has not been dispelled."],
@@ -1052,7 +1052,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_STOLEN = { check = checkPlayerInc, },
 	},
 	tagTranslations = incDispelTagTranslations,
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the unit that stole the spell from you"],
 		Skill = L["The name of the spell that has been used for stealing."],
 		ExtraSkill = L["The name of the spell that has been stolen."],
@@ -1582,7 +1582,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_DISPEL = { check = checkPlayerOut, },
 	},
 	tagTranslations = outDispelTagTranslations,
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the unit from which the spell has been removed."],
 		Skill = L["The name of the spell that has been used for dispelling."],
 		ExtraSkill = L["The name of the spell that has been dispelled."],
@@ -1600,7 +1600,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_DISPEL_FAILED = { check = checkPlayerOut, },
 	},
 	tagTranslations = outDispelTagTranslations,
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the unit from which the spell has not been removed."],
 		Skill = L["The name of the spell that has been used for dispelling."],
 		ExtraSkill = L["The name of the spell that has not been dispelled."],
@@ -1619,7 +1619,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_STOLEN = { check = checkPlayerOut, },
 	},
 	tagTranslations = outDispelTagTranslations,
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the unit from which the spell has been stolen."],
 		Skill = L["The name of the spell that has been used for stealing."],
 		ExtraSkill = L["The name of the spell that has been stolen."],
@@ -2004,7 +2004,7 @@ Parrot:RegisterCombatEvent{
 	tagTranslations = {
 		Num = 1
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Num = L["The current number of combo points."]
 	},
 	color = "ff7f00", -- orange
@@ -2022,7 +2022,7 @@ Parrot:RegisterCombatEvent{
 	tagTranslations = {
 		Num = 1
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Num = L["The current number of combo points."]
 	},
 	color = "ff7f00", -- orange
@@ -2063,7 +2063,7 @@ Parrot:RegisterCombatEvent{
 		Currency = "currency",
 		Icon = "icon",
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Amount = L["The amount of currency gained."],
 		Name = L["Name of the currency"],
 		
@@ -2110,7 +2110,7 @@ Parrot:RegisterCombatEvent{
 		Amount = "amount",
 		Faction = "faction",
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Amount = L["The amount of reputation gained."],
 		Faction = L["The name of the faction."],
 	},
@@ -2131,7 +2131,7 @@ Parrot:RegisterCombatEvent{
 		Amount = function(info) return info.amount end,
 		Faction = "faction",
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Amount = L["The amount of reputation lost."],
 		Faction = L["The name of the faction."],
 	},
@@ -2161,7 +2161,7 @@ Parrot:RegisterCombatEvent{
 		Skillname = retrieveAbilityName,
 		Amount = "amount",
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Skill = L["The skill which experienced a gain."],
 		Amount = L["The amount of skill points currently."]
 	},
@@ -2190,7 +2190,7 @@ Parrot:RegisterCombatEvent{
 		-- Name = retrieveSourceName, -- not supported anymore by the event
 		Amount = "amount",
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		-- Name = L["The name of the enemy slain."], not supported anymore by the event
 		Amount = L["The amount of experience points gained."]
 	},
@@ -2220,7 +2220,7 @@ Parrot:RegisterCombatEvent{
 		Name = retrieveDestName,
 		Skill = function(info) return info.abilityName or PLAYERSTAT_MELEE_COMBAT end,
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the enemy slain."],
 		Skill = L["The spell or ability used to slay the enemy."],
 	},
@@ -2242,7 +2242,7 @@ Parrot:RegisterCombatEvent{
 		Name = retrieveDestName,
 		Skill = function(info) return info.abilityName or PLAYERSTAT_MELEE_COMBAT end,
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Name = L["The name of the enemy slain."],
 		Skill = L["The spell or ability used to slay the enemy."],
 	},
@@ -2267,7 +2267,7 @@ Parrot:RegisterCombatEvent{
 		Skill = retrieveAbilityName,
 		Icon = retrieveIconFromAbilityName,
 	},
-	tagTranslationHelp = {
+	tagTranslationsHelp = {
 		Skill = L["The name of the spell or ability which provided the extra attacks."],
 	},
 	color = "ffff00", -- yellow
