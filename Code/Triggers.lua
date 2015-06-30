@@ -939,7 +939,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 		return
 	end
 	-- check all triggers in registry
-	for _,t in ipairs(effectiveRegistry) do
+	for _, t in next, effectiveRegistry do
 		local conditions = t.conditions
 		-- if trigger has primary conditions
 		if conditions and conditions[name] then
@@ -948,7 +948,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 			--this can be just a single value or a table of params
 			local param = conditions[name]
 			if type(param) == 'table' then
-				for i, v in pairs(param) do
+				for i, v in next, param do
 					-- if one condition matches, the trigger fires
 					if checkPrimaryCondition(v, arg, check) then
 						good = true
@@ -970,7 +970,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 							good = checkTriggerCooldown(t, v) and good
 						elseif type(v) == 'table' and #v > 0 then
 							-- if the condition is not exclusive there may be multiple matchers
-							for _,cond in pairs(v) do
+							for _,cond in next, v do
 								if not checkSecondaryCondition(k,cond) then
 									good = false
 									break
@@ -992,8 +992,8 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 					end
 				end
 			end
-		end -- if conditions then
-	end -- for _,v in ipairs(effectiveRegistry) do
+		end -- if conditions
+	end -- for ipairs
 end
 
 local function getSoundChoices()
@@ -1467,7 +1467,7 @@ function Parrot_Triggers:OnOptionsCreate()
 			return true
 		end
 		if default then
-			if type(default) == 'table' then
+			if type(default) == "table" then
 				default = CopyTable(default)
 			end
 			return default
@@ -1475,7 +1475,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		if type(param.min) == "number" and type(param.max) == "number" then
 			return (param.max + param.min) / 2
 		end
-		if param.type == 'group' then
+		if param.type == "group" then
 			return {}
 		else
 			return nil

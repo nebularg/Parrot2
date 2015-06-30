@@ -400,7 +400,7 @@ function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fon
 	if tex then
 		tex:SetAlpha(db.iconAlpha)
 	end
-	self:OnUpdate(scrollArea, aniStyle)
+	Parrot_Display:OnUpdate(scrollArea, aniStyle)
 end
 Parrot.ShowMessage = Parrot_Display.ShowMessage
 

@@ -198,6 +198,7 @@ function Parrot_CombatEvents:OnInitialize()
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
+
 	-- Register with Addons CombatLogEvent-registry for uid-stuff
 	Parrot:RegisterCombatLog(self)
 
@@ -298,7 +299,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 		local i = 0
 		while i < #t do
 			i = i + 1
-			if t[i] == '' then
+			if t[i] == "" then
 				table.remove(t, i)
 				i = i - 1
 			end
@@ -327,7 +328,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 					t[i] = alpha
 				end
 			else
-				t[i] = ''
+				t[i] = ""
 			end
 		end
 		local s = table.concat(t)
@@ -1681,12 +1682,13 @@ local function handler(literal)
 			return tostring(handler__info[value] or UNKNOWN)
 		end
 	else
-		return "[" .. inner:gsub("(%b[])", handler) .. "]"
+		local value = inner:gsub("(%b[])", handler)
+		return ("[%s]"):format(value)
 	end
 end
 
 local function round(num, idp)
-	local mult = 10^(idp or 0)
+	local mult = 10 ^ (idp or 0)
 	return math.floor(num * mult + 0.5) / mult
 end
 
@@ -1722,15 +1724,6 @@ local modifiersWithAmount = {
 	overheal = "overhealAmount",
 	overkill = "overkill",
 }
-
-local modifiersWithFlag = {
-	"glancing",
-	"crushing",
-	"crit",
-}
-
-local modifierTranslations = {}
-
 for k,v in pairs(modifiersWithAmount) do
 	-- local valAmountKey = v .. "Amount"
 	modifierTranslations[k] = { Amount = function(info)
@@ -1743,6 +1736,11 @@ for k,v in pairs(modifiersWithAmount) do
 	end }
 end
 
+local modifiersWithFlag = {
+	"glancing",
+	"crushing",
+	"crit",
+}
 for _,v in ipairs(modifiersWithFlag) do
 	modifierTranslations[v] = { Text = function(info)
 		if db.modifier.color then
@@ -2237,17 +2235,14 @@ function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
 
 	local handlers = registeredBlizzardEvents[eventName]
 	if handlers then
-		for i,v in ipairs(handlers) do
-			if type(v.check) ~= 'function' then
-				--				debug(uid, " ", eventName)
-			end
-			if v.check(...) then
-				local info = v.parse(...)
+		for _, data in ipairs(handlers) do
+			if data.check(...) then
+				local info = data.parse(...)
 				if info then
 					if type(info) == 'table' then
 						info.uid = uid
 					end
-					self:TriggerCombatEvent(v.category, v.name, info)
+					self:TriggerCombatEvent(data.category, data.name, info)
 				end
 			end
 		end
