@@ -9,12 +9,32 @@ local newList, del = Parrot.newList, Parrot.del
 local db = nil
 local defaults = {
 	profile = {
-		threshold = 0,
+		threshold = 12,
 		filters = {},
 	}
 }
 
-local GCD = 1.8
+local spells = {}
+local spellGroups = {}
+local spellCooldowns = {}
+local itemCooldowns = {}
+
+do
+	local function addGroup(name, ...)
+		for i=1, select("#", ...) do
+			local id = select(i, ...)
+			local spell = GetSpellInfo(id)
+			if spell then
+				spellGroups[spell] = name
+			else
+				debug("spell missing:", id)
+			end
+		end
+	end
+	addGroup(L["Frost traps"], 1499, 13809) -- "Freezing Trap", "Ice Trap"
+	addGroup(L["Shocks"], 8042, 8050, 8056) -- Earth Shock, Flame Shock, Frost Shock
+	addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
+end
 
 function mod:OnProfileChanged()
 	db = self.db.profile
@@ -26,11 +46,114 @@ function mod:OnInitialize()
 end
 
 function mod:OnEnable()
-	self:ResetSpells()
-	self:ScheduleRepeatingTimer("OnUpdate", 0.1)
+	self:RegisterEvent("BAG_UPDATE_COOLDOWN", "CheckItems")
+	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "CheckItems")
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "CheckSpells")
 	self:RegisterEvent("SPELLS_CHANGED", "ResetSpells")
-	self:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 end
+
+function mod:CheckItems()
+	for i = 1, 19 do
+		local link = GetInventoryItemLink("player", i)
+		if link then
+			local start, duration = GetInventoryItemCooldown("player", i)
+			local oldLink = itemCooldowns[i]
+			if oldLink then
+				if start == 0 then -- cooldown expired
+					if oldLink == link then
+						local name, _, _, _, _, _, _, _, _, texture = GetItemInfo(link)
+						Parrot:FirePrimaryTriggerCondition("Item cooldown ready", name)
+
+						--local info = newList(name, texture)
+						--Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
+						--info = del(info)
+					end
+					itemCooldowns[i] = nil
+				end
+			elseif start > 0 then -- cooldown started
+				itemCooldowns[i] = link
+				local remaining = duration - (GetTime() - start) + 0.1
+				self:ScheduleTimer("CheckItems", remaining)
+			end
+		end
+	end
+end
+
+function mod:ResetSpells(e)
+	wipe(spells)
+	wipe(spellCooldowns)
+	-- cache spells from our current spec plus racials
+	for tab = 1, 2 do
+		local _, _, offset, numSlots = GetSpellTabInfo(tab)
+		for slot = 1, numSlots do
+			local index = offset + slot
+			local spellName, subSpellName = GetSpellBookItemName(index, "spell")
+			if tab > 1 or subSpellName == "Racial" then -- damn Blizzard for not having a "Racial" global string
+				spells[spellName] = true
+				local start, duration = GetSpellCooldown(index, "spell")
+				if start and start > 0 and duration > db.threshold and not db.filters[spellName] then
+					spellCooldowns[spellName] = start
+				end
+			end
+		end
+	end
+end
+
+function mod:CheckSpells(e)
+	local expired = newList()
+	for spellName in next, spells do
+		local start, duration = GetSpellCooldown(spellName)
+		if spellCooldowns[spellName] and (start == 0 or spellCooldowns[spellName] == start) then
+			if start == 0 then
+				expired[spellName] = true
+				spellCooldowns[spellName] = nil
+			end
+		elseif start and start > 0 and duration > db.threshold and not db.filters[spellName] then
+			spellCooldowns[spellName] = start
+			local remaining = duration - (GetTime() - start) + 0.1
+			self:ScheduleTimer("CheckSpells", remaining)
+			-- can probably improve this to schedule checking the single spell
+			-- that triggered the cooldown, but then I would have to move the
+			-- "tree reset" logic here, which would be run more frequently
+		end
+	end
+
+	if next(expired) then
+		local count = 0
+		for spellName in next, expired do
+			Parrot:FirePrimaryTriggerCondition("Spell ready", spellName)
+			if not spellGroups[spellName] then
+				count = count + 1
+			end
+		end
+
+		if count > 4 then -- don't spam if something reset a bunch of spells
+			local name, texture = GetSpellTabInfo(2)
+			local info = newList(L["%s Tree"]:format(name), texture)
+			Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
+			info = del(info)
+		else
+			local groupTriggered = newList()
+			for spellName in next, expired do
+				local group = spellGroups[spellName]
+				if not group then -- normal cooldown finish
+					local _, _, texture = GetSpellInfo(spellName)
+					local info = newList(spellName, texture)
+					Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
+					info = del(info)
+				elseif not groupTriggered[group] then -- shared cooldown finish
+					groupTriggered[group] = true
+					local info = newList(spellName)
+					Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
+					info = del(info)
+				end
+			end
+			groupTriggered = del(groupTriggered)
+		end
+	end
+	del(expired)
+end
+
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",
@@ -45,183 +168,12 @@ Parrot:RegisterCombatEvent{
 	tagTranslationsHelp = {
 		Spell = L["The name of the spell or ability which is ready to be used."],
 	},
-	color = "ffffff", -- white
+	color = "ffffff",
 	sticky = false,
 }
 
-local cooldowns = {}
-local spellNameToTree = {}
-
-local nextUpdate
-local lastRecalc
-local recalcTimer
-
-local function recalcCooldowns()
-	local expired = newList()
-	local minCD -- find the Cooldown closest to expiration
-	for spell, tree in pairs(spellNameToTree) do
-		local old = cooldowns[spell]
-		local start, duration = GetSpellCooldown(spell)
-		if start then
-			local check = start > 0 and duration > GCD and duration > db.profile.threshold
-			cooldowns[spell] = check or nil
-			if old and not check then -- cooldown expired
-				expired[spell] = tree
-			end
-			local exp = duration - GetTime() + start -- remaining Cooldown
-			if check and (not minCD or minCD > exp) then
-				minCD = exp
-			end
-		end
-	end -- for spell
-	nextUpdate = minCD and GetTime() + minCD or nil
-	lastRecalc = GetTime()
-	return expired
-end
-
-local function delayedRecalc()
-	recalcTimer = nil
-	mod:OnUpdate(true)
-end
-
-function mod:SPELL_UPDATE_COOLDOWN()
-	-- if the last update was less then 0.1 seconds ago, the update will be
-	-- delayed by 0.1 seconds
-	if lastRecalc and (GetTime() - lastRecalc) < 0.1 then
-		if not recalcTimer then
-			self:ScheduleTimer(delayedRecalc, 0.1, true)
-		end
-		return
-	end
-	mod:OnUpdate(true)
-end
-
-function mod:ResetSpells()
-	wipe(cooldowns)
-	wipe(spellNameToTree)
-	for i = 1, GetNumSpellTabs() do
-		local _, _, offset, num = GetSpellTabInfo(i)
-		for j = 1, num do
-			local id = offset+j
-			local spell = GetSpellBookItemName(id, "spell")
-			if GetSpellInfo(spell) then
-				spellNameToTree[spell] = i
-			end
-		end
-	end
-	mod:OnUpdate(true)
-end
-
-local groups = {}
-local function addGroup(name, ...)
-	for i=1,select('#', ...) do
-		local id = select(i, ...)
-		local spell = GetSpellInfo(id)
-		if spell then
-			groups[spell] = name
-		else
-			debug("spell is missing: ", id)
-		end
-	end
-end
-
-addGroup(L["Frost traps"], 1499, 13809) -- "Freezing Trap", "Ice Trap"
-addGroup(L["Fire traps"], 13795, 13813, 20733) -- "Immolation Trap", "Explosive Trap", "Black Arrow"
-addGroup(L["Shocks"], 8042, 8050, 8056) -- Earth Shock, Flame Shock, Frost Shock
-addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
-
-local itemCooldowns = {}
-local function checkItems()
-	local minCD
-	for i = 1,19 do
-		local start, duration, enable = GetInventoryItemCooldown("player", i)
-		local link = GetInventoryItemLink("player",i)
-		if link then
-			local icd = itemCooldowns[link]
-			if icd and start == 0 then --cooldown expired
-				if icd == i then
-					local name = GetItemInfo(link)
-					Parrot:FirePrimaryTriggerCondition("Item cooldown ready", name)
-				end
-				itemCooldowns[link] = nil
-			elseif not icd and start ~= 0 then -- new cooldown
-				local name = GetItemInfo(link)
-				itemCooldowns[link] = i
-			end -- other cases don't require any handling
-		end
-		local exp = duration - GetTime() + start -- remaining Cooldown
-		if start > 0 and (not minCD or minCD > exp) then
-			minCD = exp
-		end -- if check
-	end
-	if minCD then
-		local nextUpdate2 = GetTime() + minCD
-		if nextUpdate then
-			nextUpdate = math.min(nextUpdate2, nextUpdate)
-		else
-			nextUpdate =  nextUpdate2
-		end
-	end
-end
-
-function mod:OnUpdate(force)
-	if (not nextUpdate or nextUpdate > GetTime()) and not force then
-		-- only run the update when the time is right
-		return
-	end
-	local expired2 = recalcCooldowns()
-	checkItems()
-	if not next(expired2) then
-		expired2 = del(expired2)
-		return
-	end
-	local treeCount = newList()
-	for name, tree in pairs(expired2) do
-		Parrot:FirePrimaryTriggerCondition("Spell ready", name)
-		if not groups[name] then
-			treeCount[tree] = (treeCount[tree] or 0) + 1
-		end
-	end
-	for tree, num in pairs(treeCount) do
-		if num >= 3 then
-			for name, tree2 in pairs(expired2) do
-				-- remove all spells from that tree from the list
-				if tree == tree2 then
-					expired2[name] = nil
-				end
-			end
-			local name, texture = GetSpellTabInfo(tree)
-			debug(tree, " - ", name)
-			local info = newList(L["%s Tree"]:format(name), texture)
-			Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
-			info = del(info)
-		end
-	end
-	treeCount = del(treeCount)
-	local groupsToTrigger = newList()
-	for name in pairs(expired2) do
-		if groups[name] then
-			groupsToTrigger[groups[name]] = true
-			expired2[name] = nil
-		end
-	end
-	for name in pairs(groupsToTrigger) do
-		local info = newList(name)
-		Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
-		info = del(info)
-	end
-	groupsToTrigger = del(groupsToTrigger)
-	for name in pairs(expired2) do
-		local _, _, texture = GetSpellInfo(name)
-		local info = newList(name, texture)
-		Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
-		info = del(info)
-	end
-	expired2 = del(expired2)
-end
-
 local function parseSpell(arg)
-	return tostring(arg or "")
+	return arg and tostring(arg) or ""
 end
 local function saveSpell(arg)
 	return tonumber(arg) or arg
@@ -232,7 +184,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	name = "Spell ready",
 	localName = L["Spell ready"],
 	param = {
-		type = 'string',
+		type = "string",
 		usage = L["<Spell name>"],
 		save = saveSpell,
 		parse = parseSpell,
@@ -244,7 +196,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	name = "Item cooldown ready",
 	localName = L["Item cooldown ready"],
 	param = {
-		type = 'string',
+		type = "string",
 		usage = L["<Item name>"],
 	},
 }
@@ -254,20 +206,13 @@ Parrot:RegisterSecondaryTriggerCondition {
 	name = "Spell ready",
 	localName = L["Spell ready"],
 	param = {
-		type = 'string',
+		type = "string",
 		usage = L["<Spell name>"],
 		save = saveSpell,
 		parse = parseSpell,
 	},
 	check = function(param)
-		if(tonumber(param)) then
-			param = GetSpellInfo(param)
-		elseif(type(param) == 'string') then
-			return (GetSpellCooldown(param) == 0)
-		else
-			debug("param was not a string but ", type(param))
-			return false
-		end
+		return GetSpellCooldown(param) == 0
 	end,
 }
 
@@ -276,34 +221,27 @@ Parrot:RegisterSecondaryTriggerCondition {
 	name = "Spell usable",
 	localName = L["Spell usable"],
 	param = {
-		type = 'string',
+		type = "string",
 		usage = L["<Spell name>"],
 		save = saveSpell,
 		parse = parseSpell,
 	},
 	check = function(param)
-		if(tonumber(param)) then
-			param = GetSpellInfo(param)
-		end
-
 		return IsUsableSpell(param)
 	end,
 }
 
 function mod:OnOptionsCreate()
-		type = 'group',
 	local options = {
+		type = "group",
 		name = L["Cooldowns"],
-		desc = L["Cooldowns"],
+		--desc = L["Cooldowns"],
 		args = {
 			threshold = {
 				name = L["Threshold"],
 				desc = L["Minimum time the cooldown must have (in seconds)"],
-				type = 'range',
-				min = 0,
-				max = 300,
-				step = 1,
-				bigStep = 10,
+				type = "range",
+				min = 1.5, max = 360, step = 0.5, bigStep = 10,
 				get = function() return db.threshold end,
 				set = function(info, value) db.threshold = value end,
 				order = 1,
@@ -317,7 +255,7 @@ function mod:OnOptionsCreate()
 		db.filters[spellName] = true
 
 		local button = {
-			type = 'execute',
+			type = "execute",
 			name = spellName,
 			desc = L["Click to remove"],
 			func = function(info)
@@ -331,8 +269,8 @@ function mod:OnOptionsCreate()
 		options.args[spellName] = button
 	end
 
-		type = 'input',
 	options.args.newFilter = {
+		type = "input",
 		name = L["Ignore"],
 		desc = L["Ignore Cooldown"],
 		get = false,
