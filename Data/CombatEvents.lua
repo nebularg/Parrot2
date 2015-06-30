@@ -1021,7 +1021,7 @@ Parrot:RegisterCombatEvent{
 }
 
 local function parseEnvironmentalDamage(info)
-	return _G["ACTION_ENVIRONMENTAL_DAMAGE_" .. info.environmentalType]
+	return _G["ACTION_ENVIRONMENTAL_DAMAGE_" .. info.environmentalType:upper()]
 end
 
 Parrot:RegisterCombatEvent{
