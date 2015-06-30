@@ -146,10 +146,6 @@ local updateDBFuncs = {
 		end
 	end,
 	[5] = function()
-		-- reenable because a bugfix made it behave properly
-		db.disabled = false
-	end,
-	[6] = function()
 		if db.disable_in_10man and db.disable_in_25man then
 			db.disable_in_raid = true
 		end
@@ -173,12 +169,13 @@ function Parrot_CombatEvents:OnNewProfile(_, database)
 end
 
 -- checks if in a raid-instance and disables CombatEvents accordingly
-local enabled = false
 local function checkZone()
-	if db.disabled or not enabled then return end
+	if not Parrot_CombatEvents:IsEnabled() then return end
 
 	local _, instance_type = IsInInstance()
-	Parrot_CombatEvents:SetEnabledState(instance_type ~= "raid" or not db.disable_in_raid)
+	if  instance_type == "raid" and db.disable_in_raid then
+		Parrot_CombatEvents:Disable()
+	end
 end
 
 function Parrot_CombatEvents:OnInitialize()
@@ -200,28 +197,15 @@ end
 
 -- used as table for data about combatEvents in the registry
 local combatEvents = {}
+
 local onEnableFuncs = {}
-local active = false
 function Parrot_CombatEvents:OnEnable()
-	if db.disabled then
-		self:Disable()
-		return
-	end
-	enabled = true
 	updateDB()
-	for _,v in ipairs(onEnableFuncs) do
-		v()
+	for _, func in next, onEnableFuncs do
+		func()
 	end
-	--	Parrot:RegisterOnUpdate(self.OnUpdate)
 end
 
-local onDisableFuncs = {}
-function Parrot_CombatEvents:OnDisable()
-	enabled = false
-	for _,v in ipairs(onDisableFuncs) do
-		v()
-	end
-end
 
 --[[
 -- helper-function for spell-abbriviation
@@ -431,8 +415,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						desc = L["Whether this module is enabled"],
 						get = function() return self:IsEnabled() end,
 						set = function(info, value)
-							db.disabled = not value
-							self:SetEnabledState(value)
+							self:Disable()
+							if value then
+								self:Enable()
+							end
 						end,
 						disabled = function()
 							local _, instance_type = IsInInstance()
@@ -449,7 +435,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							checkZone()
 						end,
 						disabled = function()
-							return db.disabled
+							return not self:IsEnabled()
 						end,
 						order = 2,
 					},
@@ -1827,9 +1813,8 @@ function Parrot_CombatEvents:RunThrottle(force)
 end
 
 local sthrottles
-
 onEnableFuncs[#onEnableFuncs + 1] = function()
-	sthrottles = db.sthrottles
+	sthrottles = db.sthrottles or {}
 end
 
 local function get_sthrottle(info)
@@ -2041,12 +2026,6 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	nextFrameCombatEvents[#nextFrameCombatEvents+1] = newList(category, name, infoCopy)
 end
 Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
-
---[[function Parrot_CombatEvents:OnUpdate()
-	if active then
-		runCachedEvents()
-	end
-end--]]
 
 local function runEvent(category, name, info)
 	local cdb = db[category][name]
