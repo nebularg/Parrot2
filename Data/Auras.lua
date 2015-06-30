@@ -1,11 +1,7 @@
 local Parrot = Parrot
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
-local newList, del = Parrot.newList, Parrot.del
-local newDict = Parrot.newDict
-local deepCopy = Parrot.deepCopy
-local unpackDictAndDel = Parrot.unpackDictAndDel
-local debug = Parrot.debug
+local newList, newDict, del = Parrot.newList, Parrot.newDict, Parrot.del
 
 local _G = _G
 local PET = _G.PET

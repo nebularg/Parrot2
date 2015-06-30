@@ -26,7 +26,7 @@ Parrot:RegisterCombatEvent{
 	color = "ffffff", -- white
 }
 
-Parrot:RegisterPrimaryTriggerCondition {
+Parrot:RegisterPrimaryTriggerCondition{
 	name = "Enter combat",
 	localName = L["Enter combat"],
 	events = {
@@ -35,7 +35,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	exclusive = true,
 }
 
-Parrot:RegisterPrimaryTriggerCondition {
+Parrot:RegisterPrimaryTriggerCondition{
 	name = "Leave combat",
 	localName = L["Leave combat"],
 	events = {
@@ -44,7 +44,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	exclusive = true,
 }
 
-Parrot:RegisterSecondaryTriggerCondition {
+Parrot:RegisterSecondaryTriggerCondition{
 	name = "In combat",
 	localName = L["In combat"],
 	notLocalName = L["Not in combat"],

@@ -4,22 +4,14 @@ local mod = Parrot:NewModule("CombatEventsData")
 local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
-local deformat = LibStub("LibDeformat-3.0")
+local Deformat = LibStub("LibDeformat-3.0")
 local db1
 
--- recycle and debug-stuff
-local newList, del = Parrot.newList, Parrot.del
-local newDict = Parrot.newDict
-local unpackDictAndDel = Parrot.unpackDictAndDel
-local debug = Parrot.debug
+local newList, newDict, del = Parrot.newList, Parrot.newDict, Parrot.del
 
---[[============================================================================
--- local globals for faster access
---============================================================================]]
-local bit_bor = bit.bor
-local bit_band = bit.band
-local UnitGUID = _G.UnitGUID
-local GetComboPoints = _G.GetComboPoints
+local bit_bor, bit_band = bit.bor, bit.band
+local UnitGUID, UnitPower = UnitGUID, UnitPower
+local GetComboPoints, UnitHasVehicleUI = GetComboPoints, UnitHasVehicleUI
 
 local PET = _G.PET
 local INTERRUPT = _G.INTERRUPT
@@ -174,11 +166,11 @@ end
 -- functions to retrieve abbrivated spellnames
 --]]
 local function retrieveAbilityName(info)
-	return Parrot:GetModule("CombatEvents"):GetAbbreviatedSpell(info.abilityName)
+	return Parrot_CombatEvents:GetAbbreviatedSpell(info.abilityName)
 end
 
 local function retrieveExtraAbilityName(info)
-	return Parrot:GetModule("CombatEvents"):GetAbbreviatedSpell(info.extraAbilityName)
+	return Parrot_CombatEvents:GetAbbreviatedSpell(info.extraAbilityName)
 end
 
 
@@ -2041,9 +2033,9 @@ for _,v in ipairs(currencies) do
 end
 
 local function parseCurrencyUpdate(message)
-	local currency, amount = deformat(message, CURRENCY_GAINED_MULTIPLE)
+	local currency, amount = Deformat(message, CURRENCY_GAINED_MULTIPLE)
 	if not currency then
-		currency = deformat(message, CURRENCY_GAINED)
+		currency = Deformat(message, CURRENCY_GAINED)
 		if not currency then
 			return
 		end
@@ -2076,7 +2068,7 @@ Parrot:RegisterCombatEvent{
 
 -- Reputation
 local function parseRepGain(chatmsg)
-	local faction, amount = deformat(chatmsg, FACTION_STANDING_INCREASED)
+	local faction, amount = Deformat(chatmsg, FACTION_STANDING_INCREASED)
 	if faction and amount then
 		local info = newList()
 		info.amount = amount
@@ -2087,7 +2079,7 @@ local function parseRepGain(chatmsg)
 end
 
 local function parseRepLoss(chatmsg)
-	local faction, amount = deformat(chatmsg, FACTION_STANDING_DECREASED)
+	local faction, amount = Deformat(chatmsg, FACTION_STANDING_DECREASED)
 	if faction and amount then
 		local info = newList()
 		info.amount = amount
@@ -2140,7 +2132,7 @@ Parrot:RegisterCombatEvent{
 
 -- Skill gains
 local function parseSkillGain(chatmsg)
-	local skill, amount = deformat(chatmsg, SKILL_RANK_UP)
+	local skill, amount = Deformat(chatmsg, SKILL_RANK_UP)
 	if skill and amount then
 		local info = newList()
 		info.abilityName = skill

@@ -5,8 +5,7 @@ local mod = Parrot:NewModule("Loot")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Loot")
 local Deformat = LibStub("LibDeformat-3.0")
 
-local debug = Parrot.debug
-local newList, newDict = Parrot.newList, Parrot.newDict
+local newDict = Parrot.newDict
 
 local YOU_LOOT_MONEY = _G.YOU_LOOT_MONEY
 local LOOT_MONEY_SPLIT = _G.LOOT_MONEY_SPLIT

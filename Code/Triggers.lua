@@ -1,46 +1,38 @@
 local Parrot = Parrot
-local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0", "AceEvent-3.0")
-local self = Parrot_Triggers
 
---@debug@
-_G.Parrot_Triggers = self
---@end-debug@
+local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0", "AceEvent-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
-local LC = _G.LOCALIZED_CLASS_NAMES_MALE
+local SharedMedia = LibStub("LibSharedMedia-3.0")
 
-local newList = Parrot.newList
-local newSet = Parrot.newSet
-local newDict = Parrot.newDict
-local del = Parrot.del
-local unpackDictAndDel= Parrot.unpackDictAndDel
+local newList, newDict, del = Parrot.newList, Parrot.newDict, Parrot.del
 
-local function setToList(set)
-	local tmp = newList()
-	for k in pairs(set) do
-		table.insert(tmp, k)
+local function newSet(...)
+	local t = newList()
+	for i = 1, select("#", ...) do
+		local k = select(i, ...)
+		t[k] = true
 	end
-	del(set)
-	return tmp
+	return t
 end
 
 local function deserializeSet(setstring)
-	return newSet((";"):split(setstring))
+	return newSet(strsplit(";", setstring))
 end
 
 local function serializeSet(set)
-	local list = setToList(set)
-	local result = table.concat(list, ";")
-	del(list)
+	local t = newList()
+	for k in next, set do
+		t[#t+1] = k
+	end
+	del(set)
+	local result = table.concat(t, ";")
+	del(t)
 	return result
 end
 
-local debug = Parrot.debug
-local deepCopy = Parrot.deepCopy
 
-local _,playerClass = UnitClass("player")
-
-local SharedMedia = LibStub("LibSharedMedia-3.0")
+local _, playerClass = UnitClass("player")
 
 --[[
 	List of default Triggers:
@@ -1988,7 +1980,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		local tmp
 
 		if param and param.type == 'group' then
-			tmp = deepCopy(param)
+			tmp = CopyTable(param)
 			for k,v in pairs(tmp.args) do
 				v.get = get
 				v.set = set
@@ -2012,7 +2004,7 @@ function Parrot_Triggers:OnOptionsCreate()
 					func = donothing,
 				}
 			else
-				local param_opt = deepCopy(param)
+				local param_opt = CopyTable(param)
 				tmp.args.param = param_opt
 				param_opt.name = localName
 				param_opt.desc = localName
@@ -2044,7 +2036,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 		if default then
 			if type(default) == 'table' then
-				default = deepCopy(default)
+				default = CopyTable(default)
 			end
 			return default
 		end
@@ -2089,7 +2081,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function getAvailablePrimaryConditions(info)
 		local t = info.arg
 		if not t.conditions then
-			return deepCopy(Parrot_TriggerConditions:GetPrimaryConditionChoices())
+			return CopyTable(Parrot_TriggerConditions:GetPrimaryConditionChoices())
 		end
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetPrimaryConditionChoices()) do
@@ -2130,7 +2122,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function getAvailableSecondaryConditions(info)
 		local t = info.arg
 		if not t.secondaryConditions then
-			return deepCopy(Parrot_TriggerConditions:GetSecondaryConditionChoices())
+			return CopyTable(Parrot_TriggerConditions:GetSecondaryConditionChoices())
 		end
 		local tmp = newList()
 		for k,v in pairs(Parrot_TriggerConditions:GetSecondaryConditionChoices()) do

@@ -1,5 +1,5 @@
-
 local Parrot = Parrot
+
 local Parrot_AnimationStyles = Parrot:NewModule("AnimationStyles")
 
 local animationStyles = {}

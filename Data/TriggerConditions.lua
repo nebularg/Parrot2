@@ -6,9 +6,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
 
 local newList, del = Parrot.newList, Parrot.del
 
-local debug = Parrot.debug
-
 local onEnableFuncs = {}
+
 function mod:OnEnable()
 	for _,v in ipairs(onEnableFuncs) do
 		v()

@@ -1,11 +1,14 @@
 local Parrot = Parrot
+
 local Parrot_Display = Parrot:NewModule("Display", "AceHook-3.0")
+local Parrot_AnimationStyles
+local Parrot_Suppressions
+local Parrot_ScrollAreas
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Display")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 local newList, del = Parrot.newList, Parrot.del
-local debug = Parrot.debug
 
 local ParrotFrame
 
@@ -23,9 +26,6 @@ local dbDefaults = {
 	},
 }
 
-local Parrot_AnimationStyles
-local Parrot_Suppressions
-local Parrot_ScrollAreas
 local db
 function Parrot_Display:OnInitialize()
 	self.db1 = Parrot.db1:RegisterNamespace("Display", dbDefaults)

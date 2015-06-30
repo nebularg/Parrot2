@@ -1,5 +1,6 @@
-Parrot = LibStub("AceAddon-3.0"):NewAddon("Parrot", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
-local Parrot, self = Parrot, Parrot
+local Parrot = LibStub("AceAddon-3.0"):NewAddon("Parrot", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
+_G.Parrot = Parrot
+
 --@debug@
 Parrot.version = "dev"
 --@end-debug@
@@ -10,220 +11,75 @@ local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
---@debug@
-local PREFIX = "|cff00ff00Parrot|r: "
-local DevTools_Dump
-DevTools_Dump = function(value)
-	if not _G.DevTools_Dump then
-		LoadAddOn("Blizzard_DebugTools")
-	end
-	DevTools_Dump = _G.DevTools_Dump
-	DevTools_Dump(value)
-end
-DEVTOOLS_DEPTH_CUTOFF = 2
-local function dump(value)
-	local orig = DEFAULT_CHAT_FRAME
-	DEFAULT_CHAT_FRAME = ChatFrame4
-	DevTools_Dump(value)
-	DEFAULT_CHAT_FRAME = orig
-end
-
-local function mystrjoin(arg1, ...)
-	local text = tostring(arg1)
-	for i = 1, select('#', ...) do
-		text = text .. tostring(select(i, ...))
-	end
-	return text
-end
---@end-debug@
-
-local function debug(arg1, ...)
-	if not arg1 then return end
+-- Debug
+Parrot.PARROT_DEBUG_FRAME = ChatFrame4
+Parrot.debug = function(arg1, ...)
 	--@debug@
-	if type(arg1) == 'table' then
-		ChatFrame4:AddMessage(PREFIX .. "+++ table-dump")
-		dump(arg1)
-		ChatFrame4:AddMessage(PREFIX .. "--- end of table-dump")
-		debug(...)
+	if type(arg1) == "table" then
+		if not DevTools_Dump then
+			assert(LoadAddOn("Blizzard_DebugTools"))
+		end
+		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: +++ table-dump")
+		DEVTOOLS_DEPTH_CUTOFF = 2
+		DEFAULT_CHAT_FRAME = Parrot.PARROT_DEBUG_FRAME
+		DevTools_Dump(arg1)
+		DEFAULT_CHAT_FRAME = ChatFrame1
+		DEVTOOLS_DEPTH_CUTOFF = 10
+		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: --- end of table-dump")
+		Parrot.debug(...)
 	else
-		local text = mystrjoin(PREFIX, arg1, ...)
-		ChatFrame4:AddMessage(text)
+		local text = strjoin(" ", tostringall(...))
+		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: " .. text)
 	end
 	--@end-debug@
 end
-Parrot.debug = debug
 
-
---[[##########################################################################
---  ####################### Table recycling stuff ############################
---  ##########################################################################]]
-
-local wipe = table.wipe
-local weak = {__mode = 'kv'}
-local pool = setmetatable({}, weak)
-local activetables = {}
-
-local function table_size(t)
-	local c = 0
-	for k in pairs(t) do
-		c = c + 1
+-- Table recycling
+local new, del
+do
+	local pool = setmetatable({}, {__mode = 'kv'})
+	
+	function new()
+		local t = next(pool)
+		if t then
+			pool[t] = nil
+		else
+			t = {}
+		end
+		return t
 	end
-	return c
-end
 
-local function psize()
-	local c = 0
-	for k in pairs(pool) do
-		c = c + 1
+	function del(t)
+		if not t then
+			error(("Bad argument #1 to 'del'. Expected %q, got %q."):format("table", type(t)), 2)
+		end
+		setmetatable(t, nil)
+		wipe(t)
+		pool[t] = true
+		return nil
 	end
-	return c
 end
-Parrot.psize = psize
 
 local function newList(...)
-	local t = next(pool)
-	local n = select('#', ...)
-	if t then
-		pool[t] = nil
-		for i = 1, n do
-			t[i] = select(i, ...)
-		end
-	else
-		t = { ... }
+	local t = new()
+	for i = 1, select('#', ...) do
+		t[i] = select(i, ...)
 	end
-	return t, n
+	return t
 end
 
 local function newDict(...)
-	local c = select('#', ...)
-	local t = next(pool)
-	if t then
-		pool[t] = nil
-	else
-		t = {}
-	end
-
+	local t = new()
 	for i = 1, select('#', ...), 2 do
 		local k, v = select(i, ...)
-		if k then
-			t[k] = v
-		end
-	end
-	activetables[t] = true
-	return t
-end
-
-local function newSet(...)
-	local t = next(pool)
-	if t then
-		pool[t] = nil
-	else
-		t = {}
-	end
-
-	for i = 1, select('#', ...) do
-		t[select(i, ...)] = true
+		t[k] = v
 	end
 	return t
-end
-
-local function deepCopy(table)
-	if not table then return nil end
-	local tmp = newList()
-	for k,v in pairs(table) do
-		if type(v) == 'table' then
-			tmp[k] = deepCopy(v)
-		else
-			tmp[k] = v
-		end
-	end
-	return tmp
-end
-
-local function del(t)
-	if not t then
-		error(("Bad argument #1 to `del'. Expected %q, got %q."):format("table", type(t)), 2)
-	end
-	if pool[t] then
-		local _, ret = pcall(error, "Error, double-free syndrome.", 3)
-		geterrorhandler()(ret)
-	end
-	setmetatable(t, nil)
-	wipe(t)
-	pool[t] = true
-	return nil
-end
-
-local function f1(t, start, finish)
-	if start > finish then
-		wipe(t)
-		pool[t] = true
-		return
-	end
-	return t[start], f1(t, start+1, finish)
-end
-local function unpackListAndDel(t, start, finish)
-	if not t then
-		error(("Bad argument #1 to `unpackListAndDel'. Expected %q, got %q."):format("table", type(t)), 2)
-	end
-	if not start then
-		start = 1
-	end
-	if not finish then
-		finish = #t
-	end
-	setmetatable(t, nil)
-	return f1(t, start, finish)
-end
-
-local function f2(t, current)
-	current = next(t, current)
-	if current == nil then
-		wipe(t)
-		pool[t] = true
-		return
-	end
-	return current, f2(t, current)
-end
-local function unpackSetAndDel(t)
-	if not t then
-		error(("Bad argument #1 to `unpackListAndDel'. Expected %q, got %q."):format("table", type(t)), 2)
-	end
-	setmetatable(t, nil)
-	return f2(t, nil)
-end
-
-local function f3(t, current)
-	local value
-	current, value = next(t, current)
-	if current == nil then
-		wipe(t)
-		pool[t] = true
-		return
-	end
-	return current, value, f3(t, current)
-end
-local function unpackDictAndDel(t)
-	if not t then
-		error(("Bad argument #1 to `unpackListAndDel'. Expected %q, got %q."):format("table", type(t)), 2)
-	end
-	setmetatable(t, nil)
-	return f3(t, nil)
 end
 
 Parrot.newList = newList
 Parrot.newDict = newDict
-Parrot.newSet = newSet
-Parrot.deepCopy = deepCopy
 Parrot.del = del
-Parrot.unpackListAndDel = unpackListAndDel
-Parrot.unpackSetAndDel = unpackSetAndDel
-Parrot.unpackDictAndDel = unpackDictAndDel
-
---[[##########################################################################
---  ####################### End Table recycling stuff ########################
---  ##########################################################################]]
-
 local function initOptions()
 	if Parrot.options.args.general then
 		return

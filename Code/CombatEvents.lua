@@ -1,12 +1,15 @@
-local Parrot = Parrot, Parrot
-local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
+local Parrot = Parrot
 
--- libs
-local SharedMedia = LibStub("LibSharedMedia-3.0")
---[[
--- localization
---]]
+local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
+local Parrot_Display
+local Parrot_ScrollAreas
+local Parrot_TriggerConditions
+
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents")
+local SharedMedia = LibStub("LibSharedMedia-3.0")
+
+local newList, del, newDict = Parrot.newList, Parrot.del, Parrot.newDict
+local debug = Parrot.debug
 
 -- lookup-table for damage-types
 local LS = {
@@ -23,17 +26,7 @@ local LS = {
 }
 
 local UNKNOWN = _G.UNKNOWN
-if type(UNKNOWN) ~= "string" then
-	UNKNOWN = "Unknown"
-end
 
--- table-recycling and debugging
-local newList, del, newDict = Parrot.newList, Parrot.del, Parrot.newDict
-local debug = Parrot.debug
-
---[[
--- all DB-defaults go here
---]]
 local dbDefaults = {
 	profile = {
 		['*'] = {
@@ -191,10 +184,6 @@ local function updateDB()
 	end
 end
 
--- module-dependencies
-local Parrot_Display
-local Parrot_ScrollAreas
-local Parrot_TriggerConditions
 
 -- checks if in a raid-instance and disables CombatEvents accordingly
 local enabled = false
@@ -210,7 +199,6 @@ function Parrot_CombatEvents:OnInitialize()
 	self.db1.RegisterCallback(self, "OnNewProfile", "OnNewProfile")
 	db = self.db1.profile
 
-	-- module dependencies
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")

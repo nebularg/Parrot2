@@ -1,13 +1,13 @@
 local Parrot = Parrot
-local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "AceEvent-3.0")
-local self = Parrot_TriggerConditions
 
-local debug = Parrot.debug
-local del = Parrot.del
+local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "AceEvent-3.0")
+local Parrot_Triggers
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions")
 
-local _,playerClass = UnitClass("player")
+local del = Parrot.del
+
+local _, playerClass = UnitClass("player")
 
 local conditions = {}
 local lastStates = {}
@@ -17,7 +17,6 @@ local primaryChoices = {}
 local secondaryChoices = {}
 
 local onEnableFuncs = {}
-local Parrot_Triggers
 function Parrot_TriggerConditions:OnEnable()
 	Parrot_Triggers = Parrot:GetModule("Triggers")
 	-- TODO remove

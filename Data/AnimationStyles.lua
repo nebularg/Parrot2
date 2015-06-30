@@ -2,6 +2,8 @@ local Parrot = Parrot
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_AnimationStyles")
 
+local math_max, math_min = math.max, math.min
+
 local validPoints = {
 	TOPLEFT = "TOPLEFT",
 	TOP = "TOP",

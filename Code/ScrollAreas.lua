@@ -1,23 +1,12 @@
 local Parrot = Parrot
+
 local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "AceTimer-3.0")
-local self = Parrot_ScrollAreas
+local Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
+local Parrot_Display = Parrot:GetModule("Display")
+
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
-local debug = Parrot.debug
-local del = Parrot.del
-local newList = Parrot.newList
---@debug@
-_G.Parrot_ScrollAreas = Parrot_ScrollAreas
---@end-debug@--
-local scrollAreas
-
-local choices = {}
-local choicesBase = {
-	Incoming = L["Incoming"],
-	Outgoing = L["Outgoing"],
-	Notification = L["Notification"],
-}
-
+local newList, del = Parrot.newList, Parrot.del
 -- Parrot_ScrollAreas.db = Parrot:GetDatabaseNamespace("ScrollAreas")
 
 function Parrot_ScrollAreas:OnInitialize()
@@ -59,6 +48,13 @@ local function initDB()
 	end
 end
 
+local choices = {}
+local choicesBase = {
+	Incoming = L["Incoming"],
+	Outgoing = L["Outgoing"],
+	Notification = L["Notification"],
+}
+
 local function rebuildChoices()
 	scrollAreas = self.db1.profile.areas
 	choices = del(choices)
@@ -84,10 +80,6 @@ function Parrot_ScrollAreas:OnDisable()
 	end
 end
 
--- Register ConfigMode callback (http://wowpedia.org/ConfigMode)
-CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
-CONFIGMODE_CALLBACKS["Parrot"] = function(state)
-	Parrot:SetConfigMode(state == "ON")
 end
 
 
@@ -101,6 +93,13 @@ Example:
 	-- or
 	Parrot:SetConfigMode(false)
 ------------------------------------------------------------------------------------]]
+
+-- Register ConfigMode callback (http://wowpedia.org/ConfigMode)
+CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
+CONFIGMODE_CALLBACKS["Parrot"] = function(state)
+	setConfigMode(state == "ON")
+end
+
 function Parrot:SetConfigMode(state)
 	if type(state) ~= "boolean" then
 		error(("Bad argument #2 to `SetConfigMode'. Expected %q, got %q."):format("boolean", type(state)), 2)
@@ -217,8 +216,8 @@ local function test(kind, k)
 	else -- 5
 		r, g, b = 1, 0, 1-f
 	end
-	Parrot:GetModule("Display"):ShowMessage(alphabet[currentAlphabet], k, kind == "sticky", r, g, b, nil, nil, nil, "Interface\\Icons\\INV_Misc_QuestionMark")
-	currentAlphabet = (currentAlphabet%(#alphabet)) + 1
+	Parrot_Display:ShowMessage(alphabet[currentAlphabet], k, kind == "sticky", r, g, b, nil, nil, nil, "Interface\\Icons\\INV_Misc_QuestionMark")
+	currentAlphabet = (currentAlphabet % #alphabet) + 1
 	currentColor = (currentColor + 10) % 360
 end
 
@@ -298,7 +297,6 @@ end
 Parrot.GetScrollAreasChoices = Parrot_ScrollAreas.GetScrollAreasChoices
 
 function Parrot_ScrollAreas:OnOptionsCreate()
-
 	local scrollAreas_opt
 	local function getName(info)
 		local name = info.arg
@@ -437,10 +435,10 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		local kind, k = info.arg[1], info.arg[2]
 		scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"] = value
 		local opt = scrollAreas_opt.args[tostring(scrollAreas[k])]
-		local choices = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(value)
+		local choices = Parrot_AnimationStyles:GetAnimationStyleDirectionChoices(value)
 		opt.args.direction.args[kind].values = choices
 		if not choices[scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"]] then
-			scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"] = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDefaultDirection(value)
+			scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"] = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection(value)
 		end
 		if not configMode then
 			test(kind, k)
@@ -464,11 +462,11 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 	end
 	local function getDirection(info)
 		local kind, k = info.arg[1], info.arg[2]
-		return scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"] or Parrot:GetModule("AnimationStyles"):GetAnimationStyleDefaultDirection(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"])
+		return scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"] or Parrot_AnimationStyles:GetAnimationStyleDefaultDirection(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"])
 	end
 	local function setDirection(info, value)
 		local kind, k = info.arg[1], info.arg[2]
-		if value == Parrot:GetModule("AnimationStyles"):GetAnimationStyleDefaultDirection(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"]) then
+		if value == Parrot_AnimationStyles:GetAnimationStyleDefaultDirection(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"]) then
 			value = nil
 		end
 		scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"] = value
@@ -480,7 +478,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 	end
 	local function directionDisabled(info)
 		local kind, k = info.arg[1], info.arg[2]
-		return not Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"])
+		return not Parrot_AnimationStyles:GetAnimationStyleDirectionChoices(scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"])
 	end
 	local function getPositionX(info)
 		return scrollAreas[info.arg].xOffset
@@ -646,7 +644,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							get = getDirection,
 							set = setDirection,
 							disabled = directionDisabled,
-							values = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(scrollAreas[k].animationStyle) or {},
+							values = Parrot_AnimationStyles:GetAnimationStyleDirectionChoices(scrollAreas[k].animationStyle) or {},
 							arg = {"normal", k},
 						},
 						sticky = {
@@ -656,7 +654,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							get = getDirection,
 							set = setDirection,
 							disabled = directionDisabled,
-							values = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDirectionChoices(scrollAreas[k].stickyAnimationStyle) or {},
+							values = Parrot_AnimationStyles:GetAnimationStyleDirectionChoices(scrollAreas[k].stickyAnimationStyle) or {},
 							arg = {"sticky", k},
 						},
 					}
@@ -673,7 +671,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							desc = L["Animation style for normal texts."],
 							get = getAnimationStyle,
 							set = setAnimationStyle,
-							values = Parrot:GetModule("AnimationStyles"):GetAnimationStylesChoices(),
+							values = Parrot_AnimationStyles:GetAnimationStylesChoices(),
 							arg = {"normal", k},
 						},
 						sticky = {
@@ -682,7 +680,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							desc = L["Animation style for sticky texts."],
 							get = getAnimationStyle,
 							set = setAnimationStyle,
-							values = Parrot:GetModule("AnimationStyles"):GetAnimationStylesChoices(),
+							values = Parrot_AnimationStyles:GetAnimationStylesChoices(),
 							arg = {"sticky", k},
 						},
 					}
@@ -889,9 +887,9 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 					end
 					scrollAreas[L["New scroll area"]] = {
 						animationStyle = "Straight",
-						direction = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDefaultDirection("Straight"),
+						direction = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection("Straight"),
 						stickyAnimationStyle = "Pow",
-						direction = Parrot:GetModule("AnimationStyles"):GetAnimationStyleDefaultDirection("Pow"),
+						direction = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection("Pow"),
 						size = 150,
 						xOffset = 0,
 						yOffset = 0,

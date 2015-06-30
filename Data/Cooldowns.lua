@@ -5,10 +5,6 @@ local mod = Parrot:NewModule("Cooldowns", "AceEvent-3.0", "AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Cooldowns")
 
 local newList, del = Parrot.newList, Parrot.del
-local deepCopy = Parrot.deepCopy
-local debug = Parrot.debug
-
-local wipe = table.wipe
 
 local db = nil
 local dbDefaults = {

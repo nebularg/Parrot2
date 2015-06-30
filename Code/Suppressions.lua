@@ -3,12 +3,8 @@ local Parrot_Suppressions = Parrot:NewModule("Suppressions")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Suppressions")
 
-local _G = _G
-
 local string_find = _G.string.find
 local pcall = _G.pcall
-
-local debug = Parrot.debug
 
 local dbDefaults = {
 	profile = {
@@ -27,10 +23,6 @@ function Parrot_Suppressions:ChangeProfile()
 		Parrot.options.args.suppressions = nil
 		self:OnOptionsCreate()
 	end
-end
-
-local function optkey(table)
-	return tostring(table):gsub("table: ","")
 end
 
 function Parrot_Suppressions:OnOptionsCreate()
@@ -128,6 +120,11 @@ function Parrot_Suppressions:OnOptionsCreate()
 			}
 		}
 	end
+
+	local function optkey(table)
+		return tostring(table):gsub("table: ","")
+	end
+
 	Parrot:AddOption('suppressions', suppressions_opt)
 	suppressions_opt.args.new = {
 		order = 1,
