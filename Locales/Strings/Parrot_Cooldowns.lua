@@ -3,7 +3,6 @@ L["<Item name>"] = true
 L["<Spell name>"] = true
 L["Click to remove"] = true
 L["Cooldowns"] = true
-L["Fire traps"] = true
 L["Frost traps"] = true
 L["Ignore"] = true
 L["Ignore Cooldown"] = true

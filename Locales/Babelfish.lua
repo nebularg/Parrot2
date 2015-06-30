@@ -5,7 +5,7 @@
 ]]
 local filePrefix = "../"
 
-local files = {
+local allfiles = {
 	Parrot = { "Code/Parrot.lua", },
 	Parrot_CombatEvents = { "Code/CombatEvents.lua", },
 	Parrot_Display = { "Code/Display.lua", },
@@ -22,9 +22,26 @@ local files = {
 	Parrot_TriggerConditions_Data = { "Data/TriggerConditions.lua", },
 }
 
+local ordered = { -- order in the locale files
+	"Parrot",
+	"Parrot_CombatEvents",
+	"Parrot_Display",
+	"Parrot_ScrollAreas",
+	"Parrot_Suppressions",
+	"Parrot_TriggerConditions",
+	"Parrot_Triggers",
+	"Parrot_AnimationStyles",
+	"Parrot_Auras",
+	"Parrot_CombatEvents_Data",
+	"Parrot_CombatStatus",
+	"Parrot_Cooldowns",
+	"Parrot_Loot",
+	"Parrot_TriggerConditions_Data",
+}
+
 local function saveLocales(namespace, strings)
 	local file = io.open("Strings/" .. namespace .. ".lua", "w")
-	for i,v in ipairs(strings) do
+	for i, v in ipairs(strings) do
 		file:write(string.format("L[\"%s\"] = true\n", v))
 	end
 	file:close()
@@ -32,9 +49,9 @@ end
 
 local function parseFile(filename)
 	local strings = {}
-	local file = io.open(string.format("%s%s", filePrefix or "", filename), "r")
-	assert(file, "Could not open " .. filename)
+	local file = assert(io.open(string.format("%s%s", filePrefix or "", filename), "r"), "Could not open " .. filename)
 	local text = file:read("*all")
+	file:close()
 
 	for match in string.gmatch(text, "L%[\"(.-)\"%]") do
 		strings[match] = true
@@ -42,20 +59,34 @@ local function parseFile(filename)
 	return strings
 end
 
+
+local locale = io.open("Strings/enUS.lua", "w")
+locale:write('local debug = nil\n\n')
+
 -- extract data from specified lua files
-for namespace,files in pairs(files) do
-	local filename = files[1]
-	local strings = {}
-	for i,v in pairs(files) do
-		local strings2 = parseFile(v)
-		for k in pairs(strings2) do
-			strings[k] = true
+for _, namespace in ipairs(ordered) do
+	print(namespace)
+	for _, file in ipairs(allfiles[namespace]) do
+		local strings = parseFile(file)
+
+		local sorted = {}
+		for k in next, strings do
+			table.insert(sorted, k)
 		end
+		table.sort(sorted)
+		if #sorted > 0 then
+			saveLocales(namespace, sorted)
+		end
+
+		locale:write(string.format('local L = LibStub("AceLocale-3.0"):NewLocale("%s", "enUS", true, debug)\n', namespace))
+		for _, v in ipairs(sorted) do
+			locale:write(string.format('L["%s"] = true\n', v))
+		end
+		locale:write('\n\n')
+
+		print("  (" .. #sorted .. ") " .. file)
 	end
-	local work = {}
-	for k,v in pairs(strings) do
-		table.insert(work, k)
-	end
-	table.sort(work)
-	saveLocales(namespace, work)
 end
+
+locale:close()
+
