@@ -1,4 +1,5 @@
 local Parrot = Parrot
+
 local mod = Parrot:NewModule("CombatEventsData")
 
 local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
@@ -20,6 +21,11 @@ local FACTION_STANDING_INCREASED = _G.FACTION_STANDING_INCREASED
 local FACTION_STANDING_DECREASED = _G.FACTION_STANDING_DECREASED
 local SKILL_RANK_UP = _G.SKILL_RANK_UP
 local XP = _G.XP
+local CURRENCY_GAINED_MULTIPLE = _G.CURRENCY_GAINED_MULTIPLE
+local CURRENCY_GAINED = _G.CURRENCY_GAINED
+local PLAYERSTAT_MELEE_COMBAT = _G.PLAYERSTAT_MELEE_COMBAT
+local UNKNOWN = _G.UNKNOWN
+local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
 
 local db
 
@@ -37,7 +43,7 @@ function mod:OnProfileChanged()
 end
 
 --[[============================================================================
--- some parser-lookup-tables
+-- start helper-functions
 --============================================================================]]
 
 local SchoolParser = {
@@ -53,30 +59,28 @@ local SchoolParser = {
 	[64] = "Arcane"
 }
 
-local function retrieveAlternatePowerName(self, key)
+local PowerTypeParser = setmetatable({
+	[-2] = HEALTH,
+	[0] = MANA,
+	[1] = RAGE,
+	[2] = FOCUS,
+	[3] = ENERGY,
+	[4] = CHI,
+	[5] = RUNES,
+	[6] = RUNIC_POWER,
+	[7] = SOUL_SHARDS,
+	[8] = ECLIPSE,
+	[9] = HOLY_POWER,
+	[11] = DARK_FORCE,
+	[12] = CHI_POWER,
+	[13] = SHADOW_ORBS,
+	[14] = BURNING_EMBERS,
+	[15] = DEMONIC_FURY,
+}, { __index = function(self, key)
 	if key == ALTERNATE_POWER_INDEX then
 		return select(10, UnitAlternatePowerInfo("player"))
 	end
-end
-
-local PowerTypeParser = setmetatable({
-		[-2] = HEALTH,
-		[0] = MANA,
-		[1] = RAGE,
-		[2] = FOCUS,
-		[3] = ENERGY,
-		[4] = CHI,
-		[5] = RUNES,
-		[6] = RUNIC_POWER,
-		[7] = SOUL_SHARDS,
-		[8] = ECLIPSE,
-		[9] = HOLY_POWER,
-		[11] = DARK_FORCE,
-		[12] = CHI_POWER,
-		[13] = SHADOW_ORBS,
-		[14] = BURNING_EMBERS,
-		[15] = DEMONIC_FURY,
-	}, { __index = retrieveAlternatePowerName, })
+end })
 
 -- lookup-table for damage-types
 local LS = {
@@ -171,26 +175,11 @@ local function retrieveExtraAbilityName(info)
 	return Parrot_CombatEvents:GetAbbreviatedSpell(info.extraAbilityName)
 end
 
-
---[[
--- Some spells emit Spellids to the combatlog that have icons different from
--- the ones in the spellbook. This table maps the spellid emitted by the
--- comabatlog to the spellID with the expected icon (spellbook, talent-tree)
---]]
-local dumbIconOverride = {
-}
-
 --[[
 -- helperfunction to retrieve an icon
 --]]
 local function retrieveIconFromAbilityName(info)
-	local icon
-	if info.spellID then
-		icon = select(3, GetSpellInfo(info.spellID)) -- dumbIconOverride[info.spellID] or -- XXX table is empty now, skip the lookup attempt
-	elseif info.abilityName then
-		--shouldn't be needed though, but to be sure
-		icon = select(3, GetSpellInfo(info.abilityName))
-	end
+	local _, _, icon = GetSpellInfo(info.spellID or info.abilityName)
 	return icon
 end
 
@@ -209,22 +198,6 @@ local missTypes = {
 	REFLECT = "reflects",
 	RESIST = "resists",
 	DEFLECT = "deflects",
-}
-
---[[
--- localisations for missTypes
---]]
-local LM = {
-	ABSORB = _G.ABSORB,
-	BLOCK = _G.BLOCK,
-	DODGE = _G.DODGE,
-	EVADE = _G.EVADE,
-	IMMUNE = _G.IMMUNE,
-	MISS = _G.MISS,
-	PARRY = _G.PARRY,
-	REFLECT = _G.REFLECT,
-	RESIST = _G.RESIST,
-	DEFLECT = _G.DEFLECT,
 }
 
 local defaultMissColor = {
@@ -526,6 +499,7 @@ Parrot:RegisterThrottleType("Reputation gains", L["Reputation gains"], 0.1, true
 --[[============================================================================
 -- Tables that describe throttle-data for several combat-events
 --============================================================================]]
+
 local meleeThrottle = {
 	"Melee damage",
 	'recipientID',
@@ -704,10 +678,6 @@ local outMissTagTranslationHelp = {
 	Name = L["The name of the enemy you attacked."],
 	Amount = L["Amount of the damage that was missed."],
 }
---[[local petOutSpellMissTagTranslationsHelp = {
-	Name = L["The name of the enemy your pet attacked."],
-	Amount = L["Amount of the damage that was missed."],
-}--]]
 
 -- Outgoing spell-miss
 local outSpellMissTagTranslations = {
@@ -751,8 +721,7 @@ local outDispelTagTranslations = {
 --[[============================================================================
 -- Incoming Events:
 -- Damage
---===
-=========================================================================]]
+--============================================================================]]
 
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
@@ -851,7 +820,7 @@ L["Melee deflects"]
 for k,v in pairs(missTypes) do
 	local name = "Melee " .. v
 	local tag = k == "ABSORB" and "%s [Amount]!" or "%s!"
-	local tag = tag:format(LM[k])
+	local tag = tag:format(_G[k])
 	local function check( _, _, _, dstGUID, _, _, missType)
 		return (dstGUID == playerGUID and missType == k)
 	end
@@ -875,6 +844,7 @@ end
 -- Incoming Events:
 -- Spell-misses
 --============================================================================]]
+
 --[[
 locales for Babelfish.lua to catch
 L["Skill absorbs"]
@@ -892,7 +862,7 @@ L["Skill deflects"]
 for k,v in pairs(missTypes) do
 	local name = "Skill " .. v
 	local tag = k == "ABSORB" and "([Skill]) %s [Amount]!" or "([Skill]) %s!"
-	local tag = tag:format(LM[k])
+	local tag = tag:format(_G[k])
 
 	local function check(_, _, _, dstGUID, _, _,_, _, _, missType)
 		return (dstGUID == playerGUID and missType == k)
@@ -994,7 +964,6 @@ Parrot:RegisterCombatEvent{
 -- Dispel
 --============================================================================]]
 
-
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Dispel"],
@@ -1074,7 +1043,7 @@ Parrot:RegisterCombatEvent{
 }
 
 local function parseEnvironmentalDamage(info)
-	return _G["ACTION_ENVIRONMENTAL_DAMAGE_" .. string.upper(info.environmentalType)]
+	return _G["ACTION_ENVIRONMENTAL_DAMAGE_" .. info.environmentalType]
 end
 
 Parrot:RegisterCombatEvent{
@@ -1172,10 +1141,6 @@ Parrot:RegisterCombatEvent{
 -- Melee miss
 --============================================================================]]
 
-local petMissColor = {
-	RESIST = "7f7fb2", -- blue-gray
-	EVADE = "7f7fff", -- light blue
-}
 --[[
 locales for Babelfish.lua to catch
 L["Pet melee absorbs"]
@@ -1189,10 +1154,16 @@ L["Pet melee reflects"]
 L["Pet melee resists"]
 L["Pet melee deflects"]
 --]]
+
+local petMissColor = {
+	RESIST = "7f7fb2", -- blue-gray
+	EVADE = "7f7fff", -- light blue
+}
+
 for k,v in pairs(missTypes) do
 	local name = "Pet melee " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]!" or "%s %s!"
-	local tag = tag:format(PET, LM[k])
+	local tag = tag:format(PET, _G[k])
 	local function check(srcGUID, _, _, dstGUID, _, dstFlags, missType)
 		return missType == k and checkPetInc(nil, nil, nil, dstGUID, nil, dstFlags)
 	end
@@ -1234,7 +1205,7 @@ L["Pet skill deflects"]
 for k,v in pairs(missTypes) do
 	local name = "Pet skill " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]! ([Skill])" or "%s %s! ([Skill])"
-	local tag = tag:format(PET, LM[k])
+	local tag = tag:format(PET, _G[k])
 
 	local function check(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
 		return missType == k and checkPetInc(nil, nil, nil, dstGUID, nil, dstFlags)
@@ -1432,7 +1403,7 @@ Parrot:RegisterCombatEvent{
 for k,v in pairs(missTypes) do
 	local name = "Melee " .. v
 	local tag = k == "ABSORB" and "%s [Amount]!" or "%s!"
-	local tag = tag:format(LM[k])
+	local tag = tag:format(_G[k])
 	local function check( srcGUID, _, _, _, _, _, missType)
 		return (srcGUID == playerGUID and missType == k)
 	end
@@ -1460,7 +1431,7 @@ end
 for k,v in pairs(missTypes) do
 	local name = "Skill " .. v
 	local tag = k == "ABSORB" and "%s [Amount]! ([Skill])" or "%s! ([Skill])"
-	local tag = tag:format(LM[k])
+	local tag = tag:format(_G[k])
 	local function check( srcGUID, _, _, _, _, _,_, _, _, missType)
 		return (srcGUID == playerGUID and missType == k)
 	end
@@ -1734,7 +1705,7 @@ Parrot:RegisterCombatEvent{
 for k,v in pairs(missTypes) do
 	local name = "Pet melee " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]!" or "%s %s!"
-	local tag = tag:format(PET, LM[k])
+	local tag = tag:format(PET, _G[k])
 
 	local function check(srcGUID, _, srcFlags, _, _, _, missType)
 		return missType == k and checkPetOut(srcGUID, nil, srcFlags)
@@ -1766,7 +1737,7 @@ end
 for k,v in pairs(missTypes) do
 	local name = "Pet skill " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]! ([Skill])" or "%s %s! ([Skill])"
-	local tag = tag:format(PET, LM[k])
+	local tag = tag:format(PET, _G[k])
 
 	local function check(srcGUID, _, srcFlags, _, _, _, _, _, _, missType)
 		return missType == k and checkPetOut(srcGUID, nil, srcFlags)
@@ -2245,6 +2216,7 @@ Parrot:RegisterCombatEvent{
 -- Notification Events:
 -- Extra attacks
 --============================================================================]]
+
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	name = "Extra attacks",

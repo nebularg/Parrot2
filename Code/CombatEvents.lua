@@ -116,14 +116,6 @@ local defaults = {
 	},
 }
 
-local function addDefaultWithSpellIdIndex(tab, spellId, value)
-	local spell = GetSpellInfo(spellId)
-	if not spell then return end
-	tab[spell] = value
-end
-
-addDefaultWithSpellIdIndex(dbDefaults.profile.sthrottles, 57669, { time = 5, }) -- Replenishment
-
 --[[
 -- to upgrade the DB from previous.
 -- usage: if the format is changed, change the defaults to the new format.
