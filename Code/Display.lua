@@ -223,26 +223,22 @@ Notes:
 Example:
 	Parrot:ShowMessage("Hello, world!", "Notification", false, 0.5, 0.5, 1)
 ------------------------------------------------------------------------------------]]
-function Parrot_Display:ShowMessage(text, scrollArea, sticky, r, g, b, font, fontSize, outline, icon)
-	self = Parrot_Display -- for those who do Parrot:ShowMessage
-	if not self:IsEnabled() then
-		return
-	end
-	if Parrot_Suppressions:ShouldSuppress(text) then
-		return
-	end
-	if not Parrot_ScrollAreas:HasScrollArea(scrollArea) then
+function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize, outline, icon)
+	if not Parrot_Display:IsEnabled() then return end
+	if Parrot_Suppressions:ShouldSuppress(text) then return end
+
+	if not Parrot_ScrollAreas:HasScrollArea(area) then
 		if Parrot_ScrollAreas:HasScrollArea("Notification") then
-			scrollArea = "Notification"
+			area = "Notification"
 		else
-			scrollArea = Parrot_ScrollAreas:GetRandomScrollArea()
-			if not scrollArea then
+			area = Parrot_ScrollAreas:GetRandomScrollArea()
+			if not area then
 				return
 			end
 		end
 	end
 
-	scrollArea = Parrot_ScrollAreas:GetScrollArea(scrollArea)
+	local scrollArea = Parrot_ScrollAreas:GetScrollArea(area)
 	if not sticky then
 		if not font then
 			font = scrollArea.font or db.font
