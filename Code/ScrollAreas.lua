@@ -55,8 +55,7 @@ local choicesBase = {
 }
 
 local function rebuildChoices()
-	choices = del(choices)
-	choices = newList()
+	wipe(choices)
 	for k, v in next, scrollAreas do
 		choices[k] = choicesBase[k] or k
 	end
@@ -68,13 +67,13 @@ function Parrot_ScrollAreas:OnProfileChanged()
 		Parrot.options.args.scrollAreas = nil
 		self:OnOptionsCreate()
 	end
+	scrollAreas = db.areas
 	rebuildChoices()
 end
 
 function Parrot_ScrollAreas:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("ScrollAreas", defaults)
-	db = self.db.profile
-	scrollAreas = db.areas
+	self:OnProfileChanged()
 end
 
 function Parrot_ScrollAreas:OnEnable()
@@ -84,17 +83,6 @@ end
 function Parrot_ScrollAreas:OnDisable()
 	setConfigMode(false)
 end
-
---[[----------------------------------------------------------------------------------
-Notes:
-	Turn on/off the config mode boxes.
-Arguments:
-	boolean - whether to turn on.
-Example:
-	Parrot:SetConfigMode(true)
-	-- or
-	Parrot:SetConfigMode(false)
-------------------------------------------------------------------------------------]]
 
 -- Register ConfigMode callback (http://wowpedia.org/ConfigMode)
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
@@ -229,11 +217,11 @@ end
 local num = 0
 local function configModeMessages()
 	num = num%2 + 1
-	for k in pairs(scrollAreas) do
+	for k in next, scrollAreas do
 		test("normal", k)
 	end
 	if num == 2 then
-		for k in pairs(scrollAreas) do
+		for k in next, scrollAreas do
 			test("sticky", k)
 		end
 	end
@@ -245,7 +233,7 @@ function setConfigMode(value)
 	if not value then
 		hideAllOffsetBoxes()
 	else
-		for k in pairs(scrollAreas) do
+		for k in next, scrollAreas do
 			showOffsetBox(k)
 		end
 		configModeTimer = Parrot_ScrollAreas:ScheduleRepeatingTimer(configModeMessages, 1)
@@ -253,17 +241,14 @@ function setConfigMode(value)
 	end
 end
 
--- #NODOC
 function Parrot_ScrollAreas:HasScrollArea(name)
 	return not not scrollAreas[name]
 end
 
--- #NODOC
 function Parrot_ScrollAreas:GetScrollArea(name)
 	return scrollAreas[name]
 end
 
--- #NODOC
 function Parrot_ScrollAreas:GetRandomScrollArea()
 	local i = 0
 	for k, v in pairs(scrollAreas) do
@@ -280,21 +265,6 @@ function Parrot_ScrollAreas:GetRandomScrollArea()
 	return
 end
 
---[[----------------------------------------------------------------------------------
-Notes:
-	This is to be used for LibRockConfig-1.0 tables.
-Returns:
-	table - A choices table for LibRockConfig-1.0 tables.
-Example:
-	{
-		type = 'text',
-		name = "Scroll area",
-		desc = "Scroll area to use in Parrot.",
-		choices = Parrot:GetScrollAreasChoices(),
-		get = getScrollArea,
-		set = setScrollArea,
-	}
-------------------------------------------------------------------------------------]]
 function Parrot_ScrollAreas:GetScrollAreasChoices()
 	return choices
 end
