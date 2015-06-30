@@ -550,10 +550,10 @@ local function compareUnitAndSpell(ref, info)
 end
 
 local unitChoices = {
-	["player"] = PLAYER,
-	["focus"] = FOCUS,
-	["target"] = TARGET,
-	["pet"] = PET,
+	["player"] = _G.PLAYER,
+	["focus"] = _G.FOCUS,
+	["target"] = _G.TARGET,
+	["pet"] = _G.PET,
 }
 
 local auraTypeChoices = {

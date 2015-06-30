@@ -61,7 +61,7 @@ Parrot:RegisterCombatEvent{
 		Name = L["Name of the currency"],
 		Amount = L["The amount of currency gained."],
 		Total = L["Your total amount of the currency."],
-		
+
 	},
 	color = "7f7fb2", -- blue-gray
 	events = {

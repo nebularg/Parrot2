@@ -15,10 +15,10 @@ function mod:OnEnable()
 end
 
 local unitChoices = {
-	["player"] = PLAYER,
-	["focus"] = FOCUS,
-	["target"] = TARGET,
-	["pet"] = PET,
+	["player"] = _G.PLAYER,
+	["focus"] = _G.FOCUS,
+	["target"] = _G.TARGET,
+	["pet"] = _G.PET,
 }
 
 local comparatorChoices = {
@@ -30,8 +30,8 @@ local comparatorChoices = {
 	--	["~="] = "~=",
 }
 local friendlyChoices = {
-	[1] = FRIENDLY,
-	[0] = HOSTILE,
+	[1] = _G.FRIENDLY,
+	[0] = _G.HOSTILE,
 	[-1] = L["Any"],
 }
 
@@ -159,19 +159,19 @@ Parrot:RegisterPrimaryTriggerCondition {
 
 local powerTypeChoices = {
 	[-1] = L["Any"],
-	[SPELL_POWER_MANA] = MANA,
-	[SPELL_POWER_RAGE] = RAGE,
-	[SPELL_POWER_FOCUS] = FOCUS,
-	[SPELL_POWER_ENERGY] = ENERGY,
-	[4] = COMBO_POINTS,
-	[SPELL_POWER_RUNIC_POWER] = RUNIC_POWER,
-	[SPELL_POWER_SOUL_SHARDS] = SOUL_SHARDS,
-	[SPELL_POWER_ECLIPSE] = ECLIPSE,
-	[SPELL_POWER_HOLY_POWER] = HOLY_POWER,
-	[SPELL_POWER_CHI] = CHI,
-	[SPELL_POWER_SHADOW_ORBS] = SHADOW_ORBS,
-	[SPELL_POWER_BURNING_EMBERS] = BURNING_EMBERS,
-	[SPELL_POWER_DEMONIC_FURY] = DEMONIC_FURY,
+	[_G.SPELL_POWER_MANA] = _G.MANA,
+	[_G.SPELL_POWER_RAGE] = _G.RAGE,
+	[_G.SPELL_POWER_FOCUS] = _G.FOCUS,
+	[_G.SPELL_POWER_ENERGY] = _G.ENERGY,
+	[4] = _G.COMBO_POINTS,
+	[_G.SPELL_POWER_RUNIC_POWER] = _G.RUNIC_POWER,
+	[_G.SPELL_POWER_SOUL_SHARDS] = _G.SOUL_SHARDS,
+	[_G.SPELL_POWER_ECLIPSE] = _G.ECLIPSE,
+	[_G.SPELL_POWER_HOLY_POWER] = _G.HOLY_POWER,
+	[_G.SPELL_POWER_CHI] = _G.CHI,
+	[_G.SPELL_POWER_SHADOW_ORBS] = _G.SHADOW_ORBS,
+	[_G.SPELL_POWER_BURNING_EMBERS] = _G.BURNING_EMBERS,
+	[_G.SPELL_POWER_DEMONIC_FURY] = _G.DEMONIC_FURY,
 }
 
 local unitPowerStates = {
@@ -298,16 +298,16 @@ Parrot:RegisterPrimaryTriggerCondition {
 }
 
 local missTypeChoices = {
-	["ABSORB"] = ABSORB,
-	["BLOCK"] = BLOCK,
-	["DEFLECT"] = DEFLECT,
-	["DODGE"] = DODGE,
-	["EVADE"] = EVADE,
-	["IMMUNE"] = IMMUNE,
-	["MISS"] = MISS,
-	["PARRY"] = PARRY,
-	["REFLECT"] = REFLECT,
-	["RESIST"] = RESIST,
+	["ABSORB"] = _G.ABSORB,
+	["BLOCK"] = _G.BLOCK,
+	["DEFLECT"] = _G.DEFLECT,
+	["DODGE"] = _G.DODGE,
+	["EVADE"] = _G.EVADE,
+	["IMMUNE"] = _G.IMMUNE,
+	["MISS"] = _G.MISS,
+	["PARRY"] = _G.PARRY,
+	["REFLECT"] = _G.REFLECT,
+	["RESIST"] = _G.RESIST,
 }
 
 Parrot:RegisterPrimaryTriggerCondition {

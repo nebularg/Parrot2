@@ -44,10 +44,10 @@ end
 --============================================================================]]
 
 local SchoolParser = {
-	[1] = "Physical",
-	[2] = "Holy",
-	[4] = "Fire",
-	[8] = "Nature",
+	[1]  = "Physical",
+	[2]  = "Holy",
+	[4]  = "Fire",
+	[8]  = "Nature",
 	[16] = "Frost",
 	[20] = "FrostFire",
 	[24] = "Froststorm",
@@ -57,22 +57,22 @@ local SchoolParser = {
 }
 
 local PowerTypeParser = setmetatable({
-	[-2] = HEALTH,
-	[0] = MANA,
-	[1] = RAGE,
-	[2] = FOCUS,
-	[3] = ENERGY,
-	[4] = CHI,
-	[5] = RUNES,
-	[6] = RUNIC_POWER,
-	[7] = SOUL_SHARDS,
-	[8] = ECLIPSE,
-	[9] = HOLY_POWER,
-	[11] = DARK_FORCE,
-	[12] = CHI_POWER,
-	[13] = SHADOW_ORBS,
-	[14] = BURNING_EMBERS,
-	[15] = DEMONIC_FURY,
+	[-2] = _G.HEALTH,
+	[0]  = _G.MANA,
+	[1]  = _G.RAGE,
+	[2]  = _G.FOCUS,
+	[3]  = _G.ENERGY,
+	[4]  = _G.CHI,
+	[5]  = _G.RUNES,
+	[6]  = _G.RUNIC_POWER,
+	[7]  = _G.SOUL_SHARDS,
+	[8]  = _G.ECLIPSE,
+	[9]  = _G.HOLY_POWER,
+	[11] = _G.DARK_FORCE,
+	[12] = _G.CHI_POWER,
+	[13] = _G.SHADOW_ORBS,
+	[14] = _G.BURNING_EMBERS,
+	[15] = _G.DEMONIC_FURY,
 }, { __index = function(self, key)
 	if key == ALTERNATE_POWER_INDEX then
 		return select(10, UnitAlternatePowerInfo("player"))
@@ -81,16 +81,16 @@ end })
 
 -- lookup-table for damage-types
 local LS = {
-	["Physical"] = STRING_SCHOOL_PHYSICAL,
-	["Holy"] = STRING_SCHOOL_HOLY,
-	["Fire"] = STRING_SCHOOL_FIRE,
-	["Nature"] = STRING_SCHOOL_NATURE,
-	["Frost"] = STRING_SCHOOL_FROST,
-	["Frostfire"] = STRING_SCHOOL_FROSTFIRE,
-	["Froststorm"] = STRING_SCHOOL_FROSTSTORM,
-	["Shadow"] = STRING_SCHOOL_SHADOW,
-	["Shadowstorm"] = STRING_SCHOOL_SHADOWSTORM,
-	["Arcane"] = STRING_SCHOOL_ARCANE,
+	["Physical"] = _G.STRING_SCHOOL_PHYSICAL,
+	["Holy"] = _G.STRING_SCHOOL_HOLY,
+	["Fire"] = _G.STRING_SCHOOL_FIRE,
+	["Nature"] = _G.STRING_SCHOOL_NATURE,
+	["Frost"] = _G.STRING_SCHOOL_FROST,
+	["Frostfire"] = _G.STRING_SCHOOL_FROSTFIRE,
+	["Froststorm"] = _G.STRING_SCHOOL_FROSTSTORM,
+	["Shadow"] = _G.STRING_SCHOOL_SHADOW,
+	["Shadowstorm"] = _G.STRING_SCHOOL_SHADOWSTORM,
+	["Arcane"] = _G.STRING_SCHOOL_ARCANE,
 }
 
 local coloredDamageAmount = function(info)
@@ -114,7 +114,7 @@ local damageTypeString = function(info)
 end
 
 local classColorStrings = {}
-for k,v in pairs(RAID_CLASS_COLORS) do
+for k, v in next, _G.RAID_CLASS_COLORS do
 	local r = v.r*255
 	local g = v.g*255
 	local b = v.b*255
