@@ -784,12 +784,7 @@ local function updateDB()
 	db.dbver = #updateFuncs
 end
 
-function Parrot_Triggers:OnNewProfile(e, database)
-	print(e)
-end
-
 function Parrot_Triggers:OnProfileChanged(e, database)
-	print(e)
 	db = self.db.profile
 	updateDB()
 
@@ -804,8 +799,6 @@ function Parrot_Triggers:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Triggers", defaults)
 	db = self.db.profile
 	updateDB()
-
-	self.db.RegisterCallback(Parrot_Triggers, "OnNewProfile", "OnNewProfile")
 
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
