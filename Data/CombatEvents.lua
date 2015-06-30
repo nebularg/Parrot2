@@ -28,14 +28,11 @@ local UNKNOWN = _G.UNKNOWN
 local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
 
 local db
-
-local onEnableFuncs = {}
+local playerGUID
 
 function mod:OnEnable()
 	db = Parrot.db:GetNamespace("CombatEvents").profile
-	for _, func in ipairs(onEnableFuncs) do
-		func()
-	end
+	playerGUID = UnitGUID("player")
 end
 
 function mod:OnProfileChanged()
@@ -101,7 +98,7 @@ local coloredDamageAmount = function(info)
 	local amount = Parrot_CombatEvents:ShortenAmount(info.amount)
 
 	if db.damageTypes.color and db.damageTypes[damageType] then
-		return "|cff" .. db.damageTypes[damageType] .. amount .. "|r"
+		return ("|cff%s%s|r"):format(db.damageTypes[damageType], amount)
 	else
 		return amount
 	end
@@ -259,10 +256,6 @@ end
 -- The player is identified by GUID because it doesn't change ever.
 -- All other units (pet, target, totems) are identified by flag-matching
 --]]
-
--- cache the playerGUID onEnable
-local playerGUID
-table.insert(onEnableFuncs, function() playerGUID = UnitGUID("player") end)
 
 local function checkPlayerInc(_, _, _, dstGUID, _, dstFlags)
 	return dstGUID == playerGUID
@@ -465,14 +458,6 @@ local function killingBlowThrottleFunc(info)
 	end
 end
 
-local function repThrottleFunc(info)
-	local num = info.throttleCount or 0
-	if num > 1 then
-		return (" (%dx)"):format(num)
-	end
-	return nil
-end
-
 --[[============================================================================
 -- Register Filtertypes
 --============================================================================]]
@@ -494,7 +479,6 @@ Parrot:RegisterThrottleType("DoTs and HoTs", L["DoTs and HoTs"], 2)
 Parrot:RegisterThrottleType("Heals", L["Heals"], 0.1, true)
 Parrot:RegisterThrottleType("Power gain/loss", L["Power gain/loss"], 3)
 Parrot:RegisterThrottleType("Killing blows", L["Killing blows"], 0.1, true)
-Parrot:RegisterThrottleType("Reputation gains", L["Reputation gains"], 0.1, true)
 
 --[[============================================================================
 -- Tables that describe throttle-data for several combat-events
@@ -547,12 +531,6 @@ local killingBlowThrottle = {
 	'sourceID',
 	{ 'throttleCount', killingBlowThrottleFunc, },
 	recipientName = L["Multiple"]
-}
-
-local repGainsThrottle = {
-	"Reputation gains",
-	'faction',
-	{ 'throttleCount', repThrottleFunc, },
 }
 
 --[[============================================================================
@@ -1987,180 +1965,6 @@ Parrot:RegisterCombatEvent{
 		Num = L["The current number of combo points."]
 	},
 	color = "ff7f00", -- orange
-}
-
---[[============================================================================
--- Notification Events:
--- Point gains
---============================================================================]]
-
-local currencies = { 241, 402, 390, 81, 61, 398, 384, 393, 392, 361, 395, 400, 394, 397, 391, 401, 385, 396, 399, }
-local currencyIcons = {}
-for _,v in ipairs(currencies) do
-	local name, amount, icon = GetCurrencyInfo(v)
-	currencyIcons[name] = [[Interface\Icons\]] .. icon
-end
-
-local function parseCurrencyUpdate(message)
-	local currency, amount = Deformat(message, CURRENCY_GAINED_MULTIPLE)
-	if not currency then
-		currency = Deformat(message, CURRENCY_GAINED)
-		if not currency then
-			return
-		end
-		amount = 1
-	end
-	local icon = currencyIcons[currency]
-	return newDict("currency", currency, "amount", amount, "icon", icon)
-end
-
-Parrot:RegisterCombatEvent{
-	category = "Notification",
-	name = "Currency gains",
-	localName = L["Currency gains"],
-	defaultTag = "+[Amount] [Currency]",
-	tagTranslations = {
-		Amount = "amount",
-		Currency = "currency",
-		Icon = "icon",
-	},
-	tagTranslationsHelp = {
-		Amount = L["The amount of currency gained."],
-		Name = L["Name of the currency"],
-		
-	},
-	color = "7f7fb2", -- blue-gray
-	events = {
-		CHAT_MSG_CURRENCY = { parse = parseCurrencyUpdate },
-	}
-}--]]
-
--- Reputation
-local function parseRepGain(chatmsg)
-	local faction, amount = Deformat(chatmsg, FACTION_STANDING_INCREASED)
-	if faction and amount then
-		local info = newList()
-		info.amount = amount
-		info.faction = faction
-		return info
-	end
-	return nil
-end
-
-local function parseRepLoss(chatmsg)
-	local faction, amount = Deformat(chatmsg, FACTION_STANDING_DECREASED)
-	if faction and amount then
-		local info = newList()
-		info.amount = amount
-		info.faction = faction
-		return info
-	end
-	return nil
-end
-
-Parrot:RegisterCombatEvent{
-	category = "Notification",
-	subCategory = L["Reputation"],
-	name = "Reputation gains",
-	localName = L["Reputation gains"],
-	defaultTag = "+[Amount] " .. REPUTATION .. " ([Faction])",
-	events = {
-		CHAT_MSG_COMBAT_FACTION_CHANGE = { parse = parseRepGain },
-	},
-	tagTranslations = {
-		Amount = "amount",
-		Faction = "faction",
-	},
-	tagTranslationsHelp = {
-		Amount = L["The amount of reputation gained."],
-		Faction = L["The name of the faction."],
-	},
-	color = "7f7fb2", -- blue-gray
-	throttle = repGainsThrottle,
-}
-
-Parrot:RegisterCombatEvent{
-	category = "Notification",
-	subCategory = L["Reputation"],
-	name = "Reputation losses",
-	localName = L["Reputation losses"],
-	defaultTag = "-[Amount] " .. REPUTATION .. " ([Faction])",
-	events = {
-		CHAT_MSG_COMBAT_FACTION_CHANGE = { parse = parseRepLoss },
-	},
-	tagTranslations = {
-		Amount = function(info) return info.amount end,
-		Faction = "faction",
-	},
-	tagTranslationsHelp = {
-		Amount = L["The amount of reputation lost."],
-		Faction = L["The name of the faction."],
-	},
-	color = "7f7fb2", -- blue-gray
-}
-
--- Skill gains
-local function parseSkillGain(chatmsg)
-	local skill, amount = Deformat(chatmsg, SKILL_RANK_UP)
-	if skill and amount then
-		local info = newList()
-		info.abilityName = skill
-		info.amount = amount
-		return info
-	end
-end
-
-Parrot:RegisterCombatEvent{
-	category = "Notification",
-	name = "Skill gains",
-	localName = L["Skill gains"],
-	defaultTag = "[Skillname]: [Amount]",
-	events = {
-		CHAT_MSG_SKILL = { parse = parseSkillGain },
-	},
-	tagTranslations = {
-		Skillname = retrieveAbilityName,
-		Amount = "amount",
-	},
-	tagTranslationsHelp = {
-		Skill = L["The skill which experienced a gain."],
-		Amount = L["The amount of skill points currently."]
-	},
-	color = "5555ff", -- semi-light blue
-}
-
--- XP gains
-local currentXP = 0
-table.insert(onEnableFuncs, function() currentXP = UnitXP("player") end)
-
-local function parseXPUpdate()
-	local newXP = UnitXP("player")
-	local info = newDict(
-		"amount", newXP - currentXP
-	)
-	currentXP = newXP
-	return info
-end
-
-Parrot:RegisterCombatEvent{
-	category = "Notification",
-	name = "Experience gains",
-	localName = L["Experience gains"],
-	defaultTag = "[Amount] " .. XP,
-	tagTranslations = {
-		-- Name = retrieveSourceName, -- not supported anymore by the event
-		Amount = "amount",
-	},
-	tagTranslationsHelp = {
-		-- Name = L["The name of the enemy slain."], not supported anymore by the event
-		Amount = L["The amount of experience points gained."]
-	},
-	color = "bf4ccc", -- magenta
-	sticky = true,
-	defaultDisabled = true,
-	events = {
-		PLAYER_XP_UPDATE = { parse = parseXPUpdate },
-	},
 }
 
 --[[============================================================================

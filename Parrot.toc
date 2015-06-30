@@ -33,4 +33,5 @@ Data\TriggerConditions.lua
 Data\Auras.lua
 Data\Cooldowns.lua
 Data\Loot.lua
+Data\PointGains.lua
 Data\CombatStatus.lua

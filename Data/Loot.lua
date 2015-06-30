@@ -98,9 +98,9 @@ local moneyStrings = {
 local GOLD_AMOUNT_inv = _G.GOLD_AMOUNT:gsub("%%d", "(%1+)")
 local SILVER_AMOUNT_inv = _G.SILVER_AMOUNT:gsub("%%d", "(%1+)")
 local COPPER_AMOUNT_inv = _G.COPPER_AMOUNT:gsub("%%d", "(%1+)")
-local GOLD_ABBR = _G.GOLD_ABBR
-local SILVER_ABBR = _G.SILVER_ABBR
-local COPPER_ABBR = _G.COPPER_ABBR
+local GOLD_AMOUNT_SYMBOL = _G.GOLD_AMOUNT_SYMBOL
+local SILVER_AMOUNT_SYMBOL = _G.SILVER_AMOUNT_SYMBOL
+local COPPER_AMOUNT_SYMBOL = _G.COPPER_AMOUNT_SYMBOL
 
 local function parse_CHAT_MSG_MONEY(chatmsg)
 	for _, moneyString in ipairs(moneyStrings) do
@@ -135,13 +135,13 @@ Parrot:RegisterCombatEvent{
 				local gold = value / 10000
 				local silver = (value / 100) % 100
 				local copper = value % 100
-				return ("%d|cffffd700%s|r%d|cffc7c7cf%s|r%d|cffeda55f%s|r"):format(gold, GOLD_ABBR, silver, SILVER_ABBR, copper, COPPER_ABBR)
+				return ("%d|cffffd700%s|r%d|cffc7c7cf%s|r%d|cffeda55f%s|r"):format(gold, GOLD_AMOUNT_SYMBOL, silver, SILVER_AMOUNT_SYMBOL, copper, COPPER_AMOUNT_SYMBOL)
 			elseif value >= 100 then
 				local silver = value / 100
 				local copper = value % 100
-				return ("%d|cffc7c7cf%s|r%d|cffeda55f%s|r"):format(silver, SILVER_ABBR, copper, COPPER_ABBR)
+				return ("%d|cffc7c7cf%s|r%d|cffeda55f%s|r"):format(silver, SILVER_AMOUNT_SYMBOL, copper, COPPER_AMOUNT_SYMBOL)
 			else
-				return ("%d|cffeda55f%s|r"):format(value, COPPER_ABBR)
+				return ("%d|cffeda55f%s|r"):format(value, COPPER_AMOUNT_SYMBOL)
 			end
 		end,
 	},
@@ -150,58 +150,6 @@ Parrot:RegisterCombatEvent{
 	},
 	events = {
 		CHAT_MSG_MONEY = { parse = parse_CHAT_MSG_MONEY, },
-	},
-	color = "ffffff", -- white
-}
-
-
-local CURRENCY_GAINED = _G.CURRENCY_GAINED
-local CURRENCY_GAINED_MULTIPLE = _G.CURRENCY_GAINED_MULTIPLE
-local HONOR_CURRENCY = _G.HONOR_CURRENCY
-
-local function parse_CHAT_MSG_CURRENCY(chatmsg)
-	local currency, amount = Deformat(chatmsg, CURRENCY_GAINED_MULTIPLE)
-	if not currency then
-		currency = Deformat(chatmsg, CURRENCY_GAINED)
-	end
-
-	if currency then
-		local currencyId = currency:match("|Hcurrency:(%d+)|h%[(.+)%]|h")
-		if not currencyId or tonumber(currencyId) == HONOR_CURRENCY then return end
-
-		local name, total, texture, _, _, _, _, quality = GetCurrencyInfo(currencyId)
-		local color = ITEM_QUALITY_COLORS[quality]
-		if color then
-			name = ("%s%s|r"):format(color.hex, name)
-		end
-		return newDict(
-			"name", name,
-			"amount", amount or 1,
-			"total", total,
-			"icon", texture
-		)
-	end
-end
-
-Parrot:RegisterCombatEvent{
-	category = "Notification",
-	subCategory = L["Loot"],
-	name = "Loot currency",
-	localName = L["Loot currency"],
-	defaultTag = L["Loot [Name] +[Amount]([Total])"],
-	tagTranslations = {
-		Name = "name",
-		Amount = "amount",
-		Total = "total",
-		Icon = "icon",
-	},
-	tagTranslationsHelp = {
-		Name = L["The name of the currency."],
-		Amount = L["The amount of currency looted."],
-		Total = L["Your total amount of the currency."],
-	},
-	events = {
-		CHAT_MSG_CURRENCY = { parse = parse_CHAT_MSG_CURRENCY, },
 	},
 	color = "ffffff", -- white
 }

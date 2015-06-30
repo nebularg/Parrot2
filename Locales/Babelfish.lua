@@ -19,6 +19,7 @@ local allfiles = {
 	Parrot_CombatStatus = { "Data/CombatStatus.lua", },
 	Parrot_Cooldowns = { "Data/Cooldowns.lua", },
 	Parrot_Loot = { "Data/Loot.lua", },
+	Parrot_PointGains = { "Data/PointGains.lua", },
 	Parrot_TriggerConditions_Data = { "Data/TriggerConditions.lua", },
 }
 
@@ -36,6 +37,7 @@ local ordered = { -- order in the locale files
 	"Parrot_CombatStatus",
 	"Parrot_Cooldowns",
 	"Parrot_Loot",
+	"Parrot_PointGains",
 	"Parrot_TriggerConditions_Data",
 }
 
