@@ -1,4 +1,5 @@
 local Parrot = Parrot
+
 local Parrot_Suppressions = Parrot:NewModule("Suppressions")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Suppressions")
@@ -6,19 +7,20 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Suppressions")
 local string_find = _G.string.find
 local pcall = _G.pcall
 
-local dbDefaults = {
+local db = nil
+local defaults = {
 	profile = {
 		suppressions = {},
 	}
 }
-local db
+
 function Parrot_Suppressions:OnInitialize()
-	Parrot_Suppressions.db1 = Parrot.db1:RegisterNamespace("Suppressions", dbDefaults)
-	db = self.db1.profile
+	self.db = Parrot.db:RegisterNamespace("Suppressions", defaults)
+	db = self.db.profile
 end
 
-function Parrot_Suppressions:ChangeProfile()
-	db = self.db1.profile
+function Parrot_Suppressions:OnProfileChanged()
+	db = self.db.profile
 	if Parrot.options.args.suppressions then
 		Parrot.options.args.suppressions = nil
 		self:OnOptionsCreate()
@@ -41,10 +43,10 @@ function Parrot_Suppressions:OnOptionsCreate()
 			if key == value then
 				return true
 			end
-			if Parrot_Suppressions.db1.profile.suppressions[value] ~= nil then
+			if db.suppressions[value] ~= nil then
 				return false
 			end
-			local nonLua = Parrot_Suppressions.db1.profile.suppressions[key]
+			local nonLua = db.suppressions[key]
 			if nonLua then
 				return true
 			end
@@ -53,12 +55,12 @@ function Parrot_Suppressions:OnOptionsCreate()
 		end
 	end
 	local function setString(info, new)
-		if Parrot_Suppressions.db1.profile.suppressions[new] ~= nil then
+		if db.suppressions[new] ~= nil then
 			return
 		end
 		local old = info.arg
-		Parrot_Suppressions.db1.profile.suppressions[new] = Parrot_Suppressions.db1.profile.suppressions[old]
-		Parrot_Suppressions.db1.profile.suppressions[old] = nil
+		db.suppressions[new] = db.suppressions[old]
+		db.suppressions[old] = nil
 		local opt = suppressions_opt.args[info[#info-1]]
 		local name = new == '' and L["New suppression"] or new
 
@@ -71,13 +73,13 @@ function Parrot_Suppressions:OnOptionsCreate()
 		opt.args.delete.arg = new
 	end
 	local function getEscape(info)
-		return not Parrot_Suppressions.db1.profile.suppressions[info.arg]
+		return not db.suppressions[info.arg]
 	end
 	local function setEscape(info, value)
-		Parrot_Suppressions.db1.profile.suppressions[info.arg] = not value
+		db.suppressions[info.arg] = not value
 	end
 	local function remove(info)
-		Parrot_Suppressions.db1.profile.suppressions[info.arg] = nil
+		db.suppressions[info.arg] = nil
 		suppressions_opt.args[info[#info-1]] = nil
 	end
 	local function makeTable(k)
@@ -132,15 +134,15 @@ function Parrot_Suppressions:OnOptionsCreate()
 		name = L["New suppression"],
 		desc = L["Add a new suppression."],
 		func = function()
-			self.db1.profile.suppressions[''] = true
+			db.suppressions[''] = true
 			local t = makeTable('')
 			suppressions_opt.args[optkey(t)] = t
 		end,
 		disabled = function()
-			return not self.db1.profile.suppressions or self.db1.profile.suppressions[''] ~= nil
+			return not db.suppressions or db.suppressions[''] ~= nil
 		end,
 	}
-	for k in pairs(self.db1.profile.suppressions) do
+	for k in next, db.suppressions do
 		local t = makeTable(k)
 		suppressions_opt.args[optkey(t)] = t
 	end
@@ -150,7 +152,7 @@ function Parrot_Suppressions:ShouldSuppress(text)
 	if not self:IsEnabled() then
 		return false
 	end
-	for suppression, escape in pairs(db.suppressions) do
+	for suppression, escape in next, db.suppressions do
 		if suppression ~= '' then
 			local success, ret = pcall(string_find, text, suppression, nil, not not escape)
 			if success and ret then

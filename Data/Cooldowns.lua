@@ -7,7 +7,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Cooldowns")
 local newList, del = Parrot.newList, Parrot.del
 
 local db = nil
-local dbDefaults = {
+local defaults = {
 	profile = {
 		threshold = 0,
 		filters = {},
@@ -16,8 +16,13 @@ local dbDefaults = {
 
 local GCD = 1.8
 
+function mod:OnProfileChanged()
+	db = self.db.profile
+end
+
 function mod:OnInitialize()
-	db = Parrot.db1:RegisterNamespace("Cooldowns", dbDefaults)
+	self.db = Parrot.db:RegisterNamespace("Cooldowns", defaults)
+	db = self.db.profile
 end
 
 function mod:OnEnable()
@@ -286,8 +291,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 }
 
 function mod:OnOptionsCreate()
-	local cd_opt = {
 		type = 'group',
+	local options = {
 		name = L["Cooldowns"],
 		desc = L["Cooldowns"],
 		args = {
@@ -299,46 +304,49 @@ function mod:OnOptionsCreate()
 				max = 300,
 				step = 1,
 				bigStep = 10,
-				get = function() return db.profile.threshold end,
-				set = function(info, value) db.profile.threshold = value end,
+				get = function() return db.threshold end,
+				set = function(info, value) db.threshold = value end,
 				order = 1,
 			},
 		},
 		order = 100,
 	}
 
-	local function removeFilter(spellName)
-		cd_opt.args[spellName] = nil
-		db.profile.filters[spellName] = nil
-		mod:ResetSpells()
-	end
-
 	local function addFilter(spellName)
-		if cd_opt.args[spellName] then return end
-		db.profile.filters[spellName] = true
+		if options.args[spellName] then return end
+		db.filters[spellName] = true
+
 		local button = {
 			type = 'execute',
 			name = spellName,
 			desc = L["Click to remove"],
-			func = function(info) removeFilter(info.arg) end,
-			arg = spellName,
+			func = function(info)
+				local spellName = info[#info]
+				options.args[spellName] = nil
+				db.filters[spellName] = nil
+				mod:ResetSpells()
+				GameTooltip:Hide()
+			end,
 		}
-		cd_opt.args[spellName] = button
+		options.args[spellName] = button
 	end
 
-	cd_opt.args.newFilter = {
 		type = 'input',
+	options.args.newFilter = {
 		name = L["Ignore"],
 		desc = L["Ignore Cooldown"],
-		get = function() return end,
-		set = function(info, value) addFilter(value); mod:ResetSpells() end,
+		get = false,
+		set = function(info, value)
+			addFilter(value)
+			mod:ResetSpells()
+		end,
 		order = 2,
 	}
 
-	for k,v in pairs(db.profile.filters) do
-		addFilter(k)
+	for spellName in pairs(db.filters) do
+		addFilter(spellName)
 	end
 
-	Parrot:AddOption('cooldowns', cd_opt)
+	Parrot:AddOption("cooldowns", options)
 end
 

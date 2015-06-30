@@ -1,6 +1,10 @@
 local Parrot = Parrot
 
 local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0", "AceEvent-3.0")
+local Parrot_TriggerConditions
+local Parrot_Display
+local Parrot_ScrollAreas
+local Parrot_CombatEvents
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
@@ -31,8 +35,18 @@ local function serializeSet(set)
 	return result
 end
 
+local db = nil
+local defaults = {
+	profile = {
+		triggers2 = {},
+		dbver = 0,
+	},
+}
 
 local _, playerClass = UnitClass("player")
+local periodicCheckTimer = nil
+local effectiveRegistry = {}
+local cooldowns = {}
 
 --[[
 	List of default Triggers:
@@ -659,707 +673,48 @@ local specChoices = {
 	},
 }
 
-local dbDefaults = {
-	profile = {
-		triggers2 = {},
-		dbver = 0,
-	},
-}
+do
+	local ScriptEnv = setmetatable({}, {__index = _G})
+	ScriptEnv.L = L
 
-local ScriptEnv = setmetatable({}, {__index = _G})
-ScriptEnv.L = L
-local safeGetSpellInfo = function(id, ...)
-	if _G.GetSpellInfo(id, ...) then
-		return _G.GetSpellInfo(id, ...)
-	else
-		return "_Unknown SpellId " .. id
-	end
-end
-
-local function hasMissingSpellIds(code)
-	for x in code:gmatch("GetSpellInfo%((%d+)%)") do
-		if not GetSpellInfo(x) then
-			debug("cannot create trigger because spell with ID ", x, " is missing")
-			return true
+	local safeGetSpellInfo = function(id, ...)
+		if _G.GetSpellInfo(id, ...) then
+			return _G.GetSpellInfo(id, ...)
+		else
+			return "_Unknown SpellId " .. id
 		end
 	end
-	return false
-end
 
-local function makeDefaultTrigger(index, code)
-	if hasMissingSpellIds(code) then
-		ScriptEnv.GetSpellInfo = safeGetSpellInfo
-	else
-		ScriptEnv.GetSpellInfo = _G.GetSpellInfo
+	local function hasMissingSpellIds(code)
+		for spellId in code:gmatch("GetSpellInfo%((%d+)%)") do
+			if not GetSpellInfo(spellId) then
+				print("Cannot create trigger because spell with ID ", spellId, " is missing")
+				return true
+			end
+		end
+		return false
 	end
-	local func = loadstring(("return %s"):format(code))
-	if not func then
-		debug("func ", index, " could not be loaded")
-	end
-	setfenv(func, ScriptEnv)
-	dbDefaults.profile.triggers2[index] = func()
-end
 
-for k,v in pairs(defaultTriggers) do
-	makeDefaultTrigger(k,v)
+	local function makeDefaultTrigger(index, code)
+		if hasMissingSpellIds(code) then
+			ScriptEnv.GetSpellInfo = safeGetSpellInfo
+		else
+			ScriptEnv.GetSpellInfo = _G.GetSpellInfo
+		end
+		local func = assert(loadstring(("return %s"):format(code)))
+		setfenv(func, ScriptEnv)
+		defaults.profile.triggers2[index] = func()
+	end
+
+	for k,v in pairs(defaultTriggers) do
+		makeDefaultTrigger(k,v)
+	end
 end
 
 local function getPlayerSpec()
 	local spec = GetSpecialization()
 	local specId = spec and GetSpecializationInfo(spec) or 0
 	return tostring(specId)
-end
-
-
-local effectiveRegistry = {}
-local periodicCheckTimer
-
-local function checkTriggerEnabled(v)
-	if v.disabled then
-		return false
-	end
-	local specstring = v.spec and v.spec[playerClass]
-	if not specstring then
-		return false
-	end
-	local sets = deserializeSet(specstring)
-	local result = sets[getPlayerSpec()]
-	del(sets)
-	return result
-end
-
-local function rebuildEffectiveRegistry()
-	local playerspec = getPlayerSpec()
-	for i = 1, #effectiveRegistry do
-		effectiveRegistry[i] = nil
-	end
-	self:CancelTimer(periodicCheckTimer, true)
-	periodicCheckTimer = nil
-	local containsPeriodic = false
-	for _,v in pairs(Parrot_Triggers.db1.profile.triggers2) do
-		if checkTriggerEnabled(v) then
-			effectiveRegistry[#effectiveRegistry+1] = v
-			if v.conditions["Check every XX seconds"] then
-				containsPeriodic = true
-			end
-		end
-	end
-	if containsPeriodic then
-		periodicCheckTimer = self:ScheduleRepeatingTimer(function()
-				Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
-		end, 0.1)
-	end
-	LibStub("AceConfigRegistry-3.0"):NotifyChange("Parrot")
-end
-
--- so triggers can be enabled/disabled from outside
-function Parrot_Triggers:setTriggerEnabled(triggerindex, enabled)
-	self.db1.profile.triggers2[triggerindex].disabled = not enabled
-	rebuildEffectiveRegistry()
-end
-
-local cooldowns = {}
-local currentTrigger
-local Parrot_TriggerConditions
-local Parrot_Display
-local Parrot_ScrollAreas
-local Parrot_CombatEvents
-
-function Parrot_Triggers:OnInitialize()
-
-	Parrot_Triggers.db1 = Parrot.db1:RegisterNamespace("Triggers", dbDefaults)
-	self.db1.RegisterCallback(Parrot_Triggers, "OnNewProfile", "OnNewProfile")
-
-	Parrot_Display = Parrot:GetModule("Display")
-	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
-	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
-	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
-end
-
---[[============================================================================
-* This code is for converting Trigggers created before v1.10 to the
-* triggers2-table
-============================================================================--]]
-local triggers2translation = {
-	["Self buff gain"] = function(spell)
-		local arg = {
-			auraType = "BUFF",
-			unit = "player",
-			spell = spell,
-		}
-		return "Aura gain", arg
-	end,
-	["Self buff stacks gain"] = function(string)
-		local spell, amount = (","):split(string)
-		local arg = {
-			auraType = "BUFF",
-			unit = "player",
-			spell = spell,
-			amount = tonumber(amount),
-		}
-		return "Aura stack gain", arg
-	end,
-	["Self buff fade"] = function(spell)
-		local arg = {
-			auraType = "BUFF",
-			unit = "player",
-			spell = spell,
-		}
-		return "Aura fade", arg
-	end,
-	["Self debuff gain"] = function(spell)
-		local arg = {
-			auraType = "DEBUFF",
-			unit = "player",
-			spell = spell,
-		}
-		return "Aura gain", arg
-	end,
-	["Self debuff fade"] = function(spell)
-		local arg = {
-			auraType = "DEBUFF",
-			unit = "player",
-			spell = spell,
-		}
-		return "Aura fade", arg
-	end,
-	["Target buff gain"] = function(spell)
-		local arg = {
-			auraType = "BUFF",
-			unit = "target",
-			spell = spell,
-		}
-		return "Aura gain", arg
-	end,
-	["Target buff fade"] = function(spell)
-		local arg = {
-			auraType = "BUFF",
-			unit = "target",
-			spell = spell,
-		}
-		return "Aura fade", arg
-	end,
-	["Target debuff gain"] = function(spell)
-		local arg = {
-			auraType = "DEBUFF",
-			unit = "target",
-			spell = spell,
-		}
-		return "Aura gain", arg
-	end,
-	["Target debuff fade"] = function(spell)
-		local arg = {
-			auraType = "DEBUFF",
-			unit = "target",
-			spell = spell,
-		}
-		return "Aura fade", arg
-	end,
-	["Focus buff gain"] = function(spell)
-		local arg = {
-			auraType = "BUFF",
-			unit = "focus",
-			spell = spell,
-		}
-		return "Aura gain", arg
-	end,
-	["Focus buff fade"] = function(spell)
-		local arg = {
-			auraType = "BUFF",
-			unit = "focus",
-			spell = spell,
-		}
-		return "Aura fade", arg
-	end,
-	["Focus debuff gain"] = function(spell)
-		local arg = {
-			auraType = "DEBUFF",
-			unit = "focus",
-			spell = spell,
-		}
-		return "Aura gain", arg
-	end,
-	["Focus debuff fade"] = function(spell)
-		local arg = {
-			auraType = "DEBUFF",
-			unit = "focus",
-			spell = spell,
-		}
-		return "Aura fade", arg
-	end,
-	["Enter combat"] = true,
-	["Leave combat"] = true,
-	["Spell ready"] = function(spell)
-		return "Spell ready", spell
-	end,
-
-	["Enemy target health percent"] = function(param)
-		local arg = {
-			unit = "target",
-			friendly = 0,
-			amount = param,
-			comparator = "<=",
-		}
-		return "Unit health", arg
-	end,
-	["Friendly target health percent"] = function(param)
-		local arg = {
-			unit = "target",
-			friendly = 1,
-			amount = param,
-			comparator = "<=",
-		}
-		return "Unit health", arg
-	end,
-	["Self health percent"] = function(param)
-		local arg = {
-			unit = "player",
-			friendly = 1,
-			amount = param,
-			comparator = "<=",
-		}
-		return "Unit health", arg
-	end,
-	["Self mana percent"] = function(param)
-		local arg = {
-			unit = "player",
-			friendly = 1,
-			amount = param,
-			comparator = "<=",
-			powerType = "MANA",
-		}
-		return "Unit power", arg
-	end,
-	["Pet health percent"] = function(param)
-		local arg = {
-			unit = "pet",
-			friendly = 1,
-			amount = param,
-			comparator = "<=",
-		}
-		return "Unit health", arg
-	end,
-	["Pet mana percent"] = function(param)
-		local arg = {
-			unit = "pet",
-			friendly = 1,
-			amount = param,
-			comparator = "<=",
-			powerType = "MANA",
-		}
-		return "Unit power", arg
-	end,
-	["Incoming Block"] = function()
-		return "Incoming miss", "BLOCK"
-	end,
-	["Incoming Dodge"] = function()
-		return "Incoming miss", "DODGE"
-	end,
-	["Incoming Parry"] = function()
-		return "Incoming miss", "PARRY"
-	end,
-	["Outgoing Block"] = function()
-		return "Outgoing miss", "BLOCK"
-	end,
-	["Outgoing Dodge"] = function()
-		return "Outgoing miss", "DODGE"
-	end,
-	["Outgoing Parry"] = function()
-		return "Outgoing miss", "PARRY"
-	end,
-	["Incoming crit"] = true,
-	["Outgoing crit"] = true,
-	["Outgoing cast"] = function(param)
-		return "Outgoing cast", param
-	end,
-	["Incoming cast"] = function(param)
-		return "Incoming cast", param
-	end,
-	["Successful spell cast"] = function(param)
-		return "Successful spell cast", {}
-	end,
-	["Check every XX seconds"] = true,
-	["Self item buff gain"] = function(param)
-		local arg = {
-			unit = "player",
-			spell = param,
-		}
-		return "Item buff gain", arg
-	end,
-	["Self Item buff fade"] = function(param)
-		local arg = {
-			unit = "player",
-			spell = param,
-		}
-		return "Item buff fade", arg
-	end,
-}
-
-local triggers2secondary = {
-	["Buff inactive"] = function(param)
-		local arg = {
-			unit = "player",
-			byplayer = false,
-			spell = param,
-		}
-		return "Buff inactive", arg
-	end,
-	["~Buff inactive"] = function(param)
-		local arg = {
-			unit = "player",
-			byplayer = false,
-			spell = param,
-		}
-		return "Aura active", arg
-	end,
-	["In combat"] = true,
-	["~In combat"] = true,
-	["Spell ready"] = function(param)
-		return "Spell ready", param
-	end,
-	["Spell usable"] = function(param)
-		return "Spell usable", param
-	end,
-	["Minimum power amount"] = function(param)
-		local arg = {
-			unit = "player",
-			amount = param,
-			friendly = 1,
-			comparator = ">=",
-			powerType = "MANA",
-		}
-		return "Unit power", arg
-	end,
-	["Minimum power percent"] = function(param)
-		local arg = {
-			unit = "player",
-			amount = param,
-			friendly = 1,
-			comparator = ">=",
-			powerType = "MANA",
-		}
-		return "Unit power", arg
-	end,
-	["Warrior stance"] = function(param)
-		return "Warrior stance", param
-	end,
-	["~Warrior stance"] = function(param)
-		return "~Warrior stance", param
-	end,
-	["Druid Form"] = function(param)
-		return "Druid Form", param
-	end,
-	["~Druid Form"] = function(param)
-		return "~Druid Form", param
-	end,
-	["Deathknight presence"] = function(param)
-		return "Deathknight presence", param
-	end,
-	["~Deathknight presence"] = function(param)
-		return "~Deathknight presence", param
-	end,
-	["Grouped"] = true,
-	["Mounted"] = true,
-	["InVehicle"] = true,
-	["Target is player"] = true,
-	["~Grouped"] = true,
-	["~Mounted"] = true,
-	["~InVehicle"] = true,
-	["~Target is player"] = true,
-	["Lua function"] = function(arg)
-		return "Lua function", arg
-	end,
-	["Minimum target health"] = function(param)
-		local arg = {
-			unit = "target",
-			amount = param,
-			friendly = -1,
-			comparator = ">=",
-		}
-		return "Unit health", arg
-	end,
-	["Minimum target health percent"] = function(param)
-		local arg = {
-			unit = "target",
-			amount = param,
-			friendly = -1,
-			comparator = ">=",
-		}
-		return "Unit health", arg
-	end,
-	["Maximum target health percent"] = function(param)
-		local arg = {
-			unit = "target",
-			amount = param,
-			friendly = -1,
-			comparator = "<=",
-		}
-		return "Unit health", arg
-	end,
-	["Trigger cooldown"] = true,
-}
-
-local function convertTriggers2()
-	if not self.db1.profile.triggers then
-		return
-	end
-	for i,t in ipairs(self.db1.profile.triggers) do
-		local tmp = deepCopy(t)
-		local cond = t.conditions
-		tmp.conditions = {}
-		for k,v in pairs(cond) do
-			if triggers2translation[k] == true then
-				tmp.conditions[k] = v
-			elseif type(triggers2translation[k]) == 'function' then
-				local name, arg = triggers2translation[k](v)
-				if Parrot_TriggerConditions:IsExclusive(name) then
-					tmp.conditions[name] = arg
-				else
-					if tmp.conditions[name] and type(tmp.conditions[name]) == 'table' then
-						table.insert(tmp.conditions[name], arg)
-					else
-						tmp.conditions[name] = { arg, }
-					end
-				end
-			else
-				debug(k, " not found")
-			end
-		end
-		cond = tmp.secondaryConditions
-		if cond then
-			tmp.secondaryConditions = {}
-			for k,v in pairs(cond) do
-				if triggers2secondary[k] == true then
-					tmp.secondaryConditions[k] = v
-				elseif type(triggers2secondary[k]) == 'function' then
-					local name, arg = triggers2secondary[k](v)
-					if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
-						tmp.secondaryConditions[name] = arg
-					else
-						if tmp.secondaryConditions[name] and type(tmp.secondaryConditions[name]) == 'table' then
-							table.insert(tmp.secondaryConditions[name], arg)
-						else
-							tmp.secondaryConditions[name] = { arg, }
-						end
-					end
-				else
-					debug(k, " not found")
-				end
-			end
-		end
-		if tmp.id then
-			tmp.id = nil
-		end
-		local index
-		for k,t2 in pairs(defaultTriggers) do
-			if t2.name == tmp.name then
-				debug("matched ", t2.name, " from old triggers")
-				index = k
-				break
-			end
-		end
-		if index then
-			self.db1.profile.triggers2[index] = tmp
-		else
-			table.insert(self.db1.profile.triggers2, tmp)
-		end
-		-- deleting old triggers
-		--		self.db1.profile.triggers = nil
-		self.db1.profile.version = nil
-	end
-end
-
-local alpha2alpah1translate = {
-	["Aura inactive"] = function(param)
-		local arg = {}
-		for k,v in ipairs(param) do
-			arg[k] = {
-				unit = "player",
-				byplayer = false,
-				spell = v,
-			}
-		end
-		return "Buff inactive", arg
-	end,
-	["~Aura inactive"] = function(param)
-		local arg = {}
-		for k,v in ipairs(param) do
-			arg[k] = {
-				unit = "player",
-				byplayer = false,
-				spell = v,
-			}
-		end
-		return "Buff active", arg
-	end,
-}
-
-local function alpha2alpha1()
-	for i,t in pairs(self.db1.profile.triggers2) do
-		if t.secondaryConditions then
-			local news = {}
-			for k,cond in pairs(t.secondaryConditions) do
-				local func = alpha2alpah1translate[k]
-				if func then
-					local newk, newv = func(cond)
-					news[newk] = newv
-				else
-					news[k] = cond
-				end -- if func
-			end -- for k,cond
-			t.secondaryConditions = news
-		end -- if t.secondaryConditions
-	end-- for i,t
-end
-
---[[
--- reset the Powertype for the low mana-trigger to MANA because previous
--- conversions (alpha->alpha) caused it to be "*".
---]]
-local function resetLowManaPowerType()
-	self.db1.profile.triggers2[1009].conditions["Unit power"][1].
-	powerType = SPELL_POWER_MANA
-end
-
---[[============================================================================
-* End of 1.9->1.10 conversion code
-============================================================================--]]
-
-local function doConvertPowerValues(cond)
-	for _,v in ipairs(cond) do
-		local oldAmount = v.amount
-		if type(oldAmount) == 'number' and oldAmount <= 1 then
-			v.amount = oldAmount*100 .. "%"
-		else
-			v.amount = tostring(oldAmount)
-		end
-		local oldType = v.powerType
-		if oldType and type(oldType) ~= 'number' then
-			v.powerType = _G["SPELL_POWER_" .. oldType]
-		end
-	end
-end
-
-local function convertPowerValues()
-	for k,trigger in pairs(Parrot_Triggers.db1.profile.triggers2) do
-		local cond = trigger.conditions["Unit power"]
-		if cond then
-			doConvertPowerValues(cond)
-		end
-		if trigger.secondaryConditions then
-			local cond = trigger.secondaryConditions["Unit power"]
-			if cond then doConvertPowerValues(cond) end
-		end
-	end
-end
-
---[[
-* General purpose update-db-functions
---]]
-local updateFuncs = {
-	[1] = convertTriggers2,
-	[2] = alpha2alpha1,
-	[3] = resetLowManaPowerType,
-	[4] = function()
-		Parrot_Triggers.db1.profile.triggers2[1005] = nil
-		Parrot_Triggers.db1.profile.triggers2[1029] = nil
-	end,
-	[5] = resetLowManaPowerType,
-	[6] = convertPowerValues,
-	[7] = function()
-		-- exexute them again for the alpha-users
-		resetLowManaPowerType()
-		convertPowerValues()
-	end,
-	[8] = function()
-			Parrot_Triggers.db1.profile.triggers2[1012] = nil
-		end,
-	[9] = function()
-			for _,v in pairs(Parrot_Triggers.db1.profile.triggers2) do
-				if v.class then
-					v.spec = {}
-					local classes = deserializeSet(v.class)
-					classes[""] = nil
-					for class in pairs(classes) do
-						v.spec[class] = table.concat(specChoices[class], ";")
-					end
-					del(classes)
-				end
-			end
-		end,
-}
-
-function Parrot_Triggers:OnNewProfile(t, key)
-	key.profile.dbver = #updateFuncs
-end
-
-local function updateDB()
-	if not self.db1.profile.dbver then
-		self.db1.profile.dbver = 0
-	end
-	local triggers = self.db1.profile.triggers2
-	-- delete user-settings from triggers that are no longer available
-	for k,v in pairs(triggers) do
-		if not v.name then
-			triggers[k] = nil
-		end
-	end
-	for i = (self.db1.profile.dbver + 1), #updateFuncs do
-		Parrot:Print(("updating DB %d->%d"):format(i-1, i))
-		updateFuncs[i]()
-		self.db1.profile.dbver = i
-	end
-end
-
-function Parrot_Triggers:ChangeProfile()
-	updateDB()
-	if Parrot.options.args.triggers then
-		Parrot.options.args.triggers = nil
-		self:OnOptionsCreate()
-	end
-	rebuildEffectiveRegistry()
-end
-local first = true
-function Parrot_Triggers:OnEnable()
-
-	updateDB()
-
-	if first then
-		Parrot_TriggerConditions:RegisterSecondaryTriggerCondition {
-			name = "Trigger cooldown",
-			localName = L["Trigger cooldown"],
-			defaultParam = 3,
-			param = {
-				type = 'number',
-				min = 0,
-				max = 60,
-				step = 0.1,
-				bigStep = 1,
-			},
-			exclusive = true,
-			check = function(param)
-				-- special handling
-				return true
-			end,
-		}
-
-		Parrot:RegisterPrimaryTriggerCondition {
-			name = "Check every XX seconds",
-			localName = L["Check every XX seconds"],
-			defaultParam = 3,
-			param = {
-				type = 'number',
-				min = 0,
-				max = 60,
-				step = 0.1,
-				bigStep = 1,
-			},
-			exclusive = true,
-		}
-		first = false
-	end
-	self:RegisterEvent("PLAYER_TALENT_UPDATE", rebuildEffectiveRegistry)
-	rebuildEffectiveRegistry()
 end
 
 local function hexColorToTuple(color)
@@ -1370,77 +725,153 @@ local function hexColorToTuple(color)
 	return math.floor(num / 256^2)/255, math.floor((num / 256)%256)/255, (num%256)/255
 end
 
--- to find the icon for old saved variables
+local function checkTriggerEnabled(v)
+	if v.disabled then return end
 
-local oldIconName = {
-	["Clearcasting"] = 16246,
-	["Counterattack"] = 27067,
-	["Frostbite"] = 12497,
-	["Impact"] = 12360,
-	["Nightfall"] = 18095,
-	["Overpower"] = 11585,
-	["Rampage"] = 30033,
-	["Revenge"] = 30357,
-	["Riposte"] = 14251,
-}
+	local specstring = v.spec and v.spec[playerClass]
+	if not specstring then return end
 
-local function figureIconPath(icon)
-	if not icon then
-		return nil
-	end
+	local sets = deserializeSet(specstring)
+	local result = sets[getPlayerSpec()]
+	del(sets)
+	return result
+end
 
-	local path
-	-- if the icon is a number, it's most likly a spellid
-	local spellId = tonumber(icon)
-	if spellId then
-		path = select(3,GetSpellInfo(spellId))
-		return path
-	end
+local function rebuildEffectiveRegistry()
+	Parrot_Triggers:CancelTimer(periodicCheckTimer)
+	periodicCheckTimer = nil
 
-	-- if the spell is in the spellbook, the icon can be retrieved that way
-	path = select(3, GetSpellInfo(icon))
-	if path then
-		return path
-	end
+	wipe(effectiveRegistry)
 
-	-- the last chance is, that it's an option saved by an old parrot version
-	-- the strings from the default-options can be resolved by the table provided above
-	local oldIcon = oldIconName[icon]
-	if oldIcon then
-		path = select(3, GetSpellInfo(oldIcon))
-		if path then
-			return path
+	for _, v in next, db.triggers2 do
+		if checkTriggerEnabled(v) then
+			effectiveRegistry[#effectiveRegistry+1] = v
+			if v.conditions["Check every XX seconds"] and not periodicCheckTimer then
+				periodicCheckTimer = Parrot_Triggers:ScheduleRepeatingTimer(function()
+					Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
+				end, 0.1)
+			end
 		end
 	end
 
-	-- perhaps it's an item
-	local _, _, _, _, _, _, _, _, _, texture = GetItemInfo(icon)
-	if texture then
-		return texture
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("Parrot")
+end
+
+local updateFuncs = {}
+
+local function updateDB()
+	-- clean up old triggers
+	if db.triggers then
+		if not next(db.triggers2) and next(db.triggers) then
+			Parrot_Triggers:Print("Your triggers are really out of date and have been reset.")
+		end
+		db.triggers = nil
 	end
-	-- nothing worked, either it's a path or a spell where the icon cannot be retrieved
-	return icon
+
+	-- delete user-settings from triggers that are no longer available
+	for k, v in pairs(db.triggers2) do
+		if not v.name then
+			db.triggers2[k] = nil
+		end
+	end
+
+	if not db.dbver then
+		db.dbver = 0
+	end
+	for i = db.dbver + 1, #updateFuncs do
+		updateFuncs[i]()
+	end
+	db.dbver = #updateFuncs
+end
+
+function Parrot_Triggers:OnNewProfile(e, database)
+	print(e)
+end
+
+function Parrot_Triggers:OnProfileChanged(e, database)
+	print(e)
+	db = self.db.profile
+	updateDB()
+
+	if Parrot.options.args.triggers then
+		Parrot.options.args.triggers = nil
+		self:OnOptionsCreate()
+	end
+	rebuildEffectiveRegistry()
+end
+
+function Parrot_Triggers:OnInitialize()
+	self.db = Parrot.db:RegisterNamespace("Triggers", defaults)
+	db = self.db.profile
+	updateDB()
+
+	self.db.RegisterCallback(Parrot_Triggers, "OnNewProfile", "OnNewProfile")
+
+	Parrot_Display = Parrot:GetModule("Display")
+	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
+	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
+	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
+end
+
+local function registerTriggers()
+	Parrot:RegisterPrimaryTriggerCondition {
+		name = "Check every XX seconds",
+		localName = L["Check periodically"],
+		defaultParam = 3,
+		param = {
+			type = "number",
+			min = 0, max = 60, step = 0.1, bigStep = 1,
+		},
+		exclusive = true,
+	}
+
+	Parrot:RegisterSecondaryTriggerCondition {
+		name = "Trigger cooldown",
+		localName = L["Trigger cooldown"],
+		defaultParam = 3,
+		param = {
+			type = "number",
+			min = 0, max = 60, step = 0.1, bigStep = 1,
+		},
+		exclusive = true,
+		check = function(param)
+			return true
+		end,
+	}
+end
+
+function Parrot_Triggers:OnEnable()
+	if registerTriggers then
+		registerTriggers()
+		registerTriggers = nil
+	end
+
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", rebuildEffectiveRegistry)
+	rebuildEffectiveRegistry()
 end
 
 -- no weak table required, there are only very few entries
-local iconcache = {}
+local iconCache = {}
 local function getIconPath(icon)
-	if not icon then
-		return
-	end
+	if not icon then return end
 
-	local iconpath = iconcache[icon]
-	if iconpath then
-		return iconpath
+	local path = iconCache[icon]
+	if not path then
+		local _, _, texture = GetSpellInfo(icon)
+		if texture then
+			path = texture
+		else
+			local _, _, _, _, _, _, _, _, _, texture = GetItemInfo(icon)
+			if texture then
+				path = texture
+			else
+				path = false
+			end
+		end
+		iconCache[icon] = path
 	end
-
-	iconpath = figureIconPath(icon)
-	iconcache[icon] = iconpath
-	return iconpath
+	return path
 end
-
-local numberedConditions = {}
-local timerCheck = {}
 
 local function checkPrimaryCondition(condition, arg, check)
 	if condition == true then
@@ -1465,6 +896,7 @@ local function checkTriggerCooldown(t, value)
 	return now - cooldowns[t.name] > value
 end
 
+local timerCheck = {}
 local function performPeriodicCheck(name, param)
 	local val = timerCheck[name]
 	if not val then
@@ -1533,7 +965,6 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 				local secondaryConditions = t.secondaryConditions
 				if secondaryConditions then
 					-- check all conditions associated with the trigger
-					currentTrigger = t.name
 					for k, v in pairs(secondaryConditions) do
 						if k == "Trigger cooldown" then
 							good = checkTriggerCooldown(t, v) and good
@@ -1604,16 +1035,16 @@ function Parrot_Triggers:OnOptionsCreate()
 						},
 						conditions = {},
 					}
-					local registry = self.db1.profile.triggers2
+					local registry = db.triggers2
 					registry[#registry+1] = t
 					makeOption(#registry, t)
 					rebuildEffectiveRegistry()
 				end,
 				disabled = function()
-					if not self.db1.profile.triggers2 then
+					if not db.triggers2 then
 						return true
 					end
-					for _,v in ipairs(self.db1.profile.triggers2) do
+					for _,v in ipairs(db.triggers2) do
 						if v.name == L["New trigger"] then
 							return true
 						end
@@ -1634,7 +1065,7 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 
 	local function getTriggerTable(info)
-		return self.db1.profile.triggers2[tonumber(getTriggerId(info))]
+		return db.triggers2[tonumber(getTriggerId(info))]
 	end
 
 	local function getFontFace(info)
@@ -1711,7 +1142,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		local idstring = getTriggerId(info)
 		local id = tonumber(idstring)
 		-- first remove it from DB
-		local triggers = self.db1.profile.triggers2
+		local triggers = db.triggers2
 		del(triggers[tonumber(id)])
 		table.remove(triggers, tonumber(id))
 		-- then remove it from options
@@ -1808,7 +1239,7 @@ function Parrot_Triggers:OnOptionsCreate()
 			local rf, gf, bf = hexColorToTuple(t.flashcolor or 'ffffff')
 			Parrot_Display:Flash(rf,gf,bf)
 		end
-		Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, figureIconPath(t.icon))
+		Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, getIconPath(t.icon))
 		if t.sound then
 			local sound = SharedMedia:Fetch('sound', t.sound)
 			if sound then
@@ -1817,6 +1248,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 	end
 
+	local LC = _G.LOCALIZED_CLASS_NAMES_MALE
 	local classChoices = {
 		DRUID = LC["DRUID"],
 		ROGUE = LC["ROGUE"],
@@ -2340,8 +1772,7 @@ function Parrot_Triggers:OnOptionsCreate()
 							type = 'select',
 							name = L["Font face"],
 							desc = L["Font face"],
-							values = Parrot.inheritFontChoices,
-							--							choiceFonts = SharedMedia:HashTable('font'),
+							values = Parrot.fontValues,
 							get = getFontFace,
 							set = setFontFace,
 							order = 1,
@@ -2489,7 +1920,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		end
 	end
 
-	for i, t in pairs(self.db1.profile.triggers2) do
+	for i, t in pairs(db.triggers2) do
 		makeOption(i, t)
 	end
 end

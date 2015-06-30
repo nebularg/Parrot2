@@ -122,19 +122,10 @@ Parrot:RegisterPrimaryTriggerCondition {
 			},
 		},
 	},
-	stateful = true,
-	getCurrent = function()
-		if not UnitExists("target") or not UnitCanAttack("player", "target") or UnitIsDeadOrGhost("target") then
-			return nil
-		else
-			return UnitHealth("target")/UnitHealthMax("target")
-		end
-	end,
 	events = {
 		UNIT_HEALTH = ret,
 		UNIT_MAXHEALTH = ret,
 		UNIT_FACTION = ret,
-		--		PLAYER_TARGET_CHANGED = true,
 	},
 	check = function(ref, info)
 		-- check if ref is complete

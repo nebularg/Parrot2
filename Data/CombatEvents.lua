@@ -5,7 +5,6 @@ local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 local Deformat = LibStub("LibDeformat-3.0")
-local db1
 
 local newList, newDict, del = Parrot.newList, Parrot.newDict, Parrot.del
 
@@ -21,6 +20,21 @@ local FACTION_STANDING_INCREASED = _G.FACTION_STANDING_INCREASED
 local FACTION_STANDING_DECREASED = _G.FACTION_STANDING_DECREASED
 local SKILL_RANK_UP = _G.SKILL_RANK_UP
 local XP = _G.XP
+
+local db
+
+local onEnableFuncs = {}
+
+function mod:OnEnable()
+	db = Parrot.db:GetNamespace("CombatEvents").profile
+	for _, func in ipairs(onEnableFuncs) do
+		func()
+	end
+end
+
+function mod:OnProfileChanged()
+	db = Parrot.db:GetNamespace("CombatEvents").profile
+end
 
 --[[============================================================================
 -- some parser-lookup-tables
@@ -78,28 +92,12 @@ local LS = {
 	["Arcane"] = STRING_SCHOOL_ARCANE,
 }
 
---[[============================================================================
--- on enable
---============================================================================]]
-local onEnableFuncs = {}
-function mod:OnEnable()
-	db1 = Parrot:GetModule("CombatEvents").db1
-	for _,v in ipairs(onEnableFuncs) do
-		v()
-	end
-end
-
---[[============================================================================
--- start helper-functions
---============================================================================]]
-
 local coloredDamageAmount = function(info)
-	local db = db1.profile.damageTypes
 	local damageType = SchoolParser[info.damageType or 1]
 	local amount = Parrot_CombatEvents:ShortenAmount(info.amount)
 
-	if db.color and db[damageType] then
-		return "|cff" .. db[damageType] .. amount .. "|r"
+	if db.damageTypes.color and db.damageTypes[damageType] then
+		return "|cff" .. db.damageTypes[damageType] .. amount .. "|r"
 	else
 		return amount
 	end
@@ -132,14 +130,14 @@ end
 --]]
 local function retrieveSourceName(info)
 	if not info.sourceName then return end
-	if db1.profile.hideUnitNames == true then
+	if db.hideUnitNames == true then
 		return "__NONAME__"
 	end
 	local result = info.sourceName
-	if Parrot_CombatEvents.db1.profile.hideRealm and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
+	if db.hideRealm and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
 		result = result:gsub("-.*", "")
 	end
-	if UnitIsPlayer(result) and db1.profile.classcolor then
+	if UnitIsPlayer(result) and db.classcolor then
 		local _, class = UnitClass(result)
 		result = classColorStrings[class]:format(result)
 	end
@@ -148,14 +146,14 @@ end
 
 local function retrieveDestName(info)
 	if not info.recipientName then return end
-	if db1.profile.hideUnitNames == true then
+	if db.hideUnitNames == true then
 		return "__NONAME__"
 	end
 	local result = info.recipientName
-	if Parrot_CombatEvents.db1.profile.hideRealm and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
+	if db.hideRealm and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
 		result = result:gsub("-.*", "")
 	end
-	if UnitIsPlayer(result) and db1.profile.classcolor then
+	if UnitIsPlayer(result) and db.classcolor then
 		local _, class = UnitClass(result)
 		result = classColorStrings[class]:format(result)
 	end
@@ -303,14 +301,14 @@ end
 -- check pet damage
 local function checkPetInc(_, _, _, dstGUID, _, dstFlags)
 	local good = checkFlags(dstFlags, PET_FLAGS)
-	if not good and db1.profile.totemEvents then
+	if not good and db.totemEvents then
 		good = checkFlags(dstFlags, GUARDIAN_FLAGS)
 	end
 	return good
 end
 local function checkPetOut(srcGUID, _, srcFlags)
 	local good = checkFlags(srcFlags, PET_FLAGS)
-	if not good and db1.profile.totemEvents then
+	if not good and db.totemEvents then
 		good = checkFlags(srcFlags, GUARDIAN_FLAGS)
 	end
 	return good
@@ -318,7 +316,7 @@ end
 
 -- check if the it's a full overheal and should be hidden
 local function checkFullOverheal(t, amount, overheal)
-	return bit_band(db1.profile.hideFullOverheals, t) == 0 or (amount - overheal) > 0
+	return bit_band(db.hideFullOverheals, t) == 0 or (amount - overheal) > 0
 end
 
 -- check player's heals
@@ -349,7 +347,7 @@ end
 local function checkPetIncHeal(srcGUID, _, _, dstGUID, _, dstFlags,_, _, _,
 	amount,	overheal)
 	local good = checkFlags(dstFlags, PET_FLAGS)
-	if not good and db1.profile.totemEvents then
+	if not good and db.totemEvents then
 		good = checkFlags(dstFlags, GUARDIAN_FLAGS)
 	end
 	return good
@@ -359,7 +357,7 @@ local function checkPetOutHeal(srcGUID, _, srcFlags, dstGUID, _, _,_, _, _,
 	local good = srcGUID ~= dstGUID and dstGUID ~= playerGUID
 	if not good then return false end
 	good = checkFlags(srcFlags, PET_FLAGS)
-	if not good and db1.profile.totemEvents then
+	if not good and db.totemEvents then
 		good = checkFlags(srcFlags, GUARDIAN_FLAGS)
 	end
 	return good
@@ -410,7 +408,7 @@ local short_format_texts = {
 }
 
 local function damageThrottleFunc(info)
-	local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
+	local L = db.useShortThrottleText and short_format_texts or long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0
@@ -452,7 +450,7 @@ local function missThrottleFunc(info)
 end
 
 local healThrottleFunc = function(info)
-	local L = db1.profile.useShortThrottleText and short_format_texts or long_format_texts
+	local L = db.useShortThrottleText and short_format_texts or long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0
@@ -1990,8 +1988,8 @@ Parrot:RegisterCombatEvent{
 	name = "Combo point gain",
 	localName = L["Combo point gain"],
 	defaultTag = L["[Num] CP"],
-	blizzardEvents = {
-		UNIT_COMBO_POINTS = { parse = parseCPGain, },
+	events = {
+		UNIT_COMBO_POINTS = { parse = parseCPGain },
 	},
 	tagTranslations = {
 		Num = 1
@@ -2008,8 +2006,8 @@ Parrot:RegisterCombatEvent{
 	name = "Combo points full",
 	localName = L["Combo points full"],
 	defaultTag = L["[Num] CP Finish It!"],
-	blizzardEvents = {
-		UNIT_COMBO_POINTS = { parse = parseCPFull, },
+	events = {
+		UNIT_COMBO_POINTS = { parse = parseCPFull },
 	},
 	tagTranslations = {
 		Num = 1
@@ -2061,8 +2059,8 @@ Parrot:RegisterCombatEvent{
 		
 	},
 	color = "7f7fb2", -- blue-gray
-	blizzardEvents = {
-		CHAT_MSG_CURRENCY = { parse = parseCurrencyUpdate, },
+	events = {
+		CHAT_MSG_CURRENCY = { parse = parseCurrencyUpdate },
 	}
 }--]]
 
@@ -2095,8 +2093,8 @@ Parrot:RegisterCombatEvent{
 	name = "Reputation gains",
 	localName = L["Reputation gains"],
 	defaultTag = "+[Amount] " .. REPUTATION .. " ([Faction])",
-	blizzardEvents = {
-		CHAT_MSG_COMBAT_FACTION_CHANGE = { parse = parseRepGain, },
+	events = {
+		CHAT_MSG_COMBAT_FACTION_CHANGE = { parse = parseRepGain },
 	},
 	tagTranslations = {
 		Amount = "amount",
@@ -2116,8 +2114,8 @@ Parrot:RegisterCombatEvent{
 	name = "Reputation losses",
 	localName = L["Reputation losses"],
 	defaultTag = "-[Amount] " .. REPUTATION .. " ([Faction])",
-	blizzardEvents = {
-		CHAT_MSG_COMBAT_FACTION_CHANGE = { parse = parseRepLoss, },
+	events = {
+		CHAT_MSG_COMBAT_FACTION_CHANGE = { parse = parseRepLoss },
 	},
 	tagTranslations = {
 		Amount = function(info) return info.amount end,
@@ -2146,8 +2144,8 @@ Parrot:RegisterCombatEvent{
 	name = "Skill gains",
 	localName = L["Skill gains"],
 	defaultTag = "[Skillname]: [Amount]",
-	blizzardEvents = {
-		CHAT_MSG_SKILL = { parse = parseSkillGain, },
+	events = {
+		CHAT_MSG_SKILL = { parse = parseSkillGain },
 	},
 	tagTranslations = {
 		Skillname = retrieveAbilityName,
@@ -2189,8 +2187,8 @@ Parrot:RegisterCombatEvent{
 	color = "bf4ccc", -- magenta
 	sticky = true,
 	defaultDisabled = true,
-	blizzardEvents = {
-		PLAYER_XP_UPDATE = { parse = parseXPUpdate, },
+	events = {
+		PLAYER_XP_UPDATE = { parse = parseXPUpdate },
 	},
 }
 

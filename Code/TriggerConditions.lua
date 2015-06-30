@@ -10,7 +10,6 @@ local del = Parrot.del
 local _, playerClass = UnitClass("player")
 
 local conditions = {}
-local lastStates = {}
 local secondaryConditions = {}
 
 local primaryChoices = {}
@@ -19,82 +18,40 @@ local secondaryChoices = {}
 local onEnableFuncs = {}
 function Parrot_TriggerConditions:OnEnable()
 	Parrot_Triggers = Parrot:GetModule("Triggers")
-	-- TODO remove
-	for k, v in pairs(conditions) do
-		if v.getCurrent then
-			lastStates[k] = v.getCurrent()
-		end
-	end
+
 	Parrot:RegisterCombatLog(self)
-	for _,v in ipairs(onEnableFuncs) do
-		v()
+	for _, func in ipairs(onEnableFuncs) do
+		func()
 	end
 end
 
 local onDisableFuncs = {}
 function Parrot_TriggerConditions:OnDisable()
-	for _,v in ipairs(onDisableFuncs) do
-		v()
+	for _, func in ipairs(onDisableFuncs) do
+		func()
 	end
 end
 
-table.insert(onDisableFuncs, function() Parrot:UnregisterCombatLog(self) end)
-
-local function RefreshEvents()
-	local self = Parrot_TriggerConditions
-	Parrot:UnRegisterAllEvents(self)
-
-	if not self:IsEnabled() then
-		return
-	end
-	for k, v in pairs(conditions) do
-		if v.events then
-			for event in pairs(v.events) do
-				local event_ns, event_ev = (";"):split(event, 2)
-				if not event_ev then
-					event_ns, event_ev = "Blizzard", event_ns
-				end
-				Parrot:RegisterBlizzardEvent(self, event_ev, "EventHandler")
-			end
-		end
-	end
-end
+table.insert(onDisableFuncs, function() Parrot:UnregisterCombatLog(Parrot_TriggerConditions) end)
 
 -- #NODOC
 function Parrot_TriggerConditions:EventHandler(uid, event, arg1, ...)
-	local fullEvent = event
-	for k, v in pairs(conditions) do
-		if v.events then
-			local arg = v.events[fullEvent]
-			local info
-			if type(arg) == 'function' then
-				info = arg(arg1, ...)
-			elseif arg == true then
-				info = true
+	for _, data in pairs(conditions) do
+		if data.events then
+			local info = data.events[event]
+			if type(info) == "function" then
+				info = info(arg1, ...)
 			else
-				info = arg == arg1
+				info = info == arg1
 			end
 			if info then
-				self:FirePrimaryTriggerCondition(v.name, info, uid, v.check)
+				self:FirePrimaryTriggerCondition(data.name, info, uid, data.check)
 			end
-			--[[if arg == true or (arg1 ~= nil and arg == arg1) then
-				if v.getCurrent then
-					local state = v.getCurrent()
-					local name = v.name
-					local oldState = lastStates[name]
-					lastStates[name] = state
-					if state ~= nil and state ~= oldState then
-						self:FirePrimaryTriggerCondition(name, state)
-					end
-				else
-					self:FirePrimaryTriggerCondition(v.name, arg1)
-				end
-			end--]]
 		end
 	end
 end
 
-self.combatLogEvents = {}
+Parrot_TriggerConditions.combatLogEvents = {}
 --[[----------------------------------------------------------------------------------
 Arguments:
 	string - the name of the trigger condition to fire, in English.
@@ -106,8 +63,6 @@ Example:
 	Parrot:FirePrimaryTriggerCondition("My trigger condition", 50)
 ------------------------------------------------------------------------------------]]
 function Parrot_TriggerConditions:FirePrimaryTriggerCondition(name, arg, uid)
-	self = Parrot_TriggerConditions -- in case someone calls Parrot:FirePrimaryTriggerCondition
-
 	if Parrot_Triggers and Parrot_Triggers:IsEnabled() then
 		local check
 		if conditions[name] then
@@ -130,13 +85,6 @@ Notes:
 			NAME_OF_EVENT = value, -- where NAME_OF_EVENT is the event to check, only works when value is equal to arg1. Also, value could be true in which case it is always checked.
 			-- there can be multiple events.
 		},
-		getCurrent = function() -- this is optional and to be used with events.
-			if not SomeCondition() then
-				return nil -- condition won't fire.
-			else
-				return value -- numeric value.
-			end
-		end,
 		param = {
 			-- AceOptions argument here.
 			-- do not specify get, set, name, or desc.
@@ -155,7 +103,6 @@ Example:
 	}
 ------------------------------------------------------------------------------------]]
 function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
-	self = Parrot_TriggerConditions -- in case someone calls Parrot:RegisterPrimaryTriggerCondition
 	local name = data.name
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. name must be a %q, got %q."):format("string", type(name)), 2)
@@ -165,14 +112,8 @@ function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
 		error(("Bad argument #2 to `RegisterCombatEvent'. localName must be a %q, got %q."):format("string", type(localName)), 2)
 	end
 	local events = data.events
-	if events then
-		if type(events) ~= "table" then
-			error(("Bad argument #2 to `RegisterCombatEvent'. localName must be a %q, got %q."):format("table", type(events)), 2)
-		end
-		local getCurrent = data.getCurrent
-		if type(getCurrent) ~= "function" and type(getCurrent) ~= "nil" then
-			error(("Bad argument #2 to `RegisterCombatEvent'. localName must be a %q or nil, got %q."):format("function", type(getCurrent)), 2)
-		end
+	if events and type(events) ~= "table" then
+		error(("Bad argument #2 to `RegisterCombatEvent'. events must be a %q, got %q."):format("table", type(events)), 2)
 	end
 	if conditions[name] then
 		error(("Trigger condition %q already registered"):format(name), 2)
@@ -181,20 +122,33 @@ function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
 	primaryChoices[name] = localName
 
 	-- combatlog-stuff
-	local combatLogEvents = data.combatLogEvents
-	if combatLogEvents then
-		for _, v in ipairs(combatLogEvents) do
-
+	if data.combatLogEvents then
+		local combatLogEvents = Parrot_TriggerConditions.combatLogEvents
+		for _, v in ipairs(data.combatLogEvents) do
 			local eventType = v.eventType
-			if not self.combatLogEvents[eventType] then
-				self.combatLogEvents[eventType] = {}
+			if not combatLogEvents[eventType] then
+				combatLogEvents[eventType] = {}
 			end
-			table.insert(self.combatLogEvents[eventType], { category = data.category, name = data.name, triggerData = v.triggerData })
+			table.insert(combatLogEvents[eventType], {
+				category = data.category,
+				name = data.name,
+				triggerData = v.triggerData
+			})
 		end
 
 	end
 
-	RefreshEvents()
+	-- Refresh events
+	Parrot:UnregisterAllBlizzardEvents(Parrot_TriggerConditions)
+	if Parrot_TriggerConditions:IsEnabled() then
+		for k, v in next, conditions do
+			if v.events then
+				for event in next, v.events do
+					Parrot:RegisterBlizzardEvent(Parrot_TriggerConditions, event, "EventHandler")
+				end
+			end
+		end
+	end
 end
 Parrot.RegisterPrimaryTriggerCondition = Parrot_TriggerConditions.RegisterPrimaryTriggerCondition
 
@@ -236,7 +190,6 @@ Example:
 	}
 ------------------------------------------------------------------------------------]]
 function Parrot_TriggerConditions:RegisterSecondaryTriggerCondition(data)
-	self = Parrot_TriggerConditions -- in case someone calls Parrot:RegisterSecondaryTriggerCondition
 	local name = data.name
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. name must be a %q, got %q."):format("string", type(name)), 2)
@@ -307,14 +260,6 @@ function Parrot_TriggerConditions:SecondaryIsExclusive(name)
 		return false
 	else
 		return not not secondaryConditions[name].exclusive
-	end
-end
-
-function Parrot_TriggerConditions:IsStateful(name)
-	if not conditions[name] then
-		return false
-	else
-		return not not conditions[name].stateful
 	end
 end
 

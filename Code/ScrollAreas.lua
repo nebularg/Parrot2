@@ -7,15 +7,11 @@ local Parrot_Display = Parrot:GetModule("Display")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
 local newList, del = Parrot.newList, Parrot.del
--- Parrot_ScrollAreas.db = Parrot:GetDatabaseNamespace("ScrollAreas")
 
-function Parrot_ScrollAreas:OnInitialize()
-	Parrot_ScrollAreas.db1 = Parrot.db1:RegisterNamespace("ScrollAreas")
-end
-
-local function initDB()
-	if not self.db1.profile.areas then
-		self.db1.profile.areas = {
+local db = nil
+local defaults = {
+	profile = {
+		areas = {
 			["Notification"] = {
 				animationStyle = "Straight",
 				direction = "UP;CENTER",
@@ -45,8 +41,11 @@ local function initDB()
 				yOffset = -30,
 			},
 		}
-	end
-end
+	}
+}
+
+local setConfigMode
+local scrollAreas
 
 local choices = {}
 local choicesBase = {
@@ -56,16 +55,15 @@ local choicesBase = {
 }
 
 local function rebuildChoices()
-	scrollAreas = self.db1.profile.areas
 	choices = del(choices)
 	choices = newList()
-	for k, v in pairs(scrollAreas) do
+	for k, v in next, scrollAreas do
 		choices[k] = choicesBase[k] or k
 	end
 end
 
-function Parrot_ScrollAreas:ChangeProfile()
-	initDB()
+function Parrot_ScrollAreas:OnProfileChanged()
+	db = self.db.profile
 	if Parrot.options.args.scrollAreas then
 		Parrot.options.args.scrollAreas = nil
 		self:OnOptionsCreate()
@@ -73,15 +71,19 @@ function Parrot_ScrollAreas:ChangeProfile()
 	rebuildChoices()
 end
 
-local setConfigMode
+function Parrot_ScrollAreas:OnInitialize()
+	self.db = Parrot.db:RegisterNamespace("ScrollAreas", defaults)
+	db = self.db.profile
+	scrollAreas = db.areas
+end
+
+function Parrot_ScrollAreas:OnEnable()
+	setConfigMode(false)
+end
+
 function Parrot_ScrollAreas:OnDisable()
-	if setConfigMode then
-		setConfigMode(false)
-	end
+	setConfigMode(false)
 end
-
-end
-
 
 --[[----------------------------------------------------------------------------------
 Notes:
@@ -106,6 +108,7 @@ function Parrot:SetConfigMode(state)
 	end
 	setConfigMode(state)
 end
+
 local configModeTimer
 local offsetBoxes
 local function hideAllOffsetBoxes()
@@ -117,6 +120,7 @@ local function hideAllOffsetBoxes()
 	end
 	Parrot_ScrollAreas:CancelTimer(configModeTimer)
 end
+
 local function showOffsetBox(k)
 	if not offsetBoxes then
 		offsetBoxes = {}
@@ -763,7 +767,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							type = 'select',
 							name = L["Normal font face"],
 							desc = L["Normal font face"],
-							values = Parrot.inheritFontChoices(),
+							values = Parrot.fontValues,
 							get = getFontFace,
 							set = setFontFace,
 							arg = {"normal", k},
@@ -808,7 +812,7 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							type = 'select',
 							name = L["Sticky font face"],
 							desc = L["Sticky font face"],
-							values = Parrot.inheritFontChoices,
+							values = Parrot.fontValues,
 							get = getFontFace,
 							set = setFontFace,
 							arg = {"sticky", k},
@@ -908,8 +912,8 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		},
 	}
 	Parrot:AddOption('scrollAreas', scrollAreas_opt)
-	scrollAreas = self.db1.profile.areas
-	for k, v in pairs(scrollAreas) do
+
+	for k, v in next, scrollAreas do
 		makeOption(k)
 		if k == L["New scroll area"] then
 			scrollAreas_opt.args[tostring(v)].order = -110

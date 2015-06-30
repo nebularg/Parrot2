@@ -27,7 +27,8 @@ local LS = {
 
 local UNKNOWN = _G.UNKNOWN
 
-local dbDefaults = {
+local db = nil
+local defaults = {
 	profile = {
 		['*'] = {
 			['*'] = {}
@@ -123,10 +124,9 @@ end
 
 addDefaultWithSpellIdIndex(dbDefaults.profile.sthrottles, 57669, { time = 5, }) -- Replenishment
 
-local db
 --[[
 -- to upgrade the DB from previous.
--- usage: if the format is changed, change the dbDefaults to the new format.
+-- usage: if the format is changed, change the defaults to the new format.
 -- Then add functions for converting old settings.
 --]]
 local updateDBFuncs = {
@@ -143,10 +143,10 @@ local updateDBFuncs = {
 		end
 	end,
 	[3] = function()
-		db.hideRealm = not Parrot.db1.profile.showNameRealm
-		Parrot.db1.profile.showNameRealm = nil
-		db.totemEvents = Parrot.db1.profile.totemDamage
-		Parrot.db1.profile.totemDamage = nil
+		db.hideRealm = not Parrot.db.profile.showNameRealm
+		Parrot.db.profile.showNameRealm = nil
+		db.totemEvents = Parrot.db.profile.totemDamage
+		Parrot.db.profile.totemDamage = nil
 	end,
 	[4] = function()
 		if db.hideFullOverheals == false then
@@ -166,14 +166,6 @@ local updateDBFuncs = {
 	end,
 }
 
-function Parrot_CombatEvents:OnNewProfile(t, key)
-	key.profile.dbver = #updateDBFuncs
-end
-
---[[
--- executes all updateDBFuncs from <dbver> (self.db.profile) to
--- <number of updateDBFuncs> and then updates the dbver to this number
---]]
 local function updateDB()
 	if not db.dbver then
 		db.dbver = 0
@@ -184,6 +176,9 @@ local function updateDB()
 	end
 end
 
+function Parrot_CombatEvents:OnNewProfile(_, database)
+	database.profile.dbver = #updateDBFuncs
+end
 
 -- checks if in a raid-instance and disables CombatEvents accordingly
 local enabled = false
@@ -195,9 +190,10 @@ local function checkZone()
 end
 
 function Parrot_CombatEvents:OnInitialize()
-	self.db1 = Parrot.db1:RegisterNamespace("CombatEvents", dbDefaults)
-	self.db1.RegisterCallback(self, "OnNewProfile", "OnNewProfile")
-	db = self.db1.profile
+	self.db = Parrot.db:RegisterNamespace("CombatEvents", defaults)
+	db = self.db.profile
+
+	self.db.RegisterCallback(self, "OnNewProfile", "OnNewProfile")
 
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
@@ -347,63 +343,6 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 	return name
 end
 
---[[
--- only register for enabled events
---]]
-local function refreshEventRegistration(category, name)
-	if not enabled then
-		return
-	end
-	local data = combatEvents[category][name]
-	local db = Parrot_CombatEvents.db1.profile[category][name]
-	local disabled = db.disabled
-	if disabled == nil then
-		disabled = data.defaultDisabled
-	end
-	local blizzardEvent = data.blizzardEvent
-	local blizzardEvent_ns, blizzardEvent_ev
-	if blizzardEvent then
-		blizzardEvent_ns, blizzardEvent_ev = (";"):split(blizzardEvent, 2)
-		if not blizzardEvent_ev then
-			blizzardEvent_ns, blizzardEvent_ev = "Blizzard", blizzardEvent_ns
-		end
-	end
-	if disabled then
-		if blizzardEvent then
-			Parrot_CombatEvents:RemoveEventListener(blizzardEvent_ns, blizzardEvent_ev)
-		end
-	else
-		if blizzardEvent then
-			Parrot:RegisterBlizzardEvent(Parrot_CombatEvents, blizzardEvent_ev, function(uid, event, ...)
-					--					debug("bla: ", ...)
-					local info = newList(...)
-					info.uid = uid
-					info.event = event
-					Parrot_CombatEvents:TriggerCombatEvent(category, name, info)
-					info = del(info)
-				end
-			)
-			--[[			Parrot_CombatEvents:AddEventListener(blizzardEvent_ev, function(ns, event, ...)
---			Parrot_CombatEvents:AddEventListener(blizzardEvent_ns, blizzardEvent_ev, function(ns, event, ...)
-				local info = newList(...)
-				info.namespace = ns
-				info.event = event
-				Parrot_CombatEvents:TriggerCombatEvent(category, name, info)
-				info = del(info)
-			end)--]]
-		end
-	end
-end
-
-onEnableFuncs[#onEnableFuncs+1] = function()
-	assert(enabled)
-	for category, q in pairs(combatEvents) do
-		for name, data in pairs(q) do
-			refreshEventRegistration(category, name)
-		end
-	end
-end
-
 local modifierTranslationHelps
 
 local throttleTypes = {}
@@ -425,8 +364,8 @@ local function getSoundChoices()
 	return t
 end
 
-function Parrot_CombatEvents:ChangeProfile()
-	db = self.db1.profile
+function Parrot_CombatEvents:OnProfileChanged()
+	db = self.db.profile
 	updateDB()
 	if next(Parrot.options.args) then
 		Parrot.options.args.events = del(Parrot.options.args.events)
@@ -966,8 +905,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			disabled = nil
 		end
 		db[category][name].disabled = disabled
-
-		refreshEventRegistration(category, name)
 	end
 	local function getScrollArea2(category, name)
 		local scrollArea = db[category][name].scrollArea
@@ -1177,7 +1114,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							type = 'select',
 							name = L["Font face"],
 							desc = L["Font face"],
-							values = Parrot.inheritFontChoices,
+							values = Parrot.fontValues,
 							get = getFontFace,
 							set = setFontFace,
 							order = 1,
@@ -1598,10 +1535,6 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 		debug(("RegisterCombatEvent: %s uses deprecated entry \"parserEvent\""):format(data.name))
 		-- error("Bad argument #2 to `RegisterCombatEvent'. parserEvent is deprecated")
 	end
-	local blizzardEvent = data.blizzardEvent
-	if blizzardEvent and type(blizzardEvent) ~= "string" then
-		error(("Bad argument #2 to `RegisterCombatEvent'. blizzardEvent must be a %q or nil, got %q."):format("string", type(blizzardEvent)), 2)
-	end
 	local tagTranslations = data.tagTranslations
 	if tagTranslations and type(tagTranslations) ~= "table" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. tagTranslations must be a %q or nil, got %q."):format("table", type(tagTranslations)), 2)
@@ -1619,7 +1552,6 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 		combatEvents[category] = newList()
 	end
 	combatEvents[category][name] = data
-	refreshEventRegistration(category, name)
 
 	if data.combatLogEvents then
 		for eventType, v in pairs(data.combatLogEvents) do
@@ -1643,11 +1575,10 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 		end
 	end
 
-	local blizzardEvents = data.blizzardEvents
-	if blizzardEvents then
-		for k,v in pairs(blizzardEvents) do
-			local check = v.check
-			if not check then
+	if data.events then
+		for k,v in next, data.events do
+			local check
+			if not v.check then
 				check = function() return true end
 			end
 			if type(check) ~= "function" then
@@ -1780,6 +1711,9 @@ function Parrot_CombatEvents:ShortenAmount(val)
 	return shortenAmount(val)
 end
 
+
+local modifierTranslations = {}
+
 local modifiersWithAmount = {
 	absorb = "absorbAmount",
 	block = "blockAmount",
@@ -1800,24 +1734,22 @@ local modifierTranslations = {}
 for k,v in pairs(modifiersWithAmount) do
 	-- local valAmountKey = v .. "Amount"
 	modifierTranslations[k] = { Amount = function(info)
-			local db = Parrot_CombatEvents.db1.profile.modifier
-			local val = Parrot_CombatEvents:ShortenAmount(info[v])
-			if db.color then
-				return "|cff" .. db[k].color .. val .. "|r"
-			else
-				return val
-			end
+		local val = Parrot_CombatEvents:ShortenAmount(info[v])
+		if db.modifier.color then
+			return "|cff" .. db.modifier[k].color .. val .. "|r"
+		else
+			return val
+		end
 	end }
 end
 
 for _,v in ipairs(modifiersWithFlag) do
 	modifierTranslations[v] = { Text = function(info)
-			local db = Parrot_CombatEvents.db1.profile.modifier
-			if db.color then
-				return "|r" .. info[1] .. "|cff" .. db[v].color
-			else
-				return info[1]
-			end
+		if db.modifier.color then
+			return "|r" .. info[1] .. "|cff" .. db.modifier[v].color
+		else
+			return info[1]
+		end
 	end }
 end
 
@@ -2127,7 +2059,7 @@ Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
 end--]]
 
 local function runEvent(category, name, info)
-	local cdb = Parrot_CombatEvents.db1.profile[category][name]
+	local cdb = db[category][name]
 	local data = combatEvents[category][name]
 
 	local throttle = data.throttle
@@ -2184,7 +2116,7 @@ local function runEvent(category, name, info)
 	local t = newList(text)
 	local overhealAmount = info.overhealAmount
 	local overkillAmount = info.overkill
-	local modifierDB = Parrot_CombatEvents.db1.profile.modifier
+	local modifierDB = db.modifier
 	if overhealAmount and overhealAmount >= 1 then
 		if modifierDB.overheal.enabled then
 			handler__translation = modifierTranslations.overheal
@@ -2301,9 +2233,8 @@ combatTimerFrame:Hide()
 combatTimerFrame:SetScript("OnUpdate", runCachedEvents)
 
 function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
-	if not self:IsEnabled() then
-		return
-	end
+	if not self:IsEnabled() then return end
+
 	local handlers = registeredBlizzardEvents[eventName]
 	if handlers then
 		for i,v in ipairs(handlers) do

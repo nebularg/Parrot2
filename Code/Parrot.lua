@@ -80,249 +80,232 @@ end
 Parrot.newList = newList
 Parrot.newDict = newDict
 Parrot.del = del
-local function initOptions()
-	if Parrot.options.args.general then
-		return
-	end
 
-	Parrot:OnOptionsCreate()
-
-	for k, v in Parrot:IterateModules() do
-		if type(v.OnOptionsCreate) == "function" then
-			v:OnOptionsCreate()
-		end
-	end
-	AceConfig:RegisterOptionsTable("Parrot", Parrot.options)
-end
-
-local dbDefaults = {
+-- Init
+local db = nil
+local defaults = {
 	profile = {
 		gameText = false,
 		gameDamage = false,
 		gameHealing = false,
 	}
 }
-local dbpr
+
+function Parrot:OnProfileChanged(event, database)
+	db = self.db.profile
+	for _, mod in self:IterateModules() do
+		if type(mod.OnProfileChanged) == "function" then
+			mod:OnProfileChanged(event, database)
+		end
+	end
+end
 
 function Parrot:OnInitialize()
-	self:RegisterChatCommand("par", "ShowConfig")
-	self:RegisterChatCommand("parrot", "ShowConfig")
+	self.db = LibStub("AceDB-3.0"):New("ParrotDB", defaults, true)
+	db = self.db.profile
 
-	-- use db1 to fool LibRock-1.0
-	-- even without the RockDB-mixin, LibRock operates on self.db
-	self.db1 = LibStub("AceDB-3.0"):New("ParrotDB", dbDefaults, "Default")
+	self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 
-	self.db1.RegisterCallback(self, "OnProfileChanged", "ChangeProfile")
-	self.db1.RegisterCallback(self, "OnProfileCopied", "ChangeProfile")
-	self.db1.RegisterCallback(self, "OnProfileReset", "ChangeProfile")
-	dbpr = self.db1.profile
-	Parrot.options = {
+	self.options = {
 		name = L["Parrot"],
 		desc = L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."],
-		type = 'group',
+		type = "group",
 		icon = [[Interface\Icons\Spell_Nature_ForceOfNature]],
 		args = {},
 	}
-	local bliz_options = CopyTable(Parrot.options)
-	bliz_options.args.load = {
+
+	local options = CopyTable(self.options)
+	options.args.load = {
 		name = L["Load config"],
 		desc = L["Load configuration options"],
-		type = 'execute',
+		type = "execute",
 		func = "ShowConfig",
-		handler = Parrot,
+		handler = self,
 	}
+	AceConfig:RegisterOptionsTable("Parrot/Blizzard", options)
+	AceConfigDialog:AddToBlizOptions("Parrot/Blizzard", "Parrot")
 
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("Parrot_bliz", bliz_options)
-	AceConfigDialog:AddToBlizOptions("Parrot_bliz", "Parrot")
+	self:RegisterChatCommand("parrot", "ShowConfig")
+	self:RegisterChatCommand("par", "ShowConfig")
 end
 
-function Parrot:ChangeProfile()
-	dbpr = self.db1.profile
-	for k,v in Parrot:IterateModules() do
-		if type(v.ChangeProfile) == 'function' then
-			v:ChangeProfile()
-		end
-	end
-end
-
-function Parrot.inheritFontChoices()
-	local t = newList()
-	for _,v in ipairs(SharedMedia:List('font')) do
-		t[v] = v
-	end
-	t["1"] = L["Inherit"]
-	return t
-end
 function Parrot:OnEnable()
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	if dbpr.gameText then
-		SetCVar("CombatDamage", dbpr.gameDamage and "1" or "0")
-		SetCVar("CombatHealing", dbpr.gameHealing and "1" or "0")
+	if db.gameText then
+		SetCVar("CombatDamage", db.gameDamage and "1" or "0")
+		SetCVar("CombatHealing", db.gameHealing and "1" or "0")
 		SetCVar("CombatLogPeriodicSpells", 1)
 		SetCVar("PetMeleeDamage", 1)
 	end
-	self:ChangeProfile()
 end
 
-Parrot.IsActive = Parrot.IsEnabled
-
-function Parrot:OnDisable()
-	for name, module in self:IterateModules() do
-		self:DisableModule(module)
+-- Event handling
+local nextUID
+do
+	local uid = 0
+	function nextUID()
+		uid = uid + 1
+		return uid
 	end
 end
 
+do
+	local combatLogHandlers = {}
+
+	local function OnCombatLogEvent(...)
+		local uid = nextUID()
+		for mod in next, combatLogHandlers do
+			mod:HandleCombatlogEvent(uid, ...)
+		end
+	end
+
+	function Parrot:RegisterCombatLog(mod)
+		if type(mod.HandleCombatlogEvent) ~= "function" then
+			error("Bad argument #1 for 'RegisterCombatLog'. Module must contain a function named HandleCombatlogEvent")
+		end
+
+		if not next(combatLogHandlers) then
+			self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", OnCombatLogEvent)
+		end
+		combatLogHandlers[mod] = true
+	end
+
+	function Parrot:UnregisterCombatLog(mod)
+		combatLogHandlers[mod] = nil
+		if not next(combatLogHandlers) then
+			self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		end
+	end
+end
+
+do
+	local blizzardEventHandlers = {}
+
+	local function OnBlizzardEvent(event, ...)
+		local uid = nextUID()
+		for mod, func in next, blizzardEventHandlers[event] do
+			mod[func](mod, uid, event, ...)
+		end
+	end
+
+	function Parrot:RegisterBlizzardEvent(mod, event, func)
+		if func then
+			if type(mod[func]) ~= "function" then
+				error(("Bad argument #3 for 'RegisterBlizzardEvent'. Module must contain a function named %s"):format(func))
+			end
+		elseif type(mod[event]) ~= "function" then
+			error(("Bad argument #2 for 'RegisterBlizzardEvent'. Module must contain a function named %s"):format(event))
+		end
+
+		if not blizzardEventHandlers[event] then
+			blizzardEventHandlers[event] = {}
+			self:RegisterEvent(event, OnBlizzardEvent)
+		end
+		if not blizzardEventHandlers[event][mod] then
+			blizzardEventHandlers[event][mod] = {}
+		end
+		blizzardEventHandlers[event][mod] = func or event
+	end
+
+	function Parrot:UnregisterBlizzardEvent(mod, event)
+		blizzardEventHandlers[event][mod] = nil
+		if not next(blizzardEventHandlers[event]) then
+			self:UnregisterEvent(event)
+			blizzardEventHandlers[event] = nil
+		end
+	end
+
+	function Parrot:UnregisterAllBlizzardEvents(mod)
+		for _, modules in next, blizzardEventHandlers do
+			modules[mod] = nil
+		end
+	end
+end
+
+-- Config
 function Parrot:ShowConfig()
-	initOptions()
+	if self.OnOptionsCreate then
+		self:OnOptionsCreate()
+
+		for _, mod in self:IterateModules() do
+			if type(mod.OnOptionsCreate) == "function" then
+				mod:OnOptionsCreate()
+			end
+		end
+		AceConfig:RegisterOptionsTable("Parrot", self.options)
+
+		self.OnOptionsCreate = nil
+	end
+
 	AceConfigDialog:Open("Parrot")
 end
 
-local uid = 0
-local function nextUID()
-	uid = uid + 1
-	return uid
-end
-
-local combatLogHandlers = {}
-
-function Parrot:RegisterCombatLog(mod)
-	if type(mod.HandleCombatlogEvent) ~= 'function' then
-		error("mod must have function named HandleCombatlogEvent")
-	end
-	table.insert(combatLogHandlers, mod)
-end
-
-function Parrot:UnregisterCombatLog(mod)
-	for i,v in ipairs(combatLogHandlers) do
-		if v == mod then
-			table.remove(i)
+do
+	local values = {}
+	function Parrot.fontValues()
+		wipe(values)
+		for _, font in ipairs(SharedMedia:List("font")) do
+			values[font] = font
 		end
+		values["1"] = L["Inherit"]
+		return values
 	end
 end
 
-function Parrot:COMBAT_LOG_EVENT_UNFILTERED(...)
-	local uid = nextUID()
-	for _, v in ipairs(combatLogHandlers) do
-		v:HandleCombatlogEvent(uid, ...)
-	end
-end
-
-local blizzardEventHandlers = {}
-
-function Parrot:RegisterBlizzardEvent(mod, eventName, handlerfunc)
-	if handlerfunc then
-		if type(mod[handlerfunc]) ~= 'function' then
-			error(("Bad argument #2 for 'RegisterBlizzardEvent'. module must contain a function named %s"):format(handlerfunc))
-		end
-	else
-		if type(mod[eventName]) ~= 'function' then
-			error(("Bad argument #2 for 'RegisterBlizzardEvent'. module must contain a function named %s"):format(eventName))
-		end
-	end
-
-	if not blizzardEventHandlers[eventName] then
-		blizzardEventHandlers[eventName] = {}
-		self:RegisterEvent(eventName, "OnBlizzardEvent")
-	end
-	if not blizzardEventHandlers[eventName][mod] then
-		blizzardEventHandlers[eventName][mod] = {}
-	end
-
-	blizzardEventHandlers[eventName][mod] = handlerfunc or eventName
-
-end
-
-function Parrot:UnRegisterBlizzardEvent(mod, eventName)
-	blizzardEventHandlers[eventName][mod] = nil
-	if not next(blizzardEventHandlers[eventName]) then
-		self:RemoveEventListener(eventName)
-		blizzardEventHandlers[eventName] = nil
-	end
-end
-
-function Parrot:UnRegisterAllEvents(mod)
-	for eventName,v in pairs(blizzardEventHandlers) do
-		v[mod] = nil
-	end
-end
-
-function Parrot:OnBlizzardEvent(eventName, ...)
-	local uid = nextUID()
-	for k,v in pairs(blizzardEventHandlers[eventName]) do
-		k[v](k, uid, eventName, ...)
-	end
-end
-
-local function setOption(info, value)
-	local name = info[#info]
-	dbpr[name] = value
-end
-local function getOption(info)
-	local name = info[#info]
-	return dbpr[name]
+function Parrot:AddOption(name, args)
+	self.options.args[name] = args
 end
 
 function Parrot:OnOptionsCreate()
-	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
+	local function setCVarOption(info, value)
+		db[info[#info]] = value
+		SetCVar("CombatDamage", db.gameDamage and "1" or "0")
+		SetCVar("CombatHealing", db.gameHealing and "1" or "0")
+	end
+
+	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
 	self.options.args.profiles.order = -1
-	self:AddOption('general', {
-			type = 'group',
-			name = L["General"],
-			desc = L["General settings"],
-			disabled = function()
-				return not self:IsEnabled()
-			end,
-			order = 1,
-			args = {
-				gameText = {
-					type = 'group',
-					inline = true,
-					name = L["Game options"],
-					set = setOption,
-					get = getOption,
-					args = {
-						gameText = {
-							type = 'toggle',
-							name = L["Control game options"],
-							desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
-							order = 1,
-						},
-						gameDamage = {
-							type = 'toggle',
-							name = L["Game damage"],
-							desc = L["Whether to show damage over the enemy's heads."],
-							disabled = function() return not dbpr.gameText end,
-							set = function(info, value)
-								setOption(info, value)
-								SetCVar("CombatDamage", value and "1" or "0")
-							end,
-							order = 2,
-						},
-						gameHealing = {
-							type = 'toggle',
-							name = L["Game healing"],
-							desc = L["Whether to show healing over the enemy's heads."],
-							disabled = function() return not dbpr.gameText end,
-							set = function(info, value)
-								setOption(info, value)
-								SetCVar("CombatHealing", value and "1" or "0")
-							end,
-							order = 3,
-						},
+
+	self:AddOption("general", {
+		type = "group",
+		name = L["General"],
+		desc = L["General settings"],
+		disabled = function() return not self:IsEnabled() end,
+		order = 1,
+		args = {
+			gameText = {
+				type = "group",
+				inline = true,
+				name = L["Game options"],
+				set = function(info, value) db[info[#info]] = value end,
+				get = function(info) return db[info[#info]] end,
+				args = {
+					gameText = {
+						type = "toggle",
+						name = L["Control game options"],
+						desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
+						order = 1,
+					},
+					gameDamage = {
+						type = "toggle",
+						name = L["Game damage"],
+						desc = L["Whether to show damage over the enemy's heads."],
+						disabled = function() return not db.gameText end,
+						set = setCVarOption,
+						order = 2,
+					},
+					gameHealing = {
+						type = "toggle",
+						name = L["Game healing"],
+						desc = L["Whether to show healing over the enemy's heads."],
+						disabled = function() return not db.gameText end,
+						set = setCVarOption,
+						order = 3,
 					},
 				},
-			}
+			},
+		}
 	})
 end
 
-function Parrot:AddOption(key, table)
-	self.options.args[key] = table
-end
-
-Parrot.options = {
-	name = L["Parrot"],
-	desc = L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."],
-	type = 'group',
-	icon = [[Interface\Icons\Spell_Nature_ForceOfNature]],
-	args = {},
-}

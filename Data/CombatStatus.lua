@@ -8,8 +8,8 @@ Parrot:RegisterCombatEvent{
 	name = "Enter combat",
 	localName = L["Enter combat"],
 	defaultTag = L["+Combat"],
-	blizzardEvents = {
-		["PLAYER_REGEN_DISABLED"] = {},
+	events = {
+		PLAYER_REGEN_DISABLED = {},
 	},
 	color = "ffffff", -- white
 }
@@ -20,8 +20,8 @@ Parrot:RegisterCombatEvent{
 	name = "Leave combat",
 	localName = L["Leave combat"],
 	defaultTag = L["-Combat"],
-	blizzardEvents = {
-		["PLAYER_REGEN_ENABLED"] = {},
+	events = {
+		PLAYER_REGEN_ENABLED = {},
 	},
 	color = "ffffff", -- white
 }

@@ -12,7 +12,8 @@ local newList, del = Parrot.newList, Parrot.del
 
 local ParrotFrame
 
-local dbDefaults = {
+local db
+local defaults = {
 	profile = {
 		alpha = 1,
 		iconAlpha = 1,
@@ -26,17 +27,17 @@ local dbDefaults = {
 	},
 }
 
-local db
+function Parrot_Display:OnProfileChanged()
+	db = self.db.profile
+end
+
 function Parrot_Display:OnInitialize()
-	self.db1 = Parrot.db1:RegisterNamespace("Display", dbDefaults)
-	db = self.db1.profile
+	self.db = Parrot.db:RegisterNamespace("Display", defaults)
+	db = self.db.profile
+
 	Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 	Parrot_Suppressions = Parrot:GetModule("Suppressions")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
-end
-
-function Parrot_Display:ChangeProfile()
-	db = self.db1.profile
 end
 
 local function setOption(info, value)

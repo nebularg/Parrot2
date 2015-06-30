@@ -1,4 +1,5 @@
 local Parrot = Parrot
+
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
 local newList, newDict, del = Parrot.newList, Parrot.newDict, Parrot.del
@@ -31,7 +32,7 @@ end
 
 local function retrieveDestName(info)
 	if not info.recipientName then return end
-	if Parrot.db1.profile.showNameRealm then
+	if Parrot.db.profile.showNameRealm then
 		return info.recipientName
 	else
 		return info.recipientName:gsub("-.*", "")
