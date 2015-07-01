@@ -1,5 +1,8 @@
 #!/usr/bin/lua
 
+require "lfs"
+lfs.mkdir("./Strings")
+
 --[[
 	Prefix to all files if this script is run from a subdir, for example
 ]]
@@ -63,7 +66,7 @@ end
 
 
 local locale = io.open("Strings/enUS.lua", "w")
-locale:write('local debug = nil\n\n')
+locale:write('local debug = nil\n---@debug@\ndebug = true\n---@end-debug@\n\n')
 
 -- extract data from specified lua files
 for _, namespace in ipairs(ordered) do
@@ -91,4 +94,3 @@ for _, namespace in ipairs(ordered) do
 end
 
 locale:close()
-
