@@ -26,9 +26,6 @@ L = LibStub("AceLocale-3.0"):NewLocale("Parrot_AnimationStyles", "frFR")
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Auras", "frFR")
 --@localization(locale="frFR", format="lua_additive_table", namespace="Parrot_Auras")@
 
--- L["The rank of the item buff gained."] = true -- not used anymore
--- L["The rank of the item buff lost."] = true -- not used anymore
-
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatEvents_Data", "frFR")
 --@localization(locale="frFR", format="lua_additive_table", namespace="Parrot_CombatEvents_Data")@
 
@@ -40,6 +37,9 @@ L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Loot", "frFR")
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions_Data", "frFR")
 --@localization(locale="frFR", format="lua_additive_table", namespace="Parrot_TC_Data")@
+
+L = LibStub("AceLocale-3.0"):NewLocale("Parrot_PointGains", "frFR")
+--@localization(locale="frFR", format="lua_additive_table", namespace="Parrot_PointGains")@
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatStatus", "frFR")
 --@localization(locale="frFR", format="lua_additive_table", namespace="Parrot_CombatStatus")@

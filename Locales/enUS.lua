@@ -1,4 +1,7 @@
 local debug = nil
+---@debug@
+debug = true
+---@end-debug@
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)
 L["Control game options"] = true
