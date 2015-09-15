@@ -1,0 +1,45 @@
+externals:
+    libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
+    libs/AceAddon-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+        tag: latest
+    libs/AceConfig-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+        tag: latest
+    libs/AceConsole-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
+        tag: latest
+    libs/AceDB-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+        tag: latest
+    libs/AceDBOptions-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
+        tag: latest
+    libs/AceEvent-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+        tag: latest
+    libs/AceGUI-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+        tag: latest
+    libs/AceHook-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceHook-3.0
+        tag: latest
+    libs/AceLocale-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
+        tag: latest
+    libs/AceTimer-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+        tag: latest
+    libs/LibSharedMedia-3.0:
+        url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
+        tag: latest
+    libs/AceGUI-3.0-SharedMediaWidgets:
+        url: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
+        tag: latest
+    libs/LibDeformat-3.0:
+        url: git://git.wowace.com/wow/libdeformat-3-0/mainline.git
+        tag: latest
+manual-changelog: CHANGELOG.txt
+ignore:
+    - Locales/Strings
+    - Locales/Babelfish.lua
