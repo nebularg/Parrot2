@@ -1,4 +1,4 @@
-local Parrot = LibStub("AceAddon-3.0"):NewAddon("Parrot", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
+local Parrot = LibStub("AceAddon-3.0"):NewAddon("Parrot", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "LibSink-2.0")
 _G.Parrot = Parrot
 
 --@debug@
@@ -116,19 +116,32 @@ function Parrot:OnInitialize()
 		args = {},
 	}
 
+	-- stub options table to show in Interface Options
 	local options = CopyTable(self.options)
 	options.args.load = {
+		type = "execute",
 		name = L["Load config"],
 		desc = L["Load configuration options"],
-		type = "execute",
 		func = "ShowConfig",
 		handler = self,
 	}
 	AceConfig:RegisterOptionsTable("Parrot/Blizzard", options)
-	AceConfigDialog:AddToBlizOptions("Parrot/Blizzard", "Parrot")
+	AceConfigDialog:AddToBlizOptions("Parrot/Blizzard", L["Parrot"])
 
 	self:RegisterChatCommand("parrot", "ShowConfig")
 	self:RegisterChatCommand("par", "ShowConfig")
+
+	local function sink(addon, text, r, g, b, font, size, outline, sticky, location, icon)
+		self:ShowMessage(text, location or "Notification", sticky, r, g, b, font, size, outline, icon)
+	end
+	local function getScrollAreasChoices()
+		local tmp = {}
+		for k, v in next, self:GetScrollAreasChoices() do
+			tmp[#tmp+1] = v
+		end
+		return tmp
+	end
+	self:RegisterSink("Parrot", L["Parrot"], nil, sink, getScrollAreasChoices, true)
 end
 
 function Parrot:OnEnable()

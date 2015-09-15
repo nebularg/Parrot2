@@ -8,7 +8,7 @@
 ## X-Website: http://www.wowace.com/
 ## X-Category: Combat
 ## SavedVariables: ParrotDB
-## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDeformat-3.0, AceGUI-3.0-SharedMediaWidgets
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDeformat-3.0, LibSink-2.0
 ## X-WoWIPortal: ckknight
 ## X-License: GPL v2 or later
 ## Version: @project-version@
