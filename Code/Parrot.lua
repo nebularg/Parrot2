@@ -87,6 +87,7 @@ local defaults = {
 	profile = {
 		gameText = false,
 		gameDamage = false,
+		gamePetDamage = false,
 		gameHealing = false,
 	}
 }
@@ -144,13 +145,25 @@ function Parrot:OnInitialize()
 	self:RegisterSink("Parrot", L["Parrot"], nil, sink, getScrollAreasChoices, true)
 end
 
-function Parrot:OnEnable()
+function Parrot:UpdateFCT()
 	if db.gameText then
-		SetCVar("CombatDamage", db.gameDamage and "1" or "0")
-		SetCVar("CombatHealing", db.gameHealing and "1" or "0")
-		SetCVar("CombatLogPeriodicSpells", 1)
-		SetCVar("PetMeleeDamage", 1)
+		local damage = db.gameDamage and "1" or "0"
+		SetCVar("floatingCombatTextCombatDamage", damage)
+		SetCVar("floatingCombatTextCombatLogPeriodicSpells", damage)
+
+		local petDamage = db.gamePetDamage and "1" or "0"
+		SetCVar("floatingCombatTextPetMeleeDamage", petDamage)
+		SetCVar("floatingCombatTextPetSpellDamage", petDamage)
+
+		local healing = db.gameHealing and "1" or "0"
+		SetCVar("floatingCombatTextCombatHealing", healing)
+		SetCVar("floatingCombatTextCombatHealingAbsorbTarget", healing)
+		SetCVar("floatingCombatTextCombatHealingAbsorbSelf", healing)
 	end
+end
+
+function Parrot:OnEnable()
+	self:UpdateFCT()
 end
 
 -- Event handling
@@ -273,8 +286,7 @@ end
 function Parrot:OnOptionsCreate()
 	local function setCVarOption(info, value)
 		db[info[#info]] = value
-		SetCVar("CombatDamage", db.gameDamage and "1" or "0")
-		SetCVar("CombatHealing", db.gameHealing and "1" or "0")
+		self:UpdateFCT()
 	end
 
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
@@ -302,19 +314,27 @@ function Parrot:OnOptionsCreate()
 					},
 					gameDamage = {
 						type = "toggle",
-						name = L["Game damage"],
-						desc = L["Whether to show damage over the enemy's heads."],
+						name = _G.SHOW_DAMAGE_TEXT, -- Damage
+						desc = _G.OPTION_TOOLTIP_SHOW_DAMAGE, -- Display damage numbers over hostile creatures when damaged.
 						disabled = function() return not db.gameText end,
 						set = setCVarOption,
 						order = 2,
 					},
-					gameHealing = {
+					gamePetDamage = {
 						type = "toggle",
-						name = L["Game healing"],
-						desc = L["Whether to show healing over the enemy's heads."],
+						name = _G.SHOW_PET_MELEE_DAMAGE, -- Pet Damage
+						desc = _G.OPTION_TOOLTIP_SHOW_PET_MELEE_DAMAGE, -- Show damage caused by your pet.
 						disabled = function() return not db.gameText end,
 						set = setCVarOption,
 						order = 3,
+					},
+					gameHealing = {
+						type = "toggle",
+						name = _G.SHOW_COMBAT_HEALING, -- Healing
+						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_HEALING, -- Display amount of healing you did to the target.
+						disabled = function() return not db.gameText end,
+						set = setCVarOption,
+						order = 4,
 					},
 				},
 			},
