@@ -201,24 +201,6 @@ local defaultTriggers = {
 		color = "ffff00",
 		disabled = true,
 	}]],
-	[1016] = [[{
-		-- Maelstrom Weapon = 53817
-		name = L["%s!"]:format(GetSpellInfo(53817)),
-		icon = 53817,
-		spec = { SHAMAN = "263" },
-		conditions = {
-			["Aura stack gain"] = {
-				{
-					spell = GetSpellInfo(53817),
-					unit = "player",
-					auraType = "BUFF",
-					amount = 5,
-				},
-			},
-		},
-		sticky = true,
-		color = "0000ff",
-	}]],
 	[1017] = [[{
 		-- Freezing Fog = 59052
 		name = L["%s!"]:format(GetSpellInfo(59052)),
@@ -253,23 +235,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "0000ff",
 	}]],
-	[1021] = [[{
-		-- Brain Freeze = 57761
-		name = L["%s!"]:format(GetSpellInfo(44549)),
-		icon = 57761,
-		spec = { MAGE = "64" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(57761),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "0000ff",
-	}]],
 	[1022] = [[{
 		-- Sudden Death = 52437
 		name = L["%s!"]:format(GetSpellInfo(52437)),
@@ -282,46 +247,6 @@ local defaultTriggers = {
 					unit = "player",
 					auraType = "BUFF",
 				},
-			},
-		},
-		sticky = true,
-		color = "ff0000",
-	}]],
-	[1025] = [[{
-		-- The Art of War
-		name = GetSpellInfo(59578),
-		icon = 59578,
-		spec = { PALADIN = "70" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(59578),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
-	[1026] = [[{
-		-- Kill shot
-		name = L["%s!"]:format(GetSpellInfo(53351)),
-		icon = 53351,
-		spec = { HUNTER = "253;254;255" },
-		conditions = {
-			["Unit health"] = {
-				[1] = {
-					unit = "target",
-					friendly = 0,
-					amount = 0.2,
-					comparator = "<=",
-				},
-			},
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(53351),
 			},
 		},
 		sticky = true,
@@ -380,42 +305,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff0000",
 	}]],
-	[1034] = [[{
-		-- Shadow Infusion
-		name = L["%s!"]:format(GetSpellInfo(91342)),
-		icon = 91342,
-		spec = { DEATHKNIGHT = "250" },
-		conditions = {
-			["Aura stack gain"] = {
-				[1] = {
-					unit = "pet",
-					spell = GetSpellInfo(91342),
-					auraType = "BUFF",
-					amount = 5,
-				},
-			},
-		},
-		sticky = true,
-		color = "00ff00",
-	}]],
-	[1035] = [[{
-		-- Focus Fire
-		name = L["%s!"]:format(GetSpellInfo(82692)),
-		icon = 82692,
-		spec = { HUNTER = "253" },
-		conditions = {
-			["Aura stack gain"] = {
-				[1] = {
-					unit = "pet",
-					spell = GetSpellInfo(19615),
-					auraType = "BUFF",
-					amount = 5,
-				},
-			},
-		},
-		sticky = true,
-		color = "ff7563",
-	}]],
 	[1038] = [[{
 		-- Ultimatum
 		name = L["%s!"]:format(GetSpellInfo(122510)),
@@ -432,23 +321,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "00d0ff",
-	}]],
-	[1039] = [[{
-		-- Bloodsurge
-		name = L["%s!"]:format(GetSpellInfo(46916)),
-		icon = 46916,
-		spec = { WARRIOR = "72" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(46916),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff0300",
 	}]],
 	[1040] = [[{
 		-- Raging Blow!
@@ -594,23 +466,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ddb800",
 	}]],
-	[1048] = [[{
-		-- Molten Core
-		name = L["%s!"]:format(GetSpellInfo(122351)),
-		icon = 122351,
-		spec = { WARLOCK = "266" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(122351),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "8d2e00",
-	}]],
 	-- start new entries at 1050
 }
 
@@ -688,7 +543,7 @@ do
 	local function hasMissingSpellIds(code)
 		for spellId in code:gmatch("GetSpellInfo%((%d+)%)") do
 			if not GetSpellInfo(spellId) then
-				print("Cannot create trigger because spell with ID ", spellId, " is missing")
+				print("Parrot: Trigger spell missing:", spellId)
 				return true
 			end
 		end
