@@ -86,9 +86,12 @@ local db = nil
 local defaults = {
 	profile = {
 		gameText = false,
+		gameSelf = false,
 		gameDamage = false,
 		gamePetDamage = false,
 		gameHealing = false,
+		gameLowHealth = false,
+		gameReactives = false,
 	}
 }
 
@@ -145,20 +148,60 @@ function Parrot:OnInitialize()
 	self:RegisterSink("Parrot", L["Parrot"], nil, sink, getScrollAreasChoices, true)
 end
 
-function Parrot:UpdateFCT()
-	if db.gameText then
-		local damage = db.gameDamage and "1" or "0"
-		SetCVar("floatingCombatTextCombatDamage", damage)
-		SetCVar("floatingCombatTextCombatLogPeriodicSpells", damage)
+do
+	local fct = {
+	  "enableFloatingCombatText",
+	  "floatingCombatTextCombatDamage",
+	  "floatingCombatTextCombatDamageAllAutos",
+	  "floatingCombatTextCombatLogPeriodicSpells",
+	  "floatingCombatTextPetMeleeDamage",
+	  "floatingCombatTextPetSpellDamage",
+	  "floatingCombatTextCombatHealing",
+	  "floatingCombatTextCombatHealingAbsorbTarget",
+	  "floatingCombatTextCombatHealingAbsorbSelf",
+	  "floatingCombatTextReactives",
+	  "floatingCombatTextLowManaHealth",
+		-- the rest default to off and we don't have toggles for them
+	  -- "floatingCombatTextCombatState",
+	  -- "floatingCombatTextDodgeParryMiss",
+	  -- "floatingCombatTextDamageReduction",
+	  -- "floatingCombatTextRepChanges",
+	  -- "floatingCombatTextFriendlyHealers",
+	  -- "floatingCombatTextComboPoints",
+	  -- "floatingCombatTextEnergyGains",
+	  -- "floatingCombatTextPeriodicEnergyGains",
+	  -- "floatingCombatTextHonorGains",
+	  -- "floatingCombatTextAuras",
+	  -- "floatingCombatTextAllSpellMechanics",
+	  -- "floatingCombatTextSpellMechanics",
+	  -- "floatingCombatTextSpellMechanicsOther",
+	}
 
-		local petDamage = db.gamePetDamage and "1" or "0"
-		SetCVar("floatingCombatTextPetMeleeDamage", petDamage)
-		SetCVar("floatingCombatTextPetSpellDamage", petDamage)
+	function Parrot:UpdateFCT()
+		if db.gameText then
+			SetCVar("enableFloatingCombatText", db.gameSelf and "1" or "0")
 
-		local healing = db.gameHealing and "1" or "0"
-		SetCVar("floatingCombatTextCombatHealing", healing)
-		SetCVar("floatingCombatTextCombatHealingAbsorbTarget", healing)
-		SetCVar("floatingCombatTextCombatHealingAbsorbSelf", healing)
+			local damage = db.gameDamage and "1" or "0"
+			SetCVar("floatingCombatTextCombatDamage", damage)
+			SetCVar("floatingCombatTextCombatDamageAllAutos", damage)
+			SetCVar("floatingCombatTextCombatLogPeriodicSpells", damage)
+
+			local petDamage = db.gamePetDamage and "1" or "0"
+			SetCVar("floatingCombatTextPetMeleeDamage", petDamage)
+			SetCVar("floatingCombatTextPetSpellDamage", petDamage)
+
+			local healing = db.gameHealing and "1" or "0"
+			SetCVar("floatingCombatTextCombatHealing", healing)
+			SetCVar("floatingCombatTextCombatHealingAbsorbTarget", healing)
+			SetCVar("floatingCombatTextCombatHealingAbsorbSelf", healing)
+
+			SetCVar("floatingCombatTextReactives", db.gameLowHealth and "1" or "0")
+			SetCVar("floatingCombatTextLowManaHealth", db.gameReactives and "1" or "0")
+		else
+			for _, var in next, fct do
+				SetCVar(var, GetCVarDefault(var))
+			end
+		end
 	end
 end
 
@@ -302,14 +345,21 @@ function Parrot:OnOptionsCreate()
 			gameText = {
 				type = "group",
 				inline = true,
-				name = L["Game options"],
-				set = function(info, value) db[info[#info]] = value end,
+				name = _G.COMBAT_TEXT_LABEL, -- Floating Combat Text
 				get = function(info) return db[info[#info]] end,
+				set = setCVarOption,
 				args = {
 					gameText = {
 						type = "toggle",
 						name = L["Control game options"],
 						desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
+						order = 0,
+					},
+					gameSelf = {
+						type = "toggle",
+						name = _G.COMBAT_SELF, -- Combat Self
+						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_TEXT, -- Checking this will enable additional combat messages to appear in the playfield.
+						disabled = function() return not db.gameText end,
 						order = 1,
 					},
 					gameDamage = {
@@ -317,7 +367,6 @@ function Parrot:OnOptionsCreate()
 						name = _G.SHOW_DAMAGE_TEXT, -- Damage
 						desc = _G.OPTION_TOOLTIP_SHOW_DAMAGE, -- Display damage numbers over hostile creatures when damaged.
 						disabled = function() return not db.gameText end,
-						set = setCVarOption,
 						order = 2,
 					},
 					gamePetDamage = {
@@ -325,7 +374,6 @@ function Parrot:OnOptionsCreate()
 						name = _G.SHOW_PET_MELEE_DAMAGE, -- Pet Damage
 						desc = _G.OPTION_TOOLTIP_SHOW_PET_MELEE_DAMAGE, -- Show damage caused by your pet.
 						disabled = function() return not db.gameText end,
-						set = setCVarOption,
 						order = 3,
 					},
 					gameHealing = {
@@ -333,8 +381,21 @@ function Parrot:OnOptionsCreate()
 						name = _G.SHOW_COMBAT_HEALING, -- Healing
 						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_HEALING, -- Display amount of healing you did to the target.
 						disabled = function() return not db.gameText end,
-						set = setCVarOption,
 						order = 4,
+					},
+					gameLowHealth = {
+						type = "toggle",
+						name = _G.COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT, -- Low Mana & Health
+						desc = _G.OPTION_TOOLTIP_COMBAT_TEXT_SHOW_LOW_HEALTH_MANA, -- Shows a message when you fall below 20% mana or health.
+						disabled = function() return not db.gameText end,
+						order = 5,
+					},
+					gameReactives = {
+						type = "toggle",
+						name = _G.COMBAT_TEXT_SHOW_REACTIVES_TEXT, -- Spell Alerts
+						desc = _G.OPTION_TOOLTIP_COMBAT_TEXT_SHOW_REACTIVES, -- Show alerts when certain important events occur.
+						disabled = function() return not db.gameText end,
+						order = 6,
 					},
 				},
 			},
