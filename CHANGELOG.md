@@ -2,6 +2,7 @@
 * improve game option handling
 * fix removed spells
 * update trigger power types
+* add LibDualSpec
 * mark compatible with 7.0
 
 ## v1.12.0:

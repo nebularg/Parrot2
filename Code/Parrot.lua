@@ -106,6 +106,7 @@ end
 
 function Parrot:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("ParrotDB", defaults, true)
+  LibStub("LibDualSpec-1.0"):EnhanceDatabase(self.db, "Parrot")
 	db = self.db.profile
 
 	self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
@@ -334,6 +335,7 @@ function Parrot:OnOptionsCreate()
 
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
 	self.options.args.profiles.order = -1
+	LibStub("LibDualSpec-1.0"):EnhanceOptions(self.options.args.profiles, self.db)
 
 	self:AddOption("general", {
 		type = "group",
