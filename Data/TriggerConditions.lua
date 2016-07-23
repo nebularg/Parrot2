@@ -1120,20 +1120,3 @@ Parrot:RegisterSecondaryTriggerCondition {
 		return func()
 	end,
 }
-
-Parrot:RegisterSecondaryTriggerCondition {
-	name = "Active talents",
-	localName = L["Active talents"],
-	defaultParam = 1,
-	exclusive = true,
-	param = {
-		type = 'select',
-		values = {
-			[1] = L["Primary"],
-			[2] = L["Secondary"],
-		},
-	},
-	check = function(param)
-		return GetActiveSpecGroup() == param
-	end,
-}

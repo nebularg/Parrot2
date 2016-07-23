@@ -639,7 +639,6 @@ L["Your total amount of the currency."] = true
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions_Data", "enUS", true, debug)
 L["<Skill name>"] = true
-L["Active talents"] = true
 L["Amount"] = true
 L["Amount of damage to compare with"] = true
 L["Amount of health to compare"] = true
