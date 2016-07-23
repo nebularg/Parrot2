@@ -1,12 +1,10 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "AceTimer-3.0")
 local Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 local Parrot_Display = Parrot:GetModule("Display")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
-
-local newList, del = Parrot.newList, Parrot.del
 
 local db = nil
 local defaults = {
@@ -85,6 +83,7 @@ function Parrot_ScrollAreas:OnDisable()
 end
 
 -- Register ConfigMode callback (http://wowpedia.org/ConfigMode)
+-- luacheck: globals CONFIGMODE_CALLBACKS
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
 CONFIGMODE_CALLBACKS["Parrot"] = function(state)
 	setConfigMode(state == "ON")
@@ -103,7 +102,7 @@ local function hideAllOffsetBoxes()
 	if not offsetBoxes then
 		return
 	end
-	for k,v in pairs(offsetBoxes) do
+	for k,v in next, offsetBoxes do
 		v:Hide()
 	end
 	Parrot_ScrollAreas:CancelTimer(configModeTimer)
@@ -193,7 +192,6 @@ local function test(kind, k)
 	local h = currentColor / 60
 	local i = math.floor(h)
 	local f = h - i
-	local color
 	local r, g, b
 	if i == 0 then
 		r, g, b = 1, f, 0
@@ -213,16 +211,18 @@ local function test(kind, k)
 	currentColor = (currentColor + 10) % 360
 end
 
-
-local num = 0
-local function configModeMessages()
-	num = num%2 + 1
-	for k in next, scrollAreas do
-		test("normal", k)
-	end
-	if num == 2 then
+local configModeMessages
+do
+	local num = 0
+	function configModeMessages()
+		num = num % 2 + 1
 		for k in next, scrollAreas do
-			test("sticky", k)
+			test("normal", k)
+		end
+		if num == 2 then
+			for k in next, scrollAreas do
+				test("sticky", k)
+			end
 		end
 	end
 end
@@ -251,12 +251,12 @@ end
 
 function Parrot_ScrollAreas:GetRandomScrollArea()
 	local i = 0
-	for k, v in pairs(scrollAreas) do
+	for k, v in next, scrollAreas do
 		i = i + 1
 	end
 	local num = math.random(1, i)
 	i = 0
-	for k, v in pairs(scrollAreas) do
+	for k, v in next, scrollAreas do
 		i = i + 1
 		if i == num then
 			return k, v
@@ -409,9 +409,9 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		local kind, k = info.arg[1], info.arg[2]
 		scrollAreas[k][kind == "normal" and "animationStyle" or "stickyAnimationStyle"] = value
 		local opt = scrollAreas_opt.args[tostring(scrollAreas[k])]
-		local choices = Parrot_AnimationStyles:GetAnimationStyleDirectionChoices(value)
-		opt.args.direction.args[kind].values = choices
-		if not choices[scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"]] then
+		local directionValues = Parrot_AnimationStyles:GetAnimationStyleDirectionChoices(value)
+		opt.args.direction.args[kind].values = directionValues
+		if not directionValues[scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"]] then
 			scrollAreas[k][kind == "normal" and "direction" or "stickyDirection"] = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection(value)
 		end
 		if not configMode then
@@ -544,7 +544,6 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 	}
 
 	local function makeOption(k)
-		local SharedMedia = LibStub("LibSharedMedia-3.0")
 		local v = scrollAreas[k]
 		local name = choicesBase[k] or k
 		local opt = {

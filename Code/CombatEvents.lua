@@ -1,9 +1,8 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
 local Parrot_Display
 local Parrot_ScrollAreas
-local Parrot_TriggerConditions
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
@@ -13,16 +12,16 @@ local debug = Parrot.debug
 
 -- lookup-table for damage-types
 local LS = {
-	["Physical"] = STRING_SCHOOL_PHYSICAL,
-	["Holy"] = STRING_SCHOOL_HOLY,
-	["Fire"] = STRING_SCHOOL_FIRE,
-	["Nature"] = STRING_SCHOOL_NATURE,
-	["Frost"] = STRING_SCHOOL_FROST,
-	["Frostfire"] = STRING_SCHOOL_FROSTFIRE,
-	["Froststorm"] = STRING_SCHOOL_FROSTSTORM,
-	["Shadow"] = STRING_SCHOOL_SHADOW,
-	["Shadowstorm"] = STRING_SCHOOL_SHADOWSTORM,
-	["Arcane"] = STRING_SCHOOL_ARCANE,
+	["Physical"] = _G.STRING_SCHOOL_PHYSICAL,
+	["Holy"] = _G.STRING_SCHOOL_HOLY,
+	["Fire"] = _G.STRING_SCHOOL_FIRE,
+	["Nature"] = _G.STRING_SCHOOL_NATURE,
+	["Frost"] = _G.STRING_SCHOOL_FROST,
+	["Frostfire"] = _G.STRING_SCHOOL_FROSTFIRE,
+	["Froststorm"] = _G.STRING_SCHOOL_FROSTSTORM,
+	["Shadow"] = _G.STRING_SCHOOL_SHADOW,
+	["Shadowstorm"] = _G.STRING_SCHOOL_SHADOWSTORM,
+	["Arcane"] = _G.STRING_SCHOOL_ARCANE,
 }
 
 local UNKNOWN = _G.UNKNOWN
@@ -186,7 +185,6 @@ function Parrot_CombatEvents:OnInitialize()
 
 	Parrot_Display = Parrot:GetModule("Display")
 	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
-	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
 
 	-- Register with Addons CombatLogEvent-registry for uid-stuff
 	Parrot:RegisterCombatLog(self)
@@ -243,11 +241,10 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 	if style == "none" then
 		return name
 	end
-	local len = 0
+	local name_len = 0
 	local i = 1
-	local name_len = #name
-	while i <= name_len do
-		len = len + 1
+	while i <= #name do
+		name_len = name_len + 1
 		local b = name:byte(i)
 		if b <= 127 then
 			i = i + 1
@@ -260,7 +257,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 		end
 	end
 	local neededLen = db.abbreviateLength
-	if len < neededLen then
+	if name_len < neededLen then
 		return name
 	end
 	if style == "abbreviate" then
@@ -272,7 +269,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 			t = del(t)
 			return name
 		end
-		local i = 0
+		i = 0
 		while i < #t do
 			i = i + 1
 			if t[i] == "" then
@@ -284,7 +281,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 			t = del(t)
 			return name
 		end
-		for i = 1, #t do
+		for j = 1, #t do
 			local len
 			local b = t[i]:byte(1)
 			if b <= 127 then
@@ -297,14 +294,14 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 				len = 4
 			end
 			if len then
-				local alpha, bravo = t[i]:sub(1, len), t[i]:sub(len+1)
+				local alpha, bravo = t[j]:sub(1, len), t[j]:sub(len+1)
 				if bravo:find(":") then
-					t[i] = alpha .. ":"
+					t[j] = alpha .. ":"
 				else
-					t[i] = alpha
+					t[j] = alpha
 				end
 			else
-				t[i] = ""
+				t[j] = ""
 			end
 		end
 		local s = table.concat(t)
@@ -634,19 +631,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	}
 	Parrot:AddOption('events', events_opt)
 
-	-- Event modifiers
-	local tmp = newDict(
-		'crit', L["Critical hits/heals"],
-		'crushing', L["Crushing blows"],
-		'glancing', L["Glancing hits"],
-		'absorb', L["Partial absorbs"],
-		'block', L["Partial blocks"],
-		'resist', L["Partial resists"],
-		'vulnerable', L["Vulnerability bonuses"],
-		'overheal', L["Overheals"],
-		'overkill', L["Overkills"]
-	)
-
 	local handler__tagTranslations
 	local function handler(literal)
 		local inner = literal:sub(2, -2)
@@ -661,98 +645,115 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		end
 		return "[" .. inner:gsub("(%b[])", handler) .. "]"
 	end
-	local function setTag(info, value)
-		handler__tagTranslations = modifierTranslationHelps[info.arg]
-		db.modifier[info.arg].tag = value:gsub("(%b[])", handler)
-		handler__tagTranslations = nil
-	end
 
-	local function getModifierColor(info)
-		return hexColorToTuple(db.modifier[info.arg].color)
-	end
-	local function setModifierColor(info, r, g, b)
-		db.modifier[info.arg].color = tupleToHexColor(r, g, b)
-	end
-
-	for k,v in pairs(tmp) do
-		local usage = L["<Tag>"]
-		local translationHelp = modifierTranslationHelps[k]
-		if translationHelp then
-			local tags = newList()
-			for tag in next, translationHelp do
-				tags[#tags+1] = tag
-			end
-			table.sort(tags)
-			for _, tag in ipairs(tags) do
-				usage = string.format("%s\n[%s] => %s", usage, tag, translationHelp[tag])
-			end
-			tags = del(tags)
+	do
+		-- Event modifiers
+		local tmp = newDict(
+			'crit', L["Critical hits/heals"],
+			'crushing', L["Crushing blows"],
+			'glancing', L["Glancing hits"],
+			'absorb', L["Partial absorbs"],
+			'block', L["Partial blocks"],
+			'resist', L["Partial resists"],
+			'vulnerable', L["Vulnerability bonuses"],
+			'overheal', L["Overheals"],
+			'overkill', L["Overkills"]
+		)
+		local function setTag(info, value)
+			handler__tagTranslations = modifierTranslationHelps[info.arg]
+			db.modifier[info.arg].tag = value:gsub("(%b[])", handler)
+			handler__tagTranslations = nil
 		end
-		events_opt.args.modifier.args[k] = {
-			type = 'group',
-			name = v,
-			desc = v,
-			get = getSubOptionFromArg,
-			set = setSubOptionFromArg,
-			args = {
-				enabled = {
-					type = 'toggle',
-					name = L["Enabled"],
-					desc = L["Whether to enable showing this event modifier."],
-					order = -1,
-					arg = k,
-				},
-				color = {
-					type = 'color',
-					name = L["Color"],
-					desc = L["What color this event modifier takes on."],
-					get = getModifierColor,
-					set = setModifierColor,
-					arg = k,
-				},
-				tag = {
-					type = 'input',
-					name = L["Text"],
-					desc = L["What text this event modifier shows."],
-					usage = usage,
-					set = setTag,
-					arg = k,
-				},
-			}
-		}
-	end
-	tmp = del(tmp)
 
-	-- Damage types
-	local tmp = newDict(
-		"Physical", LS["Physical"],
-		"Holy", LS["Holy"],
-		"Fire", LS["Fire"],
-		"Nature", LS["Nature"],
-		"Frost", LS["Frost"],
-		"Shadow", LS["Shadow"],
-		"Arcane", LS["Arcane"],
-		"Frostfire", LS["Frostfire"],
-		"Froststorm", LS["Froststorm"],
-		"Shadowstorm", LS["Shadowstorm"]
-	)
-	local function getColor(info)
-		return hexColorToTuple(db.damageTypes[info.arg])
+		local function getModifierColor(info)
+			return hexColorToTuple(db.modifier[info.arg].color)
+		end
+		local function setModifierColor(info, r, g, b)
+			db.modifier[info.arg].color = tupleToHexColor(r, g, b)
+		end
+
+		for k,v in pairs(tmp) do
+			local usage = L["<Tag>"]
+			local translationHelp = modifierTranslationHelps[k]
+			if translationHelp then
+				local tags = newList()
+				for tag in next, translationHelp do
+					tags[#tags+1] = tag
+				end
+				table.sort(tags)
+				for _, tag in ipairs(tags) do
+					usage = string.format("%s\n[%s] => %s", usage, tag, translationHelp[tag])
+				end
+				tags = del(tags)
+			end
+			events_opt.args.modifier.args[k] = {
+				type = 'group',
+				name = v,
+				desc = v,
+				get = getSubOptionFromArg,
+				set = setSubOptionFromArg,
+				args = {
+					enabled = {
+						type = 'toggle',
+						name = L["Enabled"],
+						desc = L["Whether to enable showing this event modifier."],
+						order = -1,
+						arg = k,
+					},
+					color = {
+						type = 'color',
+						name = L["Color"],
+						desc = L["What color this event modifier takes on."],
+						get = getModifierColor,
+						set = setModifierColor,
+						arg = k,
+					},
+					tag = {
+						type = 'input',
+						name = L["Text"],
+						desc = L["What text this event modifier shows."],
+						usage = usage,
+						set = setTag,
+						arg = k,
+					},
+				}
+			}
+		end
+		tmp = del(tmp)
 	end
-	local function setColor(info, r, g, b)
-		db.damageTypes[info.arg] = tupleToHexColor(r, g, b)
+
+	do
+		-- Damage types
+		local tmp = newDict(
+			"Physical", LS["Physical"],
+			"Holy", LS["Holy"],
+			"Fire", LS["Fire"],
+			"Nature", LS["Nature"],
+			"Frost", LS["Frost"],
+			"Shadow", LS["Shadow"],
+			"Arcane", LS["Arcane"],
+			"Frostfire", LS["Frostfire"],
+			"Froststorm", LS["Froststorm"],
+			"Shadowstorm", LS["Shadowstorm"]
+		)
+		local function getColor(info)
+			return hexColorToTuple(db.damageTypes[info.arg])
+		end
+		local function setColor(info, r, g, b)
+			db.damageTypes[info.arg] = tupleToHexColor(r, g, b)
+		end
+		for k,v in pairs(tmp) do
+			events_opt.args.damageTypes.args[k] = {
+				type = 'color',
+				name = v,
+				desc = L["What color this damage type takes on."],
+				get = getColor,
+				set = setColor,
+				arg = k,
+			}
+		end
+		tmp = del(tmp)
 	end
-	for k,v in pairs(tmp) do
-		events_opt.args.damageTypes.args[k] = {
-			type = 'color',
-			name = v,
-			desc = L["What color this damage type takes on."],
-			get = getColor,
-			set = setColor,
-			arg = k,
-		}
-	end
-	tmp = del(tmp)
 
 	-- CombatEvents
 	local function getArgs(info)
@@ -1534,9 +1535,9 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 
 	if data.combatLogEvents then
 		for eventType, v in pairs(data.combatLogEvents) do
-			if type(v.func) ~= 'function' then
-				--	error(("Bad argument #2 to `RegisterCombatEvent'. func must be a %q, got %q."):format("function", type(v.func)))
-			end
+			-- if type(v.func) ~= 'function' then
+			-- 	error(("Bad argument #2 to `RegisterCombatEvent'. func must be a %q, got %q."):format("function", type(v.func)))
+			-- end
 			if not combatLogEvents[eventType] then
 				combatLogEvents[eventType] = {}
 			end
@@ -1660,7 +1661,7 @@ local function handler(literal)
 			return tostring(handler__info[value] or UNKNOWN)
 		end
 	else
-		local value = inner:gsub("(%b[])", handler)
+		value = inner:gsub("(%b[])", handler)
 		return ("[%s]"):format(value)
 	end
 end
@@ -1755,9 +1756,7 @@ local STHROTTLE = _G.newproxy() -- for spell-throttle
 -- #NODOC
 function Parrot_CombatEvents:RunThrottle(force)
 	local now = GetTime()
-	local action = false
 	for throttleType,w in pairs(throttleData) do
-		action = true
 		local goodTime = now
 		local waitStyle = throttleWaitStyles[throttleType]
 		if not waitStyle then
@@ -1778,7 +1777,7 @@ function Parrot_CombatEvents:RunThrottle(force)
 					if not waitStyle2 then
 						if force or goodTime2 >= info[LAST_TIME] then
 							local todel = true
-							for k,v in pairs(info) do
+							for k in pairs(info) do
 								if k ~= LAST_TIME and k ~= STHROTTLE then
 									todel = false
 									break

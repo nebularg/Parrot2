@@ -1,4 +1,4 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "AceEvent-3.0")
 local Parrot_Triggers
@@ -6,8 +6,6 @@ local Parrot_Triggers
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions")
 
 local del = Parrot.del
-
-local _, playerClass = UnitClass("player")
 
 local conditions = {}
 local secondaryConditions = {}
@@ -36,7 +34,7 @@ table.insert(onDisableFuncs, function() Parrot:UnregisterCombatLog(Parrot_Trigge
 
 -- #NODOC
 function Parrot_TriggerConditions:EventHandler(uid, event, arg1, ...)
-	for _, data in pairs(conditions) do
+	for _, data in next, conditions do
 		if data.events then
 			local info = data.events[event]
 			if type(info) == "function" then

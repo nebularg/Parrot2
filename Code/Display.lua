@@ -1,4 +1,4 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local Parrot_Display = Parrot:NewModule("Display", "AceHook-3.0")
 local Parrot_AnimationStyles
@@ -319,9 +319,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 	end
 
 	if tex then
-		if scrollArea.iconSide == "CENTER" then
-
-		elseif scrollArea.iconSide == "RIGHT" then
+		if scrollArea.iconSide == "RIGHT" then
 			tex:SetPoint("LEFT", fs, "RIGHT", 3, 0)
 			fs:SetPoint("LEFT", frame, "LEFT")
 		else
@@ -408,28 +406,28 @@ end
 
 function Parrot_Display:OnUpdate()
 	local now = GetTime()
-	for scrollArea, u in pairs(wildFrames) do
-		for animationStyle, t in pairs(u) do
+	for scrollArea, u in next, wildFrames do
+		for animationStyle, t in next, u do
 			local t_len = #t
 			local lastFrame = newList()
 			for i, frame in ipairs(t) do
 				local start, length = frame.start, t.length
 				if start + length <= now then
 					for j = i, t_len do
-						local frame = t[j]
+						local f = t[j]
 						local cleanup = animationStyle.cleanup
 						if cleanup then
-							cleanup(frame, scrollArea.xOffset, scrollArea.yOffset, scrollArea.size, scrollArea[frame.sticky and "stickyDirection" or "direction"] or animationStyle.defaultDirection, frame.id)
+							cleanup(f, scrollArea.xOffset, scrollArea.yOffset, scrollArea.size, scrollArea[f.sticky and "stickyDirection" or "direction"] or animationStyle.defaultDirection, f.id)
 						end
-						frame:Hide()
+						f:Hide()
 						t[j] = nil
-						freeFrames[frame] = true
-						local fs = frame.fs
+						freeFrames[f] = true
+						local fs = f.fs
 						fs:Hide()
 						fs:SetParent(ParrotFrame)
 						freeFontStrings[fs] = true
-						local icon = frame.icon
-						frame.icon = nil
+						local icon = f.icon
+						f.icon = nil
 						if icon then
 							freeTextures[icon] = true
 							icon:Hide()
@@ -457,7 +455,6 @@ function Parrot_Display:OnUpdate()
 				if animationStyle.overlap then
 					for h = #lastFrame, 1, -1 do
 						if isOverlapping(lastFrame[h], frame) then
-							local done = false
 							local minimum = percent
 							local maximum = 1
 							local current = (percent + maximum) / 2
@@ -524,9 +521,9 @@ local function makeflasher()
 				return
 			end
 			local alpha = 1 - math.abs(elapsed - 0.5)
-			if elapsed > 0.2 then
-				--alpha = 0.4 - alpha
-			end
+			-- if elapsed > 0.2 then
+			-- 	alpha = 0.4 - alpha
+			-- end
 			self:SetAlpha(alpha * 0.7)
 			self.elapsed = elapsed
 	end)

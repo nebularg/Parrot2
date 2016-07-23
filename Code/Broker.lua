@@ -1,14 +1,15 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local ldbdata = {
 	type = "launcher",
 	icon = "Interface\\Icons\\Spell_Nature_ForceOfNature",
-	OnClick = function(_, msg)
-		if msg == "LeftButton" then
+	OnClick = function(_, button)
+		if button == "LeftButton" then
 			Parrot:ShowConfig()
 		end
 	end,
-	label = "Parrot",
+	label = L["Parrot"],
 }
 
 LibStub("LibDataBroker-1.1"):NewDataObject("Parrot", ldbdata)

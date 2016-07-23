@@ -1,6 +1,6 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
-local mod = Parrot:NewModule("PointGains")
+local Parrot_PointGains = Parrot:NewModule("PointGains")
 
 local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 
@@ -11,7 +11,7 @@ local newDict, newList = Parrot.newDict, Parrot.newList
 
 local currentXP = 0
 
-function mod:OnEnable()
+function Parrot_PointGains:OnEnable()
 	currentXP = UnitXP("player")
 end
 

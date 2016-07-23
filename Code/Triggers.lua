@@ -1,4 +1,4 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0", "AceEvent-3.0")
 local Parrot_TriggerConditions
@@ -9,7 +9,7 @@ local Parrot_CombatEvents
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
-local newList, newDict, del = Parrot.newList, Parrot.newDict, Parrot.del
+local newList, del = Parrot.newList, Parrot.del
 
 local function newSet(...)
 	local t = newList()
@@ -709,7 +709,7 @@ local function getIconPath(icon)
 		if texture then
 			path = texture
 		else
-			local _, _, _, _, _, _, _, _, _, texture = GetItemInfo(icon)
+			_, _, _, _, _, _, _, _, _, texture = GetItemInfo(icon)
 			if texture then
 				path = texture
 			else
@@ -1237,17 +1237,15 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function addCondition(i, t, name, localName, index, primary)
 		-- the only stuff that is different about adding primary and secondary conditions
 		local opt, param, default
-		local set, get, remove
+		local set, get
 		if primary then
 			opt = triggers_opt.args[tostring(i)].args.primary
 			param, default = Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
 			set, get = setConditionValue, getConditionValue
-			remove = removePrimaryCondition
 		else
 			opt = triggers_opt.args[tostring(i)].args.secondary
 			param, default = Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
 			set, get = setSecondaryConditionValue, getSecondaryConditionValue
-			remove = removeSecondaryCondition
 		end
 		if not localName then
 			if t.name then
@@ -1336,7 +1334,6 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function newPrimaryCondition(info, name)
 		local i = getTriggerId(info)
 		local t = info.arg
-		local opt = triggers_opt.args[tostring(i)].args.primary
 		local localName = Parrot_TriggerConditions:GetPrimaryConditionChoices()[name]
 		if Parrot_TriggerConditions:IsExclusive(name) then
 			t.conditions[name] = addPrimaryCondition(i, t, name, localName)
@@ -1377,14 +1374,12 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 
 	local function newSecondaryCondition(info, name)
-                local i = getTriggerId(info)
-                local t = info.arg
-                local opt = triggers_opt.args[tostring(i)].args.secondary
+		local i = getTriggerId(info)
+		local t = info.arg
 		local localName = Parrot_TriggerConditions:GetSecondaryConditionChoices()[name]
 		if not t.secondaryConditions then
 			t.secondaryConditions = {}
 		end
-		local i = getTriggerId(info)
 		if Parrot_TriggerConditions:SecondaryIsExclusive(name) then
 			t.secondaryConditions[name] = addSecondaryCondition(i, t, name, localName)
 		else

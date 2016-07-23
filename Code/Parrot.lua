@@ -12,19 +12,19 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 -- Debug
-Parrot.PARROT_DEBUG_FRAME = ChatFrame4
+Parrot.PARROT_DEBUG_FRAME = _G.ChatFrame4
 Parrot.debug = function(arg1, ...)
 	--@debug@
 	if type(arg1) == "table" then
-		if not DevTools_Dump then
+		if not _G.DevTools_Dump then
 			assert(LoadAddOn("Blizzard_DebugTools"))
 		end
 		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: +++ table-dump")
-		DEVTOOLS_DEPTH_CUTOFF = 2
-		DEFAULT_CHAT_FRAME = Parrot.PARROT_DEBUG_FRAME
-		DevTools_Dump(arg1)
-		DEFAULT_CHAT_FRAME = ChatFrame1
-		DEVTOOLS_DEPTH_CUTOFF = 10
+		_G.DEVTOOLS_DEPTH_CUTOFF = 2
+		_G.DEFAULT_CHAT_FRAME = Parrot.PARROT_DEBUG_FRAME
+		_G.DevTools_Dump(arg1)
+		_G.DEFAULT_CHAT_FRAME = _G.ChatFrame1
+		_G.DEVTOOLS_DEPTH_CUTOFF = 10
 		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: --- end of table-dump")
 		Parrot.debug(...)
 	else

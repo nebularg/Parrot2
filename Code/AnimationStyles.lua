@@ -1,4 +1,4 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local Parrot_AnimationStyles = Parrot:NewModule("AnimationStyles")
 

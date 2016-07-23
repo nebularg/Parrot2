@@ -1,13 +1,12 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local mod = Parrot:NewModule("CombatEventsData")
 
 local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
-local Deformat = LibStub("LibDeformat-3.0")
 
-local newList, newDict, del = Parrot.newList, Parrot.newDict, Parrot.del
+local newList = Parrot.newList
 
 local bit_bor, bit_band = bit.bor, bit.band
 local UnitGUID, UnitPower = UnitGUID, UnitPower
@@ -15,14 +14,6 @@ local GetComboPoints, UnitHasVehicleUI = GetComboPoints, UnitHasVehicleUI
 
 local PET = _G.PET
 local INTERRUPT = _G.INTERRUPT
-local HONOR_CONTRIBUTION_POINTS = _G.HONOR_CONTRIBUTION_POINTS
-local REPUTATION = _G.REPUTATION
-local FACTION_STANDING_INCREASED = _G.FACTION_STANDING_INCREASED
-local FACTION_STANDING_DECREASED = _G.FACTION_STANDING_DECREASED
-local SKILL_RANK_UP = _G.SKILL_RANK_UP
-local XP = _G.XP
-local CURRENCY_GAINED_MULTIPLE = _G.CURRENCY_GAINED_MULTIPLE
-local CURRENCY_GAINED = _G.CURRENCY_GAINED
 local PLAYERSTAT_MELEE_COMBAT = _G.PLAYERSTAT_MELEE_COMBAT
 local UNKNOWN = _G.UNKNOWN
 local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
@@ -217,19 +208,9 @@ local defaultMissColor = {
 -- first some flags
 local TYPE_GUARDIAN = _G.COMBATLOG_OBJECT_TYPE_GUARDIAN
 local TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
-local TYPE_NPC = _G.COMBATLOG_OBJECT_TYPE_NPC
-local TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
-
 local CONTROL_NPC = _G.COMBATLOG_OBJECT_CONTROL_NPC
 local CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
-
-local HOSTILE = _G.COMBATLOG_OBJECT_REACTION_HOSTILE
-local NEUTRAL = _G.COMBATLOG_OBJECT_REACTION_NEUTRAL
 local FRIENDLY = _G.COMBATLOG_OBJECT_REACTION_FRIENDLY
-
-local AFFILIATION_OUTSIDER = _G.COMBATLOG_OBJECT_AFFILIATION_OUTSIDER
-local AFFILIATION_RAID = _G.COMBATLOG_OBJECT_AFFILIATION_RAID
-local AFFILIATION_PARTY = _G.COMBATLOG_OBJECT_AFFILIATION_PARTY
 local AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
 
 -- now some flag-combos that are needed later
@@ -798,7 +779,7 @@ L["Melee deflects"]
 for k,v in pairs(missTypes) do
 	local name = "Melee " .. v
 	local tag = k == "ABSORB" and "%s [Amount]!" or "%s!"
-	local tag = tag:format(_G[k])
+	tag = tag:format(_G[k])
 	local function check( _, _, _, dstGUID, _, _, missType)
 		return (dstGUID == playerGUID and missType == k)
 	end
@@ -840,7 +821,7 @@ L["Skill deflects"]
 for k,v in pairs(missTypes) do
 	local name = "Skill " .. v
 	local tag = k == "ABSORB" and "([Skill]) %s [Amount]!" or "([Skill]) %s!"
-	local tag = tag:format(_G[k])
+	tag = tag:format(_G[k])
 
 	local function check(_, _, _, dstGUID, _, _,_, _, _, missType)
 		return (dstGUID == playerGUID and missType == k)
@@ -1141,7 +1122,7 @@ local petMissColor = {
 for k,v in pairs(missTypes) do
 	local name = "Pet melee " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]!" or "%s %s!"
-	local tag = tag:format(PET, _G[k])
+	tag = tag:format(PET, _G[k])
 	local function check(srcGUID, _, _, dstGUID, _, dstFlags, missType)
 		return missType == k and checkPetInc(nil, nil, nil, dstGUID, nil, dstFlags)
 	end
@@ -1183,7 +1164,7 @@ L["Pet skill deflects"]
 for k,v in pairs(missTypes) do
 	local name = "Pet skill " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]! ([Skill])" or "%s %s! ([Skill])"
-	local tag = tag:format(PET, _G[k])
+	tag = tag:format(PET, _G[k])
 
 	local function check(srcGUID, _, _, dstGUID, _, dstFlags, _, _, _, missType)
 		return missType == k and checkPetInc(nil, nil, nil, dstGUID, nil, dstFlags)
@@ -1381,7 +1362,7 @@ Parrot:RegisterCombatEvent{
 for k,v in pairs(missTypes) do
 	local name = "Melee " .. v
 	local tag = k == "ABSORB" and "%s [Amount]!" or "%s!"
-	local tag = tag:format(_G[k])
+	tag = tag:format(_G[k])
 	local function check( srcGUID, _, _, _, _, _, missType)
 		return (srcGUID == playerGUID and missType == k)
 	end
@@ -1409,7 +1390,7 @@ end
 for k,v in pairs(missTypes) do
 	local name = "Skill " .. v
 	local tag = k == "ABSORB" and "%s [Amount]! ([Skill])" or "%s! ([Skill])"
-	local tag = tag:format(_G[k])
+	tag = tag:format(_G[k])
 	local function check( srcGUID, _, _, _, _, _,_, _, _, missType)
 		return (srcGUID == playerGUID and missType == k)
 	end
@@ -1683,7 +1664,7 @@ Parrot:RegisterCombatEvent{
 for k,v in pairs(missTypes) do
 	local name = "Pet melee " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]!" or "%s %s!"
-	local tag = tag:format(PET, _G[k])
+	tag = tag:format(PET, _G[k])
 
 	local function check(srcGUID, _, srcFlags, _, _, _, missType)
 		return missType == k and checkPetOut(srcGUID, nil, srcFlags)
@@ -1715,7 +1696,7 @@ end
 for k,v in pairs(missTypes) do
 	local name = "Pet skill " .. v
 	local tag = k == "ABSORB" and "%s %s [Amount]! ([Skill])" or "%s %s! ([Skill])"
-	local tag = tag:format(PET, _G[k])
+	tag = tag:format(PET, _G[k])
 
 	local function check(srcGUID, _, srcFlags, _, _, _, _, _, _, missType)
 		return missType == k and checkPetOut(srcGUID, nil, srcFlags)

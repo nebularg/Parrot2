@@ -1,4 +1,4 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_AnimationStyles")
 
@@ -317,7 +317,7 @@ Parrot:RegisterAnimationStyle {
 	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
 		local mod_percent = math.pow(percent, 6)
 		local xDiff = size * mod_percent * 6
-		local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
+		-- local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
 		local point = "LEFT"
 		if direction == "LEFT" or (direction == "ALT" and uid%2 == 0) then
 			xDiff = -xDiff
@@ -351,7 +351,7 @@ Parrot:RegisterAnimationStyle {
 	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
 		local mod_percent = math.pow(percent, 6)
 		local xDiff = size * mod_percent * 6
-		local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
+		-- local yDiff = size * (percent <= 0.5 and percent or 0.5) * 0.2
 		local point = "LEFT"
 		if direction == "LEFT" or (direction == "ALT" and uid%2 == 0) then
 			xDiff = -xDiff
@@ -448,7 +448,6 @@ Parrot:RegisterAnimationStyle {
 			xDiff = percent/0.3 * frame.finishX
 			yDiff = -percent/0.3 * frame.finishY
 		elseif percent < 0.8 then
-			local now = GetTime()
 			xDiff = frame.finishX
 			yDiff = -frame.finishY
 		else
@@ -532,7 +531,7 @@ Parrot:RegisterAnimationStyle {
 
 		local y = yOffset + yDiff
 		local x = xOffset + xDiff
-		local dir, clock = (";"):split(direction)
+		local dir, clock = (";"):split(direction) -- luacheck: ignore
 		local point = "CENTER"
 		if dir == "LEFT" then
 			point = "RIGHT"
@@ -591,7 +590,6 @@ Parrot:RegisterAnimationStyle {
 			xDiff = percent/0.3 * size/2 * cos(frame.angle)
 			yDiff = percent/0.3 * size/2 * sin(frame.angle)
 		elseif percent < 0.8 then
-			local now = GetTime()
 			xDiff = size/2 * cos(frame.angle)
 			yDiff = size/2 * sin(frame.angle)
 		else
@@ -601,7 +599,7 @@ Parrot:RegisterAnimationStyle {
 
 		local y = yOffset + yDiff
 		local x = xOffset + xDiff
-		local dir, clock = (";"):split(direction)
+		local dir, clock = (";"):split(direction) -- luacheck: ignore
 		local point = "CENTER"
 		if dir == "LEFT" then
 			point = "RIGHT"

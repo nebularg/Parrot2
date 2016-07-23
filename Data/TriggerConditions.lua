@@ -1,10 +1,10 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local mod = Parrot:NewModule("TriggerConditionsData", "AceEvent-3.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
 
-local newList, del = Parrot.newList, Parrot.del
+local newList = Parrot.newList
 
 local onEnableFuncs = {}
 

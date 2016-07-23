@@ -1,10 +1,9 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
-local newList, newDict, del = Parrot.newList, Parrot.newDict, Parrot.del
+local newList, newDict = Parrot.newList, Parrot.newDict
 
-local _G = _G
 local PET = _G.PET
 
 local bit_band = bit.band
@@ -850,7 +849,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, count, _, _, _, unitCaster, _, _, spellId = UnitAura(param.unit, param.spell)
+		local name, _, _, _, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -908,7 +907,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, count, _, _, _, unitCaster, _, _, spellId = UnitAura(param.unit, param.spell)
+		local name, _, _, count, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
 		if name and count == param.stackcount then
 			if param.byplayer == true then
 				return unitCaster == "player"

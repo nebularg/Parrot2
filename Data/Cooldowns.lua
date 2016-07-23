@@ -1,4 +1,4 @@
-local Parrot = Parrot
+local Parrot = _G.Parrot
 
 local mod = Parrot:NewModule("Cooldowns", "AceEvent-3.0", "AceTimer-3.0")
 
@@ -59,7 +59,7 @@ function mod:CheckItems()
 			if oldLink then
 				if start == 0 then -- cooldown expired
 					if oldLink == link then
-						local name, _, _, _, _, _, _, _, _, texture = GetItemInfo(link)
+						local name = GetItemInfo(link)
 						Parrot:FirePrimaryTriggerCondition("Item cooldown ready", name)
 
 						--local info = newList(name, texture)
@@ -257,9 +257,9 @@ function mod:OnOptionsCreate()
 			name = spellName,
 			desc = L["Click to remove"],
 			func = function(info)
-				local spellName = info[#info]
-				options.args[spellName] = nil
-				db.filters[spellName] = nil
+				local key = info[#info]
+				options.args[key] = nil
+				db.filters[key] = nil
 				mod:ResetSpells()
 				GameTooltip:Hide()
 			end,
@@ -279,7 +279,7 @@ function mod:OnOptionsCreate()
 		order = 2,
 	}
 
-	for spellName in pairs(db.filters) do
+	for spellName in next, db.filters do
 		addFilter(spellName)
 	end
 
