@@ -1511,10 +1511,6 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 	if type(defaultTag) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. defaultTag must be a %q, got %q."):format("string", type(defaultTag)), 2)
 	end
-	if data.parserEvent then
-		debug(("RegisterCombatEvent: %s uses deprecated entry \"parserEvent\""):format(data.name))
-		-- error("Bad argument #2 to `RegisterCombatEvent'. parserEvent is deprecated")
-	end
 	local tagTranslations = data.tagTranslations
 	if tagTranslations and type(tagTranslations) ~= "table" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. tagTranslations must be a %q or nil, got %q."):format("table", type(tagTranslations)), 2)

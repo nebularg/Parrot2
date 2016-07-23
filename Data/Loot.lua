@@ -120,12 +120,6 @@ Parrot:RegisterCombatEvent{
 	name = "Loot money",
 	localName = L["Loot money"],
 	defaultTag = L["Loot +[Amount]"],
-	parserEvent = {
-		eventType = "Create",
-		sourceID = "player",
-		itemName = false,
-		isCreated = false,
-	},
 	tagTranslations = {
 		Amount = function(info)
 			local value = info.amount

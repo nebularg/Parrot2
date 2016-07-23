@@ -88,17 +88,6 @@ Notes:
 			-- do not specify get, set, name, or desc.
 		}
 	}</pre>
-	-- TODO documentation
-Example:
-	Parrot:RegisterPrimaryTriggerCondition {
-		name = "Incoming block",
-		localName = L[ [=[Incoming block]=] ],
-		parserEvent = {
-			eventType = "Miss",
-			missType = "Block",
-			recipientID = "player",
-		},
-	}
 ------------------------------------------------------------------------------------]]
 function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
 	local name = data.name
