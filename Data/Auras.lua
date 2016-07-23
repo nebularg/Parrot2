@@ -26,7 +26,7 @@ local PET_FLAGS = bit.bor(
 )
 
 local function getIcon(info)
-	return select(3, GetSpellInfo(info.spellID))
+	return GetSpellTextureFileName(info.spellID)
 end
 
 local function retrieveDestName(info)

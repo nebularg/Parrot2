@@ -286,44 +286,35 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 	if not fs:GetFont() then
 		fs:SetFont([[Fonts\FRIZQT__.TTF]], fontSize, outline)
 	end
-
 	frame.fs = fs
 
-	local tex
-	if type(icon) == "string" and icon ~= "Interface\\Icons\\Temp" and scrollArea.iconSide ~= "DISABLE" and db.iconsEnabled then
-		tex = next(freeTextures)
-		if tex then
-			tex:Show()
-			tex:ClearAllPoints()
-			freeTextures[tex] = nil
-			tex:SetParent(frame)
-		else
-			texture_num = texture_num + 1
-			tex = frame:CreateTexture("ParrotFrameTexture" .. texture_num, "OVERLAY")
-		end
-		if not tex:SetTexture(icon) then
-			tex:Hide()
-			tex:SetTexture(nil)
-			freeTextures[tex] = true
-			tex:SetParent(ParrotFrame)
-		else
-			frame.icon = tex
-			if icon:find("^Interface\\Icons\\") then
-				tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+	local texture
+	if icon and db.iconsEnabled and scrollArea.iconSide ~= "DISABLE" then
+		if type(icon) == "number" or icon ~= "Interface\\Icons\\Temp" then
+			texture = next(freeTextures)
+			if texture then
+				texture:Show()
+				texture:ClearAllPoints()
+				freeTextures[texture] = nil
+				texture:SetParent(frame)
 			else
-				tex:SetTexCoord(0, 1, 0, 1)
+				texture_num = texture_num + 1
+				texture = frame:CreateTexture("ParrotFrameTexture" .. texture_num, "OVERLAY")
 			end
-			tex:SetWidth(fontSize)
-			tex:SetHeight(fontSize)
+			texture:SetTexture(icon)
+			texture:SetTexCoord(0.07, 0.93, 0.07, 0.93) -- zoom the icon
+			texture:SetWidth(fontSize)
+			texture:SetHeight(fontSize)
+			frame.icon = texture
 		end
 	end
 
-	if tex then
+	if texture then
 		if scrollArea.iconSide == "RIGHT" then
-			tex:SetPoint("LEFT", fs, "RIGHT", 3, 0)
+			texture:SetPoint("LEFT", fs, "RIGHT", 3, 0)
 			fs:SetPoint("LEFT", frame, "LEFT")
 		else
-			tex:SetPoint("RIGHT", fs, "LEFT", -3, 0)
+			texture:SetPoint("RIGHT", fs, "LEFT", -3, 0)
 			fs:SetPoint("RIGHT", frame, "RIGHT")
 		end
 	else
@@ -340,7 +331,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 	frame.scrollArea = scrollArea
 	frame.sticky = sticky
 
-	if(sticky) then
+	if sticky then
 		frame:SetFrameLevel(1)
 	else
 		frame:SetFrameLevel(0)
@@ -391,8 +382,8 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		init(frame, scrollArea.xOffset, scrollArea.yOffset, scrollArea.size, scrollArea[sticky and "stickyDirection" or "direction"] or aniStyle.defaultDirection, frameIDs_scrollArea_aniStyle)
 	end
 	fs:SetAlpha(db.alpha)
-	if tex then
-		tex:SetAlpha(db.iconAlpha)
+	if texture then
+		texture:SetAlpha(db.iconAlpha)
 	end
 	Parrot_Display:OnUpdate(scrollArea, aniStyle)
 end

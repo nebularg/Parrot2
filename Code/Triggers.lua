@@ -705,11 +705,11 @@ local function getIconPath(icon)
 
 	local path = iconCache[icon]
 	if not path then
-		local _, _, texture = GetSpellInfo(icon)
+		local texture = GetSpellTextureFileName(icon)
 		if texture then
 			path = texture
 		else
-			_, _, _, _, _, _, _, _, _, texture = GetItemInfo(icon)
+			texture = GetItemIcon(icon)
 			if texture then
 				path = texture
 			else

@@ -168,8 +168,7 @@ end
 -- helperfunction to retrieve an icon
 --]]
 local function retrieveIconFromAbilityName(info)
-	local _, _, icon = GetSpellInfo(info.spellID or info.abilityName)
-	return icon
+	return GetSpellTextureFileName(info.spellID or info.abilityName)
 end
 
 --[[
