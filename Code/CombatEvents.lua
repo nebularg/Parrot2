@@ -1483,7 +1483,6 @@ Example:
 	}
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:RegisterCombatEvent(data)
-	self = Parrot_CombatEvents -- so people can do Parrot:RegisterCombatEvent
 	if type(data) ~= 'table' then
 		error(("Bad argument #2 to 'RegisterCombatEvent'. data must be a %q, got %q."):format("table", type(data)))
 	end
@@ -1574,7 +1573,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 					check = check,
 				}
 			)
-			Parrot:RegisterBlizzardEvent(self, k, "HandleBlizzardEvent")
+			Parrot:RegisterBlizzardEvent(Parrot_CombatEvents, k, "HandleBlizzardEvent")
 		end
 	end
 
@@ -1594,8 +1593,6 @@ Example:
 	Parrot:RegisterThrottleType("DoTs and HoTs", L[ [=[DoTs and HoTs]=] ], 2)
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:RegisterThrottleType(name, localName, duration, waitStyle)
-	self = Parrot_CombatEvents -- for people who want to Parrot:RegisterThrottleType
-
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterThrottleType'. Expected %q, got %q."):format("string", type(name)), 2)
 	end
@@ -1626,8 +1623,6 @@ Example:
 	-- allows for a filter on incoming heals, so that if you don't want to see small heals, it's easy to suppress.
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:RegisterFilterType(name, localName, default)
-	self = Parrot_CombatEvents -- for people who want to Parrot:RegisterFilterType
-
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterFilterType'. Expected %q, got %q."):format("string", type(name)), 2)
 	end
@@ -1852,10 +1847,8 @@ Example:
 	tmp = del(tmp)
 ------------------------------------------------------------------------------------]]
 function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDone)
-	self = Parrot_CombatEvents -- so people can do Parrot:TriggerCombatEvent
-	if not self:IsEnabled() then -- TODO remove
-		return
-	end
+	if not Parrot_CombatEvents:IsEnabled() then return end -- TODO remove
+
 	if cancelUIDSoon[info.uid] then
 		return
 	end
@@ -2020,7 +2013,6 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 
 	nextFrameCombatEvents[#nextFrameCombatEvents+1] = newList(category, name, infoCopy)
 end
-Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
 
 local function runEvent(category, name, info)
 	local cdb = db[category][name]
@@ -2322,12 +2314,9 @@ local function checkForRelevance(sourceFlags, destFlags)
 	bit_band(destFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT
 end
 
-function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType,
-	_, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+	if not self:IsEnabled() then return end -- TODO remove
 
-	if not self:IsEnabled() then -- TODO remove
-		return
-	end
 	if checkForRelevance(sourceFlags, destFlags) then
 		local registeredHandlers = combatLogEvents[eventType]
 		if registeredHandlers then
@@ -2344,8 +2333,7 @@ function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType,
 			else
 				parseFunc(info, ...)
 				for i, v in ipairs(registeredHandlers) do
-					-- TODO use raid-flags introduced in 4.2 here
-					-- seems dirty otherwise
+					-- TODO use raid-flags introduced in 4.2 here... seems dirty otherwise
 					local check = v.checkfunc(sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, ...)
 					if check and not sfiltered(info) then
 						info.uid = uid

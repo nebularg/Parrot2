@@ -75,7 +75,6 @@ Example:
 	}
 ------------------------------------------------------------------------------------]]
 function Parrot_AnimationStyles:RegisterAnimationStyle(data)
-	self = Parrot_AnimationStyles -- so people can Parrot:RegisterAnimationStyle
 	if type(data) ~= "table" then
 		error(("Bad argument #2 to `RegisterAnimationStyle'. Expected %q, got %q."):format("table", type(data)), 2)
 	end
@@ -124,7 +123,6 @@ Example:
 	local has = Parrot:HasAnimationStyle("My funky style")
 ------------------------------------------------------------------------------------]]
 function Parrot_AnimationStyles:HasAnimationStyle(name)
-	self = Parrot_AnimationStyles -- so people can Parrot:RegisterAnimationStyle
 	if type(name) ~= 'string' then
 		error(("Bad argument #2 to `HasAnimationStyle'. defaultDirection must be a %q, got %q."):format("string", type(name)))
 	end
