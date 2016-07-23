@@ -9,7 +9,7 @@ local newDict = Parrot.newDict
 
 local LOOT_ITEM_SELF = _G.LOOT_ITEM_SELF
 local LOOT_ITEM_SELF_MULTIPLE = _G.LOOT_ITEM_SELF_MULTIPLE
-local LOOT_ITEM_PUSHED_SELF = _G. LOOT_ITEM_PUSHED_SELF
+local LOOT_ITEM_PUSHED_SELF = _G.LOOT_ITEM_PUSHED_SELF
 local LOOT_ITEM_PUSHED_SELF_MULTIPLE = _G.LOOT_ITEM_PUSHED_SELF_MULTIPLE
 local LOOT_ITEM_CREATED_SELF = _G.LOOT_ITEM_CREATED_SELF
 local LOOT_ITEM_CREATED_SELF_MULTIPLE = _G.LOOT_ITEM_CREATED_SELF_MULTIPLE
@@ -107,7 +107,7 @@ local function parse_CHAT_MSG_MONEY(chatmsg)
 		local amount = Deformat(chatmsg, moneyString)
 		if amount then
 			local gold = chatmsg:match(GOLD_AMOUNT_inv) or 0
-			local silver = chatmsg:match(GOLD_AMOUNT_inv) or 0
+			local silver = chatmsg:match(SILVER_AMOUNT_inv) or 0
 			local copper = chatmsg:match(COPPER_AMOUNT_inv) or 0
 			return newDict(
 				"amount", 10000 * gold + 100 * silver + copper
