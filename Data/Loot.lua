@@ -1,7 +1,7 @@
 local Parrot = _G.Parrot
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Loot")
-local Deformat = LibStub("LibDeformat-3.0")
+local Deformat = Parrot.Deformat
 
 local newDict = Parrot.newDict
 

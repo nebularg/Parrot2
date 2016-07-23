@@ -5,7 +5,7 @@ local Parrot_PointGains = Parrot:NewModule("PointGains")
 local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_PointGains")
-local Deformat = LibStub("LibDeformat-3.0")
+local Deformat = Parrot.Deformat
 
 local newDict, newList = Parrot.newDict, Parrot.newList
 
