@@ -2013,6 +2013,7 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 
 	nextFrameCombatEvents[#nextFrameCombatEvents+1] = newList(category, name, infoCopy)
 end
+Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
 
 local function runEvent(category, name, info)
 	local cdb = db[category][name]
