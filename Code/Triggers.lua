@@ -478,7 +478,7 @@ local specChoices = {
 	},
 	ROGUE = {
 		259, -- Assassination
-		260, -- Combat
+		260, -- Outlaw
 		261, -- Subtlety
 	},
 	SHAMAN = {
@@ -502,9 +502,9 @@ local specChoices = {
 		267, -- Destruction
 	},
 	PRIEST = {
-		256, --Discipline
-		257, --Holy
-		258, --Shadow
+		256, -- Discipline
+		257, -- Holy
+		258, -- Shadow
 	},
 	WARRIOR = {
 		71, -- Arms
@@ -526,6 +526,10 @@ local specChoices = {
 		269, -- Windwalker
 		270, -- Mistweaver
 	},
+	DEMONHUNTER = {
+		577, -- Havoc
+		581, -- Vengeance
+	}
 }
 
 do
@@ -1109,6 +1113,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		HUNTER = LC["HUNTER"],
 		DEATHKNIGHT = LC["DEATHKNIGHT"],
 		MONK = LC["MONK"],
+		DEMONHUNTER = LC["DEMONHUNTER"],
 	}
 
 	local function getConditionValue(info)
