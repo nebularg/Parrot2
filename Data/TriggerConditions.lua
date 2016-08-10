@@ -890,32 +890,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 	end,
 }
 
-
-Parrot:RegisterSecondaryTriggerCondition {
-	name = "Warrior stance",
-	localName = L["Warrior stance"],
-	notLocalName = L["Not in warrior stance"],
-	param = {
-		type = 'select',
-		values = {
-			["Battle Stance"] = GetSpellInfo(2457),
-			["Defensive Stance"] = GetSpellInfo(71),
-		}
-	},
-	check = function(param)
-		if select(2,UnitClass("player")) ~= "WARRIOR" then
-			return true
-		end
-		local form = GetShapeshiftForm(true)
-		if form == 1 then
-			return param == "Battle Stance"
-		elseif form == 2 then
-			return param == "Defensive Stance"
-		end
-		return false
-	end,
-}
-
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Druid Form",
 	localName = L["Druid Form"],
@@ -946,34 +920,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 			return param == "Moonkin Form"
 		--elseif form == 5 then
 		--	return param == "Tree of Life"
-		end
-		return false
-	end,
-}
-
-Parrot:RegisterSecondaryTriggerCondition {
-	name = "Deathknight presence",
-	localName = L["Deathknight presence"],
-	notLocalName = L["Not Deathknight presence"],
-	param = {
-		type = 'select',
-		values = {
-			["Blood Presence"] = GetSpellInfo(50475),
-			["Frost Presence"] = GetSpellInfo(61261),
-			["Unholy Presence"] = GetSpellInfo(55222),
-		}
-	},
-	check = function(param)
-		if select(2,UnitClass("player")) ~= "DEATHKNIGHT" then
-			return true
-		end
-		local form = GetShapeshiftForm(false)
-		if form == 1 then
-			return param == "Blood Presence"
-		elseif form == 2 then
-			return param == "Frost Presence"
-		elseif form == 3 then
-			return param == "Unholy Presence"
 		end
 		return false
 	end,
