@@ -1,17 +1,18 @@
 ## Interface: 70000
-## Title: Parrot
+## Title: Parrot 2
 ## Notes: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-zhCN: 绝妙的浮动战斗记录指示器。
 ## Notes-zhTW: 絕妙的浮動戰鬥記錄指示器。
-## Author: ckknight, profalbert
-## X-eMail: ckknight AT gmail DOT com, cedwani AT quantentunnel DOT de
-## X-Website: http://www.wowace.com/
+## Author: Nebula
+## Version: @project-version@
+
+## X-Credit: ckknight, profalbert
 ## X-Category: Combat
+## X-License: GPL v2 or later
+## X-Curse-Project-ID: parrot2
+
 ## SavedVariables: ParrotDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibSink-2.0, LibDualSpec-1.0
-## X-WoWIPortal: ckknight
-## X-License: GPL v2 or later
-## Version: @project-version@
 
 embeds.xml
 
