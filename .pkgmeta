@@ -23,5 +23,6 @@ externals:
     Libs/LibDualSpec-1.0: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
 
 ignore:
-    - Locales/Strings
-    - Locales/Babelfish.lua
+  - ISSUE_TEMPLATE.md
+  - README.md
+  - Locales/Babelfish.lua
