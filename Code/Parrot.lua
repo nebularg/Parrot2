@@ -475,7 +475,9 @@ function Parrot:OnOptionsCreate()
 						type = "toggle",
 						name = L["Control game options"],
 						desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
+						descStyle = "inline",
 						order = 0,
+						width = "full",
 					},
 					gameSelf = {
 						type = "toggle",
