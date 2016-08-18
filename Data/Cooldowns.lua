@@ -127,9 +127,11 @@ function mod:CheckSpells(e)
 
 		if count > 4 then -- don't spam if something reset a bunch of spells
 			local name, texture = GetSpellTabInfo(2)
-			local info = newList(L["%s Tree"]:format(name), texture)
-			Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
-			info = del(info)
+			if name then
+				local info = newList(L["%s Tree"]:format(name), texture)
+				Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
+				info = del(info)
+			end
 		else
 			local groupTriggered = newList()
 			for spellName in next, expired do
