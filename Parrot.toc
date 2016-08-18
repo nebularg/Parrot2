@@ -6,9 +6,9 @@
 ## Author: Nebula
 ## Version: @project-version@
 
-## X-Credit: ckknight, profalbert
+## X-Credits: ckknight, profalbert
 ## X-Category: Combat
-## X-License: GPL v2 or later
+## X-License: LGPLv2.1
 ## X-Curse-Project-ID: parrot2
 
 ## SavedVariables: ParrotDB
