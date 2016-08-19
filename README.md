@@ -4,7 +4,7 @@ _This is a continuation of Parrot! I started a personal fork in early Mist of
 Pandaria and have been slowly rewritting it since. Installing this should
 overwrite the directory for the original Parrot and continue to use your
 existing settings. If you have problems, just delete the Parrot directory at
-`Inferface/AddOns/Parrot` and reinstall Parrot 2._
+`Interface/AddOns/Parrot` and reinstall Parrot 2._
 
 ## Floating Combat Text of awesomeness.
 
