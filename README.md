@@ -1,5 +1,12 @@
 # Parrot 2
-Floating Combat Text of awesomeness.
+
+_This is a continuation of Parrot! I started a personal fork in early Mist of
+Pandaria and have been slowly rewritting it since. Installing this should
+overwrite the directory for the original Parrot and continue to use your
+existing settings. If you have problems, just delete the Parrot directory at
+`Inferface/AddOns/Parrot` and reinstall Parrot 2._
+
+## Floating Combat Text of awesomeness.
 
 Displays combat (damage, healing, auras) events as well as other events (loot,
 cooldown available, power change, repuation, kills, and more) as moving text
@@ -12,7 +19,8 @@ reaction to a variety of things, like gaining a buff or dodging an attack.
 **Q**: I created a custom trigger doing <something>. Is it worthy to be in
 Parrot's default triggers?  
 **A**: If you want to contribute a trigger that is useful for your class,
-please post a ticket where you describe *exactly* how you set it up.
+please post a ticket where you describe the conditions you used set it up
+and I'll look at including it.
 
 **Q**: Parrot is not showing heals, but it's enabled in the options.  
 **A**: WoW displays every full overheal in the combat log (even for HoTs).
@@ -28,20 +36,14 @@ for MyMedia.txt" in the SharedMedia folder.
 **Q**: Whenever I reload or log back in again, Parrot hides Blizzard's default
 outgoing damage text (the one above the mob in question). Is there a way to
 avoid having to re-enable Blizzard's options all the time?  
-**A**: When enabled, Parrot manages the settings for Blizzard FCTs damage and
-heal display. You can enable these features to be used with Parrot in the
-config (General->Game damage/healing)
+**A**: When enabled, Parrot manages the settings for Blizzard's floating combat
+text. You can manage these settings in the Parrot config.
 
-**Q**: Sometimes when looting stackable items, the stack count is off. Why
-isn't this fixed?  
+**Q**: Why is the stack count sometimes off when looting stackable items?  
 **A**: The problem is that the event for loot is triggered before or after the
 item was put in the bag depending on lag and may not have registered by the
 time we check the item's count.
 
-## Localization
-If you want to help translate Parrot into your language please do so on the
-[WowAce localization tool](http://www.wowace.com/addons/parrot2/localization/).
-
-## Feature Requests / Reporting Bugs
+## Localization / Feature Requests / Reporting Bugs
 [Please use the ticket system](https://github.com/nebularg/Parrot2/issues) or
 [create a pull request](https://github.com/nebularg/Parrot2/pulls).
