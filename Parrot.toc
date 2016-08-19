@@ -10,6 +10,7 @@
 ## X-Category: Combat
 ## X-License: LGPLv2.1
 ## X-Curse-Project-ID: parrot2
+## X-WoWI-ID: 24143
 
 ## SavedVariables: ParrotDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibSink-2.0, LibDualSpec-1.0
