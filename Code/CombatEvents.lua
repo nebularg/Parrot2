@@ -450,7 +450,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 						values = {
 							[0] = L["Off"],
 							[1] = L["Only HoTs"],
-							[2] = L["Only direct Heals"],
+							[2] = L["Only direct heals"],
 							[3] = L["On"],
 						}
 					},
@@ -476,8 +476,8 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					},
 					shortenAmount = {
 						type = 'toggle',
-						name = L["Shorten Amounts"],
-						desc = L["Abbrivate number values displayed (26000 -> 26k)"],
+						name = L["Shorten amounts"],
+						desc = L["Abbreviate number values displayed (26000 -> 26k)"],
 					},
 				},
 			},
@@ -559,7 +559,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				args = {
 					useShortThrottleText = {
 						type = 'toggle',
-						name = L["Short Texts"],
+						name = L["Short texts"],
 						desc = L["Use short throttle-texts (like \"2++\" instead of \"2 crits\")"],
 						order = 1,
 					}

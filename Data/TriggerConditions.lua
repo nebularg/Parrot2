@@ -927,7 +927,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 
 Parrot:RegisterSecondaryTriggerCondition {
 	name = "Grouped",
-	localName = L["In a Group or Raid"],
+	localName = L["In a group"],
 	check = function()
 		return IsInGroup()
 	end,

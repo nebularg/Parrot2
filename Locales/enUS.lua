@@ -1,23 +1,18 @@
 local debug = nil
----@debug@
+--@debug@
 debug = true
----@end-debug@
+--@end-debug@
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)
-L["Control game options"] = true
+L["Parrot"] = true
 L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."] = true
-L["Game damage"] = true
-L["Game healing"] = true
-L["Game options"] = true
 L["General"] = true
 L["General settings"] = true
+L["Control game options"] = true
+L.controlGameOptionsDesc = "Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."
 L["Inherit"] = true
 L["Load config"] = true
 L["Load configuration options"] = true
-L["Parrot"] = true
-L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."] = true
-L["Whether to show damage over the enemy's heads."] = true
-L["Whether to show healing over the enemy's heads."] = true
 
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot_CombatEvents", "enUS", true, debug)
@@ -29,7 +24,7 @@ L[" ([Amount] resisted)"] = true
 L[" ([Amount] vulnerable)"] = true
 L["<Tag>"] = true
 L["Abbreviate"] = true
-L["Abbrivate number values displayed (26000 -> 26k)"] = true
+L["Abbreviate number values displayed (26000 -> 26k)"] = true
 L["Add a new filter."] = true
 L["Add a new throttle."] = true
 L["Always hide skill names even when present in the tag"] = true
@@ -88,7 +83,7 @@ L["Notification events are available to notify you of certain actions."] = true
 L["Off"] = true
 L["On"] = true
 L["Only HoTs"] = true
-L["Only direct Heals"] = true
+L["Only direct heals"] = true
 L["Options for damage types."] = true
 L["Options for event modifiers."] = true
 L["Outgoing"] = true
@@ -103,8 +98,8 @@ L["Remove filter"] = true
 L["Remove throttle"] = true
 L["Scoll area where all events will be shown"] = true
 L["Scroll area"] = true
-L["Short Texts"] = true
-L["Shorten Amounts"] = true
+L["Short texts"] = true
+L["Shorten amounts"] = true
 L["Shorten spell names"] = true
 L["Show guardian events"] = true
 L["Sound"] = true
@@ -254,9 +249,6 @@ L["Remove"] = true
 L["Remove suppression"] = true
 L["Suppressions"] = true
 L["Whether the search string is a lua search expression or not."] = true
-
-
-local L = LibStub("AceLocale-3.0"):NewLocale("Parrot_TriggerConditions", "enUS", true, debug)
 
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Triggers", "enUS", true, debug)
@@ -646,11 +638,10 @@ L["Amount of power to compare"] = true
 L["Any"] = true
 L["Cast started"] = true
 L["Comparator Type"] = true
-L["Deathknight presence"] = true
 L["Druid Form"] = true
 L["Hostility"] = true
 L["How to compare actual value with parameter"] = true
-L["In a Group or Raid"] = true
+L["In a group"] = true
 L["In vehicle"] = true
 L["Incoming cast"] = true
 L["Incoming crit"] = true
@@ -659,10 +650,8 @@ L["Incoming miss"] = true
 L["Lua function"] = true
 L["Miss type"] = true
 L["Mounted"] = true
-L["Not Deathknight presence"] = true
 L["Not in Druid Form"] = true
 L["Not in vehicle"] = true
-L["Not in warrior stance"] = true
 L["Not mounted"] = true
 L["Outgoing cast"] = true
 L["Outgoing crit"] = true
@@ -686,7 +675,4 @@ L["Type of power"] = true
 L["Unit"] = true
 L["Unit health"] = true
 L["Unit power"] = true
-L["Warrior stance"] = true
 L["Whether the unit should be friendly or hostile"] = true
-
-

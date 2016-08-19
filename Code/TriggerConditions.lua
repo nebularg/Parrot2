@@ -3,8 +3,6 @@ local Parrot = _G.Parrot
 local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "AceEvent-3.0")
 local Parrot_Triggers
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions")
-
 local del = Parrot.del
 
 local conditions = {}
@@ -159,7 +157,7 @@ Notes:
 Example:
 	Parrot:RegisterSecondaryTriggerCondition {
 		name = "Minimum power amount",
-		localName = L[ [=[Minimum power amount]=] ],
+		localName = L["Minimum power amount"],
 		defaultParam = 0.5,
 		param = {
 			type = 'range',
