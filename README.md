@@ -46,4 +46,4 @@ time we check the item's count.
 
 ## Localization / Feature Requests / Reporting Bugs
 [Please use the ticket system](https://github.com/nebularg/Parrot2/issues) or
-[create a pull request](https://github.com/nebularg/Parrot2/pulls).
+[create a pull request](https://github.com/nebularg/Parrot2).

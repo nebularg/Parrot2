@@ -1,4 +1,5 @@
 package-as: Parrot
+wowi-archive-previous: no
 
 externals:
     Libs/LibStub:
