@@ -165,10 +165,23 @@ local function retrieveExtraAbilityName(info)
 end
 
 --[[
+-- Some spells just trigger different spells to deal the damage, and of course
+-- they tend to use a different icon from the original spell, which annoys some
+-- people.
+--]]
+local dumbTriggerSpellOverride = {
+	[22482] = GetSpellTextureFileName(13877), -- Blade Flurry
+	[5374] = GetSpellTextureFileName(1329), -- Mutilate
+	[27576] = GetSpellTextureFileName(1329), -- Mutilate Off-Hand
+	[222031] = GetSpellTextureFileName(162794), -- Chaos Strike
+	[199547] = GetSpellTextureFileName(162794), -- Chaos Strike
+}
+
+--[[
 -- helperfunction to retrieve an icon
 --]]
 local function retrieveIconFromAbilityName(info)
-	return GetSpellTextureFileName(info.spellID or info.abilityName)
+	return dumbTriggerSpellOverride[info.spellID] or GetSpellTextureFileName(info.spellID or info.abilityName)
 end
 
 --[[
@@ -2020,4 +2033,3 @@ Parrot:RegisterCombatEvent{
 	color = "ffff00", -- yellow
 	sticky = true,
 }
-
