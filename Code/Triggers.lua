@@ -1482,7 +1482,7 @@ function Parrot_Triggers:OnOptionsCreate()
 		return ("|c03888888%s|r"):format(t.name) -- grey
 	end
 
-	local function isHidden(info)
+	local function isHiddenForYourClass(info)
 		local id = tonumber(getTriggerId(info))
 		if id > 1000 then
 			-- always show the "Low" triggers incase you screw it up for other classes
@@ -1704,7 +1704,7 @@ function Parrot_Triggers:OnOptionsCreate()
 			type = 'group',
 			name = getColoredName,
 			desc = t.name,
-			hidden = isHidden,
+			hidden = isHiddenForYourClass,
 			order = t.name == L["New trigger"] and -110 or -100,
 			arg = t,
 			args = {
