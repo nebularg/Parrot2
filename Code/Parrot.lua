@@ -9,7 +9,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 -- Debug
 Parrot.PARROT_DEBUG_FRAME = _G.ChatFrame4
@@ -429,18 +428,6 @@ function Parrot:ShowConfig()
 	end
 
 	AceConfigDialog:Open("Parrot")
-end
-
-do
-	local values = {}
-	function Parrot.fontValues()
-		wipe(values)
-		for _, font in ipairs(SharedMedia:List("font")) do
-			values[font] = font
-		end
-		values["1"] = L["Inherit"]
-		return values
-	end
 end
 
 function Parrot:AddOption(name, args)

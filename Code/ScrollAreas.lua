@@ -6,6 +6,19 @@ local Parrot_Display = Parrot:GetModule("Display")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
+do
+	local SharedMedia = LibStub("LibSharedMedia-3.0")
+	local values = {}
+	function Parrot.fontValues()
+		wipe(values)
+		for _, font in ipairs(SharedMedia:List("font")) do
+			values[font] = font
+		end
+		values["1"] = L["Inherit"]
+		return values
+	end
+end
+
 local db = nil
 local defaults = {
 	profile = {

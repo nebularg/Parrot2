@@ -7,7 +7,6 @@ L["General"] = "전체"
 L["General settings"] = "전체 설정"
 L["Control game options"] = "게임 옵션 조정"
 L.controlGameOptionsDesc = "기본 인터페이스 옵션을 Parrot에서 조절할 수 있습니다. 이 설정은 기본 인터페이스 옵션을 변경합니다."
-L["Inherit"] = "상속"
 L["Load config"] = "설정 불러오기"
 L["Load configuration options"] = "설정 옵션 불려오기"
 

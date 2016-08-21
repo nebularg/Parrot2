@@ -8,7 +8,6 @@ L["General"] = "通用"
 L["General settings"] = "通用设置"
 L["Control game options"] = "控制游戏选项"
 L.controlGameOptionsDesc = "Parrot 是否控制下面的默认界面选项。\n这些设置总是覆盖默认界面选项的手动更改。"
-L["Inherit"] = "继承"
 L["Load config"] = "加载配置"
 L["Load configuration options"] = "加载配置选项"
 

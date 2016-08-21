@@ -10,7 +10,6 @@ L["General"] = true
 L["General settings"] = true
 L["Control game options"] = true
 L.controlGameOptionsDesc = "Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."
-L["Inherit"] = true
 L["Load config"] = true
 L["Load configuration options"] = true
 

@@ -9,7 +9,6 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", LOCALE)
 -- L["General settings"] = "General settings"
 -- L["Control game options"] = "Control game options"
 -- L.controlGameOptionsDesc = "Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."
--- L["Inherit"] = "Inherit"
 -- L["Load config"] = "Load config"
 -- L["Load configuration options"] = "Load configuration options"
 

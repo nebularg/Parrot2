@@ -8,7 +8,6 @@ L["General"] = "Основное"
 L["General settings"] = "Основные настройки"
 L["Control game options"] = "Опции управления игрой"
 L.controlGameOptionsDesc = "Должен ли Parrot управлять элементами интерфейса перечисленными ниже."
-L["Inherit"] = "Наследовать"
 L["Load config"] = "Настройка опций"
 L["Load configuration options"] = "Загрузить опции настройки"
 
