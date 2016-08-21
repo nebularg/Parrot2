@@ -1,7 +1,3 @@
-#!/usr/bin/lua
-
-require "lfs"
-lfs.mkdir("./Strings")
 
 --[[
 	Prefix to all files if this script is run from a subdir, for example
@@ -14,7 +10,6 @@ local allfiles = {
 	Parrot_Display = { "Code/Display.lua", },
 	Parrot_ScrollAreas = { "Code/ScrollAreas.lua", },
 	Parrot_Suppressions = { "Code/Suppressions.lua", },
-	Parrot_TriggerConditions = { "Code/TriggerConditions.lua", },
 	Parrot_Triggers = { "Code/Triggers.lua", },
 	Parrot_AnimationStyles = { "Data/AnimationStyles.lua", },
 	Parrot_Auras = { "Data/Auras.lua", },
@@ -32,7 +27,6 @@ local ordered = { -- order in the locale files
 	"Parrot_Display",
 	"Parrot_ScrollAreas",
 	"Parrot_Suppressions",
-	"Parrot_TriggerConditions",
 	"Parrot_Triggers",
 	"Parrot_AnimationStyles",
 	"Parrot_Auras",
@@ -43,14 +37,6 @@ local ordered = { -- order in the locale files
 	"Parrot_PointGains",
 	"Parrot_TriggerConditions_Data",
 }
-
-local function saveLocales(namespace, strings)
-	local file = io.open("Strings/" .. namespace .. ".lua", "w")
-	for i, v in ipairs(strings) do
-		file:write(string.format("L[\"%s\"] = true\n", v))
-	end
-	file:close()
-end
 
 local function parseFile(filename)
 	local strings = {}
@@ -65,8 +51,8 @@ local function parseFile(filename)
 end
 
 
-local locale = io.open("Strings/enUS.lua", "w")
-locale:write('local debug = nil\n---@debug@\ndebug = true\n---@end-debug@\n\n')
+local locale = io.open("Strings-enUS.lua", "w")
+locale:write('local debug = nil\n--@debug@\ndebug = true\n--@end-debug@')
 
 -- extract data from specified lua files
 for _, namespace in ipairs(ordered) do
@@ -79,15 +65,11 @@ for _, namespace in ipairs(ordered) do
 			table.insert(sorted, k)
 		end
 		table.sort(sorted)
-		if #sorted > 0 then
-			saveLocales(namespace, sorted)
-		end
 
-		locale:write(string.format('local L = LibStub("AceLocale-3.0"):NewLocale("%s", "enUS", true, debug)\n', namespace))
+		locale:write(string.format('\n\nlocal L = LibStub("AceLocale-3.0"):NewLocale("%s", "enUS", true, debug)\n', namespace))
 		for _, v in ipairs(sorted) do
 			locale:write(string.format('L["%s"] = true\n', v))
 		end
-		locale:write('\n\n')
 
 		print("  (" .. #sorted .. ") " .. file)
 	end
