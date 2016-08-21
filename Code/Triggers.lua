@@ -117,6 +117,7 @@ local defaultTriggers = {
 			WARRIOR = "71;72;73",
 			DEATHKNIGHT = "250;251;252",
 			MONK = "268;269;270",
+			DEMONHUNTER = "577;581"
 		},
 		conditions = {
 			["Unit health"] = {
@@ -143,6 +144,7 @@ local defaultTriggers = {
 			PRIEST = "256;257;258",
 			SHAMAN = "262;263;264",
 			WARLOCK = "265;266;267",
+			MONK = "270",
 		},
 		conditions = {
 			["Unit power"] = {
@@ -167,7 +169,7 @@ local defaultTriggers = {
 			HUNTER = "253;254;255",
 			MAGE = "64",
 			WARLOCK = "265;266;267",
-			DEATHKNIGHT = "250;251;252",
+			DEATHKNIGHT = "252",
 		},
 		conditions = {
 			["Unit health"] = {
@@ -643,7 +645,7 @@ local function updateDB()
 	db.dbver = #updateFuncs
 end
 
-function Parrot_Triggers:OnProfileChanged(e, database)
+function Parrot_Triggers:OnProfileChanged()
 	db = self.db.profile
 	updateDB()
 
@@ -991,21 +993,9 @@ function Parrot_Triggers:OnOptionsCreate()
 	end
 	-- not local, declared above
 	function remove(info)
-		local idstring = getTriggerId(info)
-		local id = tonumber(idstring)
-		-- first remove it from DB
-		local triggers = db.triggers2
-		del(triggers[tonumber(id)])
-		table.remove(triggers, tonumber(id))
-		-- then remove it from options
-		triggers_opt.args[idstring] = del(triggers_opt.args[idstring])
-		-- and fix ids for other triggers
-		while triggers_opt.args[tostring(id+1)] do
-			local nextoptid = tostring(id + 1)
-			triggers_opt.args[tostring(id)] = triggers_opt.args[nextoptid]
-			triggers_opt.args[nextoptid] = nil
-			id = id + 1
-		end
+		local id = getTriggerId(info)
+		db.triggers2[tonumber(id)] = nil
+		triggers_opt.args[id] = nil
 		rebuildEffectiveRegistry()
 	end
 	local function getSticky(info)
@@ -1492,6 +1482,22 @@ function Parrot_Triggers:OnOptionsCreate()
 		return ("|c03888888%s|r"):format(t.name) -- grey
 	end
 
+	local function isHidden(info)
+		local id = tonumber(getTriggerId(info))
+		if id > 1000 then
+			-- always show the "Low" triggers incase you screw it up for other classes
+			if id == 1008 or id == 1009 or id == 1010 then
+				return false
+			end
+			-- hide default triggers not for your class
+			local t = getTriggerTable(info)
+			if t.spec and not t.spec[playerClass] then
+				return true
+			end
+		end
+		return false
+	end
+
 	local tsharedopt = {
 		output = {
 			type = 'input',
@@ -1698,6 +1704,7 @@ function Parrot_Triggers:OnOptionsCreate()
 			type = 'group',
 			name = getColoredName,
 			desc = t.name,
+			hidden = isHidden,
 			order = t.name == L["New trigger"] and -110 or -100,
 			arg = t,
 			args = {
