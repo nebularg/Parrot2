@@ -2,7 +2,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "deDE")
 if not L then return end
 
 L["Parrot"] = "Parrot"
-L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."] = "Scrollender Kampftext der Ungeheuerlichkeit. Kraaaah! "
+L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."] = "Scrollender Kampftext der Ungeheuerlichkeit. Kraaaah!"
 L["General"] = "Allgemein"
 L["General settings"] = "Allgemeine Einstellungen"
 L["Control game options"] = "Spieloptionen steuern"

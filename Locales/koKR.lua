@@ -2,7 +2,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "koKR")
 if not L then return end
 
 L["Parrot"] = "Parrot"
-L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."] = "Floating Combat Text of awesomeness. Caw. It'll eat your crackers."
+-- L["Floating Combat Text of awesomeness. Caw. It'll eat your crackers."] = "Floating Combat Text of awesomeness. Caw. It'll eat your crackers."
 L["General"] = "전체"
 L["General settings"] = "전체 설정"
 L["Control game options"] = "게임 옵션 조정"
