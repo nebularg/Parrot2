@@ -1552,10 +1552,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 
 	if data.events then
 		for k,v in next, data.events do
-			local check
-			if not v.check then
-				check = function() return true end
-			end
+			local check = v.check or truecheck
 			if type(check) ~= "function" then
 				error(("Bad argument #2 to `RegisterCombatEvent'. check must be a %q or nil, got %q."):format("function", type(check)), 2)
 			end

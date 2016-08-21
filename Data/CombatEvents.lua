@@ -1907,59 +1907,82 @@ Parrot:RegisterCombatEvent{
 -- Combo points
 --============================================================================]]
 
--- local variable to prevent double-combo-point-messages (?)
-local cur = 0
-local function parseCPGain()
-	local num = UnitHasVehicleUI("player") and GetComboPoints("vehicle", "target") or UnitPower("player", 4)
-	if cur == num then return end
-	cur = num
-	if num > 0 and num < 5 then
-		return newList(num)
+do
+	local function getMaxCP()
+		local max = UnitPowerMax("player", 4) or 5
+		local real_max = max
+		if max == 8 then max = 5 end -- Anticipation talent: 8 CP but finishers still use a max of 5
+		return max, real_max
 	end
-end
 
-local function parseCPFull()
-	local num = UnitHasVehicleUI("player") and GetComboPoints("vehicle", "target") or UnitPower("player", 4)
-	if num == 5 then
-		return newList(num)
+	local cur = 0
+	local function parseCPGain()
+		local num = UnitHasVehicleUI("player") and GetComboPoints("vehicle") or UnitPower("player", 4)
+		if cur == num then return end
+		cur = num
+		if num > 0 and num < getMaxCP() then
+			return newList(num)
+		end
 	end
+
+	local prev = 0
+	local function parseCPFull()
+		local num = UnitHasVehicleUI("player") and GetComboPoints("vehicle") or UnitPower("player", 4)
+		local max, real_max = getMaxCP()
+		local t = GetTime()
+		if num == real_max and t-prev < 0.1 then return end -- UNIT_POWER fires twice at max
+		prev = t
+		if num >= max then
+			return newList(num)
+		end
+	end
+
+	local function checkPower(unit, power_type)
+		return (unit == "player" or unit == "pet") and power_type == "COMBO_POINTS"
+	end
+
+	Parrot:RegisterCombatEvent{
+		category = "Notification",
+		subCategory = L["Combo points"],
+		name = "Combo point gain",
+		localName = L["Combo point gain"],
+		defaultTag = L["[Num] CP"],
+		events = {
+			UNIT_POWER = {
+				check = checkPower,
+				parse = parseCPGain
+			},
+		},
+		tagTranslations = {
+			Num = 1
+		},
+		tagTranslationsHelp = {
+			Num = L["The current number of combo points."]
+		},
+		color = "ff7f00", -- orange
+	}
+
+	Parrot:RegisterCombatEvent{
+		category = "Notification",
+		subCategory = L["Combo points"],
+		name = "Combo points full",
+		localName = L["Combo points full"],
+		defaultTag = L["[Num] CP Finish It!"],
+		events = {
+			UNIT_POWER = {
+				check = checkPower,
+				parse = parseCPFull
+			},
+		},
+		tagTranslations = {
+			Num = 1
+		},
+		tagTranslationsHelp = {
+			Num = L["The current number of combo points."]
+		},
+		color = "ff7f00", -- orange
+	}
 end
-
-Parrot:RegisterCombatEvent{
-	category = "Notification",
-	subCategory = L["Combo points"],
-	name = "Combo point gain",
-	localName = L["Combo point gain"],
-	defaultTag = L["[Num] CP"],
-	events = {
-		UNIT_COMBO_POINTS = { parse = parseCPGain },
-	},
-	tagTranslations = {
-		Num = 1
-	},
-	tagTranslationsHelp = {
-		Num = L["The current number of combo points."]
-	},
-	color = "ff7f00", -- orange
-}
-
-Parrot:RegisterCombatEvent{
-	category = "Notification",
-	subCategory = L["Combo points"],
-	name = "Combo points full",
-	localName = L["Combo points full"],
-	defaultTag = L["[Num] CP Finish It!"],
-	events = {
-		UNIT_COMBO_POINTS = { parse = parseCPFull },
-	},
-	tagTranslations = {
-		Num = 1
-	},
-	tagTranslationsHelp = {
-		Num = L["The current number of combo points."]
-	},
-	color = "ff7f00", -- orange
-}
 
 --[[============================================================================
 -- Notification Events:
