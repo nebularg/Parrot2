@@ -255,8 +255,14 @@ function Parrot:OnInitialize()
 	self:RegisterChatCommand("parrot", "ShowConfig")
 	self:RegisterChatCommand("par", "ShowConfig")
 
+	local LibSink = LibStub("LibSink-2.0")
 	local function sink(addon, text, r, g, b, font, size, outline, sticky, location, icon)
-		self:ShowMessage(text, location or "Notification", sticky, r, g, b, font, size, outline, icon)
+		local storage = LibSink.storageForAddon[addon] and LibSink.storageForAddon[addon]
+		if storage then
+			location = storage.sink20ScrollArea or location or "Notification"
+			sticky = storage.sink20Sticky or sticky
+		end
+		self:ShowMessage(text, location, sticky, r, g, b, font, size, outline, icon)
 	end
 	local function getScrollAreasChoices()
 		local tmp = {}
