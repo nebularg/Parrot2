@@ -335,10 +335,12 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		opt.args.font.args.fontSizeInherit.arg[2] = new
 		opt.args.font.args.fontSize.arg[2] = new
 		opt.args.font.args.fontOutline.arg[2] = new
+		opt.args.font.args.fontShadow.arg[2] = new
 		opt.args.font.args.stickyfontface.arg[2] = new
 		opt.args.font.args.stickyfontSizeInherit.arg[2] = new
 		opt.args.font.args.stickyfontSize.arg[2] = new
 		opt.args.font.args.stickyfontOutline.arg[2] = new
+		opt.args.font.args.stickyfontShadow.arg[2] = new
 		if shouldConfig then
 			setConfigMode(true)
 		end
@@ -412,6 +414,32 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 		NONE = L["None"],
 		OUTLINE = L["Thin"],
 		THICKOUTLINE = L["Thick"],
+		[L["Inherit"]] = L["Inherit"],
+	}
+	local function getFontShadow(info)
+		local kind, k = info.arg[1], info.arg[2]
+		local value = scrollAreas[k][kind == "normal" and "fontShadow" or "stickyFontShadow"]
+		if value == nil then
+			return L["Inherit"]
+		else
+			return tostring(value)
+		end
+	end
+	local function setFontShadow(info, value)
+		local kind, k = info.arg[1], info.arg[2]
+		if value == L["Inherit"] then
+			value = nil
+		else
+			value = value == "true"
+		end
+		scrollAreas[k][kind == "normal" and "fontShadow" or "stickyFontShadow"] = value
+		if not configMode then
+			test(kind, k)
+		end
+	end
+	local fontShadowChoices = {
+		["false"] = DISABLE,
+		["true"] = ENABLE,
 		[L["Inherit"]] = L["Inherit"],
 	}
 	local function getAnimationStyle(info)
@@ -743,23 +771,19 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 					type = 'group',
 					inline = true,
 					name = L["Custom font"],
-					desc = L["Custom font"],
 					args = {
 						fontface = {
 							type = 'select',
 							name = L["Normal font face"],
-							desc = L["Normal font face"],
 							values = Parrot.fontValues,
 							get = getFontFace,
 							set = setFontFace,
 							arg = {"normal", k},
-
 							order = 1,
 						},
 						fontSizeInherit = {
 							type = 'toggle',
 							name = L["Normal inherit font size"],
-							desc = L["Normal inherit font size"],
 							get = getFontSizeInherit,
 							set = setFontSizeInherit,
 							arg = {"normal", k},
@@ -768,7 +792,6 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 						fontSize = {
 							type = 'range',
 							name = L["Normal font size"],
-							desc = L["Normal font size"],
 							min = 12,
 							max = 30,
 							step = 1,
@@ -776,45 +799,51 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							set = setFontSize,
 							disabled = getFontSizeInherit,
 							arg = {"normal", k},
-
 							order = 3,
 						},
 						fontOutline = {
 							type = 'select',
 							name = L["Normal font outline"],
-							desc = L["Normal font outline"],
 							get = getFontOutline,
 							set = setFontOutline,
 							values = fontOutlineChoices,
 							arg = {"normal", k},
-
 							order = 4,
+						},
+						fontShadow = {
+							type = 'select',
+							name = L["Normal font shadow"],
+							get = getFontShadow,
+							set = setFontShadow,
+							values = fontShadowChoices,
+							arg = {"normal", k},
+							order = 5,
+						},
+						sep = {
+							type = "description",
+							name = "",
+							order = 6,
 						},
 						stickyfontface = {
 							type = 'select',
 							name = L["Sticky font face"],
-							desc = L["Sticky font face"],
 							values = Parrot.fontValues,
 							get = getFontFace,
 							set = setFontFace,
 							arg = {"sticky", k},
-
-							order = 5,
+							order = 7,
 						},
 						stickyfontSizeInherit = {
 							type = 'toggle',
 							name = L["Sticky inherit font size"],
-							desc = L["Sticky inherit font size"],
 							get = getFontSizeInherit,
 							set = setFontSizeInherit,
 							arg = {"sticky", k},
-
-							order = 6,
+							order = 8,
 						},
 						stickyfontSize = {
 							type = 'range',
 							name = L["Sticky font size"],
-							desc = L["Sticky font size"],
 							min = 12,
 							max = 30,
 							step = 1,
@@ -822,19 +851,25 @@ function Parrot_ScrollAreas:OnOptionsCreate()
 							set = setFontSize,
 							disabled = getFontSizeInherit,
 							arg = {"sticky", k},
-
-							order = 7,
+							order = 9,
 						},
 						stickyfontOutline = {
 							type = 'select',
 							name = L["Sticky font outline"],
-							desc = L["Sticky font outline"],
 							get = getFontOutline,
 							set = setFontOutline,
 							values = fontOutlineChoices,
 							arg = {"sticky", k},
-
-							order = 8,
+							order = 10,
+						},
+						stickyfontShadow = {
+							type = 'select',
+							name = L["Sticky font shadow"],
+							get = getFontShadow,
+							set = setFontShadow,
+							values = fontShadowChoices,
+							arg = {"sticky", k},
+							order = 11,
 						},
 					}
 				}

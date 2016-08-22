@@ -21,9 +21,11 @@ local defaults = {
 		font = "Friz Quadrata TT",
 		fontSize = 18,
 		fontOutline = "THICKOUTLINE",
+		fontShadow = true,
 		stickyFont = "Friz Quadrata TT",
 		stickyFontSize = 26,
 		stickyFontOutline = "THICKOUTLINE",
+		stickyFontShadow = true,
 	},
 }
 
@@ -90,7 +92,7 @@ end
 
 local function getFontChoices()
 	local result = {}
-	for _,v in ipairs(SharedMedia:List('font')) do
+	for _,v in ipairs(SharedMedia:List("font")) do
 		result[v] = v
 	end
 	return result
@@ -113,7 +115,7 @@ function Parrot_Display:OnOptionsCreate()
 	}
 
 	Parrot.options.args.general.args.alpha = {
-		type = 'range',
+		type = "range",
 		name = L["Text transparency"],
 		desc = L["How opaque/transparent the text should be."],
 		min = 0.25,
@@ -125,7 +127,7 @@ function Parrot_Display:OnOptionsCreate()
 		set = setOption,
 	}
 	Parrot.options.args.general.args.iconAlpha = {
-		type = 'range',
+		type = "range",
 		name = L["Icon transparency"],
 		desc = L["How opaque/transparent icons should be."],
 		min = 0.25,
@@ -137,60 +139,61 @@ function Parrot_Display:OnOptionsCreate()
 		set = setOption,
 	}
 	Parrot.options.args.general.args.iconsEnabled = {
-		type = 'toggle',
+		type = "toggle",
 		name = L["Enable icons"],
 		desc = L["Set whether icons should be enabled or disabled altogether."],
 		get = getOption,
 		set = setOption,
 	}
 	Parrot.options.args.general.args.font = {
-		type = 'group',
+		type = "group",
 		name = L["Master font settings"],
-		desc = L["Master font settings"],
 		get = getOption,
 		set = setOption,
 		args = {
 			font = {
-				type = 'select',
+				type = "select",
 				control = "LSM30_Font",
-				name = L["Normal font"],
-				desc = L["Normal font face."],
+				name = L["Normal font face"],
 				values = getFontChoices(),
 			},
 			fontSize = {
-				type = 'range',
+				type = "range",
 				name = L["Normal font size"],
-				desc = L["Normal font size"],
 				min = 6,
 				max = 32,
 				step = 1,
 			},
 			fontOutline = {
-				type = 'select',
-				name = L["Normal outline"],
-				desc = L["Normal outline"],
+				type = "select",
+				name = L["Normal font outline"],
 				values = outlineChoices,
 			},
+			fontShadow = {
+				type = "toggle",
+				name = L["Normal font shadow"],
+			},
 			stickyFont = {
-				type = 'select',
+				type = "select",
 				control = "LSM30_Font",
-				name = L["Sticky font"],
-				desc = L["Sticky font face."],
+				name = L["Sticky font face"],
 				values = getFontChoices(),
 			},
 			stickyFontSize = {
-				type = 'range',
+				type = "range",
 				name = L["Sticky font size"],
-				desc = L["Sticky font size"],
 				min = 6,
 				max = 32,
 				step = 1,
 			},
 			stickyFontOutline = {
-				type = 'select',
-				name = L["Sticky outline"],
-				desc = L["Sticky outline"],
+				type = "select",
+				name = L["Sticky font outline"],
 				values = outlineChoices,
+			},
+			stickyFontShadow = {
+				type = "toggle",
+				name = L["Sticky font shadow"],
 			},
 		}
 	}
@@ -239,6 +242,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 	end
 
 	local scrollArea = Parrot_ScrollAreas:GetScrollArea(area)
+	local shadow = nil
 	if not sticky then
 		if not font then
 			font = scrollArea.font or db.font
@@ -249,6 +253,10 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		if not outline then
 			outline = scrollArea.fontOutline or db.fontOutline
 		end
+		shadow = scrollArea.fontShadow
+		if shadow == nil then
+			shadow = db.fontShadow
+		end
 	else
 		if not font then
 			font = scrollArea.stickyFont or db.stickyFont
@@ -258,6 +266,10 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		end
 		if not outline then
 			outline = scrollArea.stickyFontOutline or db.stickyFontOutline
+		end
+		shadow = scrollArea.stickyFontShadow
+		if shadow == nil then
+			shadow = db.stickyFontShadow
 		end
 	end
 	if outline == "NONE" then
@@ -282,9 +294,14 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		fontString_num = fontString_num + 1
 		fs = frame:CreateFontString("ParrotFrameFontString" .. fontString_num, "ARTWORK", "SystemFont_Shadow_Small")
 	end
-	fs:SetFont(SharedMedia:Fetch('font', font), fontSize, outline)
+	fs:SetFont(SharedMedia:Fetch("font", font), fontSize, outline)
 	if not fs:GetFont() then
 		fs:SetFont([[Fonts\FRIZQT__.TTF]], fontSize, outline)
+	end
+	if shadow then
+		fs:SetShadowColor(0, 0, 0, 1)
+	else
+		fs:SetShadowColor(0, 0, 0, 0)
 	end
 	frame.fs = fs
 
