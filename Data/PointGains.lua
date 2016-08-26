@@ -192,11 +192,12 @@ local XP = _G.XP
 
 local function parseXPUpdate()
 	local newXP = UnitXP("player")
-	local info = newDict(
-		"amount", newXP - currentXP
-	)
-	currentXP = newXP
-	return info
+	local delta = newXP - currentXP
+	if delta > 0 then
+		local info = newDict("amount", delta)
+		currentXP = newXP
+		return info
+	end
 end
 
 Parrot:RegisterCombatEvent{
