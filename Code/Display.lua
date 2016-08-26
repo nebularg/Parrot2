@@ -7,6 +7,7 @@ local Parrot_ScrollAreas
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Display")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
+local DEFAULT_FONT_NAME = SharedMedia:GetDefault("font")
 
 local newList, del = Parrot.newList, Parrot.del
 
@@ -18,11 +19,11 @@ local defaults = {
 		alpha = 1,
 		iconAlpha = 1,
 		iconsEnabled = true,
-		font = "Friz Quadrata TT",
+		font = DEFAULT_FONT_NAME, --"Friz Quadrata TT",
 		fontSize = 18,
 		fontOutline = "THICKOUTLINE",
 		fontShadow = true,
-		stickyFont = "Friz Quadrata TT",
+		stickyFont = DEFAULT_FONT_NAME, --"Friz Quadrata TT",
 		stickyFontSize = 26,
 		stickyFontOutline = "THICKOUTLINE",
 		stickyFontShadow = true,
@@ -295,9 +296,6 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		fs = frame:CreateFontString("ParrotFrameFontString" .. fontString_num, "ARTWORK", "SystemFont_Shadow_Small")
 	end
 	fs:SetFont(SharedMedia:Fetch("font", font), fontSize, outline)
-	if not fs:GetFont() then
-		fs:SetFont([[Fonts\FRIZQT__.TTF]], fontSize, outline)
-	end
 	if shadow then
 		fs:SetShadowColor(0, 0, 0, 1)
 	else

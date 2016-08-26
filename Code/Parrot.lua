@@ -257,7 +257,7 @@ function Parrot:OnInitialize()
 
 	local LibSink = LibStub("LibSink-2.0")
 	local function sink(addon, text, r, g, b, font, size, outline, sticky, location, icon)
-		local storage = LibSink.storageForAddon[addon] and LibSink.storageForAddon[addon]
+		local storage = LibSink.storageForAddon[addon]
 		if storage then
 			location = storage.sink20ScrollArea or location or "Notification"
 			sticky = storage.sink20Sticky or sticky
