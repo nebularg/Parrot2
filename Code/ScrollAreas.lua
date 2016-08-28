@@ -140,7 +140,7 @@ local function showOffsetBox(k)
 		offsetBox:SetFrameStrata("MEDIUM")
 
 		local bg = offsetBox:CreateTexture("Parrot_ScrollAreas_OffsetBox_" .. k .. "_Background", "BACKGROUND")
-		bg:SetTexture(0.7, 0.4, 0, 0.5) -- orange
+		bg:SetColorTexture(0.7, 0.4, 0, 0.5) -- orange
 		bg:SetAllPoints(offsetBox)
 
 		local text = offsetBox:CreateFontString("Parrot_ScrollAreas_Offset_" .. k .. "_BoxText", "ARTWORK", "GameFontHighlight")
