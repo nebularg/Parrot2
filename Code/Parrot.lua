@@ -221,11 +221,12 @@ function Parrot:OnProfileChanged(event, database)
 			mod:OnProfileChanged(event, database)
 		end
 	end
+	self:UpdateFCT()
 end
 
 function Parrot:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("ParrotDB", defaults, true)
-  LibStub("LibDualSpec-1.0"):EnhanceDatabase(self.db, "Parrot")
+	LibStub("LibDualSpec-1.0"):EnhanceDatabase(self.db, "Parrot")
 	db = self.db.profile
 
 	self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
