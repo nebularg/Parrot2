@@ -597,25 +597,23 @@ Parrot:RegisterPrimaryTriggerCondition {
 	end,
 }
 
-local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical, _, _, _, multistrike)
+local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical)
 	local data = newList()
 	data.dstName = dstName
 	data.srcName = srcName
 	data.amount = amount
 	data.critical = not not critical
-	data.multistrike = not not multistrike
 	data.spellName = spellName
 	data.spellId = spellId
 	return data
 end
 
-local function parseSwingDamage(_, srcName, _, _, dstName, _, amount, _, _, _, _, _, critical, _, _, _, multistrike)
+local function parseSwingDamage(_, srcName, _, _, dstName, _, amount, _, _, _, _, _, critical)
 	local data = newList()
 	data.dstName = dstName
 	data.srcName = srcName
 	data.amount = amount
 	data.critical = not not critical
-	data.multistrike = not not multistrike
 	return data
 end
 
