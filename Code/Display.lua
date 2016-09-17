@@ -1,6 +1,6 @@
 local Parrot = _G.Parrot
 
-local Parrot_Display = Parrot:NewModule("Display", "AceHook-3.0")
+local Parrot_Display = Parrot:NewModule("Display")
 local Parrot_AnimationStyles
 local Parrot_Suppressions
 local Parrot_ScrollAreas
@@ -67,28 +67,9 @@ function Parrot_Display:OnEnable()
 		ParrotFrame:SetHeight(0.0001)
 		ParrotFrame:SetScript("OnUpdate", onUpdate)
 	end
-
-	if _G.CombatText_AddMessage then
-		self:RawHook("CombatText_AddMessage", true)
-	else
-		function _G.CombatText_AddMessage(...)
-			self:CombatText_AddMessage(...)
-		end
-	end
 end
 
 function Parrot_Display:OnDisable()
-end
-
--- #NODOC
-function Parrot_Display:CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, isStaggered)
-	if type(message) ~= "string" then
-		return
-	end
-	if type(r) ~= "number" or type(g) ~= "number" or type(b) ~= "number" then
-		r, g, b = 1, 1, 1
-	end
-	self:ShowMessage(message, "Notification", displayType == "crit", r, g, b, nil, nil, nil)
 end
 
 local function getFontChoices()
