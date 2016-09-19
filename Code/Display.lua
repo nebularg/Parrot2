@@ -12,6 +12,7 @@ local DEFAULT_FONT_NAME = SharedMedia:GetDefault("font")
 local newList, del = Parrot.newList, Parrot.del
 
 local ParrotFrame
+local Display_Update
 
 local db
 local defaults = {
@@ -52,10 +53,6 @@ local function getOption(info)
 	return db[name]
 end
 
-local function onUpdate()
-	Parrot_Display:OnUpdate()
-end
-
 function Parrot_Display:OnEnable()
 	if not ParrotFrame then
 		ParrotFrame = CreateFrame("Frame", "ParrotFrame", UIParent)
@@ -65,7 +62,7 @@ function Parrot_Display:OnEnable()
 		ParrotFrame:SetPoint("CENTER")
 		ParrotFrame:SetWidth(0.0001)
 		ParrotFrame:SetHeight(0.0001)
-		ParrotFrame:SetScript("OnUpdate", onUpdate)
+		ParrotFrame:SetScript("OnUpdate", Display_Update)
 	end
 end
 
@@ -79,15 +76,6 @@ local function getFontChoices()
 	end
 	return result
 end
-
---[[local function setOption(info, value)
-	local name = info[#info]
-	db[name] = value
-end
-local function getOption(info)
-	local name = info[#info]
-	return db[name]
-end--]]
 
 function Parrot_Display:OnOptionsCreate()
 	local outlineChoices = {
@@ -182,7 +170,7 @@ function Parrot_Display:OnOptionsCreate()
 end
 
 local freeFrames = {}
-local wildFrames
+local wildFrames = {}
 local frame_num = 0
 local frameIDs = {}
 local freeTextures = {}
@@ -340,8 +328,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		animationStyle = scrollArea.animationStyle
 	end
 	local aniStyle = Parrot_AnimationStyles:GetAnimationStyle(animationStyle)
-	if not wildFrames then
-		wildFrames = newList()
+	if not next(wildFrames) then
 		ParrotFrame:Show()
 	end
 	local wildFrames_scrollArea = wildFrames[scrollArea]
@@ -381,7 +368,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 	if texture then
 		texture:SetAlpha(db.iconAlpha)
 	end
-	Parrot_Display:OnUpdate(scrollArea, aniStyle)
+	Display_Update()
 end
 Parrot.ShowMessage = Parrot_Display.ShowMessage
 
@@ -391,7 +378,7 @@ local function isOverlapping(alpha, bravo)
 	end
 end
 
-function Parrot_Display:OnUpdate()
+function Display_Update()
 	local now = GetTime()
 	for scrollArea, u in next, wildFrames do
 		for animationStyle, t in next, u do
@@ -482,7 +469,6 @@ function Parrot_Display:OnUpdate()
 		end
 	end
 	if not next(wildFrames) then
-		wildFrames = del(wildFrames)
 		ParrotFrame:Hide()
 	end
 end
