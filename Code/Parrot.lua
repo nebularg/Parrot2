@@ -11,27 +11,40 @@ local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 -- Debug
-Parrot.PARROT_DEBUG_FRAME = _G.ChatFrame4
-Parrot.debug = function(arg1, ...)
-	--@debug@
-	if type(arg1) == "table" then
-		if not _G.DevTools_Dump then
-			assert(LoadAddOn("Blizzard_DebugTools"))
+local debug = function() end
+--@debug@
+do
+	local PARROT_DEBUG_FRAME = _G.ChatFrame4
+	local function nilCacheFunc() return nil end
+	local function writeFunc(self, msg) PARROT_DEBUG_FRAME:AddMessage(msg) end
+
+	function debug(arg1, ...)
+		if type(arg1) == "table" then
+			local loaded = LoadAddOn("Blizzard_DebugTools")
+			if not loaded then
+				PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: !!! table-dump skipped")
+				return debug(...)
+			end
+
+			local context = {
+				depth = 2,
+			  GetTableName = nilCacheFunc,
+			  GetFunctionName = nilCacheFunc,
+			  GetUserdataName = nilCacheFunc,
+				Write = writeFunc,
+			}
+			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: +++ table-dump")
+			_G.DevTools_RunDump(arg1, context)
+			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: --- end of table-dump")
+			return debug(...)
+		else
+			local text = strjoin(" ", tostringall(...))
+			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: " .. text)
 		end
-		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: +++ table-dump")
-		_G.DEVTOOLS_DEPTH_CUTOFF = 2
-		_G.DEFAULT_CHAT_FRAME = Parrot.PARROT_DEBUG_FRAME
-		_G.DevTools_Dump(arg1)
-		_G.DEFAULT_CHAT_FRAME = _G.ChatFrame1
-		_G.DEVTOOLS_DEPTH_CUTOFF = 10
-		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: --- end of table-dump")
-		Parrot.debug(...)
-	else
-		local text = strjoin(" ", tostringall(...))
-		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: " .. text)
 	end
-	--@end-debug@
 end
+--@end-debug@
+Parrot.debug = debug
 
 -- Table recycling
 local new, del
