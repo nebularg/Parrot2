@@ -1,10 +1,6 @@
-local Parrot = LibStub("AceAddon-3.0"):NewAddon("Parrot", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "LibSink-2.0")
-_G.Parrot = Parrot
-
---@debug@
-Parrot.version = "dev"
---@end-debug@
-
+local _, ns = ...
+ns.addon = {}
+local Parrot = LibStub("AceAddon-3.0"):NewAddon(ns.addon, "Parrot", "AceEvent-3.0", "LibSink-2.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local AceConfig = LibStub("AceConfig-3.0")
@@ -28,9 +24,9 @@ do
 
 			local context = {
 				depth = 2,
-			  GetTableName = nilCacheFunc,
-			  GetFunctionName = nilCacheFunc,
-			  GetUserdataName = nilCacheFunc,
+				GetTableName = nilCacheFunc,
+				GetFunctionName = nilCacheFunc,
+				GetUserdataName = nilCacheFunc,
 				Write = writeFunc,
 			}
 			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: +++ table-dump")
@@ -266,8 +262,11 @@ function Parrot:OnInitialize()
 	AceConfig:RegisterOptionsTable("Parrot/Blizzard", options)
 	AceConfigDialog:AddToBlizOptions("Parrot/Blizzard", L["Parrot"])
 
-	self:RegisterChatCommand("parrot", "ShowConfig")
-	self:RegisterChatCommand("par", "ShowConfig")
+	SLASH_PARROT1 = "/parrot"
+	SLASH_PARROT2 = "/par"
+	function SlashCmdList.PARROT()
+		self:ShowConfig()
+	end
 
 	local LibSink = LibStub("LibSink-2.0")
 	local function sink(addon, text, r, g, b, font, size, outline, sticky, location, icon)
@@ -286,6 +285,18 @@ function Parrot:OnInitialize()
 		return tmp
 	end
 	self:RegisterSink("Parrot", L["Parrot"], nil, sink, getScrollAreasChoices, true)
+
+	LibStub("LibDataBroker-1.1"):NewDataObject("Parrot", {
+		type = "launcher",
+		icon = "Interface\\Icons\\Spell_Nature_ForceOfNature",
+		OnClick = function(_, button)
+			if button == "LeftButton" then
+				Parrot:ShowConfig()
+			end
+		end,
+		label = L["Parrot"],
+	})
+
 end
 
 do
@@ -533,3 +544,5 @@ function Parrot:OnOptionsCreate()
 		}
 	})
 end
+
+_G.Parrot = Parrot

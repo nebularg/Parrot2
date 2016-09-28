@@ -6,7 +6,7 @@
 ## Notes-ruRU: Мощный плавающий текст боя.
 ## Notes-zhCN: 绝妙的战斗记录指示器。
 ## Notes-zhTW: 絕妙的戰鬥記錄指示器。
-## Author: Nebula
+## Author: Neb
 ## Version: @project-version@
 
 ## X-Credits: ckknight, profalbert
@@ -23,7 +23,6 @@ embeds.xml
 Locales\locales.xml
 
 Code\Parrot.lua
-Code\Broker.lua
 Code\AnimationStyles.lua
 Code\CombatEvents.lua
 Code\Display.lua
