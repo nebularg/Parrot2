@@ -1,6 +1,6 @@
-local Parrot = _G.Parrot
-
-local Parrot_AnimationStyles = Parrot:NewModule("AnimationStyles")
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("AnimationStyles")
 
 local animationStyles = {}
 local animationStylesChoices = {}
@@ -74,7 +74,7 @@ Example:
 		overlap = true,
 	}
 ------------------------------------------------------------------------------------]]
-function Parrot_AnimationStyles:RegisterAnimationStyle(data)
+function module:RegisterAnimationStyle(data)
 	if type(data) ~= "table" then
 		error(("Bad argument #2 to `RegisterAnimationStyle'. Expected %q, got %q."):format("table", type(data)), 2)
 	end
@@ -112,7 +112,7 @@ function Parrot_AnimationStyles:RegisterAnimationStyle(data)
 	animationStyles[name] = data
 	animationStylesChoices[name] = localName
 end
-Parrot.RegisterAnimationStyle = Parrot_AnimationStyles.RegisterAnimationStyle
+Parrot.RegisterAnimationStyle = module.RegisterAnimationStyle
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -122,32 +122,32 @@ Returns:
 Example:
 	local has = Parrot:HasAnimationStyle("My funky style")
 ------------------------------------------------------------------------------------]]
-function Parrot_AnimationStyles:HasAnimationStyle(name)
+function module:HasAnimationStyle(name)
 	if type(name) ~= 'string' then
 		error(("Bad argument #2 to `HasAnimationStyle'. defaultDirection must be a %q, got %q."):format("string", type(name)))
 	end
 	return not not animationStyles[name]
 end
-Parrot.HasAnimationStyle = Parrot_AnimationStyles.HasAnimationStyle
+Parrot.HasAnimationStyle = module.HasAnimationStyle
 
 -- #NODOC
-function Parrot_AnimationStyles:GetAnimationStyle(name)
+function module:GetAnimationStyle(name)
 	return animationStyles[name] or animationStyles.Straight
 end
 
 -- #NODOC
-function Parrot_AnimationStyles:GetAnimationStylesChoices()
+function module:GetAnimationStylesChoices()
 	return animationStylesChoices
 end
 
 -- #NODOC
-function Parrot_AnimationStyles:GetAnimationStyleDirectionChoices(name)
+function module:GetAnimationStyleDirectionChoices(name)
 	if not animationStyles[name] then
 		return
 	end
 	return animationStyles[name].directions
 end
-function Parrot_AnimationStyles:GetAnimationStyleDefaultDirection(name)
+function module:GetAnimationStyleDefaultDirection(name)
 	if not animationStyles[name] then
 		return nil
 	end

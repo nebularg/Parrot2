@@ -1,14 +1,13 @@
-local Parrot = _G.Parrot
-
-local mod = Parrot:NewModule("TriggerConditionsData", "AceEvent-3.0")
-
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("TriggerConditionsData", "AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
 
 local newList = Parrot.newList
 
 local onEnableFuncs = {}
 
-function mod:OnEnable()
+function module:OnEnable()
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
@@ -188,7 +187,7 @@ local unitPowerStates = {
 -- wipe the states for units that can change when they are changed
 --]]
 table.insert(onEnableFuncs, function()
-		mod:RegisterEvent("PLAYER_TARGET_CHANGED", function()
+		module:RegisterEvent("PLAYER_TARGET_CHANGED", function()
 				wipe(unitHealthStates.target)
 				wipe(unitPowerStates.target)
 			end
@@ -196,7 +195,7 @@ table.insert(onEnableFuncs, function()
 	end
 )
 table.insert(onEnableFuncs, function()
-		mod:RegisterEvent("PLAYER_FOCUS_CHANGED", function()
+		module:RegisterEvent("PLAYER_FOCUS_CHANGED", function()
 				--				debug("wipe focus states")
 				wipe(unitHealthStates.focus)
 				wipe(unitPowerStates.focus)
@@ -205,7 +204,7 @@ table.insert(onEnableFuncs, function()
 	end
 )
 table.insert(onEnableFuncs, function()
-		mod:RegisterEvent("UNIT_PET", function(_, unit)
+		module:RegisterEvent("UNIT_PET", function(_, unit)
 				if unit == "player" then
 					wipe(unitHealthStates.pet)
 					wipe(unitPowerStates.pet)

@@ -1,6 +1,7 @@
-local Parrot = _G.Parrot
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("TriggerConditions", "AceEvent-3.0")
 
-local Parrot_TriggerConditions = Parrot:NewModule("TriggerConditions", "AceEvent-3.0")
 local Parrot_Triggers
 
 local del = Parrot.del
@@ -11,27 +12,17 @@ local secondaryConditions = {}
 local primaryChoices = {}
 local secondaryChoices = {}
 
-local onEnableFuncs = {}
-function Parrot_TriggerConditions:OnEnable()
+function module:OnEnable()
 	Parrot_Triggers = Parrot:GetModule("Triggers")
-
 	Parrot:RegisterCombatLog(self)
-	for _, func in ipairs(onEnableFuncs) do
-		func()
-	end
 end
 
-local onDisableFuncs = {}
-function Parrot_TriggerConditions:OnDisable()
-	for _, func in ipairs(onDisableFuncs) do
-		func()
-	end
+function module:OnDisable()
+	Parrot:UnregisterCombatLog(module)
 end
-
-table.insert(onDisableFuncs, function() Parrot:UnregisterCombatLog(Parrot_TriggerConditions) end)
 
 -- #NODOC
-function Parrot_TriggerConditions:EventHandler(uid, event, arg1, ...)
+function module:EventHandler(uid, event, arg1, ...)
 	for _, data in next, conditions do
 		if data.events then
 			local info = data.events[event]
@@ -47,7 +38,7 @@ function Parrot_TriggerConditions:EventHandler(uid, event, arg1, ...)
 	end
 end
 
-Parrot_TriggerConditions.combatLogEvents = {}
+module.combatLogEvents = {}
 --[[----------------------------------------------------------------------------------
 Arguments:
 	string - the name of the trigger condition to fire, in English.
@@ -58,7 +49,7 @@ Notes:
 Example:
 	Parrot:FirePrimaryTriggerCondition("My trigger condition", 50)
 ------------------------------------------------------------------------------------]]
-function Parrot_TriggerConditions:FirePrimaryTriggerCondition(name, arg, uid)
+function module:FirePrimaryTriggerCondition(name, arg, uid)
 	if Parrot_Triggers and Parrot_Triggers:IsEnabled() then
 		local check
 		if conditions[name] then
@@ -67,7 +58,7 @@ function Parrot_TriggerConditions:FirePrimaryTriggerCondition(name, arg, uid)
 		Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 	end
 end
-Parrot.FirePrimaryTriggerCondition = Parrot_TriggerConditions.FirePrimaryTriggerCondition
+Parrot.FirePrimaryTriggerCondition = module.FirePrimaryTriggerCondition
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -87,7 +78,7 @@ Notes:
 		}
 	}</pre>
 ------------------------------------------------------------------------------------]]
-function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
+function module:RegisterPrimaryTriggerCondition(data)
 	local name = data.name
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. name must be a %q, got %q."):format("string", type(name)), 2)
@@ -108,7 +99,7 @@ function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
 
 	-- combatlog-stuff
 	if data.combatLogEvents then
-		local combatLogEvents = Parrot_TriggerConditions.combatLogEvents
+		local combatLogEvents = module.combatLogEvents
 		for _, v in ipairs(data.combatLogEvents) do
 			local eventType = v.eventType
 			if not combatLogEvents[eventType] then
@@ -124,18 +115,18 @@ function Parrot_TriggerConditions:RegisterPrimaryTriggerCondition(data)
 	end
 
 	-- Refresh events
-	Parrot:UnregisterAllBlizzardEvents(Parrot_TriggerConditions)
-	if Parrot_TriggerConditions:IsEnabled() then
+	Parrot:UnregisterAllBlizzardEvents(module)
+	if module:IsEnabled() then
 		for k, v in next, conditions do
 			if v.events then
 				for event in next, v.events do
-					Parrot:RegisterBlizzardEvent(Parrot_TriggerConditions, event, "EventHandler")
+					Parrot:RegisterBlizzardEvent(module, event, "EventHandler")
 				end
 			end
 		end
 	end
 end
-Parrot.RegisterPrimaryTriggerCondition = Parrot_TriggerConditions.RegisterPrimaryTriggerCondition
+Parrot.RegisterPrimaryTriggerCondition = module.RegisterPrimaryTriggerCondition
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -174,7 +165,7 @@ Example:
 		end,
 	}
 ------------------------------------------------------------------------------------]]
-function Parrot_TriggerConditions:RegisterSecondaryTriggerCondition(data)
+function module:RegisterSecondaryTriggerCondition(data)
 	local name = data.name
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterCombatEvent'. name must be a %q, got %q."):format("string", type(name)), 2)
@@ -190,20 +181,20 @@ function Parrot_TriggerConditions:RegisterSecondaryTriggerCondition(data)
 		secondaryChoices["~" .. name] = notLocalName
 	end
 end
-Parrot.RegisterSecondaryTriggerCondition = Parrot_TriggerConditions.RegisterSecondaryTriggerCondition
+Parrot.RegisterSecondaryTriggerCondition = module.RegisterSecondaryTriggerCondition
 
 -- #NODOC
-function Parrot_TriggerConditions:GetPrimaryConditionChoices()
+function module:GetPrimaryConditionChoices()
 	return primaryChoices
 end
 
 -- #NODOC
-function Parrot_TriggerConditions:GetSecondaryConditionChoices()
+function module:GetSecondaryConditionChoices()
 	return secondaryChoices
 end
 
 -- #NODOC
-function Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
+function module:GetPrimaryConditionParamDetails(name)
 	local data = conditions[name]
 	if not data then
 		return
@@ -211,12 +202,12 @@ function Parrot_TriggerConditions:GetPrimaryConditionParamDetails(name)
 	return data.param, data.defaultParam
 end
 
-function Parrot_TriggerConditions:GetSecondary()
+function module:GetSecondary()
 	return secondaryConditions
 end
 
 -- #NODOC
-function Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
+function module:GetSecondaryConditionParamDetails(name)
 	local data = secondaryConditions[name]
 	if not data then
 		if name:find("^~") then
@@ -229,7 +220,7 @@ function Parrot_TriggerConditions:GetSecondaryConditionParamDetails(name)
 	return data.param, data.defaultParam
 end
 
-function Parrot_TriggerConditions:IsExclusive(name)
+function module:IsExclusive(name)
 	if not conditions[name] then
 		return false
 	else
@@ -237,7 +228,7 @@ function Parrot_TriggerConditions:IsExclusive(name)
 	end
 end
 
-function Parrot_TriggerConditions:SecondaryIsExclusive(name)
+function module:SecondaryIsExclusive(name)
 	if name:match("^~.*") then
 		name = name:sub(2)
 	end
@@ -249,7 +240,7 @@ function Parrot_TriggerConditions:SecondaryIsExclusive(name)
 end
 
 -- #NODOC
-function Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, arg)
+function module:DoesSecondaryTriggerConditionPass(name, arg)
 	local notted = false
 	if name:find("^~") then
 		notted = true
@@ -270,7 +261,7 @@ function Parrot_TriggerConditions:DoesSecondaryTriggerConditionPass(name, arg)
 	end
 end
 
-function Parrot_TriggerConditions:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+function module:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
 	local registeredHandlers = self.combatLogEvents[eventType]
 	if registeredHandlers then
 		for _,v in ipairs(registeredHandlers) do
@@ -286,26 +277,3 @@ function Parrot_TriggerConditions:HandleCombatlogEvent(uid, _, timestamp, eventT
 		end
 	end
 end
-
---[[function Parrot_TriggerConditions:COMBAT_LOG_EVENT_UNFILTERED(_, _, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
-
-	if not Parrot:IsModuleActive(Parrot_TriggerConditions) then
-		return
-	end
-
-	local registeredHandlers = self.combatLogEvents[eventType]
-	if registeredHandlers then
-		for _, v in ipairs(registeredHandlers) do
-			local arg = v.triggerData(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
-			if arg == true then
-				local uid = (srcGUID or 0) + (dstGUID or 0) - timestamp
-				self:FirePrimaryTriggerCondition(v.name, nil, uid)
-			elseif arg then
-				local uid = (srcGUID or 0) + (dstGUID or 0) - timestamp
-				self:FirePrimaryTriggerCondition(v.name, arg, uid)
-			end
-		end
-	end
-
-end
---]]

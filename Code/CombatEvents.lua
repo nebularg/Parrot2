@@ -1,12 +1,11 @@
-local Parrot = _G.Parrot
-
-local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
-local Parrot_Display
-local Parrot_ScrollAreas
-
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents")
+
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
+local tinsert, tremove, tconcat, tsort = table.insert, table.remove, table.concat, table.sort
 local newList, del, newDict = Parrot.newList, Parrot.del, Parrot.newDict
 local debug = Parrot.debug
 
@@ -163,28 +162,34 @@ local function updateDB()
 	end
 end
 
-function Parrot_CombatEvents:OnNewProfile(_, database)
+function module:OnNewProfile(_, database)
 	database.profile.dbver = #updateDBFuncs
+end
+
+function module:OnProfileChanged()
+	db = self.db.profile
+	updateDB()
+	if next(Parrot.options.args) then
+		Parrot.options.args.events = del(Parrot.options.args.events)
+		self:OnOptionsCreate()
+	end
 end
 
 -- checks if in a raid-instance and disables CombatEvents accordingly
 local function checkZone()
-	if not Parrot_CombatEvents:IsEnabled() then return end
+	if not module:IsEnabled() then return end
 
 	local _, instance_type = IsInInstance()
 	if  instance_type == "raid" and db.disable_in_raid then
-		Parrot_CombatEvents:Disable()
+		module:Disable()
 	end
 end
 
-function Parrot_CombatEvents:OnInitialize()
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("CombatEvents", defaults)
 	db = self.db.profile
 
 	self.db.RegisterCallback(self, "OnNewProfile", "OnNewProfile")
-
-	Parrot_Display = Parrot:GetModule("Display")
-	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 
 	-- Register with Addons CombatLogEvent-registry for uid-stuff
 	Parrot:RegisterCombatLog(self)
@@ -195,13 +200,13 @@ end
 
 -- used as table for data about combatEvents in the registry
 local combatEvents = {}
+local sthrottles
 
-local onEnableFuncs = {}
-function Parrot_CombatEvents:OnEnable()
+function module:OnEnable()
 	updateDB()
-	for _, func in next, onEnableFuncs do
-		func()
-	end
+	sthrottles = db.sthrottles or {}
+	playerGUID = UnitGUID("player")
+	self:ScheduleRepeatingTimer("RunThrottle", 0.05)
 end
 
 
@@ -235,7 +240,7 @@ end
 -- + Truncate: "Shad..."
 -- + Abbriviate: "SB"
 --]]
-function Parrot_CombatEvents:GetAbbreviatedSpell(name)
+function module:GetAbbreviatedSpell(name)
 	if not name then return end
 	local style = db.abbreviateStyle
 	if style == "none" then
@@ -273,7 +278,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 		while i < #t do
 			i = i + 1
 			if t[i] == "" then
-				table.remove(t, i)
+				tremove(t, i)
 				i = i - 1
 			end
 		end
@@ -304,7 +309,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 				t[j] = ""
 			end
 		end
-		local s = table.concat(t)
+		local s = tconcat(t)
 		t = del(t)
 		return s
 	elseif style == "truncate" then
@@ -316,6 +321,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 	end
 	return name
 end
+Parrot.GetAbbreviatedSpell = module.GetAbbreviatedSpell
 
 local modifierTranslationHelps
 
@@ -338,15 +344,6 @@ local function getSoundChoices()
 	return t
 end
 
-function Parrot_CombatEvents:OnProfileChanged()
-	db = self.db.profile
-	updateDB()
-	if next(Parrot.options.args) then
-		Parrot.options.args.events = del(Parrot.options.args.events)
-		Parrot_CombatEvents:OnOptionsCreate()
-	end
-end
-
 local function setOption(info, value)
 	local name = info[#info]
 	debug("Parrot.db: set option ", name, " = ", value)
@@ -366,7 +363,7 @@ local function hexColorToTuple(color)
 end
 
 
-function Parrot_CombatEvents:OnOptionsCreate()
+function module:OnOptionsCreate()
 	local function getSubOption(info)
 		local name = info[#info]
 		local category = info[#info - 1]
@@ -619,10 +616,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					},
 					abbrDesc = {
 						type = 'description',
-						name = string.format("%s: %s\n%s: %s\n%s: %s", L["None"],
-							L["Do not shorten spell names."], L["Abbreviate"],
-							L["Gift of the Wild => GotW."], L["Truncate"],
-							L["Gift of the Wild => Gift of t..."]),
+						name = ("%s: %s\n%s: %s\n%s: %s"):format(
+							L["None"], L["Do not shorten spell names."],
+							L["Abbreviate"], L["Gift of the Wild => GotW."],
+							L["Truncate"], L["Gift of the Wild => Gift of t..."]
+						),
 						order = 3,
 					},
 				},
@@ -680,9 +678,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				for tag in next, translationHelp do
 					tags[#tags+1] = tag
 				end
-				table.sort(tags)
+				tsort(tags)
 				for _, tag in ipairs(tags) do
-					usage = string.format("%s\n[%s] => %s", usage, tag, translationHelp[tag])
+					usage = ("%s\n[%s] => %s"):format(usage, tag, translationHelp[tag])
 				end
 				tags = del(tags)
 			end
@@ -984,7 +982,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	-- copy the choices
 	local function getScrollAreasChoices()
 		local tmp = {}
-		for k,v in pairs(Parrot_ScrollAreas:GetScrollAreasChoices()) do
+		for k,v in pairs(Parrot:GetScrollAreasChoices()) do
 			tmp[k] = v
 		end
 		return tmp
@@ -1041,9 +1039,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			for tag in next, data.tagTranslationsHelp do
 				tags[#tags+1] = tag
 			end
-			table.sort(tags)
+			tsort(tags)
 			for _, tag in ipairs(tags) do
-				usage = string.format("%s\n[%s] => %s", usage, tag, data.tagTranslationsHelp[tag])
+				usage = ("%s\n[%s] => %s"):format(usage, tag, data.tagTranslationsHelp[tag])
 			end
 			tags = del(tags)
 		end
@@ -1482,7 +1480,7 @@ Example:
 		color = "ffffff", -- white
 	}
 ------------------------------------------------------------------------------------]]
-function Parrot_CombatEvents:RegisterCombatEvent(data)
+function module:RegisterCombatEvent(data)
 	if type(data) ~= 'table' then
 		error(("Bad argument #2 to 'RegisterCombatEvent'. data must be a %q, got %q."):format("table", type(data)))
 	end
@@ -1540,7 +1538,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			if type(check) ~= "function" then
 				error(("Bad argument #2 to `RegisterCombatEvent'. check must be a %q or nil, got %q."):format("function", type(check)), 2)
 			end
-			table.insert(combatLogEvents[eventType], {
+			tinsert(combatLogEvents[eventType], {
 					category = category,
 					name = data.name,
 					infofunc = v.func,
@@ -1563,20 +1561,20 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			if not registeredBlizzardEvents[k] then
 				registeredBlizzardEvents[k] = newList()
 			end
-			table.insert(registeredBlizzardEvents[k], {
+			tinsert(registeredBlizzardEvents[k], {
 					category = category,
 					name = data.name,
 					parse = parse,
 					check = check,
 				}
 			)
-			Parrot:RegisterBlizzardEvent(Parrot_CombatEvents, k, "HandleBlizzardEvent")
+			Parrot:RegisterBlizzardEvent(module, k, "HandleBlizzardEvent")
 		end
 	end
 
 	createOption(category, name)
 end
-Parrot.RegisterCombatEvent = Parrot_CombatEvents.RegisterCombatEvent
+Parrot.RegisterCombatEvent = module.RegisterCombatEvent
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -1589,7 +1587,7 @@ Notes:
 Example:
 	Parrot:RegisterThrottleType("DoTs and HoTs", L[ [=[DoTs and HoTs]=] ], 2)
 ------------------------------------------------------------------------------------]]
-function Parrot_CombatEvents:RegisterThrottleType(name, localName, duration, waitStyle)
+function module:RegisterThrottleType(name, localName, duration, waitStyle)
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterThrottleType'. Expected %q, got %q."):format("string", type(name)), 2)
 	end
@@ -1606,7 +1604,7 @@ function Parrot_CombatEvents:RegisterThrottleType(name, localName, duration, wai
 
 	createThrottleOption(name)
 end
-Parrot.RegisterThrottleType = Parrot_CombatEvents.RegisterThrottleType
+Parrot.RegisterThrottleType = module.RegisterThrottleType
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -1619,7 +1617,7 @@ Example:
 	Parrot_CombatEvents:RegisterFilterType("Incoming heals", L.Incoming_heals, 0)
 	-- allows for a filter on incoming heals, so that if you don't want to see small heals, it's easy to suppress.
 ------------------------------------------------------------------------------------]]
-function Parrot_CombatEvents:RegisterFilterType(name, localName, default)
+function module:RegisterFilterType(name, localName, default)
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterFilterType'. Expected %q, got %q."):format("string", type(name)), 2)
 	end
@@ -1635,7 +1633,7 @@ function Parrot_CombatEvents:RegisterFilterType(name, localName, default)
 
 	createThrottleOption(name)
 end
-Parrot.RegisterFilterType = Parrot_CombatEvents.RegisterFilterType
+Parrot.RegisterFilterType = module.RegisterFilterType
 
 local handler__translation
 local handler__info
@@ -1673,12 +1671,13 @@ local function shortenAmount(val)
 	end
 end
 
-function Parrot_CombatEvents:ShortenAmount(val)
+function module:ShortenAmount(val)
 	if not db.shortenAmount then
 		return val
 	end
 	return shortenAmount(val)
 end
+Parrot.ShortenAmount = module.ShortenAmount
 
 
 local modifierTranslations = {}
@@ -1694,7 +1693,7 @@ local modifiersWithAmount = {
 for k,v in pairs(modifiersWithAmount) do
 	-- local valAmountKey = v .. "Amount"
 	modifierTranslations[k] = { Amount = function(info)
-		local val = Parrot_CombatEvents:ShortenAmount(info[v])
+		local val = module:ShortenAmount(info[v])
 		if db.modifier.color then
 			return "|cff" .. db.modifier[k].color .. val .. "|r"
 		else
@@ -1733,16 +1732,12 @@ modifierTranslationHelps = {
 -- save data about pending throttles
 local throttleData = {}
 
-onEnableFuncs[#onEnableFuncs+1] = function()
-	Parrot_CombatEvents:ScheduleRepeatingTimer("RunThrottle", 0.1)
-end
-
 local LAST_TIME = _G.newproxy() -- cheaper than {}
 local NEXT_TIME = _G.newproxy() -- cheaper than {}
 local STHROTTLE = _G.newproxy() -- for spell-throttle
 
 -- #NODOC
-function Parrot_CombatEvents:RunThrottle(force)
+function module:RunThrottle(force)
 	local now = GetTime()
 	for throttleType,w in pairs(throttleData) do
 		local goodTime = now
@@ -1799,11 +1794,6 @@ function Parrot_CombatEvents:RunThrottle(force)
 	end
 end
 
-local sthrottles
-onEnableFuncs[#onEnableFuncs + 1] = function()
-	sthrottles = db.sthrottles or {}
-end
-
 local function get_sthrottle(info)
 	local sthrottle = sthrottles[info.spellID] or sthrottles[info.abilityName]
 	return sthrottle
@@ -1814,7 +1804,7 @@ local runCachedEvents
 local combatTimerFrame
 local cancelUIDSoon = {}
 
-function Parrot_CombatEvents:CancelEventsWithUID(uid)
+function module:CancelEventsWithUID(uid)
 	if not db.cancelUIDSoon then
 		return
 	end
@@ -1822,12 +1812,13 @@ function Parrot_CombatEvents:CancelEventsWithUID(uid)
 	while i >= 1 do
 		local v = nextFrameCombatEvents[i]
 		if v and uid == v[3].uid then
-			table.remove(nextFrameCombatEvents, i)
+			tremove(nextFrameCombatEvents, i)
 		end
 		i = i - 1
 	end
 	cancelUIDSoon[uid] = true
 end
+Parrot.CancelEventsWithUID = module.CancelEventsWithUID
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -1843,8 +1834,8 @@ Example:
 	Parrot:TriggerCombatEvent("Notification", "My event", tmp)
 	tmp = del(tmp)
 ------------------------------------------------------------------------------------]]
-function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDone)
-	if not Parrot_CombatEvents:IsEnabled() then return end -- TODO remove
+function module:TriggerCombatEvent(category, name, info, throttleDone)
+	if not module:IsEnabled() then return end -- TODO remove
 
 	if cancelUIDSoon[info.uid] then
 		return
@@ -2005,12 +1996,11 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 
 	if #nextFrameCombatEvents == 0 then
 		combatTimerFrame:Show()
-		--		Parrot_CombatEvents:ScheduleRepeatingTimer(runCachedEvents, 0.1)
 	end
 
 	nextFrameCombatEvents[#nextFrameCombatEvents+1] = newList(category, name, infoCopy)
 end
-Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
+Parrot.TriggerCombatEvent = module.TriggerCombatEvent
 
 local function runEvent(category, name, info)
 	local cdb = db[category][name]
@@ -2076,13 +2066,13 @@ local function runEvent(category, name, info)
 			handler__translation = modifierTranslations.overheal
 			t[#t+1] = modifierDB.overheal.tag:gsub("(%b[])", handler)
 		end
-		text = table.concat(t)
+		text = tconcat(t)
 	elseif overkillAmount and overkillAmount >= 1 then
 		if modifierDB.overkill.enabled then
 			handler__translation = modifierTranslations.overkill
 			t[#t+1] = modifierDB.overkill.tag:gsub("(%b[])", handler)
 		end
-		text = table.concat(t)
+		text = tconcat(t)
 	else
 		if modifierDB.absorb.enabled then
 			local absorbAmount = info.absorbAmount
@@ -2112,7 +2102,7 @@ local function runEvent(category, name, info)
 				t[#t+1] = modifierDB.vulnerable.tag:gsub("(%b[])", handler)
 			end
 		end
-		text = table.concat(t)
+		text = tconcat(t)
 		if info.isGlancing then
 			if modifierDB.glancing.enabled then
 				handler__translation = modifierTranslations.glancing
@@ -2157,7 +2147,7 @@ local function runEvent(category, name, info)
 	if throttleSuffix then
 		text = text .. throttleSuffix
 	end
-	Parrot_Display:ShowMessage(text, cdb.scrollArea or category, sticky, r, g, b, cdb.font, cdb.fontSize, cdb.fontOutline, icon)
+	Parrot:ShowMessage(text, cdb.scrollArea or category, sticky, r, g, b, cdb.font, cdb.fontSize, cdb.fontOutline, icon)
 	if cdb.sound then
 		PlaySoundFile(SharedMedia:Fetch('sound', cdb.sound), "MASTER")
 	end
@@ -2186,7 +2176,7 @@ combatTimerFrame = CreateFrame("Frame")
 combatTimerFrame:Hide()
 combatTimerFrame:SetScript("OnUpdate", runCachedEvents)
 
-function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
+function module:HandleBlizzardEvent(uid, eventName, ...)
 	if not self:IsEnabled() then return end
 
 	local handlers = registeredBlizzardEvents[eventName]
@@ -2203,11 +2193,6 @@ function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
 			end
 		end
 	end
-end
-
-local playerGUID
-onEnableFuncs[#onEnableFuncs + 1] = function()
-	playerGUID = UnitGUID("player")
 end
 
 local function sfiltered(info)
@@ -2276,15 +2261,15 @@ local function makeParseFunction(event)
 	if next(moreParams[event]) then
 		local paramCode = newList()
 		for _,v in ipairs(moreParams[event]) do
-			table.insert(paramCode, ("info.%s"):format(legacyNames[v] or v))
+			tinsert(paramCode, ("info.%s"):format(legacyNames[v] or v))
 		end
-		code = code .. table.concat(paramCode, ",") .. " = ...;"
+		code = code .. tconcat(paramCode, ",") .. " = ...;"
 		del(paramCode)
 	end
 
 	local extras = moreParams[event].extra
 	if extras then
-		code = code .. table.concat(extras, ";") .. ";"
+		code = code .. tconcat(extras, ";") .. ";"
 	end
 
 	code = code .. "end"
@@ -2312,7 +2297,7 @@ local function checkForRelevance(sourceFlags, destFlags)
 	bit_band(destFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT
 end
 
-function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+function module:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
 	if not self:IsEnabled() then return end -- TODO remove
 
 	if checkForRelevance(sourceFlags, destFlags) then

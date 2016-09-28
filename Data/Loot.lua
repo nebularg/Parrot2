@@ -1,9 +1,9 @@
-local Parrot = _G.Parrot
-
+local _, ns = ...
+local Parrot = ns.addon
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Loot")
-local Deformat = Parrot.Deformat
 
 local newDict = Parrot.newDict
+local Deformat = Parrot.Deformat
 
 local LOOT_ITEM_SELF = _G.LOOT_ITEM_SELF
 local LOOT_ITEM_SELF_MULTIPLE = _G.LOOT_ITEM_SELF_MULTIPLE

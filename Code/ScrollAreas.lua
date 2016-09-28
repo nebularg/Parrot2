@@ -1,10 +1,9 @@
-local Parrot = _G.Parrot
-
-local Parrot_ScrollAreas = Parrot:NewModule("ScrollAreas", "AceTimer-3.0")
-local Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
-local Parrot_Display = Parrot:GetModule("Display")
-
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("ScrollAreas", "AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
+
+local Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 
 do
 	local SharedMedia = LibStub("LibSharedMedia-3.0")
@@ -72,7 +71,7 @@ local function rebuildChoices()
 	end
 end
 
-function Parrot_ScrollAreas:OnProfileChanged()
+function module:OnProfileChanged()
 	db = self.db.profile
 	if Parrot.options.args.scrollAreas then
 		Parrot.options.args.scrollAreas = nil
@@ -82,16 +81,16 @@ function Parrot_ScrollAreas:OnProfileChanged()
 	rebuildChoices()
 end
 
-function Parrot_ScrollAreas:OnInitialize()
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("ScrollAreas", defaults)
 	self:OnProfileChanged()
 end
 
-function Parrot_ScrollAreas:OnEnable()
+function module:OnEnable()
 	setConfigMode(false)
 end
 
-function Parrot_ScrollAreas:OnDisable()
+function module:OnDisable()
 	setConfigMode(false)
 end
 
@@ -118,7 +117,7 @@ local function hideAllOffsetBoxes()
 	for k,v in next, offsetBoxes do
 		v:Hide()
 	end
-	Parrot_ScrollAreas:CancelTimer(configModeTimer)
+	module:CancelTimer(configModeTimer)
 end
 
 local function showOffsetBox(k)
@@ -128,8 +127,8 @@ local function showOffsetBox(k)
 	local offsetBox = offsetBoxes[k]
 	local name = choicesBase[k] or k
 	if not offsetBox then
-		offsetBox = CreateFrame("Button", "Parrot_ScrollAreas_OffsetBox_" .. k, UIParent)
-		local midPoint = CreateFrame("Frame", "Parrot_ScrollAreas_OffsetBox_" .. k .. "_Midpoint", offsetBox)
+		offsetBox = CreateFrame("Button", "ParrotScrollAreasOffsetBox" .. k, UIParent)
+		local midPoint = CreateFrame("Frame", "$parentMidPoint", offsetBox)
 		offsetBox.midPoint = midPoint
 		midPoint:SetWidth(1)
 		midPoint:SetHeight(1)
@@ -139,19 +138,19 @@ local function showOffsetBox(k)
 		offsetBox:SetHeight(100)
 		offsetBox:SetFrameStrata("MEDIUM")
 
-		local bg = offsetBox:CreateTexture("Parrot_ScrollAreas_OffsetBox_" .. k .. "_Background", "BACKGROUND")
+		local bg = offsetBox:CreateTexture("$parentBackground", "BACKGROUND")
 		bg:SetColorTexture(0.7, 0.4, 0, 0.5) -- orange
 		bg:SetAllPoints(offsetBox)
 
-		local text = offsetBox:CreateFontString("Parrot_ScrollAreas_Offset_" .. k .. "_BoxText", "ARTWORK", "GameFontHighlight")
+		local text = offsetBox:CreateFontString("$parentText", "ARTWORK", "GameFontHighlight")
 		offsetBox.text = text
 		text:SetText(L["Click and drag to the position you want."])
 		text:SetPoint("CENTER")
-		local topText = offsetBox:CreateFontString("Parrot_ScrollAreas_Offset_" .. k .. "_BoxTopText", "ARTWORK", "GameFontHighlight")
+		local topText = offsetBox:CreateFontString("$parentTopText", "ARTWORK", "GameFontHighlight")
 		offsetBox.topText = topText
 		topText:SetText(L["Scroll area: %s"]:format(name))
 		topText:SetPoint("BOTTOM", offsetBox, "TOP", 0, 5)
-		local bottomText = offsetBox:CreateFontString("Parrot_ScrollAreas_Offset_" .. k .. "_BoxBottomText", "ARTWORK", "GameFontHighlight")
+		local bottomText = offsetBox:CreateFontString("$parentBottomText", "ARTWORK", "GameFontHighlight")
 		offsetBox.bottomText = bottomText
 		bottomText:SetPoint("TOP", offsetBox, "BOTTOM", 0, -5)
 
@@ -219,7 +218,7 @@ local function test(kind, k)
 	else -- 5
 		r, g, b = 1, 0, 1-f
 	end
-	Parrot_Display:ShowMessage(alphabet[currentAlphabet], k, kind == "sticky", r, g, b, nil, nil, nil, "Interface\\Icons\\INV_Misc_QuestionMark")
+	Parrot:ShowMessage(alphabet[currentAlphabet], k, kind == "sticky", r, g, b, nil, nil, nil, "Interface\\Icons\\INV_Misc_QuestionMark")
 	currentAlphabet = (currentAlphabet % #alphabet) + 1
 	currentColor = (currentColor + 10) % 360
 end
@@ -249,20 +248,20 @@ function setConfigMode(value)
 		for k in next, scrollAreas do
 			showOffsetBox(k)
 		end
-		configModeTimer = Parrot_ScrollAreas:ScheduleRepeatingTimer(configModeMessages, 1)
+		configModeTimer = module:ScheduleRepeatingTimer(configModeMessages, 1)
 		configModeMessages()
 	end
 end
 
-function Parrot_ScrollAreas:HasScrollArea(name)
+function module:HasScrollArea(name)
 	return not not scrollAreas[name]
 end
 
-function Parrot_ScrollAreas:GetScrollArea(name)
+function module:GetScrollArea(name)
 	return scrollAreas[name]
 end
 
-function Parrot_ScrollAreas:GetRandomScrollArea()
+function module:GetRandomScrollArea()
 	local i = 0
 	for k, v in next, scrollAreas do
 		i = i + 1
@@ -278,12 +277,12 @@ function Parrot_ScrollAreas:GetRandomScrollArea()
 	return
 end
 
-function Parrot_ScrollAreas:GetScrollAreasChoices()
+function module:GetScrollAreasChoices()
 	return choices
 end
-Parrot.GetScrollAreasChoices = Parrot_ScrollAreas.GetScrollAreasChoices
+Parrot.GetScrollAreasChoices = module.GetScrollAreasChoices
 
-function Parrot_ScrollAreas:OnOptionsCreate()
+function module:OnOptionsCreate()
 	local scrollAreas_opt
 	local function getName(info)
 		local name = info.arg

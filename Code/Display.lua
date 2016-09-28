@@ -1,11 +1,12 @@
-local Parrot = _G.Parrot
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("Display")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Display")
 
-local Parrot_Display = Parrot:NewModule("Display")
 local Parrot_AnimationStyles
 local Parrot_Suppressions
 local Parrot_ScrollAreas
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Display")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 local DEFAULT_FONT_NAME = SharedMedia:GetDefault("font")
 
@@ -31,11 +32,11 @@ local defaults = {
 	},
 }
 
-function Parrot_Display:OnProfileChanged()
+function module:OnProfileChanged()
 	db = self.db.profile
 end
 
-function Parrot_Display:OnInitialize()
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Display", defaults)
 	db = self.db.profile
 
@@ -53,7 +54,7 @@ local function getOption(info)
 	return db[name]
 end
 
-function Parrot_Display:OnEnable()
+function module:OnEnable()
 	if not ParrotFrame then
 		ParrotFrame = CreateFrame("Frame", "ParrotFrame", UIParent)
 		ParrotFrame:Hide()
@@ -66,9 +67,6 @@ function Parrot_Display:OnEnable()
 	end
 end
 
-function Parrot_Display:OnDisable()
-end
-
 local function getFontChoices()
 	local result = {}
 	for _,v in ipairs(SharedMedia:List("font")) do
@@ -77,7 +75,7 @@ local function getFontChoices()
 	return result
 end
 
-function Parrot_Display:OnOptionsCreate()
+function module:OnOptionsCreate()
 	local outlineChoices = {
 		NONE = L["None"],
 		OUTLINE = L["Thin"],
@@ -196,8 +194,8 @@ Notes:
 Example:
 	Parrot:ShowMessage("Hello, world!", "Notification", false, 0.5, 0.5, 1)
 ------------------------------------------------------------------------------------]]
-function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize, outline, icon)
-	if not Parrot_Display:IsEnabled() then return end
+function module:ShowMessage(text, area, sticky, r, g, b, font, fontSize, outline, icon)
+	if not module:IsEnabled() then return end
 	if Parrot_Suppressions:ShouldSuppress(text) then return end
 
 	if not Parrot_ScrollAreas:HasScrollArea(area) then
@@ -370,7 +368,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 	end
 	Display_Update()
 end
-Parrot.ShowMessage = Parrot_Display.ShowMessage
+Parrot.ShowMessage = module.ShowMessage
 
 local function isOverlapping(alpha, bravo)
 	if alpha:GetLeft() <= bravo:GetRight() and bravo:GetLeft() <= alpha:GetRight() and alpha:GetBottom() <= bravo:GetTop() and bravo:GetBottom() <= alpha:GetTop() then
@@ -473,45 +471,33 @@ function Display_Update()
 	end
 end
 
-local flasher
+local flasher = nil
 local function makeflasher()
-	if flasher then
-		return
-	end
 	flasher = CreateFrame("Frame", "ParrotFlash", UIParent)
 	flasher:SetFrameStrata("BACKGROUND")
 	flasher:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",})
 	flasher:SetAllPoints( UIParent)
 	flasher:SetScript("OnShow", function (self)
-			self.elapsed = 0
-			self:SetAlpha(0)
+		self.elapsed = 0
+		self:SetAlpha(0)
 	end)
 	flasher:SetScript("OnUpdate", function (self, elapsed)
-			elapsed = self.elapsed + elapsed
-			if elapsed >= 1 then
-				self:Hide()
-				self:SetAlpha(0)
-				return
-			end
-			local alpha = 1 - math.abs(elapsed - 0.5)
-			-- if elapsed > 0.2 then
-			-- 	alpha = 0.4 - alpha
-			-- end
-			self:SetAlpha(alpha * 0.7)
-			self.elapsed = elapsed
+		elapsed = self.elapsed + elapsed
+		if elapsed >= 1 then
+			self:Hide()
+			self:SetAlpha(0)
+			return
+		end
+		local alpha = 1 - math.abs(elapsed - 0.5)
+		self:SetAlpha(alpha * 0.7)
+		self.elapsed = elapsed
 	end)
 	flasher:Hide()
 end
 
-local function doFlash(self, r, g, b)
+function module:Flash(r, g, b)
+	if not flasher then makeflasher() end
 	flasher:SetBackdropColor(r, g, b, 255)
 	flasher:Show()
 end
-
-local function initFlasherAndFlash(self, r, g, b)
-	makeflasher()
-	Parrot_Display.Flash = doFlash
-	doFlash(self, r, g, b)
-end
-
-Parrot_Display.Flash = initFlasherAndFlash
+Parrot.Flash = module.Flash

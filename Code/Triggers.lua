@@ -1,12 +1,10 @@
-local Parrot = _G.Parrot
-
-local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0", "AceEvent-3.0")
-local Parrot_TriggerConditions
-local Parrot_Display
-local Parrot_ScrollAreas
-local Parrot_CombatEvents
-
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("Triggers", "AceEvent-3.0", "AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
+
+local Parrot_TriggerConditions
+
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 local newList, del = Parrot.newList, Parrot.del
@@ -599,7 +597,7 @@ local function checkTriggerEnabled(v)
 end
 
 local function rebuildEffectiveRegistry()
-	Parrot_Triggers:CancelTimer(periodicCheckTimer)
+	module:CancelTimer(periodicCheckTimer)
 	periodicCheckTimer = nil
 
 	wipe(effectiveRegistry)
@@ -608,7 +606,7 @@ local function rebuildEffectiveRegistry()
 		if checkTriggerEnabled(v) then
 			effectiveRegistry[#effectiveRegistry+1] = v
 			if v.conditions["Check every XX seconds"] and not periodicCheckTimer then
-				periodicCheckTimer = Parrot_Triggers:ScheduleRepeatingTimer(function()
+				periodicCheckTimer = module:ScheduleRepeatingTimer(function()
 					Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
 				end, 0.1)
 			end
@@ -624,7 +622,7 @@ local function updateDB()
 	-- clean up old triggers
 	if db.triggers then
 		if not next(db.triggers2) and next(db.triggers) then
-			Parrot_Triggers:Print("Your triggers are really out of date and have been reset.")
+			module:Print("Your triggers are really out of date and have been reset.")
 		end
 		db.triggers = nil
 	end
@@ -645,7 +643,7 @@ local function updateDB()
 	db.dbver = #updateFuncs
 end
 
-function Parrot_Triggers:OnProfileChanged()
+function module:OnProfileChanged()
 	db = self.db.profile
 	updateDB()
 
@@ -656,15 +654,12 @@ function Parrot_Triggers:OnProfileChanged()
 	rebuildEffectiveRegistry()
 end
 
-function Parrot_Triggers:OnInitialize()
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Triggers", defaults)
 	db = self.db.profile
 	updateDB()
 
-	Parrot_Display = Parrot:GetModule("Display")
-	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
-	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 end
 
 local function registerTriggers()
@@ -694,7 +689,7 @@ local function registerTriggers()
 	}
 end
 
-function Parrot_Triggers:OnEnable()
+function module:OnEnable()
 	if registerTriggers then
 		registerTriggers()
 		registerTriggers = nil
@@ -775,10 +770,10 @@ local function showTrigger(t)
 	local icon = getIconPath(t.icon)
 	if t.useflash then
 		local rf, gf, bf = hexColorToTuple(t.flashcolor or 'ffffff')
-		Parrot_Display:Flash(rf,gf,bf)
+		Parrot:Flash(rf,gf,bf)
 	end
 
-	Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, icon)
+	Parrot:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, icon)
 
 	if t.sound then
 		local sound = SharedMedia:Fetch('sound', t.sound)
@@ -788,7 +783,7 @@ local function showTrigger(t)
 	end
 end
 
-function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
+function module:OnTriggerCondition(name, arg, uid, check)
 	if UnitIsDeadOrGhost("player") then
 		return
 	end
@@ -842,7 +837,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 				if good and checkTriggerCooldown(t, 0.1) then
 					showTrigger(t)
 					if uid then
-						Parrot_CombatEvents:CancelEventsWithUID(uid)
+						Parrot:CancelEventsWithUID(uid)
 					end
 				end
 			end
@@ -858,7 +853,7 @@ local function getSoundChoices()
 	return t
 end
 
-function Parrot_Triggers:OnOptionsCreate()
+function module:OnOptionsCreate()
 
 	local acetype = {
 		['number'] = 'range',
@@ -1079,9 +1074,9 @@ function Parrot_Triggers:OnOptionsCreate()
 		--TODO
 		if t.useflash then
 			local rf, gf, bf = hexColorToTuple(t.flashcolor or 'ffffff')
-			Parrot_Display:Flash(rf,gf,bf)
+			Parrot:Flash(rf,gf,bf)
 		end
-		Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, getIconPath(t.icon))
+		Parrot:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, getIconPath(t.icon))
 		if t.sound then
 			local sound = SharedMedia:Fetch('sound', t.sound)
 			if sound then
@@ -1574,7 +1569,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				},
 				scrollArea = {
 					type = 'select',
-					values = Parrot_ScrollAreas:GetScrollAreasChoices(),
+					values = Parrot:GetScrollAreasChoices(),
 					name = L["Scroll area"],
 					desc = L["Which scroll area to output to."],
 					get = getScrollArea,

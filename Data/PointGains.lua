@@ -1,17 +1,14 @@
-local Parrot = _G.Parrot
-
-local Parrot_PointGains = Parrot:NewModule("PointGains")
-
-local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
-
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("PointGains")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_PointGains")
-local Deformat = Parrot.Deformat
 
 local newDict, newList = Parrot.newDict, Parrot.newList
+local Deformat = Parrot.Deformat
 
 local currentXP = 0
 
-function Parrot_PointGains:OnEnable()
+function module:OnEnable()
 	currentXP = UnitXP("player")
 end
 
@@ -155,7 +152,7 @@ Parrot:RegisterCombatEvent{
 local SKILL_RANK_UP = _G.SKILL_RANK_UP
 
 local function retrieveAbilityName(info)
-	return Parrot_CombatEvents:GetAbbreviatedSpell(info.abilityName)
+	return Parrot:GetAbbreviatedSpell(info.abilityName)
 end
 
 local function parseSkillGain(chatmsg)

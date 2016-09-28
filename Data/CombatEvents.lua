@@ -1,9 +1,6 @@
-local Parrot = _G.Parrot
-
+local _, ns = ...
+local Parrot = ns.addon
 local mod = Parrot:NewModule("CombatEventsData")
-
-local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
-
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
 
 local newList = Parrot.newList
@@ -87,7 +84,7 @@ local LS = {
 
 local coloredDamageAmount = function(info)
 	local damageType = SchoolParser[info.damageType or 1]
-	local amount = Parrot_CombatEvents:ShortenAmount(info.amount)
+	local amount = Parrot:ShortenAmount(info.amount)
 
 	if db.damageTypes.color and db.damageTypes[damageType] then
 		return ("|cff%s%s|r"):format(db.damageTypes[damageType], amount)
@@ -157,11 +154,11 @@ end
 -- functions to retrieve abbrivated spellnames
 --]]
 local function retrieveAbilityName(info)
-	return Parrot_CombatEvents:GetAbbreviatedSpell(info.abilityName)
+	return Parrot:GetAbbreviatedSpell(info.abilityName)
 end
 
 local function retrieveExtraAbilityName(info)
-	return Parrot_CombatEvents:GetAbbreviatedSpell(info.extraAbilityName)
+	return Parrot:GetAbbreviatedSpell(info.extraAbilityName)
 end
 
 --[[

@@ -1,7 +1,6 @@
-local Parrot = _G.Parrot
-
-local mod = Parrot:NewModule("Cooldowns", "AceEvent-3.0", "AceTimer-3.0")
-
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("Cooldowns", "AceEvent-3.0", "AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Cooldowns")
 
 local newList, del = Parrot.newList, Parrot.del
@@ -34,23 +33,23 @@ do
 	addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
 end
 
-function mod:OnProfileChanged()
+function module:OnProfileChanged()
 	db = self.db.profile
 end
 
-function mod:OnInitialize()
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Cooldowns", defaults)
 	db = self.db.profile
 end
 
-function mod:OnEnable()
+function module:OnEnable()
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN", "CheckItems")
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "CheckItems")
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "CheckSpells")
 	self:RegisterEvent("SPELLS_CHANGED", "ResetSpells")
 end
 
-function mod:CheckItems()
+function module:CheckItems()
 	for i = 1, 19 do
 		local link = GetInventoryItemLink("player", i)
 		if link then
@@ -77,7 +76,7 @@ function mod:CheckItems()
 	end
 end
 
-function mod:ResetSpells(e)
+function module:ResetSpells(e)
 	wipe(spells)
 	wipe(spellCooldowns)
 	-- cache spells from our current spec plus racials
@@ -97,7 +96,7 @@ function mod:ResetSpells(e)
 	end
 end
 
-function mod:CheckSpells(e)
+function module:CheckSpells(e)
 	local expired = newList()
 	for spellName in next, spells do
 		local start, duration = GetSpellCooldown(spellName)
@@ -231,7 +230,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 	end,
 }
 
-function mod:OnOptionsCreate()
+function module:OnOptionsCreate()
 	local options = {
 		type = "group",
 		name = L["Cooldowns"],
@@ -262,7 +261,7 @@ function mod:OnOptionsCreate()
 				local key = info[#info]
 				options.args[key] = nil
 				db.filters[key] = nil
-				mod:ResetSpells()
+				module:ResetSpells()
 				GameTooltip:Hide()
 			end,
 		}
@@ -276,7 +275,7 @@ function mod:OnOptionsCreate()
 		get = false,
 		set = function(info, value)
 			addFilter(value)
-			mod:ResetSpells()
+			module:ResetSpells()
 		end,
 		order = 2,
 	}

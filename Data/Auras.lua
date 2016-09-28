@@ -1,5 +1,5 @@
-local Parrot = _G.Parrot
-
+local _, ns = ...
+local Parrot = ns.addon
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
 
 local newList, newDict = Parrot.newList, Parrot.newDict
@@ -12,17 +12,11 @@ local function checkFlags(flags1, flags2)
 end
 
 local HOSTILE = _G.COMBATLOG_OBJECT_REACTION_HOSTILE
-local FRIENDLY = _G.COMBATLOG_OBJECT_REACTION_FRIENDLY
-
-local TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
-local CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
-local AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
-
 local PET_FLAGS = bit.bor(
-	TYPE_PET,
-	CONTROL_PLAYER,
-	FRIENDLY,
-	AFFILIATION_MINE
+	_G.COMBATLOG_OBJECT_TYPE_PET,
+	_G.COMBATLOG_OBJECT_CONTROL_PLAYER,
+	_G.COMBATLOG_OBJECT_REACTION_FRIENDLY,
+	_G.COMBATLOG_OBJECT_AFFILIATION_MINE
 )
 
 local function getIcon(info)
