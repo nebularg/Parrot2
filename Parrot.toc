@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: Parrot 2
 ## Notes: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-deDE: Scrollender Kampftext der Ungeheuerlichkeit. Kraaaah!
