@@ -43,6 +43,7 @@ local defaults = {
 		abbreviateLength = 30,
 		stickyCrit = true,
 		disable_in_raid = false,
+		disable_in_battleground = false,
 		hideFullOverheals = 1,
 		hideSkillNames = false,
 		hideUnitNames = false,
@@ -177,11 +178,13 @@ end
 
 -- checks if in a raid-instance and disables CombatEvents accordingly
 local function checkZone()
-	if not module:IsEnabled() then return end
-
 	local _, instance_type = IsInInstance()
 	if  instance_type == "raid" and db.disable_in_raid then
 		module:Disable()
+	elseif instance_type == "pvp" and db.disable_in_battleground then
+		module:Disable()
+	elseif not module:IsEnabled() then
+		module:Enable()
 	end
 end
 
@@ -403,23 +406,6 @@ function module:OnOptionsCreate()
 				type = 'group',
 				inline = true,
 				args = {
-					enable_combat_events = {
-						type = 'toggle',
-						name = L["Enabled"],
-						desc = L["Whether this module is enabled"],
-						get = function() return self:IsEnabled() end,
-						set = function(info, value)
-							self:Disable()
-							if value then
-								self:Enable()
-							end
-						end,
-						disabled = function()
-							local _, instance_type = IsInInstance()
-							return instance_type == "raid" and db.disable_in_raid
-						end,
-						order = 1,
-					},
 					disable_in_raid = {
 						type = 'toggle',
 						name = L["Disable in raids"],
@@ -428,8 +414,15 @@ function module:OnOptionsCreate()
 							setOption(info, value)
 							checkZone()
 						end,
-						disabled = function()
-							return not self:IsEnabled()
+						order = 1,
+					},
+					disable_in_battleground = {
+						type = 'toggle',
+						name = L["Disable in pvp"],
+						desc = L["Disable this module while in a battleground"],
+						set = function(info, value)
+							setOption(info, value)
+							checkZone()
 						end,
 						order = 2,
 					},
