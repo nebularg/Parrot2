@@ -30,6 +30,7 @@ local defaults = {
 				size = 150,
 				xOffset = 0,
 				yOffset = 175,
+				iconSide = "LEFT",
 			},
 			["Incoming"] = {
 				animationStyle = "Parabola",
@@ -49,6 +50,7 @@ local defaults = {
 				size = 260,
 				xOffset = 60,
 				yOffset = -30,
+				iconSide = "LEFT",
 			},
 		}
 	}
@@ -561,27 +563,25 @@ function module:OnOptionsCreate()
 	local function disableRemove(info)
 		return not next(scrollAreas, next(scrollAreas))
 	end
+	local iconSideChoices = {
+		LEFT = L["Left"],
+		RIGHT = L["Right"],
+		-- CENTER = L["Center of screen"],
+		-- EDGE = L["Edge of screen"],
+		DISABLE = L["Disable"],
+	}
 	local function getIconSide(info)
-		return scrollAreas[info.arg].iconSide or "LEFT"
+		local value = scrollAreas[info.arg].iconSide
+		return iconSideChoices[value] and value or "LEFT"
 	end
 	local function setIconSide(info, value)
 		local k = info.arg
-		if value == "LEFT" then
-			value = nil
-		end
 		scrollAreas[k].iconSide = value
 		if not configMode then
 			test("normal", k)
 			test("sticky", k)
 		end
 	end
-	local iconSideChoices = {
-		LEFT = L["Left"],
-		RIGHT = L["Right"],
-		CENTER = L["Center of screen"],
-		EDGE = L["Edge of screen"],
-		DISABLE = L["Disable"],
-	}
 
 	local function makeOption(k)
 		local v = scrollAreas[k]

@@ -295,7 +295,7 @@ function module:ShowMessage(text, area, sticky, r, g, b, font, fontSize, outline
 		if scrollArea.iconSide == "RIGHT" then
 			texture:SetPoint("LEFT", fs, "RIGHT", 3, 0)
 			fs:SetPoint("LEFT", frame, "LEFT")
-		else
+		else -- scrollArea.iconSide == "LEFT"
 			texture:SetPoint("RIGHT", fs, "LEFT", -3, 0)
 			fs:SetPoint("RIGHT", frame, "RIGHT")
 		end
