@@ -124,7 +124,7 @@ local function retrieveSourceName(info)
 		return "__NONAME__"
 	end
 	local result = info.sourceName
-	if db.hideRealm and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
+	if db.hideRealm and info.sourceID and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
 		result = result:gsub("-.*", "")
 	end
 	if UnitIsPlayer(result) and db.classcolor then
@@ -140,7 +140,7 @@ local function retrieveDestName(info)
 		return "__NONAME__"
 	end
 	local result = info.recipientName
-	if db.hideRealm and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
+	if db.hideRealm and info.recipientID and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
 		result = result:gsub("-.*", "")
 	end
 	if UnitIsPlayer(result) and db.classcolor then
