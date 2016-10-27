@@ -53,6 +53,7 @@ local defaults = {
 		hideSkillNames = false,
 		hideUnitNames = false,
 		shortenAmount = false,
+		breakUpAmount = false,
 		classcolor = true,
 		totemDamage = true,
 		hideRealm = true,
@@ -212,7 +213,6 @@ function module:OnEnable()
 
 	self:ScheduleRepeatingTimer("RunThrottle", 0.05)
 end
-
 
 --[[
 -- helper-function for spell-abbriviation
@@ -443,33 +443,52 @@ function module:OnOptionsCreate()
 							[1] = L["Only HoTs"],
 							[2] = L["Only direct heals"],
 							[3] = L["On"],
-						}
+						},
+						order = 1,
+					},
+					sep = {
+						type = "description",
+						name = "",
+						order = 2,
 					},
 					hideSkillNames = {
 						type = 'toggle',
 						name = L["Hide skill names"],
 						desc = L["Always hide skill names even when present in the tag"],
+						order = 3,
 					},
 					hideUnitNames = {
 						type = 'toggle',
 						name = L["Hide unit names"],
 						desc = L["Always hide unit names even when present in the tag"],
+						order = 4,
 					},
 					hideRealm = {
 						type = 'toggle',
 						name = L["Hide realm"],
 						desc = L["Hide realm in player names"],
+						order = 5,
 					},
 					classcolor = {
 						type = 'toggle',
 						name = L["Color by class"],
 						desc = L["Color unit names by class"],
+						order = 6,
 					},
 					shortenAmount = {
 						type = 'toggle',
 						name = L["Shorten amounts"],
-						desc = L["Abbreviate number values displayed (26000 -> 26k)"],
+						desc = L["Abbreviate number values displayed (26500 -> 26.5k)"],
+						disabled = function() return db.breakUpAmount end,
+						order = 7,
 					},
+					breakUpAmount = {
+						type = 'toggle',
+						name = L["Break up amounts"],
+						desc = L["Break up number values with '%s' (26500 -> %s)"]:format(LARGE_NUMBER_SEPERATOR, BreakUpLargeNumbers(26500)),
+						disabled = function() return db.shortenAmount end,
+						order = 8,
+					}
 				},
 			},
 			totemEvents = {
@@ -1666,10 +1685,12 @@ local function shortenAmount(val)
 end
 
 function module:ShortenAmount(val)
-	if not db.shortenAmount then
-		return val
+	if db.shortenAmount then
+		return shortenAmount(val)
+	elseif db.breakUpAmount then
+		return BreakUpLargeNumbers(val)
 	end
-	return shortenAmount(val)
+	return val
 end
 Parrot.ShortenAmount = module.ShortenAmount
 
