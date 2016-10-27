@@ -9,6 +9,11 @@ local tinsert, tremove, tconcat, tsort = table.insert, table.remove, table.conca
 local newList, del, newDict = Parrot.newList, Parrot.del, Parrot.newDict
 local debug = Parrot.debug
 
+-- used as table for data about combatEvents in the registry
+local combatEvents = {}
+local sthrottles
+local playerGUID
+
 -- lookup-table for damage-types
 local LS = {
 	["Physical"] = _G.STRING_SCHOOL_PHYSICAL,
@@ -170,13 +175,13 @@ end
 function module:OnProfileChanged()
 	db = self.db.profile
 	updateDB()
+	sthrottles = db.sthrottles or {}
 	if next(Parrot.options.args) then
 		Parrot.options.args.events = del(Parrot.options.args.events)
 		self:OnOptionsCreate()
 	end
 end
 
--- checks if in a raid-instance and disables CombatEvents accordingly
 local function checkZone()
 	local _, instance_type = IsInInstance()
 	if  instance_type == "raid" and db.disable_in_raid then
@@ -190,9 +195,10 @@ end
 
 function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("CombatEvents", defaults)
-	db = self.db.profile
-
 	self.db.RegisterCallback(self, "OnNewProfile", "OnNewProfile")
+	db = self.db.profile
+	updateDB()
+	sthrottles = db.sthrottles or {}
 
 	-- Register with Addons CombatLogEvent-registry for uid-stuff
 	Parrot:RegisterCombatLog(self)
@@ -201,14 +207,9 @@ function module:OnInitialize()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", checkZone)
 end
 
--- used as table for data about combatEvents in the registry
-local combatEvents = {}
-local sthrottles
-
 function module:OnEnable()
-	updateDB()
-	sthrottles = db.sthrottles or {}
 	playerGUID = UnitGUID("player")
+
 	self:ScheduleRepeatingTimer("RunThrottle", 0.05)
 end
 
