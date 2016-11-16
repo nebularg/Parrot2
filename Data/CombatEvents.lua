@@ -104,50 +104,56 @@ end
 
 local classColorStrings = {}
 for k, v in next, _G.RAID_CLASS_COLORS do
-	local r = v.r*255
-	local g = v.g*255
-	local b = v.b*255
-	classColorStrings[k] = ("|cff%02x%02x%02x%%s|r"):format(r,g,b)
+	classColorStrings[k] = ("|c%s%%s|r"):format(v.colorStr)
 end
 
 local powerTypeString = function(info)
-	local powerType = PowerTypeParser[info.powerType] or UNKNOWN
-	return powerType
+	return PowerTypeParser[info.powerType] or UNKNOWN
 end
 
 --[[
 -- functions to retrieve player-names (to hide realm-names)
 --]]
 local function retrieveSourceName(info)
-	if not info.sourceName then return end
-	if db.hideUnitNames == true then
+	if not info or not info.sourceName or not info.sourceID then return end
+
+	if db.hideUnitNames then
 		return "__NONAME__"
 	end
-	local result = info.sourceName
-	if db.hideRealm and info.sourceID and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
-		result = result:gsub("-.*", "")
+
+	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.sourceID)
+	if class then
+		if db.hideRealm then
+			name = name:gsub("-.*", "")
+		end
+		if db.classcolor then
+			name = classColorStrings[class]:format(name)
+		end
+		return name
 	end
-	if UnitIsPlayer(result) and db.classcolor then
-		local _, class = UnitClass(result)
-		result = classColorStrings[class]:format(result)
-	end
-	return result
+
+	return info.sourceName
 end
 
 local function retrieveDestName(info)
-	if not info.recipientName then return end
-	if db.hideUnitNames == true then
+	if not info or not info.recipientName or not info.recipientID then return end
+
+	if db.hideUnitNames then
 		return "__NONAME__"
 	end
-	local result = info.recipientName
-	if db.hideRealm and info.recipientID and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
-		result = result:gsub("-.*", "")
+
+	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.recipientID)
+	if class then
+		if db.hideRealm then
+			name = name:gsub("-.*", "")
+		end
+		if db.classcolor then
+			name = classColorStrings[class]:format(name)
+		end
+		return name
 	end
-	if UnitIsPlayer(result) and db.classcolor then
-		local _, class = UnitClass(result)
-		result = classColorStrings[class]:format(result)
-	end
-	return result
+
+	return info.recipientName
 end
 
 --[[
