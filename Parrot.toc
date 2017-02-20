@@ -12,7 +12,7 @@
 ## X-Credits: ckknight, profalbert
 ## X-Category: Combat
 ## X-License: LGPLv2.1
-## X-Curse-Project-ID: parrot2
+## X-Curse-Project-ID: 101768
 ## X-WoWI-ID: 24143
 
 ## SavedVariables: ParrotDB
