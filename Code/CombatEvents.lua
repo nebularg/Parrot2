@@ -2320,10 +2320,10 @@ function module:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID
 		if registeredHandlers then
 			local info = newList()
 			info.sourceID = sourceGUID
-			info.sourceName = sourceName
+			info.sourceName = sourceName or ""
 			info.sourceFlags = sourceFlags
 			info.recipientID = destGUID
-			info.recipientName = destName
+			info.recipientName = destName or ""
 			info.destFlags = destFlags
 			local parseFunc = combatLogParseFuncs[eventType]
 			if not parseFunc then
