@@ -136,7 +136,7 @@ function module:CheckSpells(e)
 			for spellName in next, expired do
 				local group = spellGroups[spellName]
 				if not group then -- normal cooldown finish
-					local texture = GetSpellTextureFileName(spellName)
+					local texture = GetSpellTexture(spellName)
 					local info = newList(spellName, texture)
 					Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
 					info = del(info)
@@ -286,4 +286,3 @@ function module:OnOptionsCreate()
 
 	Parrot:AddOption("cooldowns", options)
 end
-

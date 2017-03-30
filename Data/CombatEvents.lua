@@ -173,18 +173,18 @@ end
 -- people.
 --]]
 local dumbTriggerSpellOverride = {
-	[22482] = GetSpellTextureFileName(13877), -- Blade Flurry
-	[5374] = GetSpellTextureFileName(1329), -- Mutilate
-	[27576] = GetSpellTextureFileName(1329), -- Mutilate Off-Hand
-	[222031] = GetSpellTextureFileName(162794), -- Chaos Strike
-	[199547] = GetSpellTextureFileName(162794), -- Chaos Strike
+	[22482] = GetSpellTexture(GetSpellInfo(13877)), -- Blade Flurry
+	[5374] = GetSpellTexture(GetSpellInfo(1329)), -- Mutilate
+	[27576] = GetSpellTexture(GetSpellInfo(1329)), -- Mutilate Off-Hand
+	[222031] = GetSpellTexture(GetSpellInfo(162794)), -- Chaos Strike
+	[199547] = GetSpellTexture(GetSpellInfo(162794)), -- Chaos Strike
 }
 
 --[[
 -- helperfunction to retrieve an icon
 --]]
 local function retrieveIconFromAbilityName(info)
-	return dumbTriggerSpellOverride[info.spellID] or GetSpellTextureFileName(info.spellID or info.abilityName)
+	return dumbTriggerSpellOverride[info.spellID] or GetSpellTexture(GetSpellInfo(info.spellID) or info.abilityName)
 end
 
 --[[
