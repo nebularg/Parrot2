@@ -706,7 +706,7 @@ local function getIconPath(icon)
 
 	local path = iconCache[icon]
 	if not path then
-		local texture = GetSpellTextureFileName(icon)
+		local texture = GetSpellTexture(icon)
 		if texture then
 			path = texture
 		else
