@@ -346,8 +346,8 @@ do
 			SetCVar("floatingCombatTextCombatHealingAbsorbTarget", healing)
 			SetCVar("floatingCombatTextCombatHealingAbsorbSelf", healing)
 
-			SetCVar("floatingCombatTextReactives", db.gameLowHealth and "1" or "0")
-			SetCVar("floatingCombatTextLowManaHealth", db.gameReactives and "1" or "0")
+			SetCVar("floatingCombatTextReactives", db.gameReactives and "1" or "0")
+			SetCVar("floatingCombatTextLowManaHealth", db.gameLowHealth and "1" or "0")
 		else
 			for _, var in next, fct do
 				SetCVar(var, GetCVarDefault(var))
