@@ -213,7 +213,7 @@ end
 local db = nil
 local defaults = {
 	profile = {
-		gameText = false,
+		gameText = true,
 		gameSelf = false,
 		gameDamage = false,
 		gamePetDamage = false,
@@ -328,6 +328,12 @@ do
 	  -- "floatingCombatTextSpellMechanicsOther",
 	}
 
+	function Parrot:ResetFCT()
+		for _, var in next, fct do
+			SetCVar(var, GetCVarDefault(var))
+		end
+	end
+
 	function Parrot:UpdateFCT()
 		if db.gameText then
 			SetCVar("enableFloatingCombatText", db.gameSelf and "1" or "0")
@@ -348,10 +354,6 @@ do
 
 			SetCVar("floatingCombatTextReactives", db.gameReactives and "1" or "0")
 			SetCVar("floatingCombatTextLowManaHealth", db.gameLowHealth and "1" or "0")
-		else
-			for _, var in next, fct do
-				SetCVar(var, GetCVarDefault(var))
-			end
 		end
 	end
 end
@@ -470,6 +472,9 @@ function Parrot:OnOptionsCreate()
 		db[info[#info]] = value
 		self:UpdateFCT()
 	end
+	local function disabled()
+		return not db.gameText
+	end
 
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
 	self.options.args.profiles.order = -1
@@ -494,6 +499,14 @@ function Parrot:OnOptionsCreate()
 						name = L["Control game options"],
 						desc = L.controlGameOptionsDesc,
 						descStyle = "inline",
+						set = function(info, value)
+							db[info[#info]] = value
+							if value then
+								self:UpdateFCT()
+							else
+								self:ResetFCT()
+							end
+						end,
 						order = 0,
 						width = "full",
 					},
@@ -501,42 +514,42 @@ function Parrot:OnOptionsCreate()
 						type = "toggle",
 						name = _G.COMBAT_SELF, -- Combat Self
 						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_TEXT, -- Checking this will enable additional combat messages to appear in the playfield.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 1,
 					},
 					gameDamage = {
 						type = "toggle",
 						name = _G.SHOW_DAMAGE_TEXT, -- Damage
 						desc = _G.OPTION_TOOLTIP_SHOW_DAMAGE, -- Display damage numbers over hostile creatures when damaged.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 2,
 					},
 					gamePetDamage = {
 						type = "toggle",
 						name = _G.SHOW_PET_MELEE_DAMAGE, -- Pet Damage
 						desc = _G.OPTION_TOOLTIP_SHOW_PET_MELEE_DAMAGE, -- Show damage caused by your pet.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 3,
 					},
 					gameHealing = {
 						type = "toggle",
 						name = _G.SHOW_COMBAT_HEALING, -- Healing
 						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_HEALING, -- Display amount of healing you did to the target.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 4,
 					},
 					gameLowHealth = {
 						type = "toggle",
 						name = _G.COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT, -- Low Mana & Health
 						desc = _G.OPTION_TOOLTIP_COMBAT_TEXT_SHOW_LOW_HEALTH_MANA, -- Shows a message when you fall below 20% mana or health.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 5,
 					},
 					gameReactives = {
 						type = "toggle",
 						name = _G.COMBAT_TEXT_SHOW_REACTIVES_TEXT, -- Spell Alerts
 						desc = _G.OPTION_TOOLTIP_COMBAT_TEXT_SHOW_REACTIVES, -- Show alerts when certain important events occur.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 6,
 					},
 				},
