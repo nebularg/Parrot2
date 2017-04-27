@@ -238,6 +238,31 @@ Parrot:RegisterAnimationStyle {
 }
 
 Parrot:RegisterAnimationStyle {
+	-- static anchor
+	name = "Static2",
+	localName = L["Static"] .. "2",
+	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+		local yDiff = (num - 1) * frame.fontSize
+		local vert, align = (';'):split(direction)
+		if vert == "DOWN" then
+			yDiff = -yDiff
+		end
+		local y = yOffset + yDiff
+		local x = xOffset
+		frame:SetPoint(validPoints[align] or "CENTER", UIParent, "CENTER", x, y)
+	end,
+	defaultDirection = "DOWN;CENTER",
+	directions = {
+		["UP;LEFT"] = L["Up, left-aligned"],
+		["UP;RIGHT"] = L["Up, right-aligned"],
+		["UP;CENTER"] = L["Up, center-aligned"],
+		["DOWN;LEFT"] = L["Down, left-aligned"],
+		["DOWN;RIGHT"] = L["Down, right-aligned"],
+		["DOWN;CENTER"] = L["Down, center-aligned"],
+	}
+}
+
+Parrot:RegisterAnimationStyle {
 	-- makes a parabola in the form of y = (-x - 1)(-x + 0.5) + 1
 	name = "Rainbow",
 	localName = L["Rainbow"],
