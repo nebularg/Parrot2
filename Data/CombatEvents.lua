@@ -94,6 +94,14 @@ local coloredDamageAmount = function(info)
 	end
 end
 
+local damageAmount = function(info)
+	return Parrot:ShortenAmount(info.amount)
+end
+
+local realDamageAmount = function(info)
+	return Parrot:ShortenAmount(info.realAmount)
+end
+
 local damageTypeString = function(info)
 	local damageType = SchoolParser[info.damageType]
 	if damageType then
@@ -560,7 +568,7 @@ local petIncSkillDamageTagTranslationsHelp = {
 local incHealTagTranslations = {
 	Name = retrieveSourceName,
 	Skill = retrieveAbilityName,
-	Amount = "realAmount",
+	Amount = realDamageAmount,
 	Icon = retrieveIconFromAbilityName,
 }
 local incHealTagTranslationsHelp = {
@@ -577,7 +585,7 @@ local petIncHealTagTranslationsHelp = {
 -- Incoming Melee-miss
 local incMissTagTranslations = {
 	Name = retrieveSourceName,
-	Amount = "amount",
+	Amount = damageAmount,
 }
 local incMissTagTranslationHelp = {
 	Name = L["The name of the enemy that attacked you."],
@@ -593,7 +601,7 @@ local incSpellMissTagTranslations = {
 	Name = retrieveSourceName,
 	Skill = retrieveAbilityName,
 	Icon = retrieveIconFromAbilityName,
-	Amount = "amount",
+	Amount = damageAmount,
 }
 local incSpellMissTagTranslationsHelp = {
 	Name = L["The name of the enemy that attacked you."],
@@ -631,7 +639,7 @@ local petOutSkillDamageTagTranslationsHelp = {
 local outHealTagTranslations = {
 	Name = retrieveDestName,
 	Skill = retrieveAbilityName,
-	Amount = "realAmount",
+	Amount = realDamageAmount,
 	Icon = retrieveIconFromAbilityName,
 }
 local outHealTagTranslationsHelp = {
@@ -648,7 +656,7 @@ local petOutHealTagTranslationsHelp = {
 -- Outgoing melee-miss
 local outMissTagTranslations = {
 	Name = retrieveDestName,
-	Amount = "amount",
+	Amount = damageAmount,
 }
 local outMissTagTranslationHelp = {
 	Name = L["The name of the enemy you attacked."],
@@ -660,7 +668,7 @@ local outSpellMissTagTranslations = {
 	Name = retrieveDestName,
 	Skill = retrieveAbilityName,
 	Icon = retrieveIconFromAbilityName,
-	Amount = "amount",
+	Amount = damageAmount,
 }
 local outSpellMissTagTranslationsHelp = {
 	Name = L["The name of the enemy you attacked."],
@@ -1032,7 +1040,7 @@ Parrot:RegisterCombatEvent{
 		ENVIRONMENTAL_DAMAGE = { check = checkPlayerInc, },
 	},
 	tagTranslations = {
-		Amount = "amount",
+		Amount = damageAmount,
 		Type = parseEnvironmentalDamage,
 	},
 	tagTranslationsHelp = {
@@ -1609,7 +1617,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
-		Amount = "amount",
+		Amount = damageAmount,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
