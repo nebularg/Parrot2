@@ -12,7 +12,13 @@ local DEFAULT_FONT_NAME = SharedMedia:GetDefault("font")
 
 local newList, del = Parrot.newList, Parrot.del
 
-local ParrotFrame
+local ParrotFrame = CreateFrame("Frame", "ParrotFrame", UIParent)
+ParrotFrame:Hide()
+ParrotFrame:SetFrameStrata("HIGH")
+ParrotFrame:SetToplevel(true)
+ParrotFrame:SetPoint("CENTER")
+ParrotFrame:SetWidth(0.0001)
+ParrotFrame:SetHeight(0.0001)
 local Display_Update
 
 local db
@@ -52,19 +58,6 @@ end
 local function getOption(info)
 	local name = info[#info]
 	return db[name]
-end
-
-function module:OnEnable()
-	if not ParrotFrame then
-		ParrotFrame = CreateFrame("Frame", "ParrotFrame", UIParent)
-		ParrotFrame:Hide()
-		ParrotFrame:SetFrameStrata("HIGH")
-		ParrotFrame:SetToplevel(true)
-		ParrotFrame:SetPoint("CENTER")
-		ParrotFrame:SetWidth(0.0001)
-		ParrotFrame:SetHeight(0.0001)
-		ParrotFrame:SetScript("OnUpdate", Display_Update)
-	end
 end
 
 local function getFontChoices()
@@ -470,6 +463,7 @@ function Display_Update()
 		ParrotFrame:Hide()
 	end
 end
+ParrotFrame:SetScript("OnUpdate", Display_Update)
 
 local flasher = nil
 local function makeflasher()
