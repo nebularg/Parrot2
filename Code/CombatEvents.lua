@@ -1888,22 +1888,6 @@ function module:TriggerCombatEvent(category, name, info, throttleDone)
 		return
 	end
 
-	local filterType = data.filterType
-	if filterType then
-		local actualType = filterType[1]
-		local filterKey = filterType[2]
-		local base = db.filters[actualType] or filterDefaults[actualType]
-		local info_filterKey
-		if type(filterKey) == "function" then
-			info_filterKey = filterKey(info)
-		else
-			info_filterKey = info[filterKey]
-		end
-		if info_filterKey < base then
-			return
-		end
-	end
-
 	if throttleDone then
 		if info[STHROTTLE] then
 			if info[STHROTTLE].waitStyle then
@@ -2020,6 +2004,22 @@ Parrot.TriggerCombatEvent = module.TriggerCombatEvent
 local function runEvent(category, name, info)
 	local cdb = db[category][name]
 	local data = combatEvents[category][name]
+
+	local filterType = data.filterType
+	if filterType then
+		local actualType = filterType[1]
+		local filterKey = filterType[2]
+		local base = db.filters[actualType] or filterDefaults[actualType]
+		local info_filterKey
+		if type(filterKey) == "function" then
+			info_filterKey = filterKey(info)
+		else
+			info_filterKey = info[filterKey]
+		end
+		if info_filterKey < base then
+			return
+		end
+	end
 
 	local throttle = data.throttle
 	local throttleSuffix
