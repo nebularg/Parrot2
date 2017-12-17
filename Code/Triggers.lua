@@ -56,10 +56,10 @@ local cooldowns = {}
 
 local defaultTriggers = {
 	[1004] = [[{
-		-- 5308 = Execute
+		-- Execute
 		name = L["%s!"]:format(GetSpellInfo(5308)),
 		icon = 5308,
-		spec = { WARRIOR = "71;72;73", },
+		spec = { WARRIOR = "71;72", },
 		conditions = {
 			["Unit health"] = {
 				{
@@ -73,29 +73,6 @@ local defaultTriggers = {
 		secondaryConditions = {
 			["Spell ready"] = {
 				[1] = GetSpellInfo(5308),
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
-	[1006] = [[{
-		-- 24275 - Hammer of Wrath
-		name = L["%s!"]:format(GetSpellInfo(24275)),
-		icon = 24275,
-		spec = { PALADIN = "66;70" },
-		conditions = {
-			["Unit health"] = {
-				{
-					unit = "target",
-					amount = 0.20,
-					comparator = "<",
-					friendly = 0,
-				},
-			},
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(24275),
 			},
 		},
 		sticky = true,
@@ -151,7 +128,7 @@ local defaultTriggers = {
 					amount = "35%",
 					comparator = "<=",
 					friendly = 1,
-					powerType = "MANA",
+					powerType = 0,
 				},
 			},
 		},
@@ -185,7 +162,7 @@ local defaultTriggers = {
 		color = "ff7f7f",
 	}]],
 	[1014] = [[{
-		-- Revenge = 6572
+		-- Revenge
 		name = L["%s!"]:format(GetSpellInfo(6572)),
 		icon = 6572,
 		spec = { WARRIOR = "73" },
@@ -202,7 +179,7 @@ local defaultTriggers = {
 		disabled = true,
 	}]],
 	[1017] = [[{
-		-- Freezing Fog = 59052
+		-- Rime
 		name = L["%s!"]:format(GetSpellInfo(59052)),
 		icon = 59052,
 		spec = { DEATHKNIGHT = "251" },
@@ -219,14 +196,14 @@ local defaultTriggers = {
 		color = "0000ff",
 	}]],
 	[1018] = [[{
-		-- Killing Machine = 51128
-		name = L["%s!"]:format(GetSpellInfo(51128)),
+		-- Killing Machine
+		name = L["%s!"]:format(GetSpellInfo(51124)),
 		icon = 51130,
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
-					spell = GetSpellInfo(51128),
+					spell = GetSpellInfo(51124),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -234,42 +211,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "0000ff",
-	}]],
-	[1022] = [[{
-		-- Sudden Death = 52437
-		name = L["%s!"]:format(GetSpellInfo(52437)),
-		icon = 52437,
-		spec = { WARRIOR = "71;72;73" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(52437),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff0000",
-	}]],
-	[1028] = [[{
-		-- Serendipity
-		name = L["%s!"]:format(GetSpellInfo(63733)),
-		icon = 63733,
-		spec = { PRIEST = "257" },
-		conditions = {
-			["Aura stack gain"] = {
-				[1] = {
-					["unit"] = "player",
-					["spell"] = GetSpellInfo(63733),
-					["auraType"] = "BUFF",
-					["amount"] = 2,
-				},
-			},
-		},
-		sticky = true,
-		disabled = true,
-		color = "00c0ff",
 	}]],
 	[1031] = [[{
 		-- Fingers of Frost
@@ -304,23 +245,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff0000",
-	}]],
-	[1038] = [[{
-		-- Ultimatum
-		name = L["%s!"]:format(GetSpellInfo(122510)),
-		icon = 122510,
-		spec = { WARRIOR = "73" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(122510),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "00d0ff",
 	}]],
 	[1040] = [[{
 		-- Raging Blow!
@@ -365,14 +289,14 @@ local defaultTriggers = {
 		color = "9b00b3",
 	}]],
 	[1042] = [[{
-		-- Arcane Missiles
-		name = L["%s!"]:format(GetSpellInfo(7268)),
-		icon = 7268,
+		-- Arcane Missiles!
+		name = GetSpellInfo(79683),
+		icon = 79683,
 		spec = { MAGE = "62" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(7268),
+					spell = GetSpellInfo(79683),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -382,7 +306,7 @@ local defaultTriggers = {
 		color = "59006c",
 	}]],
 	[1043] = [[{
-		-- Pyroblast!
+		-- Hot Streak!
 		name = GetSpellInfo(48108),
 		icon = 48108,
 		spec = { MAGE = "63" },
