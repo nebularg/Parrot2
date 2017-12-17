@@ -770,9 +770,9 @@ function module:OnOptionsCreate()
 	local function getArgs(info)
 		local category = info[2]
 		local name = info[4]
-		for i,v in ipairs(info) do
-			debug(i, " = ", v)
-		end
+		-- for i,v in ipairs(info) do
+		-- 	debug(i, " = ", v)
+		-- end
 		return category, name
 	end
 	local function getTag(info)
@@ -2066,11 +2066,9 @@ local function runEvent(category, name, info)
 		end
 	end
 
-	if db.hideUnitNames then
-		text = text:gsub("%(__NONAME__%)","")
-		text = text:gsub(" %- __NONAME__%)",")")
-		text = text:gsub("__NONAME__","")
-	end
+	text = text:gsub("%(__NONAME__%)","")
+	text = text:gsub(" %- __NONAME__%)",")")
+	text = text:gsub("__NONAME__","")
 
 	local t = newList(text)
 	local overhealAmount = info.overhealAmount
