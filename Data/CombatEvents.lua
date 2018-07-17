@@ -1960,7 +1960,7 @@ do
 		localName = L["Combo point gain"],
 		defaultTag = L["[Num] CP"],
 		events = {
-			UNIT_POWER = {
+			UNIT_POWER_UPDATE = {
 				check = checkPower,
 				parse = parseCPGain
 			},
@@ -1981,7 +1981,7 @@ do
 		localName = L["Combo points full"],
 		defaultTag = L["[Num] CP Finish It!"],
 		events = {
-			UNIT_POWER = {
+			UNIT_POWER_UPDATE = {
 				check = checkPower,
 				parse = parseCPFull
 			},

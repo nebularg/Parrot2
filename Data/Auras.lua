@@ -843,7 +843,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
+		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -901,7 +901,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, count, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
+		local name, _, count, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
 		if name and count == param.stackcount then
 			if param.byplayer == true then
 				return unitCaster == "player"
@@ -949,7 +949,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, _, unitCaster = UnitDebuff(param.unit, param.spell)
+		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -1000,7 +1000,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, _, unitCaster = UnitDebuff(param.unit, param.spell)
+		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
 		if name then
 			if param.byplayer == true then
 				return unitCaster == "player"
@@ -1010,7 +1010,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 		else
 			return false
 		end
-		--		return not UnitAura(param.unit, param.spell or "")
 	end,
 }
 

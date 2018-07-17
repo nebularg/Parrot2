@@ -261,7 +261,7 @@ function module:DoesSecondaryTriggerConditionPass(name, arg)
 	end
 end
 
-function module:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+function module:HandleCombatlogEvent(uid, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
 	local registeredHandlers = self.combatLogEvents[eventType]
 	if registeredHandlers then
 		for _,v in ipairs(registeredHandlers) do

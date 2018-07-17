@@ -282,8 +282,8 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 	},
 	events = {
-		UNIT_POWER = ret,
-		UNIT_MAX_POWER = ret,
+		UNIT_POWER_UPDATE = ret,
+		UNIT_MAXPOWER = ret,
 	},
 	check = function(ref, info)
 		-- check if ref is complete

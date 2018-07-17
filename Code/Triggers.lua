@@ -288,23 +288,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "9b00b3",
 	}]],
-	[1042] = [[{
-		-- Arcane Missiles!
-		name = GetSpellInfo(79683),
-		icon = 79683,
-		spec = { MAGE = "62" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(79683),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "59006c",
-	}]],
 	[1043] = [[{
 		-- Hot Streak!
 		name = GetSpellInfo(48108),

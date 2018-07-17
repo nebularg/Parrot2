@@ -375,10 +375,10 @@ end
 do
 	local combatLogHandlers = {}
 
-	local function OnCombatLogEvent(...)
+	local function OnCombatLogEvent()
 		local uid = nextUID()
 		for mod in next, combatLogHandlers do
-			mod:HandleCombatlogEvent(uid, ...)
+			mod:HandleCombatlogEvent(uid, CombatLogGetCurrentEventInfo())
 		end
 	end
 
