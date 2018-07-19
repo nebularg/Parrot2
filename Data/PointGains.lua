@@ -25,7 +25,7 @@ local function parseCurrencyUpdate(chatmsg)
 
 	if currency then
 		local name, total, texture, _, _, _, _, quality = GetCurrencyInfo(currency)
-		if currency == "" then return end
+		if name == "" then return end
 		local color = ITEM_QUALITY_COLORS[quality]
 		if color then
 			name = ("%s%s|r"):format(color.hex, name)
