@@ -15,7 +15,6 @@ end
 -- Currency
 local CURRENCY_GAINED = _G.CURRENCY_GAINED
 local CURRENCY_GAINED_MULTIPLE = _G.CURRENCY_GAINED_MULTIPLE
-local HONOR_CURRENCY = _G.HONOR_CURRENCY
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 
 local function parseCurrencyUpdate(chatmsg)
@@ -25,10 +24,8 @@ local function parseCurrencyUpdate(chatmsg)
 	end
 
 	if currency then
-		local currencyId = currency:match("|Hcurrency:(%d+)|h%[(.+)%]|h")
-		if not currencyId or tonumber(currencyId) == HONOR_CURRENCY then return end
-
-		local name, total, texture, _, _, _, _, quality = GetCurrencyInfo(currencyId)
+		local name, total, texture, _, _, _, _, quality = GetCurrencyInfo(currency)
+		if currency == "" then return end
 		local color = ITEM_QUALITY_COLORS[quality]
 		if color then
 			name = ("%s%s|r"):format(color.hex, name)
