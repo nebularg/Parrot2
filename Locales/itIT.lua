@@ -612,6 +612,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Parrot_Loot", "itIT")
 
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot_PointGains", "itIT")
+-- L["AP"] = "AP"
+-- L["Artifact power gains"] = "Artifact power gains"
 -- L["Currency gains"] = "Currency gains"
 -- L["Experience gains"] = "Experience gains"
 -- L["Name of the currency"] = "Name of the currency"

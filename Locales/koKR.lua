@@ -608,6 +608,8 @@ L["The total amount of items in inventory."] = "가방에 있는 아이템의 �
 
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_PointGains", "koKR")
+-- L["AP"] = "AP"
+-- L["Artifact power gains"] = "Artifact power gains"
 -- L["Currency gains"] = "Currency gains"
 L["Experience gains"] = "경험치 획득"
 -- L["Name of the currency"] = "ame of the currency"

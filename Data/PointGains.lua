@@ -52,7 +52,7 @@ Parrot:RegisterCombatEvent{
 		Icon = "icon",
 	},
 	tagTranslationsHelp = {
-		Name = L["Name of the currency"],
+		Currency = L["Name of the currency"],
 		Amount = L["The amount of currency gained."],
 		Total = L["Your total amount of the currency."],
 
@@ -210,5 +210,44 @@ Parrot:RegisterCombatEvent{
 	defaultDisabled = true,
 	events = {
 		PLAYER_XP_UPDATE = { parse = parseXPUpdate },
+	},
+}
+
+-- Artifact Power gains
+local ARTIFACT_XP_GAIN = _G.ARTIFACT_XP_GAIN
+
+local function parseAPUpdate(chatmsg)
+	local itemLink, amount = Deformat(chatmsg, ARTIFACT_XP_GAIN)
+	if itemLink and amount then
+		local name, _, quality, _, _, _, _, _, _, texture = GetItemInfo(itemLink)
+		local color = ITEM_QUALITY_COLORS[quality]
+		if color then
+			name = ("%s%s|r"):format(color.hex, name)
+		end
+		return newDict(
+			"name", name,
+			"amount", amount,
+			"icon", texture
+		)
+	end
+end
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	name = "Artifact power gains",
+	localName = L["Artifact power gains"],
+	defaultTag = "[Name] +[Amount] " .. L["AP"],
+	tagTranslations = {
+		Name = "name",
+		Amount = "amount",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The name of the item."],
+		Amount = L["The amount of experience points gained."],
+	},
+	color = "e5cc99",
+	events = {
+		CHAT_MSG_SYSTEM = { parse = parseAPUpdate },
 	},
 }

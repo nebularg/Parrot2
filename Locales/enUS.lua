@@ -615,6 +615,8 @@ L["The total amount of items in inventory."] = true
 
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot_PointGains", "enUS", true, debug)
+L["AP"] = true
+L["Artifact power gains"] = true
 L["Currency gains"] = true
 L["Experience gains"] = true
 L["Name of the currency"] = true

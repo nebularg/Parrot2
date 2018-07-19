@@ -612,6 +612,8 @@ L["The total amount of items in inventory."] = "Die Gesamtanzahl des Gegenstande
 
 
 L = LibStub("AceLocale-3.0"):NewLocale("Parrot_PointGains", "deDE")
+-- L["AP"] = "AP"
+-- L["Artifact power gains"] = "Artifact power gains"
 L["Currency gains"] = "Währung erhalten"
 L["Experience gains"] = "Erfahrung erhalten"
 L["Name of the currency"] = "Name der Währung"
