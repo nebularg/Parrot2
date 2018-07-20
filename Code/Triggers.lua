@@ -5,7 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
 
 local Parrot_TriggerConditions
 
-local SharedMedia = LibStub("LibSharedMedia-3.0")
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
 local newList, del = Parrot.newList, Parrot.del
 
@@ -683,9 +683,9 @@ local function showTrigger(t)
 	Parrot:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, icon)
 
 	if t.sound then
-		local sound = SharedMedia:Fetch('sound', t.sound)
+		local sound = LibSharedMedia:Fetch('sound', t.sound)
 		if sound then
-			PlaySoundFile(sound, "MASTER")
+			PlaySoundFile(sound, "Master")
 		end
 	end
 end
@@ -750,14 +750,6 @@ function module:OnTriggerCondition(name, arg, uid, check)
 			end
 		end -- if conditions
 	end -- for ipairs
-end
-
-local function getSoundChoices()
-	local t = newList()
-	for _,v in ipairs(SharedMedia:List("sound")) do
-		t[v] = v
-	end
-	return t
 end
 
 function module:OnOptionsCreate()
@@ -828,17 +820,20 @@ function module:OnOptionsCreate()
 		local t = getTriggerTable(info)
 		local font = t.font
 		if font == nil then
-			return "1"
-		else
-			return font
+			return -1
 		end
+		for i, v in next, Parrot.fontValues do
+			if v == font then return i end
+		end
+		return font
 	end
 	local function setFontFace(info, value)
 		local t = getTriggerTable(info)
-		if value == "1" then
-			value = nil
+		if value == -1 then
+			t.font = nil
+		else
+			t.font = Parrot.fontValues[value]
 		end
-		t.font = value
 	end
 	local function getFontSize(info)
 		return getTriggerTable(info).fontSize
@@ -963,16 +958,20 @@ function module:OnOptionsCreate()
 	local function setUseFlash(info, value)
 		getTriggerTable(info).useflash = value
 	end
-	local function getSound(info)
-		return getTriggerTable(info).sound or "None"
-	end
 
-	local function setSound(info, value)
-		PlaySoundFile(SharedMedia:Fetch('sound', value), "MASTER")
-		if value == "None" then
-			value = nil
+	local function getSound(info)
+		local value = getTriggerTable(info).sound or "None"
+		for i, v in next, Parrot.soundValues do
+			if v == value then return i end
 		end
-		getTriggerTable(info).sound = value
+	end
+	local function setSound(info, value)
+		local v = Parrot.soundValues[value]
+		PlaySoundFile(LibSharedMedia:Fetch("sound", v), "Master")
+		if v == "None" then
+			v = nil
+		end
+		getTriggerTable(info).sound = v
 	end
 
 	local function test(info)
@@ -985,9 +984,9 @@ function module:OnOptionsCreate()
 		end
 		Parrot:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, getIconPath(t.icon))
 		if t.sound then
-			local sound = SharedMedia:Fetch('sound', t.sound)
+			local sound = LibSharedMedia:Fetch('sound', t.sound)
 			if sound then
-				PlaySoundFile(sound, "MASTER")
+				PlaySoundFile(sound, "Master")
 			end
 		end
 	end
@@ -1485,12 +1484,12 @@ function module:OnOptionsCreate()
 				},
 				sound = {
 					type = 'select',
-					control = "LSM30_Sound",
-					values = getSoundChoices,
 					name = L["Sound"],
 					desc = L["What sound to play when the trigger is shown."],
+					values = Parrot.soundValues,
 					get = getSound,
 					set = setSound,
+					itemControl = "DDI-Sound",
 					order = 4,
 				},
 				test = {
@@ -1528,9 +1527,10 @@ function module:OnOptionsCreate()
 							type = 'select',
 							name = L["Font face"],
 							desc = L["Font face"],
-							values = Parrot.fontValues,
+							values = Parrot.fontWithInheritValues,
 							get = getFontFace,
 							set = setFontFace,
+							itemControl = "DDI-Font",
 							order = 1,
 						},
 						fontSizeInherit = {

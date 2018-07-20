@@ -446,6 +446,27 @@ do
 end
 
 -- Config
+do
+	local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+
+	Parrot.soundValues = LibSharedMedia:List("sound")
+	Parrot.fontValues = LibSharedMedia:List("font")
+	Parrot.fontWithInheritValues = {}
+
+	local function rebuild(_, mediatype)
+		if mediatype == "font" then
+			wipe(Parrot.fontWithInheritValues)
+			for i, v in next, Parrot.fontValues do
+				Parrot.fontWithInheritValues[i] = v
+			end
+			Parrot.fontWithInheritValues[-1] = L["Inherit"]
+		end
+	end
+	rebuild(nil, "font")
+
+	LibSharedMedia.RegisterCallback(Parrot, "LibSharedMedia_Registered", rebuild)
+end
+
 function Parrot:ShowConfig()
 	if self.OnOptionsCreate then
 		self:OnOptionsCreate()

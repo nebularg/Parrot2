@@ -3,7 +3,7 @@ local Parrot = ns.addon
 local module = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents")
 
-local SharedMedia = LibStub("LibSharedMedia-3.0")
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
 local tinsert, tremove, tconcat, tsort = table.insert, table.remove, table.concat, table.sort
 local newList, del, newDict = Parrot.newList, Parrot.del, Parrot.newDict
@@ -339,14 +339,6 @@ local filterDefaults = {}
 local function createOption() end
 local function createThrottleOption() end
 local function createFilterOption() end
-
-local function getSoundChoices()
-	local t = {}
-	for _,v in ipairs(SharedMedia:List("sound")) do
-		t[v] = v
-	end
-	return t
-end
 
 local function setOption(info, value)
 	local name = info[#info]
@@ -825,17 +817,19 @@ function module:OnOptionsCreate()
 		local category, name = getArgs(info)
 		local font = db[category][name].font
 		if font == nil then
-			return "1"
-		else
-			return font
+			return -1
+		end
+		for i, v in next, Parrot.fontValues do
+			if v == font then return i end
 		end
 	end
 	local function setFontFace(info, value)
 		local category, name = getArgs(info)
-		if value == "1" then
-			value = nil
+		if value == -1 then
+			db[category][name].font = nil
+		else
+			db[category][name].font = Parrot.fontValues[value]
 		end
-		db[category][name].font = value
 	end
 	local function getFontSize(info)
 		local category, name = getArgs(info)
@@ -920,15 +914,21 @@ function module:OnOptionsCreate()
 	end
 	local function getSound(info)
 		local category, name = getArgs(info)
-		return db[category][name].sound or "None"
+		local value = db[category][name].sound or "None"
+		for i, v in next, Parrot.soundValues do
+			if v == value then
+				return i
+			end
+		end
 	end
 	local function setSound(info, value)
 		local category, name = getArgs(info)
-		PlaySoundFile(SharedMedia:Fetch('sound', value), "MASTER")
-		if value == "None" then
-			value = nil
+		local v = Parrot.soundValues[value]
+		PlaySoundFile(LibSharedMedia:Fetch("sound", v), "Master")
+		if v == "None" then
+			v = nil
 		end
-		db[category][name].sound = value
+		db[category][name].sound = v
 	end
 
 	local function getCommonEnabled(info)
@@ -1082,11 +1082,12 @@ function module:OnOptionsCreate()
 				},
 				sound = {
 					type = 'select',
-					values = getSoundChoices,
 					name = L["Sound"],
 					desc = L["What sound to play when the current event occurs."],
+					values = Parrot.soundValues,
 					get = getSound,
 					set = setSound,
+					itemControl = "DDI-Sound",
 				},
 				sticky = {
 					name = L["Sticky"],
@@ -1105,9 +1106,10 @@ function module:OnOptionsCreate()
 							type = 'select',
 							name = L["Font face"],
 							desc = L["Font face"],
-							values = Parrot.fontValues,
+							values = Parrot.fontWithInheritValues,
 							get = getFontFace,
 							set = setFontFace,
+							itemControl = "DDI-Font",
 							order = 1,
 						},
 						fontSizeInherit = {
@@ -2162,7 +2164,7 @@ local function runEvent(category, name, info)
 	end
 	Parrot:ShowMessage(text, cdb.scrollArea or category, sticky, r, g, b, cdb.font, cdb.fontSize, cdb.fontOutline, icon)
 	if cdb.sound then
-		PlaySoundFile(SharedMedia:Fetch('sound', cdb.sound), "MASTER")
+		PlaySoundFile(LibSharedMedia:Fetch('sound', cdb.sound), "Master")
 	end
 end
 

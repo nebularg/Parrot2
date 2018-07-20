@@ -7,8 +7,8 @@ local Parrot_AnimationStyles
 local Parrot_Suppressions
 local Parrot_ScrollAreas
 
-local SharedMedia = LibStub("LibSharedMedia-3.0")
-local DEFAULT_FONT_NAME = SharedMedia:GetDefault("font")
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+local DEFAULT_FONT_NAME = LibSharedMedia:GetDefault("font")
 
 local newList, del = Parrot.newList, Parrot.del
 
@@ -60,12 +60,22 @@ local function getOption(info)
 	return db[name]
 end
 
-local function getFontChoices()
-	local result = {}
-	for _,v in ipairs(SharedMedia:List("font")) do
-		result[v] = v
+local function getFontFace(info)
+	local font = db[info[#info]]
+	if font == nil then
+		return -1
 	end
-	return result
+	for i, v in next, Parrot.fontValues do
+		if v == font then return i end
+	end
+	return font
+end
+local function setFontFace(info, value)
+	if value == -1 then
+		db[info[#info]] = nil
+	else
+		db[info[#info]] = Parrot.fontValues[value]
+	end
 end
 
 function module:OnOptionsCreate()
@@ -114,9 +124,11 @@ function module:OnOptionsCreate()
 		args = {
 			font = {
 				type = "select",
-				control = "LSM30_Font",
 				name = L["Normal font face"],
-				values = getFontChoices(),
+				values = Parrot.fontValues,
+				get = getFontFace,
+				set = setFontFace,
+				itemControl = "DDI-Font",
 			},
 			fontSize = {
 				type = "range",
@@ -136,9 +148,11 @@ function module:OnOptionsCreate()
 			},
 			stickyFont = {
 				type = "select",
-				control = "LSM30_Font",
 				name = L["Sticky font face"],
-				values = getFontChoices(),
+				values = Parrot.fontValues,
+				get = getFontFace,
+				set = setFontFace,
+				itemControl = "DDI-Font",
 			},
 			stickyFontSize = {
 				type = "range",
@@ -255,7 +269,7 @@ function module:ShowMessage(text, area, sticky, r, g, b, font, fontSize, outline
 		fontString_num = fontString_num + 1
 		fs = frame:CreateFontString("ParrotFrameFontString" .. fontString_num, "ARTWORK", "SystemFont_Shadow_Small")
 	end
-	fs:SetFont(SharedMedia:Fetch("font", font), fontSize, outline)
+	fs:SetFont(LibSharedMedia:Fetch("font", font), fontSize, outline)
 	if shadow then
 		fs:SetShadowColor(0, 0, 0, 1)
 	else

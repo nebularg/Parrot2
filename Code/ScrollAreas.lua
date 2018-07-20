@@ -5,19 +5,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_ScrollAreas")
 
 local Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 
-do
-	local SharedMedia = LibStub("LibSharedMedia-3.0")
-	local values = {}
-	function Parrot.fontValues()
-		wipe(values)
-		for _, font in ipairs(SharedMedia:List("font")) do
-			values[font] = font
-		end
-		values["1"] = L["Inherit"]
-		return values
-	end
-end
-
 local db = nil
 local defaults = {
 	profile = {
@@ -351,17 +338,19 @@ function module:OnOptionsCreate()
 		local kind, k = info.arg[1], info.arg[2]
 		local font = scrollAreas[k][kind == "normal" and "font" or "stickyFont"]
 		if font == nil then
-			return "1"
-		else
-			return font
+			return -1
+		end
+		for i, v in next, Parrot.fontValues do
+			if v == font then return i end
 		end
 	end
 	local function setFontFace(info, value)
 		local kind, k = info.arg[1], info.arg[2]
-		if value == "1" then
-			value = nil
+		if value == -1 then
+			scrollAreas[k][kind == "normal" and "font" or "stickyFont"] = nil
+		else
+			scrollAreas[k][kind == "normal" and "font" or "stickyFont"] = Parrot.fontValues[value]
 		end
-		scrollAreas[k][kind == "normal" and "font" or "stickyFont"] = value
 		if not configMode then
 			test(kind, k)
 		end
@@ -774,9 +763,10 @@ function module:OnOptionsCreate()
 						fontface = {
 							type = 'select',
 							name = L["Normal font face"],
-							values = Parrot.fontValues,
+							values = Parrot.fontWithInheritValues,
 							get = getFontFace,
 							set = setFontFace,
+							itemControl = "DDI-Font",
 							arg = {"normal", k},
 							order = 1,
 						},
@@ -826,9 +816,10 @@ function module:OnOptionsCreate()
 						stickyfontface = {
 							type = 'select',
 							name = L["Sticky font face"],
-							values = Parrot.fontValues,
+							values = Parrot.fontWithInheritValues,
 							get = getFontFace,
 							set = setFontFace,
+							itemControl = "DDI-Font",
 							arg = {"sticky", k},
 							order = 7,
 						},
