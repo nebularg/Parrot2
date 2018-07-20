@@ -215,7 +215,12 @@ Parrot:RegisterAnimationStyle {
 	localName = L["Static"],
 	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
 		local fsHeight = frame.fontSize
-		local topDiff = (max - 1) * 0.5 * fsHeight
+		local maxShow = size / fsHeight
+		if num > maxShow then
+			frame:Hide()
+			return
+		end
+		local topDiff = (math.min(max, maxShow) - 1) * 0.5 * fsHeight
 		local currDiff = -(num - 1) * fsHeight
 		local yDiff = topDiff + currDiff
 		local vert, align = (';'):split(direction)
@@ -242,6 +247,10 @@ Parrot:RegisterAnimationStyle {
 	name = "Static2",
 	localName = L["Static"] .. "2",
 	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+		if num > (size / frame.fontSize) then
+			frame:Hide()
+			return
+		end
 		local yDiff = (num - 1) * frame.fontSize
 		local vert, align = (';'):split(direction)
 		if vert == "DOWN" then
