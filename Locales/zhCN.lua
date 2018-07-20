@@ -628,6 +628,7 @@ L["The amount of reputation gained."] = "获得的声望点数。"
 L["The amount of reputation lost."] = "失去声望的点数。"
 L["The amount of skill points currently."] = "当前的技能点数。"
 L["The name of the faction."] = "势力的名称。"
+L["The name of the item."] = "物品名称。"
 L["The skill which experienced a gain."] = "获得提升的技能。"
 L["Your total amount of the currency."] = "货币的总数量。"
 

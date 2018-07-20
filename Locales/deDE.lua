@@ -627,6 +627,7 @@ L["The amount of reputation gained."] = "Der Betrag des erhaltenen Rufs"
 L["The amount of reputation lost."] = "Der Betrag des verlorenen Rufs"
 L["The amount of skill points currently."] = "Aktuelle Anzahl an Skillpunkten."
 L["The name of the faction."] = "Der Name der Fraktion"
+L["The name of the item."] = "Der Name des Gegenstandes"
 L["The skill which experienced a gain."] = "Der Zauber, der eine Verbesserung erhalten hat"
 -- L["Your total amount of the currency."] = "Your total amount of the currency."
 

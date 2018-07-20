@@ -626,6 +626,7 @@ L["The amount of reputation gained."] = "La quantité de points de réputation g
 L["The amount of reputation lost."] = "La quantité de points de réputation perdue."
 L["The amount of skill points currently."] = "Le nombre actuel de points de compétence."
 L["The name of the faction."] = "Le nom de la faction."
+L["The name of the item."] = "Le nom de l'objet."
 L["The skill which experienced a gain."] = "La compétence qui vient de prendre un gain."
 -- L["Your total amount of the currency."] = "Your total amount of the currency."
 

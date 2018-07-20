@@ -623,6 +623,7 @@ L["The amount of reputation gained."] = "획득한 평판량입니다."
 L["The amount of reputation lost."] = "손실된 평판량입니다."
 L["The amount of skill points currently."] = "현재 기술 포인트입니다."
 L["The name of the faction."] = "진영의 이름입니다."
+L["The name of the item."] = "아이템의 이름입니다."
 L["The skill which experienced a gain."] = "경험치를 획득한 기술입니다."
 -- L["Your total amount of the currency."] = "Your total amount of the currency."
 

@@ -627,6 +627,7 @@ L["The amount of reputation gained."] = "Количество полученно
 L["The amount of reputation lost."] = "Количество потерянной репутации."
 L["The amount of skill points currently."] = "Количество текущих очков умения."
 L["The name of the faction."] = "Название фракции."
+L["The name of the item."] = "Название предмета."
 L["The skill which experienced a gain."] = "Умение полученное от накопления опыта."
 -- L["Your total amount of the currency."] = "Your total amount of the currency."
 

@@ -1,6 +1,6 @@
-local debug = nil
+local debug = true
 --@debug@
-debug = true
+debug = nil
 --@end-debug@
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)
@@ -630,6 +630,7 @@ L["The amount of reputation gained."] = true
 L["The amount of reputation lost."] = true
 L["The amount of skill points currently."] = true
 L["The name of the faction."] = true
+L["The name of the item."] = true
 L["The skill which experienced a gain."] = true
 L["Your total amount of the currency."] = true
 

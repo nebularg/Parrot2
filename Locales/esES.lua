@@ -631,6 +631,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Parrot_PointGains", LOCALE)
 -- L["The amount of reputation lost."] = "The amount of reputation lost."
 -- L["The amount of skill points currently."] = "The amount of skill points currently."
 -- L["The name of the faction."] = "The name of the faction."
+-- L["The name of the item."] = "The name of the item."
 -- L["The skill which experienced a gain."] = "The skill which experienced a gain."
 -- L["Your total amount of the currency."] = "Your total amount of the currency."
 
