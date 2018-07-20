@@ -128,17 +128,15 @@ local function retrieveSourceName(info)
 		return "__NONAME__"
 	end
 
-	if UnitIsPlayer(info.sourceName) then
-		local _, class, _, _, _, name = GetPlayerInfoByGUID(info.sourceID)
-		if class then
-			if db.hideRealm then
-				name = name:gsub("-.*", "")
-			end
-			if db.classcolor then
-				name = classColorStrings[class]:format(name)
-			end
-			return name
+	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.sourceID)
+	if class then
+		if not db.hideRealm then
+			name = info.sourceName
 		end
+		if db.classcolor then
+			name = classColorStrings[class]:format(name)
+		end
+		return name
 	end
 
 	return info.sourceName
@@ -149,17 +147,15 @@ local function retrieveDestName(info)
 		return "__NONAME__"
 	end
 
-	if UnitIsPlayer(info.recipientName) then
-		local _, class, _, _, _, name = GetPlayerInfoByGUID(info.recipientID)
-		if class then
-			if db.hideRealm then
-				name = name:gsub("-.*", "")
-			end
-			if db.classcolor then
-				name = classColorStrings[class]:format(name)
-			end
-			return name
+	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.recipientID)
+	if class then
+		if not db.hideRealm then
+			name = info.recipientName
 		end
+		if db.classcolor then
+			name = classColorStrings[class]:format(name)
+		end
+		return name
 	end
 
 	return info.recipientName
