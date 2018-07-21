@@ -1,7 +1,7 @@
 local _, ns = ...
 local Parrot = ns.addon
 local module = Parrot:NewModule("Cooldowns", "AceEvent-3.0", "AceTimer-3.0")
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Cooldowns")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList, del = Parrot.newList, Parrot.del
 

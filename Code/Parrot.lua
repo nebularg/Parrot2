@@ -518,7 +518,7 @@ function Parrot:OnOptionsCreate()
 					gameText = {
 						type = "toggle",
 						name = L["Control game options"],
-						desc = L.controlGameOptionsDesc,
+						desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
 						descStyle = "inline",
 						set = function(info, value)
 							db[info[#info]] = value

@@ -2,77 +2,90 @@
 --[[
 	Prefix to all files if this script is run from a subdir, for example
 ]]
-local filePrefix = "../"
+local file_prefix = "../"
 
-local allfiles = {
-	Parrot = { "Code/Parrot.lua", },
-	Parrot_CombatEvents = { "Code/CombatEvents.lua", },
-	Parrot_Display = { "Code/Display.lua", },
-	Parrot_ScrollAreas = { "Code/ScrollAreas.lua", },
-	Parrot_Suppressions = { "Code/Suppressions.lua", },
-	Parrot_Triggers = { "Code/Triggers.lua", },
-	Parrot_AnimationStyles = { "Data/AnimationStyles.lua", },
-	Parrot_Auras = { "Data/Auras.lua", },
-	Parrot_CombatEvents_Data = { "Data/CombatEvents.lua", },
-	Parrot_CombatStatus = { "Data/CombatStatus.lua", },
-	Parrot_Cooldowns = { "Data/Cooldowns.lua", },
-	Parrot_Loot = { "Data/Loot.lua", },
-	Parrot_PointGains = { "Data/PointGains.lua", },
-	Parrot_TriggerConditions_Data = { "Data/TriggerConditions.lua", },
+local all_files = {
+	"Code/Parrot.lua",
+	"Code/CombatEvents.lua",
+	"Code/Display.lua",
+	"Code/ScrollAreas.lua",
+	"Code/Suppressions.lua",
+	"Code/Triggers.lua",
+	"Data/AnimationStyles.lua",
+	"Data/Auras.lua",
+	"Data/CombatEvents.lua",
+	"Data/CombatStatus.lua",
+	"Data/Cooldowns.lua",
+	"Data/Loot.lua",
+	"Data/PointGains.lua",
+	"Data/TriggerConditions.lua",
+}
+local locale_files = {
+	"deDE", "esES", "frFR", "itIT", "koKR", "ptBR", "ruRU", "zhCN", "zhTW",
 }
 
-local ordered = { -- order in the locale files
-	"Parrot",
-	"Parrot_CombatEvents",
-	"Parrot_Display",
-	"Parrot_ScrollAreas",
-	"Parrot_Suppressions",
-	"Parrot_Triggers",
-	"Parrot_AnimationStyles",
-	"Parrot_Auras",
-	"Parrot_CombatEvents_Data",
-	"Parrot_CombatStatus",
-	"Parrot_Cooldowns",
-	"Parrot_Loot",
-	"Parrot_PointGains",
-	"Parrot_TriggerConditions_Data",
-}
+-- extract data
+local strings = {}
+print("Parsing files")
+for _, file in next, all_files do
+	local fh = assert(io.open(string.format("%s%s", file_prefix or "", file), "r"), "Could not open " .. file)
+	local text = fh:read("*all")
+	fh:close()
 
-local function parseFile(filename)
-	local strings = {}
-	local file = assert(io.open(string.format("%s%s", filePrefix or "", filename), "r"), "Could not open " .. filename)
-	local text = file:read("*all")
-	file:close()
-
+	local count = 0
 	for match in string.gmatch(text, "L%[\"(.-)\"%]") do
 		strings[match] = true
+		count = count + 1
 	end
-	return strings
+	print("  (" .. count .. ")\t" .. file)
 end
 
+print("\nGenerating locales")
 
-local locale = io.open("Strings-enUS.lua", "w")
-locale:write('local debug = nil\n--@debug@\ndebug = true\n--@end-debug@')
-
--- extract data from specified lua files
-for _, namespace in ipairs(ordered) do
-	print(namespace)
-	for _, file in ipairs(allfiles[namespace]) do
-		local strings = parseFile(file)
-
-		local sorted = {}
-		for k in next, strings do
-			table.insert(sorted, k)
-		end
-		table.sort(sorted)
-
-		locale:write(string.format('\n\nlocal L = LibStub("AceLocale-3.0"):NewLocale("%s", "enUS", true, debug)\n', namespace))
-		for _, v in ipairs(sorted) do
-			locale:write(string.format('L["%s"] = true\n', v))
-		end
-
-		print("  (" .. #sorted .. ") " .. file)
-	end
+-- dump the english locale
+local sorted = {}
+for key in next, strings do
+	table.insert(sorted, key)
 end
+table.sort(sorted)
 
+local locale = assert(io.open("enUS.lua", "wb"), "Could not open enUS.lua")
+locale:write('local debug = true\r\n--@debug@\r\ndebug = nil\r\n--@end-debug@')
+locale:write('\r\n\r\nlocal L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)\r\n\r\n')
+
+for _, v in ipairs(sorted) do
+	locale:write(string.format('L["%s"] = true\r\n', v))
+end
 locale:close()
+print("  (" .. #sorted .. ")\tenUS")
+
+-- dump the rest
+local L
+local m = { NewLocale = function() L = {} return L end }
+_G.LibStub = setmetatable({}, { __call = function() return m end })
+
+for _, file in next, locale_files do
+	dofile(string.format("%sLocales/%s.lua", file_prefix or "", file))
+
+	local locale = assert(io.open(string.format("%sLocales/%s.lua", file_prefix or "", file), "wb"), "Could not open " .. file)
+	locale:write('local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "' .. file .. '")')
+	if file == "esES" then
+		locale:write(' or LibStub("AceLocale-3.0"):NewLocale("Parrot", "esMX")')
+	end
+	locale:write('\r\nif not L then return end\r\n\r\n')
+
+	local count = 0
+	for index, key in ipairs(sorted) do
+		local value = L[key]
+		if value then
+			value = value:gsub("\n", "\\n"):gsub("\"", "\\\"")
+			locale:write(string.format('L["%s"] = "%s"\r\n', key, value))
+			count = count + 1
+		else
+			locale:write(string.format('-- L["%s"] = "%s"\r\n', key, key))
+		end
+	end
+	locale:close()
+
+	print("  (" .. count .. ")\t" .. file)
+end

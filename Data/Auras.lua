@@ -1,6 +1,6 @@
 local _, ns = ...
 local Parrot = ns.addon
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList, newDict = Parrot.newList, Parrot.newDict
 
@@ -595,7 +595,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -646,7 +646,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -708,7 +708,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -828,7 +828,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -879,7 +879,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -934,7 +934,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -985,7 +985,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},

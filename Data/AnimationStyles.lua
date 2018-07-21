@@ -1,6 +1,6 @@
 local _, ns = ...
 local Parrot = ns.addon
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_AnimationStyles")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local math_max, math_min = math.max, math.min
 

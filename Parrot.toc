@@ -19,8 +19,7 @@
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDDI-1.0, LibSink-2.0, LibDualSpec-1.0
 
 embeds.xml
-
-Locales\locales.xml
+locales.xml
 
 Code\Parrot.lua
 Code\AnimationStyles.lua

@@ -1,7 +1,7 @@
 local _, ns = ...
 local Parrot = ns.addon
 local module = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 

@@ -1,6 +1,6 @@
 local _, ns = ...
 local Parrot = ns.addon
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Loot")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newDict = Parrot.newDict
 local Deformat = Parrot.Deformat

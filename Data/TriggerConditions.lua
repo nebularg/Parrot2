@@ -1,7 +1,7 @@
 local _, ns = ...
 local Parrot = ns.addon
 local module = Parrot:NewModule("TriggerConditionsData", "AceEvent-3.0")
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList = Parrot.newList
 
