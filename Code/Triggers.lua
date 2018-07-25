@@ -1,13 +1,11 @@
-local Parrot = _G.Parrot
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("Triggers", "AceEvent-3.0", "AceTimer-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
-local Parrot_Triggers = Parrot:NewModule("Triggers", "AceTimer-3.0", "AceEvent-3.0")
 local Parrot_TriggerConditions
-local Parrot_Display
-local Parrot_ScrollAreas
-local Parrot_CombatEvents
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Triggers")
-local SharedMedia = LibStub("LibSharedMedia-3.0")
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
 local newList, del = Parrot.newList, Parrot.del
 
@@ -58,10 +56,10 @@ local cooldowns = {}
 
 local defaultTriggers = {
 	[1004] = [[{
-		-- 5308 = Execute
+		-- Execute
 		name = L["%s!"]:format(GetSpellInfo(5308)),
 		icon = 5308,
-		spec = { WARRIOR = "71;72;73", },
+		spec = { WARRIOR = "71;72", },
 		conditions = {
 			["Unit health"] = {
 				{
@@ -75,29 +73,6 @@ local defaultTriggers = {
 		secondaryConditions = {
 			["Spell ready"] = {
 				[1] = GetSpellInfo(5308),
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
-	[1006] = [[{
-		-- 24275 - Hammer of Wrath
-		name = L["%s!"]:format(GetSpellInfo(24275)),
-		icon = 24275,
-		spec = { PALADIN = "66;70" },
-		conditions = {
-			["Unit health"] = {
-				{
-					unit = "target",
-					amount = 0.20,
-					comparator = "<",
-					friendly = 0,
-				},
-			},
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(24275),
 			},
 		},
 		sticky = true,
@@ -153,7 +128,7 @@ local defaultTriggers = {
 					amount = "35%",
 					comparator = "<=",
 					friendly = 1,
-					powerType = "MANA",
+					powerType = 0,
 				},
 			},
 		},
@@ -187,7 +162,7 @@ local defaultTriggers = {
 		color = "ff7f7f",
 	}]],
 	[1014] = [[{
-		-- Revenge = 6572
+		-- Revenge
 		name = L["%s!"]:format(GetSpellInfo(6572)),
 		icon = 6572,
 		spec = { WARRIOR = "73" },
@@ -204,7 +179,7 @@ local defaultTriggers = {
 		disabled = true,
 	}]],
 	[1017] = [[{
-		-- Freezing Fog = 59052
+		-- Rime
 		name = L["%s!"]:format(GetSpellInfo(59052)),
 		icon = 59052,
 		spec = { DEATHKNIGHT = "251" },
@@ -221,14 +196,14 @@ local defaultTriggers = {
 		color = "0000ff",
 	}]],
 	[1018] = [[{
-		-- Killing Machine = 51128
-		name = L["%s!"]:format(GetSpellInfo(51128)),
+		-- Killing Machine
+		name = L["%s!"]:format(GetSpellInfo(51124)),
 		icon = 51130,
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
-					spell = GetSpellInfo(51128),
+					spell = GetSpellInfo(51124),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -236,42 +211,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "0000ff",
-	}]],
-	[1022] = [[{
-		-- Sudden Death = 52437
-		name = L["%s!"]:format(GetSpellInfo(52437)),
-		icon = 52437,
-		spec = { WARRIOR = "71;72;73" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(52437),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff0000",
-	}]],
-	[1028] = [[{
-		-- Serendipity
-		name = L["%s!"]:format(GetSpellInfo(63733)),
-		icon = 63733,
-		spec = { PRIEST = "257" },
-		conditions = {
-			["Aura stack gain"] = {
-				[1] = {
-					["unit"] = "player",
-					["spell"] = GetSpellInfo(63733),
-					["auraType"] = "BUFF",
-					["amount"] = 2,
-				},
-			},
-		},
-		sticky = true,
-		disabled = true,
-		color = "00c0ff",
 	}]],
 	[1031] = [[{
 		-- Fingers of Frost
@@ -306,23 +245,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff0000",
-	}]],
-	[1038] = [[{
-		-- Ultimatum
-		name = L["%s!"]:format(GetSpellInfo(122510)),
-		icon = 122510,
-		spec = { WARRIOR = "73" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(122510),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "00d0ff",
 	}]],
 	[1040] = [[{
 		-- Raging Blow!
@@ -366,25 +288,8 @@ local defaultTriggers = {
 		sticky = true,
 		color = "9b00b3",
 	}]],
-	[1042] = [[{
-		-- Arcane Missiles
-		name = L["%s!"]:format(GetSpellInfo(7268)),
-		icon = 7268,
-		spec = { MAGE = "62" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(7268),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "59006c",
-	}]],
 	[1043] = [[{
-		-- Pyroblast!
+		-- Hot Streak!
 		name = GetSpellInfo(48108),
 		icon = 48108,
 		spec = { MAGE = "63" },
@@ -599,7 +504,7 @@ local function checkTriggerEnabled(v)
 end
 
 local function rebuildEffectiveRegistry()
-	Parrot_Triggers:CancelTimer(periodicCheckTimer)
+	module:CancelTimer(periodicCheckTimer)
 	periodicCheckTimer = nil
 
 	wipe(effectiveRegistry)
@@ -608,7 +513,7 @@ local function rebuildEffectiveRegistry()
 		if checkTriggerEnabled(v) then
 			effectiveRegistry[#effectiveRegistry+1] = v
 			if v.conditions["Check every XX seconds"] and not periodicCheckTimer then
-				periodicCheckTimer = Parrot_Triggers:ScheduleRepeatingTimer(function()
+				periodicCheckTimer = module:ScheduleRepeatingTimer(function()
 					Parrot:FirePrimaryTriggerCondition("Check every XX seconds")
 				end, 0.1)
 			end
@@ -624,7 +529,7 @@ local function updateDB()
 	-- clean up old triggers
 	if db.triggers then
 		if not next(db.triggers2) and next(db.triggers) then
-			Parrot_Triggers:Print("Your triggers are really out of date and have been reset.")
+			module:Print("Your triggers are really out of date and have been reset.")
 		end
 		db.triggers = nil
 	end
@@ -645,7 +550,7 @@ local function updateDB()
 	db.dbver = #updateFuncs
 end
 
-function Parrot_Triggers:OnProfileChanged()
+function module:OnProfileChanged()
 	db = self.db.profile
 	updateDB()
 
@@ -656,15 +561,12 @@ function Parrot_Triggers:OnProfileChanged()
 	rebuildEffectiveRegistry()
 end
 
-function Parrot_Triggers:OnInitialize()
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Triggers", defaults)
 	db = self.db.profile
 	updateDB()
 
-	Parrot_Display = Parrot:GetModule("Display")
-	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
-	Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
 end
 
 local function registerTriggers()
@@ -694,7 +596,7 @@ local function registerTriggers()
 	}
 end
 
-function Parrot_Triggers:OnEnable()
+function module:OnEnable()
 	if registerTriggers then
 		registerTriggers()
 		registerTriggers = nil
@@ -711,7 +613,7 @@ local function getIconPath(icon)
 
 	local path = iconCache[icon]
 	if not path then
-		local texture = GetSpellTextureFileName(icon)
+		local texture = GetSpellTexture(icon)
 		if texture then
 			path = texture
 		else
@@ -775,20 +677,20 @@ local function showTrigger(t)
 	local icon = getIconPath(t.icon)
 	if t.useflash then
 		local rf, gf, bf = hexColorToTuple(t.flashcolor or 'ffffff')
-		Parrot_Display:Flash(rf,gf,bf)
+		Parrot:Flash(rf,gf,bf)
 	end
 
-	Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, icon)
+	Parrot:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, icon)
 
 	if t.sound then
-		local sound = SharedMedia:Fetch('sound', t.sound)
+		local sound = LibSharedMedia:Fetch('sound', t.sound)
 		if sound then
-			PlaySoundFile(sound, "MASTER")
+			PlaySoundFile(sound, "Master")
 		end
 	end
 end
 
-function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
+function module:OnTriggerCondition(name, arg, uid, check)
 	if UnitIsDeadOrGhost("player") then
 		return
 	end
@@ -842,7 +744,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 				if good and checkTriggerCooldown(t, 0.1) then
 					showTrigger(t)
 					if uid then
-						Parrot_CombatEvents:CancelEventsWithUID(uid)
+						Parrot:CancelEventsWithUID(uid)
 					end
 				end
 			end
@@ -850,15 +752,7 @@ function Parrot_Triggers:OnTriggerCondition(name, arg, uid, check)
 	end -- for ipairs
 end
 
-local function getSoundChoices()
-	local t = newList()
-	for _,v in ipairs(SharedMedia:List("sound")) do
-		t[v] = v
-	end
-	return t
-end
-
-function Parrot_Triggers:OnOptionsCreate()
+function module:OnOptionsCreate()
 
 	local acetype = {
 		['number'] = 'range',
@@ -926,17 +820,20 @@ function Parrot_Triggers:OnOptionsCreate()
 		local t = getTriggerTable(info)
 		local font = t.font
 		if font == nil then
-			return "1"
-		else
-			return font
+			return -1
 		end
+		for i, v in next, Parrot.fontValues do
+			if v == font then return i end
+		end
+		return font
 	end
 	local function setFontFace(info, value)
 		local t = getTriggerTable(info)
-		if value == "1" then
-			value = nil
+		if value == -1 then
+			t.font = nil
+		else
+			t.font = Parrot.fontValues[value]
 		end
-		t.font = value
 	end
 	local function getFontSize(info)
 		return getTriggerTable(info).fontSize
@@ -1061,16 +958,20 @@ function Parrot_Triggers:OnOptionsCreate()
 	local function setUseFlash(info, value)
 		getTriggerTable(info).useflash = value
 	end
-	local function getSound(info)
-		return getTriggerTable(info).sound or "None"
-	end
 
-	local function setSound(info, value)
-		PlaySoundFile(SharedMedia:Fetch('sound', value), "MASTER")
-		if value == "None" then
-			value = nil
+	local function getSound(info)
+		local value = getTriggerTable(info).sound or "None"
+		for i, v in next, Parrot.soundValues do
+			if v == value then return i end
 		end
-		getTriggerTable(info).sound = value
+	end
+	local function setSound(info, value)
+		local v = Parrot.soundValues[value]
+		PlaySoundFile(LibSharedMedia:Fetch("sound", v), "Master")
+		if v == "None" then
+			v = nil
+		end
+		getTriggerTable(info).sound = v
 	end
 
 	local function test(info)
@@ -1079,13 +980,13 @@ function Parrot_Triggers:OnOptionsCreate()
 		--TODO
 		if t.useflash then
 			local rf, gf, bf = hexColorToTuple(t.flashcolor or 'ffffff')
-			Parrot_Display:Flash(rf,gf,bf)
+			Parrot:Flash(rf,gf,bf)
 		end
-		Parrot_Display:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, getIconPath(t.icon))
+		Parrot:ShowMessage(t.name, t.scrollArea or "Notification", t.sticky, r, g, b, t.font, t.fontSize, t.outline, getIconPath(t.icon))
 		if t.sound then
-			local sound = SharedMedia:Fetch('sound', t.sound)
+			local sound = LibSharedMedia:Fetch('sound', t.sound)
 			if sound then
-				PlaySoundFile(sound, "MASTER")
+				PlaySoundFile(sound, "Master")
 			end
 		end
 	end
@@ -1574,7 +1475,7 @@ function Parrot_Triggers:OnOptionsCreate()
 				},
 				scrollArea = {
 					type = 'select',
-					values = Parrot_ScrollAreas:GetScrollAreasChoices(),
+					values = Parrot:GetScrollAreasChoices(),
 					name = L["Scroll area"],
 					desc = L["Which scroll area to output to."],
 					get = getScrollArea,
@@ -1583,12 +1484,12 @@ function Parrot_Triggers:OnOptionsCreate()
 				},
 				sound = {
 					type = 'select',
-					control = "LSM30_Sound",
-					values = getSoundChoices,
 					name = L["Sound"],
 					desc = L["What sound to play when the trigger is shown."],
+					values = Parrot.soundValues,
 					get = getSound,
 					set = setSound,
+					itemControl = "DDI-Sound",
 					order = 4,
 				},
 				test = {
@@ -1626,9 +1527,10 @@ function Parrot_Triggers:OnOptionsCreate()
 							type = 'select',
 							name = L["Font face"],
 							desc = L["Font face"],
-							values = Parrot.fontValues,
+							values = Parrot.fontWithInheritValues,
 							get = getFontFace,
 							set = setFontFace,
+							itemControl = "DDI-Font",
 							order = 1,
 						},
 						fontSizeInherit = {

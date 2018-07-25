@@ -1,14 +1,13 @@
-local Parrot = _G.Parrot
-
-local mod = Parrot:NewModule("TriggerConditionsData", "AceEvent-3.0")
-
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_TriggerConditions_Data")
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("TriggerConditionsData", "AceEvent-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList = Parrot.newList
 
 local onEnableFuncs = {}
 
-function mod:OnEnable()
+function module:OnEnable()
 	for _,v in ipairs(onEnableFuncs) do
 		v()
 	end
@@ -159,22 +158,22 @@ Parrot:RegisterPrimaryTriggerCondition {
 
 local powerTypeChoices = {
 	[-1] = L["Any"],
-	[_G.SPELL_POWER_MANA] = _G.MANA,
-	[_G.SPELL_POWER_RAGE] = _G.RAGE,
-	[_G.SPELL_POWER_FOCUS] = _G.FOCUS,
-	[_G.SPELL_POWER_ENERGY] = _G.ENERGY,
-	[_G.SPELL_POWER_COMBO_POINTS] = _G.COMBO_POINTS,
-	[_G.SPELL_POWER_RUNES] = _G.RUNES,
-	[_G.SPELL_POWER_RUNIC_POWER] = _G.RUNIC_POWER,
-	[_G.SPELL_POWER_SOUL_SHARDS] = _G.SOUL_SHARDS,
-	[_G.SPELL_POWER_LUNAR_POWER] = _G.LUNAR_POWER,
-	[_G.SPELL_POWER_HOLY_POWER] = _G.HOLY_POWER,
-	[_G.SPELL_POWER_MAELSTROM] = _G.MAELSTROM,
-	[_G.SPELL_POWER_CHI] = _G.CHI,
-	[_G.SPELL_POWER_INSANITY] = _G.INSANITY,
-	[_G.SPELL_POWER_ARCANE_CHARGES] = _G.ARCANE_CHARGES,
-	[_G.SPELL_POWER_FURY] = _G.FURY,
-	[_G.SPELL_POWER_PAIN] = _G.PAIN,
+	[0] = _G.MANA,
+	[1] = _G.RAGE,
+	[2] = _G.FOCUS,
+	[3] = _G.ENERGY,
+	[4] = _G.COMBO_POINTS,
+	[5] = _G.RUNES,
+	[6] = _G.RUNIC_POWER,
+	[7] = _G.SOUL_SHARDS,
+	[8] = _G.LUNAR_POWER,
+	[9] = _G.HOLY_POWER,
+	[11] = _G.MAELSTROM,
+	[12] = _G.CHI,
+	[13] = _G.INSANITY,
+	[16] = _G.ARCANE_CHARGES,
+	[17] = _G.FURY,
+	[18] = _G.PAIN,
 }
 
 local unitPowerStates = {
@@ -188,7 +187,7 @@ local unitPowerStates = {
 -- wipe the states for units that can change when they are changed
 --]]
 table.insert(onEnableFuncs, function()
-		mod:RegisterEvent("PLAYER_TARGET_CHANGED", function()
+		module:RegisterEvent("PLAYER_TARGET_CHANGED", function()
 				wipe(unitHealthStates.target)
 				wipe(unitPowerStates.target)
 			end
@@ -196,7 +195,7 @@ table.insert(onEnableFuncs, function()
 	end
 )
 table.insert(onEnableFuncs, function()
-		mod:RegisterEvent("PLAYER_FOCUS_CHANGED", function()
+		module:RegisterEvent("PLAYER_FOCUS_CHANGED", function()
 				--				debug("wipe focus states")
 				wipe(unitHealthStates.focus)
 				wipe(unitPowerStates.focus)
@@ -205,7 +204,7 @@ table.insert(onEnableFuncs, function()
 	end
 )
 table.insert(onEnableFuncs, function()
-		mod:RegisterEvent("UNIT_PET", function(_, unit)
+		module:RegisterEvent("UNIT_PET", function(_, unit)
 				if unit == "player" then
 					wipe(unitHealthStates.pet)
 					wipe(unitPowerStates.pet)
@@ -283,8 +282,8 @@ Parrot:RegisterPrimaryTriggerCondition {
 		},
 	},
 	events = {
-		UNIT_POWER = ret,
-		UNIT_MAX_POWER = ret,
+		UNIT_POWER_UPDATE = ret,
+		UNIT_MAXPOWER = ret,
 	},
 	check = function(ref, info)
 		-- check if ref is complete
@@ -597,25 +596,23 @@ Parrot:RegisterPrimaryTriggerCondition {
 	end,
 }
 
-local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical, _, _, _, multistrike)
+local function parseSpellDamage(_, srcName, _, _, dstName, _, spellId, spellName, _, amount, _, _, _, _, critical)
 	local data = newList()
 	data.dstName = dstName
 	data.srcName = srcName
 	data.amount = amount
 	data.critical = not not critical
-	data.multistrike = not not multistrike
 	data.spellName = spellName
 	data.spellId = spellId
 	return data
 end
 
-local function parseSwingDamage(_, srcName, _, _, dstName, _, amount, _, _, _, _, _, critical, _, _, _, multistrike)
+local function parseSwingDamage(_, srcName, _, _, dstName, _, amount, _, _, _, _, _, critical)
 	local data = newList()
 	data.dstName = dstName
 	data.srcName = srcName
 	data.amount = amount
 	data.critical = not not critical
-	data.multistrike = not not multistrike
 	return data
 end
 

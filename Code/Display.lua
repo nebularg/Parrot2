@@ -1,17 +1,25 @@
-local Parrot = _G.Parrot
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("Display")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
-local Parrot_Display = Parrot:NewModule("Display", "AceHook-3.0")
 local Parrot_AnimationStyles
 local Parrot_Suppressions
 local Parrot_ScrollAreas
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Display")
-local SharedMedia = LibStub("LibSharedMedia-3.0")
-local DEFAULT_FONT_NAME = SharedMedia:GetDefault("font")
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+local DEFAULT_FONT_NAME = LibSharedMedia:GetDefault("font")
 
 local newList, del = Parrot.newList, Parrot.del
 
-local ParrotFrame
+local ParrotFrame = CreateFrame("Frame", "ParrotFrame", UIParent)
+ParrotFrame:Hide()
+ParrotFrame:SetFrameStrata("HIGH")
+ParrotFrame:SetToplevel(true)
+ParrotFrame:SetPoint("CENTER")
+ParrotFrame:SetWidth(0.0001)
+ParrotFrame:SetHeight(0.0001)
+local Display_Update
 
 local db
 local defaults = {
@@ -30,11 +38,11 @@ local defaults = {
 	},
 }
 
-function Parrot_Display:OnProfileChanged()
+function module:OnProfileChanged()
 	db = self.db.profile
 end
 
-function Parrot_Display:OnInitialize()
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Display", defaults)
 	db = self.db.profile
 
@@ -52,63 +60,25 @@ local function getOption(info)
 	return db[name]
 end
 
-local function onUpdate()
-	Parrot_Display:OnUpdate()
-end
-
-function Parrot_Display:OnEnable()
-	if not ParrotFrame then
-		ParrotFrame = CreateFrame("Frame", "ParrotFrame", UIParent)
-		ParrotFrame:Hide()
-		ParrotFrame:SetFrameStrata("HIGH")
-		ParrotFrame:SetToplevel(true)
-		ParrotFrame:SetPoint("CENTER")
-		ParrotFrame:SetWidth(0.0001)
-		ParrotFrame:SetHeight(0.0001)
-		ParrotFrame:SetScript("OnUpdate", onUpdate)
+local function getFontFace(info)
+	local font = db[info[#info]]
+	if font == nil then
+		return -1
 	end
-
-	if _G.CombatText_AddMessage then
-		self:RawHook("CombatText_AddMessage", true)
+	for i, v in next, Parrot.fontValues do
+		if v == font then return i end
+	end
+	return font
+end
+local function setFontFace(info, value)
+	if value == -1 then
+		db[info[#info]] = nil
 	else
-		function _G.CombatText_AddMessage(...)
-			self:CombatText_AddMessage(...)
-		end
+		db[info[#info]] = Parrot.fontValues[value]
 	end
 end
 
-function Parrot_Display:OnDisable()
-end
-
--- #NODOC
-function Parrot_Display:CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, isStaggered)
-	if type(message) ~= "string" then
-		return
-	end
-	if type(r) ~= "number" or type(g) ~= "number" or type(b) ~= "number" then
-		r, g, b = 1, 1, 1
-	end
-	self:ShowMessage(message, "Notification", displayType == "crit", r, g, b, nil, nil, nil)
-end
-
-local function getFontChoices()
-	local result = {}
-	for _,v in ipairs(SharedMedia:List("font")) do
-		result[v] = v
-	end
-	return result
-end
-
---[[local function setOption(info, value)
-	local name = info[#info]
-	db[name] = value
-end
-local function getOption(info)
-	local name = info[#info]
-	return db[name]
-end--]]
-
-function Parrot_Display:OnOptionsCreate()
+function module:OnOptionsCreate()
 	local outlineChoices = {
 		NONE = L["None"],
 		OUTLINE = L["Thin"],
@@ -154,9 +124,11 @@ function Parrot_Display:OnOptionsCreate()
 		args = {
 			font = {
 				type = "select",
-				control = "LSM30_Font",
 				name = L["Normal font face"],
-				values = getFontChoices(),
+				values = Parrot.fontValues,
+				get = getFontFace,
+				set = setFontFace,
+				itemControl = "DDI-Font",
 			},
 			fontSize = {
 				type = "range",
@@ -176,9 +148,11 @@ function Parrot_Display:OnOptionsCreate()
 			},
 			stickyFont = {
 				type = "select",
-				control = "LSM30_Font",
 				name = L["Sticky font face"],
-				values = getFontChoices(),
+				values = Parrot.fontValues,
+				get = getFontFace,
+				set = setFontFace,
+				itemControl = "DDI-Font",
 			},
 			stickyFontSize = {
 				type = "range",
@@ -201,7 +175,7 @@ function Parrot_Display:OnOptionsCreate()
 end
 
 local freeFrames = {}
-local wildFrames
+local wildFrames = {}
 local frame_num = 0
 local frameIDs = {}
 local freeTextures = {}
@@ -227,8 +201,8 @@ Notes:
 Example:
 	Parrot:ShowMessage("Hello, world!", "Notification", false, 0.5, 0.5, 1)
 ------------------------------------------------------------------------------------]]
-function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize, outline, icon)
-	if not Parrot_Display:IsEnabled() then return end
+function module:ShowMessage(text, area, sticky, r, g, b, font, fontSize, outline, icon)
+	if not module:IsEnabled() then return end
 	if Parrot_Suppressions:ShouldSuppress(text) then return end
 
 	if not Parrot_ScrollAreas:HasScrollArea(area) then
@@ -295,7 +269,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		fontString_num = fontString_num + 1
 		fs = frame:CreateFontString("ParrotFrameFontString" .. fontString_num, "ARTWORK", "SystemFont_Shadow_Small")
 	end
-	fs:SetFont(SharedMedia:Fetch("font", font), fontSize, outline)
+	fs:SetFont(LibSharedMedia:Fetch("font", font), fontSize, outline)
 	if shadow then
 		fs:SetShadowColor(0, 0, 0, 1)
 	else
@@ -328,7 +302,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		if scrollArea.iconSide == "RIGHT" then
 			texture:SetPoint("LEFT", fs, "RIGHT", 3, 0)
 			fs:SetPoint("LEFT", frame, "LEFT")
-		else
+		else -- scrollArea.iconSide == "LEFT"
 			texture:SetPoint("RIGHT", fs, "LEFT", -3, 0)
 			fs:SetPoint("RIGHT", frame, "RIGHT")
 		end
@@ -359,8 +333,7 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 		animationStyle = scrollArea.animationStyle
 	end
 	local aniStyle = Parrot_AnimationStyles:GetAnimationStyle(animationStyle)
-	if not wildFrames then
-		wildFrames = newList()
+	if not next(wildFrames) then
 		ParrotFrame:Show()
 	end
 	local wildFrames_scrollArea = wildFrames[scrollArea]
@@ -400,9 +373,9 @@ function Parrot_Display:ShowMessage(text, area, sticky, r, g, b, font, fontSize,
 	if texture then
 		texture:SetAlpha(db.iconAlpha)
 	end
-	Parrot_Display:OnUpdate(scrollArea, aniStyle)
+	Display_Update()
 end
-Parrot.ShowMessage = Parrot_Display.ShowMessage
+Parrot.ShowMessage = module.ShowMessage
 
 local function isOverlapping(alpha, bravo)
 	if alpha:GetLeft() <= bravo:GetRight() and bravo:GetLeft() <= alpha:GetRight() and alpha:GetBottom() <= bravo:GetTop() and bravo:GetBottom() <= alpha:GetTop() then
@@ -410,7 +383,7 @@ local function isOverlapping(alpha, bravo)
 	end
 end
 
-function Parrot_Display:OnUpdate()
+function Display_Update()
 	local now = GetTime()
 	for scrollArea, u in next, wildFrames do
 		for animationStyle, t in next, u do
@@ -501,50 +474,38 @@ function Parrot_Display:OnUpdate()
 		end
 	end
 	if not next(wildFrames) then
-		wildFrames = del(wildFrames)
 		ParrotFrame:Hide()
 	end
 end
+ParrotFrame:SetScript("OnUpdate", Display_Update)
 
-local flasher
+local flasher = nil
 local function makeflasher()
-	if flasher then
-		return
-	end
 	flasher = CreateFrame("Frame", "ParrotFlash", UIParent)
 	flasher:SetFrameStrata("BACKGROUND")
 	flasher:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",})
 	flasher:SetAllPoints( UIParent)
 	flasher:SetScript("OnShow", function (self)
-			self.elapsed = 0
-			self:SetAlpha(0)
+		self.elapsed = 0
+		self:SetAlpha(0)
 	end)
 	flasher:SetScript("OnUpdate", function (self, elapsed)
-			elapsed = self.elapsed + elapsed
-			if elapsed >= 1 then
-				self:Hide()
-				self:SetAlpha(0)
-				return
-			end
-			local alpha = 1 - math.abs(elapsed - 0.5)
-			-- if elapsed > 0.2 then
-			-- 	alpha = 0.4 - alpha
-			-- end
-			self:SetAlpha(alpha * 0.7)
-			self.elapsed = elapsed
+		elapsed = self.elapsed + elapsed
+		if elapsed >= 1 then
+			self:Hide()
+			self:SetAlpha(0)
+			return
+		end
+		local alpha = 1 - math.abs(elapsed - 0.5)
+		self:SetAlpha(alpha * 0.7)
+		self.elapsed = elapsed
 	end)
 	flasher:Hide()
 end
 
-local function doFlash(self, r, g, b)
+function module:Flash(r, g, b)
+	if not flasher then makeflasher() end
 	flasher:SetBackdropColor(r, g, b, 255)
 	flasher:Show()
 end
-
-local function initFlasherAndFlash(self, r, g, b)
-	makeflasher()
-	Parrot_Display.Flash = doFlash
-	doFlash(self, r, g, b)
-end
-
-Parrot_Display.Flash = initFlasherAndFlash
+Parrot.Flash = module.Flash

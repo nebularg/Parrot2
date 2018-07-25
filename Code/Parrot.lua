@@ -1,37 +1,46 @@
-local Parrot = LibStub("AceAddon-3.0"):NewAddon("Parrot", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "LibSink-2.0")
-_G.Parrot = Parrot
-
---@debug@
-Parrot.version = "dev"
---@end-debug@
-
+local _, ns = ...
+ns.addon = {}
+local Parrot = LibStub("AceAddon-3.0"):NewAddon(ns.addon, "Parrot", "AceEvent-3.0", "LibSink-2.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 -- Debug
-Parrot.PARROT_DEBUG_FRAME = _G.ChatFrame4
-Parrot.debug = function(arg1, ...)
-	--@debug@
-	if type(arg1) == "table" then
-		if not _G.DevTools_Dump then
-			assert(LoadAddOn("Blizzard_DebugTools"))
+local debug = function() end
+--@debug@
+do
+	local PARROT_DEBUG_FRAME = _G.ChatFrame4
+	local function nilCacheFunc() return nil end
+	local function writeFunc(self, msg) PARROT_DEBUG_FRAME:AddMessage(msg) end
+
+	function debug(arg1, ...)
+		if type(arg1) == "table" then
+			local loaded = LoadAddOn("Blizzard_DebugTools")
+			if not loaded then
+				PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: !!! table-dump skipped")
+				return debug(...)
+			end
+
+			local context = {
+				depth = 2,
+				GetTableName = nilCacheFunc,
+				GetFunctionName = nilCacheFunc,
+				GetUserdataName = nilCacheFunc,
+				Write = writeFunc,
+			}
+			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: +++ table-dump")
+			_G.DevTools_RunDump(arg1, context)
+			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: --- end of table-dump")
+			return debug(...)
+		else
+			local text = strjoin(" ", tostringall(...))
+			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: " .. text)
 		end
-		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: +++ table-dump")
-		_G.DEVTOOLS_DEPTH_CUTOFF = 2
-		_G.DEFAULT_CHAT_FRAME = Parrot.PARROT_DEBUG_FRAME
-		_G.DevTools_Dump(arg1)
-		_G.DEFAULT_CHAT_FRAME = _G.ChatFrame1
-		_G.DEVTOOLS_DEPTH_CUTOFF = 10
-		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: --- end of table-dump")
-		Parrot.debug(...)
-	else
-		local text = strjoin(" ", tostringall(...))
-		Parrot.PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: " .. text)
 	end
-	--@end-debug@
 end
+--@end-debug@
+Parrot.debug = debug
 
 -- Table recycling
 local new, del
@@ -204,7 +213,7 @@ end
 local db = nil
 local defaults = {
 	profile = {
-		gameText = false,
+		gameText = true,
 		gameSelf = false,
 		gameDamage = false,
 		gamePetDamage = false,
@@ -221,11 +230,12 @@ function Parrot:OnProfileChanged(event, database)
 			mod:OnProfileChanged(event, database)
 		end
 	end
+	self:UpdateFCT()
 end
 
 function Parrot:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("ParrotDB", defaults, true)
-  LibStub("LibDualSpec-1.0"):EnhanceDatabase(self.db, "Parrot")
+	LibStub("LibDualSpec-1.0"):EnhanceDatabase(self.db, "Parrot")
 	db = self.db.profile
 
 	self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
@@ -252,8 +262,11 @@ function Parrot:OnInitialize()
 	AceConfig:RegisterOptionsTable("Parrot/Blizzard", options)
 	AceConfigDialog:AddToBlizOptions("Parrot/Blizzard", L["Parrot"])
 
-	self:RegisterChatCommand("parrot", "ShowConfig")
-	self:RegisterChatCommand("par", "ShowConfig")
+	SLASH_PARROT1 = "/parrot"
+	SLASH_PARROT2 = "/par"
+	function SlashCmdList.PARROT()
+		self:ShowConfig()
+	end
 
 	local LibSink = LibStub("LibSink-2.0")
 	local function sink(addon, text, r, g, b, font, size, outline, sticky, location, icon)
@@ -272,6 +285,18 @@ function Parrot:OnInitialize()
 		return tmp
 	end
 	self:RegisterSink("Parrot", L["Parrot"], nil, sink, getScrollAreasChoices, true)
+
+	LibStub("LibDataBroker-1.1"):NewDataObject("Parrot", {
+		type = "launcher",
+		icon = "Interface\\Icons\\Spell_Nature_ForceOfNature",
+		OnClick = function(_, button)
+			if button == "LeftButton" then
+				Parrot:ShowConfig()
+			end
+		end,
+		label = L["Parrot"],
+	})
+
 end
 
 do
@@ -303,6 +328,12 @@ do
 	  -- "floatingCombatTextSpellMechanicsOther",
 	}
 
+	function Parrot:ResetFCT()
+		for _, var in next, fct do
+			SetCVar(var, GetCVarDefault(var))
+		end
+	end
+
 	function Parrot:UpdateFCT()
 		if db.gameText then
 			SetCVar("enableFloatingCombatText", db.gameSelf and "1" or "0")
@@ -321,12 +352,8 @@ do
 			SetCVar("floatingCombatTextCombatHealingAbsorbTarget", healing)
 			SetCVar("floatingCombatTextCombatHealingAbsorbSelf", healing)
 
-			SetCVar("floatingCombatTextReactives", db.gameLowHealth and "1" or "0")
-			SetCVar("floatingCombatTextLowManaHealth", db.gameReactives and "1" or "0")
-		else
-			for _, var in next, fct do
-				SetCVar(var, GetCVarDefault(var))
-			end
+			SetCVar("floatingCombatTextReactives", db.gameReactives and "1" or "0")
+			SetCVar("floatingCombatTextLowManaHealth", db.gameLowHealth and "1" or "0")
 		end
 	end
 end
@@ -348,10 +375,10 @@ end
 do
 	local combatLogHandlers = {}
 
-	local function OnCombatLogEvent(...)
+	local function OnCombatLogEvent()
 		local uid = nextUID()
 		for mod in next, combatLogHandlers do
-			mod:HandleCombatlogEvent(uid, ...)
+			mod:HandleCombatlogEvent(uid, CombatLogGetCurrentEventInfo())
 		end
 	end
 
@@ -419,6 +446,27 @@ do
 end
 
 -- Config
+do
+	local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+
+	Parrot.soundValues = LibSharedMedia:List("sound")
+	Parrot.fontValues = LibSharedMedia:List("font")
+	Parrot.fontWithInheritValues = {}
+
+	local function rebuild(_, mediatype)
+		if mediatype == "font" then
+			wipe(Parrot.fontWithInheritValues)
+			for i, v in next, Parrot.fontValues do
+				Parrot.fontWithInheritValues[i] = v
+			end
+			Parrot.fontWithInheritValues[-1] = L["Inherit"]
+		end
+	end
+	rebuild(nil, "font")
+
+	LibSharedMedia.RegisterCallback(Parrot, "LibSharedMedia_Registered", rebuild)
+end
+
 function Parrot:ShowConfig()
 	if self.OnOptionsCreate then
 		self:OnOptionsCreate()
@@ -445,6 +493,9 @@ function Parrot:OnOptionsCreate()
 		db[info[#info]] = value
 		self:UpdateFCT()
 	end
+	local function disabled()
+		return not db.gameText
+	end
 
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
 	self.options.args.profiles.order = -1
@@ -467,8 +518,16 @@ function Parrot:OnOptionsCreate()
 					gameText = {
 						type = "toggle",
 						name = L["Control game options"],
-						desc = L.controlGameOptionsDesc,
+						desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
 						descStyle = "inline",
+						set = function(info, value)
+							db[info[#info]] = value
+							if value then
+								self:UpdateFCT()
+							else
+								self:ResetFCT()
+							end
+						end,
 						order = 0,
 						width = "full",
 					},
@@ -476,42 +535,42 @@ function Parrot:OnOptionsCreate()
 						type = "toggle",
 						name = _G.COMBAT_SELF, -- Combat Self
 						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_TEXT, -- Checking this will enable additional combat messages to appear in the playfield.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 1,
 					},
 					gameDamage = {
 						type = "toggle",
 						name = _G.SHOW_DAMAGE_TEXT, -- Damage
 						desc = _G.OPTION_TOOLTIP_SHOW_DAMAGE, -- Display damage numbers over hostile creatures when damaged.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 2,
 					},
 					gamePetDamage = {
 						type = "toggle",
 						name = _G.SHOW_PET_MELEE_DAMAGE, -- Pet Damage
 						desc = _G.OPTION_TOOLTIP_SHOW_PET_MELEE_DAMAGE, -- Show damage caused by your pet.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 3,
 					},
 					gameHealing = {
 						type = "toggle",
 						name = _G.SHOW_COMBAT_HEALING, -- Healing
 						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_HEALING, -- Display amount of healing you did to the target.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 4,
 					},
 					gameLowHealth = {
 						type = "toggle",
 						name = _G.COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT, -- Low Mana & Health
 						desc = _G.OPTION_TOOLTIP_COMBAT_TEXT_SHOW_LOW_HEALTH_MANA, -- Shows a message when you fall below 20% mana or health.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 5,
 					},
 					gameReactives = {
 						type = "toggle",
 						name = _G.COMBAT_TEXT_SHOW_REACTIVES_TEXT, -- Spell Alerts
 						desc = _G.OPTION_TOOLTIP_COMBAT_TEXT_SHOW_REACTIVES, -- Show alerts when certain important events occur.
-						disabled = function() return not db.gameText end,
+						disabled = disabled,
 						order = 6,
 					},
 				},
@@ -519,3 +578,5 @@ function Parrot:OnOptionsCreate()
 		}
 	})
 end
+
+_G.Parrot = Parrot

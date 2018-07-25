@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 80000
 ## Title: Parrot 2
 ## Notes: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-deDE: Scrollender Kampftext der Ungeheuerlichkeit. Kraaaah!
@@ -6,24 +6,22 @@
 ## Notes-ruRU: Мощный плавающий текст боя.
 ## Notes-zhCN: 绝妙的战斗记录指示器。
 ## Notes-zhTW: 絕妙的戰鬥記錄指示器。
-## Author: Nebula
+## Author: Neb
 ## Version: @project-version@
 
 ## X-Credits: ckknight, profalbert
 ## X-Category: Combat
 ## X-License: LGPLv2.1
-## X-Curse-Project-ID: parrot2
+## X-Curse-Project-ID: 101768
 ## X-WoWI-ID: 24143
 
 ## SavedVariables: ParrotDB
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibSink-2.0, LibDualSpec-1.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDDI-1.0, LibSink-2.0, LibDualSpec-1.0
 
 embeds.xml
-
-Locales\locales.xml
+locales.xml
 
 Code\Parrot.lua
-Code\Broker.lua
 Code\AnimationStyles.lua
 Code\CombatEvents.lua
 Code\Display.lua

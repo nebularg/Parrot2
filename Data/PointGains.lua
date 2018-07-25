@@ -1,24 +1,20 @@
-local Parrot = _G.Parrot
-
-local Parrot_PointGains = Parrot:NewModule("PointGains")
-
-local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
-
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_PointGains")
-local Deformat = Parrot.Deformat
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("PointGains")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newDict, newList = Parrot.newDict, Parrot.newList
+local Deformat = Parrot.Deformat
 
 local currentXP = 0
 
-function Parrot_PointGains:OnEnable()
+function module:OnEnable()
 	currentXP = UnitXP("player")
 end
 
 -- Currency
 local CURRENCY_GAINED = _G.CURRENCY_GAINED
 local CURRENCY_GAINED_MULTIPLE = _G.CURRENCY_GAINED_MULTIPLE
-local HONOR_CURRENCY = _G.HONOR_CURRENCY
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 
 local function parseCurrencyUpdate(chatmsg)
@@ -28,10 +24,8 @@ local function parseCurrencyUpdate(chatmsg)
 	end
 
 	if currency then
-		local currencyId = currency:match("|Hcurrency:(%d+)|h%[(.+)%]|h")
-		if not currencyId or tonumber(currencyId) == HONOR_CURRENCY then return end
-
-		local name, total, texture, _, _, _, _, quality = GetCurrencyInfo(currencyId)
+		local name, total, texture, _, _, _, _, quality = GetCurrencyInfo(currency)
+		if name == "" then return end
 		local color = ITEM_QUALITY_COLORS[quality]
 		if color then
 			name = ("%s%s|r"):format(color.hex, name)
@@ -58,7 +52,7 @@ Parrot:RegisterCombatEvent{
 		Icon = "icon",
 	},
 	tagTranslationsHelp = {
-		Name = L["Name of the currency"],
+		Currency = L["Name of the currency"],
 		Amount = L["The amount of currency gained."],
 		Total = L["Your total amount of the currency."],
 
@@ -155,7 +149,7 @@ Parrot:RegisterCombatEvent{
 local SKILL_RANK_UP = _G.SKILL_RANK_UP
 
 local function retrieveAbilityName(info)
-	return Parrot_CombatEvents:GetAbbreviatedSpell(info.abilityName)
+	return Parrot:GetAbbreviatedSpell(info.abilityName)
 end
 
 local function parseSkillGain(chatmsg)
@@ -216,5 +210,44 @@ Parrot:RegisterCombatEvent{
 	defaultDisabled = true,
 	events = {
 		PLAYER_XP_UPDATE = { parse = parseXPUpdate },
+	},
+}
+
+-- Artifact Power gains
+local ARTIFACT_XP_GAIN = _G.ARTIFACT_XP_GAIN
+
+local function parseAPUpdate(chatmsg)
+	local itemLink, amount = Deformat(chatmsg, ARTIFACT_XP_GAIN)
+	if itemLink and amount then
+		local name, _, quality, _, _, _, _, _, _, texture = GetItemInfo(itemLink)
+		local color = ITEM_QUALITY_COLORS[quality]
+		if color then
+			name = ("%s%s|r"):format(color.hex, name)
+		end
+		return newDict(
+			"name", name,
+			"amount", amount,
+			"icon", texture
+		)
+	end
+end
+
+Parrot:RegisterCombatEvent{
+	category = "Notification",
+	name = "Artifact power gains",
+	localName = L["Artifact power gains"],
+	defaultTag = "[Name] +[Amount] " .. L["AP"],
+	tagTranslations = {
+		Name = "name",
+		Amount = "amount",
+		Icon = "icon",
+	},
+	tagTranslationsHelp = {
+		Name = L["The name of the item."],
+		Amount = L["The amount of experience points gained."],
+	},
+	color = "e5cc99",
+	events = {
+		CHAT_MSG_SYSTEM = { parse = parseAPUpdate },
 	},
 }

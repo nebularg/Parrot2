@@ -1,10 +1,7 @@
-local Parrot = _G.Parrot
-
+local _, ns = ...
+local Parrot = ns.addon
 local mod = Parrot:NewModule("CombatEventsData")
-
-local Parrot_CombatEvents = Parrot:GetModule("CombatEvents")
-
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents_Data")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList = Parrot.newList
 
@@ -49,22 +46,23 @@ local SchoolParser = {
 
 local PowerTypeParser = setmetatable({
 	[-2] = _G.HEALTH,
-	[_G.SPELL_POWER_MANA] = _G.MANA,
-	[_G.SPELL_POWER_RAGE] = _G.RAGE,
-	[_G.SPELL_POWER_FOCUS] = _G.FOCUS,
-	[_G.SPELL_POWER_ENERGY] = _G.ENERGY,
-	[_G.SPELL_POWER_COMBO_POINTS] = _G.COMBO_POINTS,
-	[_G.SPELL_POWER_RUNES] = _G.RUNES,
-	[_G.SPELL_POWER_RUNIC_POWER] = _G.RUNIC_POWER,
-	[_G.SPELL_POWER_SOUL_SHARDS] = _G.SOUL_SHARDS,
-	[_G.SPELL_POWER_LUNAR_POWER] = _G.LUNAR_POWER,
-	[_G.SPELL_POWER_HOLY_POWER] = _G.HOLY_POWER,
-	[_G.SPELL_POWER_MAELSTROM] = _G.MAELSTROM,
-	[_G.SPELL_POWER_CHI] = _G.CHI,
-	[_G.SPELL_POWER_INSANITY] = _G.INSANITY,
-	[_G.SPELL_POWER_ARCANE_CHARGES] = _G.ARCANE_CHARGES,
-	[_G.SPELL_POWER_FURY] = _G.FURY,
-	[_G.SPELL_POWER_PAIN] = _G.PAIN,
+	-- [-1] = _G.NONE,
+	[0] = _G.MANA,
+	[1] = _G.RAGE,
+	[2] = _G.FOCUS,
+	[3] = _G.ENERGY,
+	[4] = _G.COMBO_POINTS,
+	[5] = _G.RUNES,
+	[6] = _G.RUNIC_POWER,
+	[7] = _G.SOUL_SHARDS,
+	[8] = _G.LUNAR_POWER,
+	[9] = _G.HOLY_POWER,
+	[11] = _G.MAELSTROM,
+	[12] = _G.CHI,
+	[13] = _G.INSANITY,
+	[16] = _G.ARCANE_CHARGES,
+	[17] = _G.FURY,
+	[18] = _G.PAIN,
 }, { __index = function(self, key)
 	if key == ALTERNATE_POWER_INDEX then
 		return select(10, UnitAlternatePowerInfo("player"))
@@ -87,13 +85,21 @@ local LS = {
 
 local coloredDamageAmount = function(info)
 	local damageType = SchoolParser[info.damageType or 1]
-	local amount = Parrot_CombatEvents:ShortenAmount(info.amount)
+	local amount = Parrot:ShortenAmount(info.amount)
 
 	if db.damageTypes.color and db.damageTypes[damageType] then
 		return ("|cff%s%s|r"):format(db.damageTypes[damageType], amount)
 	else
 		return amount
 	end
+end
+
+local damageAmount = function(info)
+	return Parrot:ShortenAmount(info.amount)
+end
+
+local realDamageAmount = function(info)
+	return Parrot:ShortenAmount(info.realAmount)
 end
 
 local damageTypeString = function(info)
@@ -107,61 +113,63 @@ end
 
 local classColorStrings = {}
 for k, v in next, _G.RAID_CLASS_COLORS do
-	local r = v.r*255
-	local g = v.g*255
-	local b = v.b*255
-	classColorStrings[k] = ("|cff%02x%02x%02x%%s|r"):format(r,g,b)
+	classColorStrings[k] = ("|c%s%%s|r"):format(v.colorStr)
 end
 
 local powerTypeString = function(info)
-	local powerType = PowerTypeParser[info.powerType] or UNKNOWN
-	return powerType
+	return PowerTypeParser[info.powerType] or UNKNOWN
 end
 
 --[[
 -- functions to retrieve player-names (to hide realm-names)
 --]]
 local function retrieveSourceName(info)
-	if not info.sourceName then return end
-	if db.hideUnitNames == true then
+	if db.hideUnitNames or info.sourceName == "" then
 		return "__NONAME__"
 	end
-	local result = info.sourceName
-	if db.hideRealm and GetPlayerInfoByGUID(info.sourceID) then -- it's a player
-		result = result:gsub("-.*", "")
+
+	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.sourceID)
+	if class then
+		if not db.hideRealm then
+			name = info.sourceName
+		end
+		if db.classcolor then
+			name = classColorStrings[class]:format(name)
+		end
+		return name
 	end
-	if UnitIsPlayer(result) and db.classcolor then
-		local _, class = UnitClass(result)
-		result = classColorStrings[class]:format(result)
-	end
-	return result
+
+	return info.sourceName
 end
 
 local function retrieveDestName(info)
-	if not info.recipientName then return end
-	if db.hideUnitNames == true then
+	if db.hideUnitNames or info.recipientName == "" then
 		return "__NONAME__"
 	end
-	local result = info.recipientName
-	if db.hideRealm and GetPlayerInfoByGUID(info.recipientID) then -- it's a player
-		result = result:gsub("-.*", "")
+
+	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.recipientID)
+	if class then
+		if not db.hideRealm then
+			name = info.recipientName
+		end
+		if db.classcolor then
+			name = classColorStrings[class]:format(name)
+		end
+		return name
 	end
-	if UnitIsPlayer(result) and db.classcolor then
-		local _, class = UnitClass(result)
-		result = classColorStrings[class]:format(result)
-	end
-	return result
+
+	return info.recipientName
 end
 
 --[[
 -- functions to retrieve abbrivated spellnames
 --]]
 local function retrieveAbilityName(info)
-	return Parrot_CombatEvents:GetAbbreviatedSpell(info.abilityName)
+	return Parrot:GetAbbreviatedSpell(info.abilityName)
 end
 
 local function retrieveExtraAbilityName(info)
-	return Parrot_CombatEvents:GetAbbreviatedSpell(info.extraAbilityName)
+	return Parrot:GetAbbreviatedSpell(info.extraAbilityName)
 end
 
 --[[
@@ -170,18 +178,18 @@ end
 -- people.
 --]]
 local dumbTriggerSpellOverride = {
-	[22482] = GetSpellTextureFileName(13877), -- Blade Flurry
-	[5374] = GetSpellTextureFileName(1329), -- Mutilate
-	[27576] = GetSpellTextureFileName(1329), -- Mutilate Off-Hand
-	[222031] = GetSpellTextureFileName(162794), -- Chaos Strike
-	[199547] = GetSpellTextureFileName(162794), -- Chaos Strike
+	[22482] = GetSpellTexture(13877), -- Blade Flurry
+	[5374] = GetSpellTexture(1329), -- Mutilate
+	[27576] = GetSpellTexture(1329), -- Mutilate Off-Hand
+	[222031] = GetSpellTexture(162794), -- Chaos Strike
+	[199547] = GetSpellTexture(162794), -- Chaos Strike
 }
 
 --[[
 -- helperfunction to retrieve an icon
 --]]
 local function retrieveIconFromAbilityName(info)
-	return dumbTriggerSpellOverride[info.spellID] or GetSpellTextureFileName(info.spellID or info.abilityName)
+	return dumbTriggerSpellOverride[info.spellID] or GetSpellTexture(info.spellID or info.abilityName)
 end
 
 --[[
@@ -556,7 +564,7 @@ local petIncSkillDamageTagTranslationsHelp = {
 local incHealTagTranslations = {
 	Name = retrieveSourceName,
 	Skill = retrieveAbilityName,
-	Amount = "realAmount",
+	Amount = realDamageAmount,
 	Icon = retrieveIconFromAbilityName,
 }
 local incHealTagTranslationsHelp = {
@@ -573,7 +581,7 @@ local petIncHealTagTranslationsHelp = {
 -- Incoming Melee-miss
 local incMissTagTranslations = {
 	Name = retrieveSourceName,
-	Amount = "amount",
+	Amount = damageAmount,
 }
 local incMissTagTranslationHelp = {
 	Name = L["The name of the enemy that attacked you."],
@@ -589,7 +597,7 @@ local incSpellMissTagTranslations = {
 	Name = retrieveSourceName,
 	Skill = retrieveAbilityName,
 	Icon = retrieveIconFromAbilityName,
-	Amount = "amount",
+	Amount = damageAmount,
 }
 local incSpellMissTagTranslationsHelp = {
 	Name = L["The name of the enemy that attacked you."],
@@ -627,7 +635,7 @@ local petOutSkillDamageTagTranslationsHelp = {
 local outHealTagTranslations = {
 	Name = retrieveDestName,
 	Skill = retrieveAbilityName,
-	Amount = "realAmount",
+	Amount = realDamageAmount,
 	Icon = retrieveIconFromAbilityName,
 }
 local outHealTagTranslationsHelp = {
@@ -644,7 +652,7 @@ local petOutHealTagTranslationsHelp = {
 -- Outgoing melee-miss
 local outMissTagTranslations = {
 	Name = retrieveDestName,
-	Amount = "amount",
+	Amount = damageAmount,
 }
 local outMissTagTranslationHelp = {
 	Name = L["The name of the enemy you attacked."],
@@ -656,7 +664,7 @@ local outSpellMissTagTranslations = {
 	Name = retrieveDestName,
 	Skill = retrieveAbilityName,
 	Icon = retrieveIconFromAbilityName,
-	Amount = "amount",
+	Amount = damageAmount,
 }
 local outSpellMissTagTranslationsHelp = {
 	Name = L["The name of the enemy you attacked."],
@@ -1028,7 +1036,7 @@ Parrot:RegisterCombatEvent{
 		ENVIRONMENTAL_DAMAGE = { check = checkPlayerInc, },
 	},
 	tagTranslations = {
-		Amount = "amount",
+		Amount = damageAmount,
 		Type = parseEnvironmentalDamage,
 	},
 	tagTranslationsHelp = {
@@ -1605,7 +1613,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
-		Amount = "amount",
+		Amount = damageAmount,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy your pet attacked."],
@@ -1948,7 +1956,7 @@ do
 		localName = L["Combo point gain"],
 		defaultTag = L["[Num] CP"],
 		events = {
-			UNIT_POWER = {
+			UNIT_POWER_UPDATE = {
 				check = checkPower,
 				parse = parseCPGain
 			},
@@ -1969,7 +1977,7 @@ do
 		localName = L["Combo points full"],
 		defaultTag = L["[Num] CP Finish It!"],
 		events = {
-			UNIT_POWER = {
+			UNIT_POWER_UPDATE = {
 				check = checkPower,
 				parse = parseCPFull
 			},

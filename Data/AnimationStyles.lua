@@ -1,6 +1,6 @@
-local Parrot = _G.Parrot
-
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_AnimationStyles")
+local _, ns = ...
+local Parrot = ns.addon
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local math_max, math_min = math.max, math.min
 
@@ -215,7 +215,12 @@ Parrot:RegisterAnimationStyle {
 	localName = L["Static"],
 	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
 		local fsHeight = frame.fontSize
-		local topDiff = (max - 1) * 0.5 * fsHeight
+		local maxShow = size / fsHeight
+		if num > maxShow then
+			frame:Hide()
+			return
+		end
+		local topDiff = (math.min(max, maxShow) - 1) * 0.5 * fsHeight
 		local currDiff = -(num - 1) * fsHeight
 		local yDiff = topDiff + currDiff
 		local vert, align = (';'):split(direction)
@@ -235,6 +240,35 @@ Parrot:RegisterAnimationStyle {
 		["DOWN;RIGHT"] = L["Down, right-aligned"],
 		["DOWN;CENTER"] = L["Down, center-aligned"],
 	},
+}
+
+Parrot:RegisterAnimationStyle {
+	-- static anchor
+	name = "Static2",
+	localName = L["Static"] .. "2",
+	func = function(frame, xOffset, yOffset, size, percent, direction, num, max, uid)
+		if num > (size / frame.fontSize) then
+			frame:Hide()
+			return
+		end
+		local yDiff = (num - 1) * frame.fontSize
+		local vert, align = (';'):split(direction)
+		if vert == "DOWN" then
+			yDiff = -yDiff
+		end
+		local y = yOffset + yDiff
+		local x = xOffset
+		frame:SetPoint(validPoints[align] or "CENTER", UIParent, "CENTER", x, y)
+	end,
+	defaultDirection = "DOWN;CENTER",
+	directions = {
+		["UP;LEFT"] = L["Up, left-aligned"],
+		["UP;RIGHT"] = L["Up, right-aligned"],
+		["UP;CENTER"] = L["Up, center-aligned"],
+		["DOWN;LEFT"] = L["Down, left-aligned"],
+		["DOWN;RIGHT"] = L["Down, right-aligned"],
+		["DOWN;CENTER"] = L["Down, center-aligned"],
+	}
 }
 
 Parrot:RegisterAnimationStyle {

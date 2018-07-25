@@ -1,6 +1,6 @@
-local Parrot = _G.Parrot
-
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Auras")
+local _, ns = ...
+local Parrot = ns.addon
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList, newDict = Parrot.newList, Parrot.newDict
 
@@ -12,21 +12,15 @@ local function checkFlags(flags1, flags2)
 end
 
 local HOSTILE = _G.COMBATLOG_OBJECT_REACTION_HOSTILE
-local FRIENDLY = _G.COMBATLOG_OBJECT_REACTION_FRIENDLY
-
-local TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
-local CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
-local AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
-
 local PET_FLAGS = bit.bor(
-	TYPE_PET,
-	CONTROL_PLAYER,
-	FRIENDLY,
-	AFFILIATION_MINE
+	_G.COMBATLOG_OBJECT_TYPE_PET,
+	_G.COMBATLOG_OBJECT_CONTROL_PLAYER,
+	_G.COMBATLOG_OBJECT_REACTION_FRIENDLY,
+	_G.COMBATLOG_OBJECT_AFFILIATION_MINE
 )
 
 local function getIcon(info)
-	return GetSpellTextureFileName(info.spellID)
+	return GetSpellTexture(info.spellID)
 end
 
 local function retrieveDestName(info)
@@ -601,7 +595,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -652,7 +646,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -714,7 +708,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -834,7 +828,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -849,7 +843,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
+		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -885,7 +879,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -907,7 +901,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, count, _, _, _, unitCaster = UnitAura(param.unit, param.spell)
+		local name, _, count, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
 		if name and count == param.stackcount then
 			if param.byplayer == true then
 				return unitCaster == "player"
@@ -940,7 +934,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -955,7 +949,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, _, unitCaster = UnitDebuff(param.unit, param.spell)
+		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -991,7 +985,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 				name = L["Spell"],
 				desc = L["Buff name or spell id"],
 				type = 'string',
-				usage = "<Buff name or spell id>",
+				usage = L["<Buff name or spell id>"],
 				save = saveSpell,
 				parse = parseSpell,
 			},
@@ -1006,7 +1000,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, _, unitCaster = UnitDebuff(param.unit, param.spell)
+		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
 		if name then
 			if param.byplayer == true then
 				return unitCaster == "player"
@@ -1016,7 +1010,6 @@ Parrot:RegisterSecondaryTriggerCondition {
 		else
 			return false
 		end
-		--		return not UnitAura(param.unit, param.spell or "")
 	end,
 }
 

@@ -1,8 +1,7 @@
-local Parrot = _G.Parrot
-
-local Parrot_Suppressions = Parrot:NewModule("Suppressions")
-
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_Suppressions")
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("Suppressions")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local string_find = _G.string.find
 local pcall = _G.pcall
@@ -14,12 +13,12 @@ local defaults = {
 	}
 }
 
-function Parrot_Suppressions:OnInitialize()
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Suppressions", defaults)
 	db = self.db.profile
 end
 
-function Parrot_Suppressions:OnProfileChanged()
+function module:OnProfileChanged()
 	db = self.db.profile
 	if Parrot.options.args.suppressions then
 		Parrot.options.args.suppressions = nil
@@ -27,7 +26,7 @@ function Parrot_Suppressions:OnProfileChanged()
 	end
 end
 
-function Parrot_Suppressions:OnOptionsCreate()
+function module:OnOptionsCreate()
 	local suppressions_opt = {
 		type = 'group',
 		name = L["Suppressions"],
@@ -148,7 +147,7 @@ function Parrot_Suppressions:OnOptionsCreate()
 	end
 end
 
-function Parrot_Suppressions:ShouldSuppress(text)
+function module:ShouldSuppress(text)
 	if not self:IsEnabled() then
 		return false
 	end

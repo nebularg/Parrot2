@@ -1,14 +1,18 @@
-local Parrot = _G.Parrot
+local _, ns = ...
+local Parrot = ns.addon
+local module = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
-local Parrot_CombatEvents = Parrot:NewModule("CombatEvents", "AceEvent-3.0", "AceTimer-3.0")
-local Parrot_Display
-local Parrot_ScrollAreas
+local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Parrot_CombatEvents")
-local SharedMedia = LibStub("LibSharedMedia-3.0")
-
+local tinsert, tremove, tconcat, tsort = table.insert, table.remove, table.concat, table.sort
 local newList, del, newDict = Parrot.newList, Parrot.del, Parrot.newDict
 local debug = Parrot.debug
+
+-- used as table for data about combatEvents in the registry
+local combatEvents = {}
+local sthrottles
+local playerGUID
 
 -- lookup-table for damage-types
 local LS = {
@@ -44,10 +48,12 @@ local defaults = {
 		abbreviateLength = 30,
 		stickyCrit = true,
 		disable_in_raid = false,
+		disable_in_battleground = false,
 		hideFullOverheals = 1,
 		hideSkillNames = false,
 		hideUnitNames = false,
 		shortenAmount = false,
+		breakUpAmount = false,
 		classcolor = true,
 		totemDamage = true,
 		hideRealm = true,
@@ -163,28 +169,37 @@ local function updateDB()
 	end
 end
 
-function Parrot_CombatEvents:OnNewProfile(_, database)
+function module:OnNewProfile(_, database)
 	database.profile.dbver = #updateDBFuncs
 end
 
--- checks if in a raid-instance and disables CombatEvents accordingly
-local function checkZone()
-	if not Parrot_CombatEvents:IsEnabled() then return end
-
-	local _, instance_type = IsInInstance()
-	if  instance_type == "raid" and db.disable_in_raid then
-		Parrot_CombatEvents:Disable()
+function module:OnProfileChanged()
+	db = self.db.profile
+	updateDB()
+	sthrottles = db.sthrottles or {}
+	if next(Parrot.options.args) then
+		Parrot.options.args.events = del(Parrot.options.args.events)
+		self:OnOptionsCreate()
 	end
 end
 
-function Parrot_CombatEvents:OnInitialize()
+local function checkZone()
+	local _, instance_type = IsInInstance()
+	if  instance_type == "raid" and db.disable_in_raid then
+		module:Disable()
+	elseif instance_type == "pvp" and db.disable_in_battleground then
+		module:Disable()
+	elseif not module:IsEnabled() then
+		module:Enable()
+	end
+end
+
+function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("CombatEvents", defaults)
-	db = self.db.profile
-
 	self.db.RegisterCallback(self, "OnNewProfile", "OnNewProfile")
-
-	Parrot_Display = Parrot:GetModule("Display")
-	Parrot_ScrollAreas = Parrot:GetModule("ScrollAreas")
+	db = self.db.profile
+	updateDB()
+	sthrottles = db.sthrottles or {}
 
 	-- Register with Addons CombatLogEvent-registry for uid-stuff
 	Parrot:RegisterCombatLog(self)
@@ -193,17 +208,11 @@ function Parrot_CombatEvents:OnInitialize()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", checkZone)
 end
 
--- used as table for data about combatEvents in the registry
-local combatEvents = {}
+function module:OnEnable()
+	playerGUID = UnitGUID("player")
 
-local onEnableFuncs = {}
-function Parrot_CombatEvents:OnEnable()
-	updateDB()
-	for _, func in next, onEnableFuncs do
-		func()
-	end
+	self:ScheduleRepeatingTimer("RunThrottle", 0.05)
 end
-
 
 --[[
 -- helper-function for spell-abbriviation
@@ -235,7 +244,7 @@ end
 -- + Truncate: "Shad..."
 -- + Abbriviate: "SB"
 --]]
-function Parrot_CombatEvents:GetAbbreviatedSpell(name)
+function module:GetAbbreviatedSpell(name)
 	if not name then return end
 	local style = db.abbreviateStyle
 	if style == "none" then
@@ -273,7 +282,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 		while i < #t do
 			i = i + 1
 			if t[i] == "" then
-				table.remove(t, i)
+				tremove(t, i)
 				i = i - 1
 			end
 		end
@@ -304,7 +313,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 				t[j] = ""
 			end
 		end
-		local s = table.concat(t)
+		local s = tconcat(t)
 		t = del(t)
 		return s
 	elseif style == "truncate" then
@@ -316,6 +325,7 @@ function Parrot_CombatEvents:GetAbbreviatedSpell(name)
 	end
 	return name
 end
+Parrot.GetAbbreviatedSpell = module.GetAbbreviatedSpell
 
 local modifierTranslationHelps
 
@@ -329,23 +339,6 @@ local filterDefaults = {}
 local function createOption() end
 local function createThrottleOption() end
 local function createFilterOption() end
-
-local function getSoundChoices()
-	local t = {}
-	for _,v in ipairs(SharedMedia:List("sound")) do
-		t[v] = v
-	end
-	return t
-end
-
-function Parrot_CombatEvents:OnProfileChanged()
-	db = self.db.profile
-	updateDB()
-	if next(Parrot.options.args) then
-		Parrot.options.args.events = del(Parrot.options.args.events)
-		Parrot_CombatEvents:OnOptionsCreate()
-	end
-end
 
 local function setOption(info, value)
 	local name = info[#info]
@@ -366,7 +359,7 @@ local function hexColorToTuple(color)
 end
 
 
-function Parrot_CombatEvents:OnOptionsCreate()
+function module:OnOptionsCreate()
 	local function getSubOption(info)
 		local name = info[#info]
 		local category = info[#info - 1]
@@ -406,23 +399,6 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				type = 'group',
 				inline = true,
 				args = {
-					enable_combat_events = {
-						type = 'toggle',
-						name = L["Enabled"],
-						desc = L["Whether this module is enabled"],
-						get = function() return self:IsEnabled() end,
-						set = function(info, value)
-							self:Disable()
-							if value then
-								self:Enable()
-							end
-						end,
-						disabled = function()
-							local _, instance_type = IsInInstance()
-							return instance_type == "raid" and db.disable_in_raid
-						end,
-						order = 1,
-					},
 					disable_in_raid = {
 						type = 'toggle',
 						name = L["Disable in raids"],
@@ -431,8 +407,15 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							setOption(info, value)
 							checkZone()
 						end,
-						disabled = function()
-							return not self:IsEnabled()
+						order = 1,
+					},
+					disable_in_battleground = {
+						type = 'toggle',
+						name = L["Disable in pvp"],
+						desc = L["Disable this module while in a battleground"],
+						set = function(info, value)
+							setOption(info, value)
+							checkZone()
 						end,
 						order = 2,
 					},
@@ -452,33 +435,52 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							[1] = L["Only HoTs"],
 							[2] = L["Only direct heals"],
 							[3] = L["On"],
-						}
+						},
+						order = 1,
+					},
+					sep = {
+						type = "description",
+						name = "",
+						order = 2,
 					},
 					hideSkillNames = {
 						type = 'toggle',
 						name = L["Hide skill names"],
 						desc = L["Always hide skill names even when present in the tag"],
+						order = 3,
 					},
 					hideUnitNames = {
 						type = 'toggle',
 						name = L["Hide unit names"],
 						desc = L["Always hide unit names even when present in the tag"],
+						order = 4,
 					},
 					hideRealm = {
 						type = 'toggle',
 						name = L["Hide realm"],
 						desc = L["Hide realm in player names"],
+						order = 5,
 					},
 					classcolor = {
 						type = 'toggle',
 						name = L["Color by class"],
 						desc = L["Color unit names by class"],
+						order = 6,
 					},
 					shortenAmount = {
 						type = 'toggle',
 						name = L["Shorten amounts"],
-						desc = L["Abbreviate number values displayed (26000 -> 26k)"],
+						desc = L["Abbreviate number values displayed (26500 -> 26.5k)"],
+						disabled = function() return db.breakUpAmount end,
+						order = 7,
 					},
+					breakUpAmount = {
+						type = 'toggle',
+						name = L["Break up amounts"],
+						desc = L["Break up number values with '%s' (26500 -> %s)"]:format(LARGE_NUMBER_SEPERATOR, BreakUpLargeNumbers(26500)),
+						disabled = function() return db.shortenAmount end,
+						order = 8,
+					}
 				},
 			},
 			totemEvents = {
@@ -619,10 +621,11 @@ function Parrot_CombatEvents:OnOptionsCreate()
 					},
 					abbrDesc = {
 						type = 'description',
-						name = string.format("%s: %s\n%s: %s\n%s: %s", L["None"],
-							L["Do not shorten spell names."], L["Abbreviate"],
-							L["Gift of the Wild => GotW."], L["Truncate"],
-							L["Gift of the Wild => Gift of t..."]),
+						name = ("%s: %s\n%s: %s\n%s: %s"):format(
+							L["None"], L["Do not shorten spell names."],
+							L["Abbreviate"], L["Gift of the Wild => GotW."],
+							L["Truncate"], L["Gift of the Wild => Gift of t..."]
+						),
 						order = 3,
 					},
 				},
@@ -680,9 +683,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				for tag in next, translationHelp do
 					tags[#tags+1] = tag
 				end
-				table.sort(tags)
+				tsort(tags)
 				for _, tag in ipairs(tags) do
-					usage = string.format("%s\n[%s] => %s", usage, tag, translationHelp[tag])
+					usage = ("%s\n[%s] => %s"):format(usage, tag, translationHelp[tag])
 				end
 				tags = del(tags)
 			end
@@ -759,9 +762,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	local function getArgs(info)
 		local category = info[2]
 		local name = info[4]
-		for i,v in ipairs(info) do
-			debug(i, " = ", v)
-		end
+		-- for i,v in ipairs(info) do
+		-- 	debug(i, " = ", v)
+		-- end
 		return category, name
 	end
 	local function getTag(info)
@@ -814,17 +817,19 @@ function Parrot_CombatEvents:OnOptionsCreate()
 		local category, name = getArgs(info)
 		local font = db[category][name].font
 		if font == nil then
-			return "1"
-		else
-			return font
+			return -1
+		end
+		for i, v in next, Parrot.fontValues do
+			if v == font then return i end
 		end
 	end
 	local function setFontFace(info, value)
 		local category, name = getArgs(info)
-		if value == "1" then
-			value = nil
+		if value == -1 then
+			db[category][name].font = nil
+		else
+			db[category][name].font = Parrot.fontValues[value]
 		end
-		db[category][name].font = value
 	end
 	local function getFontSize(info)
 		local category, name = getArgs(info)
@@ -909,15 +914,21 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	end
 	local function getSound(info)
 		local category, name = getArgs(info)
-		return db[category][name].sound or "None"
+		local value = db[category][name].sound or "None"
+		for i, v in next, Parrot.soundValues do
+			if v == value then
+				return i
+			end
+		end
 	end
 	local function setSound(info, value)
 		local category, name = getArgs(info)
-		PlaySoundFile(SharedMedia:Fetch('sound', value), "MASTER")
-		if value == "None" then
-			value = nil
+		local v = Parrot.soundValues[value]
+		PlaySoundFile(LibSharedMedia:Fetch("sound", v), "Master")
+		if v == "None" then
+			v = nil
 		end
-		db[category][name].sound = value
+		db[category][name].sound = v
 	end
 
 	local function getCommonEnabled(info)
@@ -984,7 +995,7 @@ function Parrot_CombatEvents:OnOptionsCreate()
 	-- copy the choices
 	local function getScrollAreasChoices()
 		local tmp = {}
-		for k,v in pairs(Parrot_ScrollAreas:GetScrollAreasChoices()) do
+		for k,v in pairs(Parrot:GetScrollAreasChoices()) do
 			tmp[k] = v
 		end
 		return tmp
@@ -1041,9 +1052,9 @@ function Parrot_CombatEvents:OnOptionsCreate()
 			for tag in next, data.tagTranslationsHelp do
 				tags[#tags+1] = tag
 			end
-			table.sort(tags)
+			tsort(tags)
 			for _, tag in ipairs(tags) do
-				usage = string.format("%s\n[%s] => %s", usage, tag, data.tagTranslationsHelp[tag])
+				usage = ("%s\n[%s] => %s"):format(usage, tag, data.tagTranslationsHelp[tag])
 			end
 			tags = del(tags)
 		end
@@ -1071,11 +1082,12 @@ function Parrot_CombatEvents:OnOptionsCreate()
 				},
 				sound = {
 					type = 'select',
-					values = getSoundChoices,
 					name = L["Sound"],
 					desc = L["What sound to play when the current event occurs."],
+					values = Parrot.soundValues,
 					get = getSound,
 					set = setSound,
+					itemControl = "DDI-Sound",
 				},
 				sticky = {
 					name = L["Sticky"],
@@ -1094,9 +1106,10 @@ function Parrot_CombatEvents:OnOptionsCreate()
 							type = 'select',
 							name = L["Font face"],
 							desc = L["Font face"],
-							values = Parrot.fontValues,
+							values = Parrot.fontWithInheritValues,
 							get = getFontFace,
 							set = setFontFace,
+							itemControl = "DDI-Font",
 							order = 1,
 						},
 						fontSizeInherit = {
@@ -1482,7 +1495,7 @@ Example:
 		color = "ffffff", -- white
 	}
 ------------------------------------------------------------------------------------]]
-function Parrot_CombatEvents:RegisterCombatEvent(data)
+function module:RegisterCombatEvent(data)
 	if type(data) ~= 'table' then
 		error(("Bad argument #2 to 'RegisterCombatEvent'. data must be a %q, got %q."):format("table", type(data)))
 	end
@@ -1540,7 +1553,7 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			if type(check) ~= "function" then
 				error(("Bad argument #2 to `RegisterCombatEvent'. check must be a %q or nil, got %q."):format("function", type(check)), 2)
 			end
-			table.insert(combatLogEvents[eventType], {
+			tinsert(combatLogEvents[eventType], {
 					category = category,
 					name = data.name,
 					infofunc = v.func,
@@ -1563,20 +1576,20 @@ function Parrot_CombatEvents:RegisterCombatEvent(data)
 			if not registeredBlizzardEvents[k] then
 				registeredBlizzardEvents[k] = newList()
 			end
-			table.insert(registeredBlizzardEvents[k], {
+			tinsert(registeredBlizzardEvents[k], {
 					category = category,
 					name = data.name,
 					parse = parse,
 					check = check,
 				}
 			)
-			Parrot:RegisterBlizzardEvent(Parrot_CombatEvents, k, "HandleBlizzardEvent")
+			Parrot:RegisterBlizzardEvent(module, k, "HandleBlizzardEvent")
 		end
 	end
 
 	createOption(category, name)
 end
-Parrot.RegisterCombatEvent = Parrot_CombatEvents.RegisterCombatEvent
+Parrot.RegisterCombatEvent = module.RegisterCombatEvent
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -1589,7 +1602,7 @@ Notes:
 Example:
 	Parrot:RegisterThrottleType("DoTs and HoTs", L[ [=[DoTs and HoTs]=] ], 2)
 ------------------------------------------------------------------------------------]]
-function Parrot_CombatEvents:RegisterThrottleType(name, localName, duration, waitStyle)
+function module:RegisterThrottleType(name, localName, duration, waitStyle)
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterThrottleType'. Expected %q, got %q."):format("string", type(name)), 2)
 	end
@@ -1606,7 +1619,7 @@ function Parrot_CombatEvents:RegisterThrottleType(name, localName, duration, wai
 
 	createThrottleOption(name)
 end
-Parrot.RegisterThrottleType = Parrot_CombatEvents.RegisterThrottleType
+Parrot.RegisterThrottleType = module.RegisterThrottleType
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -1619,7 +1632,7 @@ Example:
 	Parrot_CombatEvents:RegisterFilterType("Incoming heals", L.Incoming_heals, 0)
 	-- allows for a filter on incoming heals, so that if you don't want to see small heals, it's easy to suppress.
 ------------------------------------------------------------------------------------]]
-function Parrot_CombatEvents:RegisterFilterType(name, localName, default)
+function module:RegisterFilterType(name, localName, default)
 	if type(name) ~= "string" then
 		error(("Bad argument #2 to `RegisterFilterType'. Expected %q, got %q."):format("string", type(name)), 2)
 	end
@@ -1635,7 +1648,7 @@ function Parrot_CombatEvents:RegisterFilterType(name, localName, default)
 
 	createThrottleOption(name)
 end
-Parrot.RegisterFilterType = Parrot_CombatEvents.RegisterFilterType
+Parrot.RegisterFilterType = module.RegisterFilterType
 
 local handler__translation
 local handler__info
@@ -1673,12 +1686,15 @@ local function shortenAmount(val)
 	end
 end
 
-function Parrot_CombatEvents:ShortenAmount(val)
-	if not db.shortenAmount then
-		return val
+function module:ShortenAmount(val)
+	if db.shortenAmount then
+		return shortenAmount(val)
+	elseif db.breakUpAmount then
+		return BreakUpLargeNumbers(val)
 	end
-	return shortenAmount(val)
+	return val
 end
+Parrot.ShortenAmount = module.ShortenAmount
 
 
 local modifierTranslations = {}
@@ -1694,7 +1710,7 @@ local modifiersWithAmount = {
 for k,v in pairs(modifiersWithAmount) do
 	-- local valAmountKey = v .. "Amount"
 	modifierTranslations[k] = { Amount = function(info)
-		local val = Parrot_CombatEvents:ShortenAmount(info[v])
+		local val = module:ShortenAmount(info[v])
 		if db.modifier.color then
 			return "|cff" .. db.modifier[k].color .. val .. "|r"
 		else
@@ -1733,16 +1749,12 @@ modifierTranslationHelps = {
 -- save data about pending throttles
 local throttleData = {}
 
-onEnableFuncs[#onEnableFuncs+1] = function()
-	Parrot_CombatEvents:ScheduleRepeatingTimer("RunThrottle", 0.1)
-end
-
 local LAST_TIME = _G.newproxy() -- cheaper than {}
 local NEXT_TIME = _G.newproxy() -- cheaper than {}
 local STHROTTLE = _G.newproxy() -- for spell-throttle
 
 -- #NODOC
-function Parrot_CombatEvents:RunThrottle(force)
+function module:RunThrottle(force)
 	local now = GetTime()
 	for throttleType,w in pairs(throttleData) do
 		local goodTime = now
@@ -1799,11 +1811,6 @@ function Parrot_CombatEvents:RunThrottle(force)
 	end
 end
 
-local sthrottles
-onEnableFuncs[#onEnableFuncs + 1] = function()
-	sthrottles = db.sthrottles or {}
-end
-
 local function get_sthrottle(info)
 	local sthrottle = sthrottles[info.spellID] or sthrottles[info.abilityName]
 	return sthrottle
@@ -1814,7 +1821,7 @@ local runCachedEvents
 local combatTimerFrame
 local cancelUIDSoon = {}
 
-function Parrot_CombatEvents:CancelEventsWithUID(uid)
+function module:CancelEventsWithUID(uid)
 	if not db.cancelUIDSoon then
 		return
 	end
@@ -1822,12 +1829,13 @@ function Parrot_CombatEvents:CancelEventsWithUID(uid)
 	while i >= 1 do
 		local v = nextFrameCombatEvents[i]
 		if v and uid == v[3].uid then
-			table.remove(nextFrameCombatEvents, i)
+			tremove(nextFrameCombatEvents, i)
 		end
 		i = i - 1
 	end
 	cancelUIDSoon[uid] = true
 end
+Parrot.CancelEventsWithUID = module.CancelEventsWithUID
 
 --[[----------------------------------------------------------------------------------
 Arguments:
@@ -1843,8 +1851,8 @@ Example:
 	Parrot:TriggerCombatEvent("Notification", "My event", tmp)
 	tmp = del(tmp)
 ------------------------------------------------------------------------------------]]
-function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDone)
-	if not Parrot_CombatEvents:IsEnabled() then return end -- TODO remove
+function module:TriggerCombatEvent(category, name, info, throttleDone)
+	if not module:IsEnabled() then return end -- TODO remove
 
 	if cancelUIDSoon[info.uid] then
 		return
@@ -1880,22 +1888,6 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 	if type(info) ~= "table" then
 		error(("Bad argument #4 to `TriggerCombatEvent'. %q expected, got %q."):format("table", type(info)), 2)
 		return
-	end
-
-	local filterType = data.filterType
-	if filterType then
-		local actualType = filterType[1]
-		local filterKey = filterType[2]
-		local base = db.filters[actualType] or filterDefaults[actualType]
-		local info_filterKey
-		if type(filterKey) == "function" then
-			info_filterKey = filterKey(info)
-		else
-			info_filterKey = info[filterKey]
-		end
-		if info_filterKey < base then
-			return
-		end
 	end
 
 	if throttleDone then
@@ -2005,16 +1997,31 @@ function Parrot_CombatEvents:TriggerCombatEvent(category, name, info, throttleDo
 
 	if #nextFrameCombatEvents == 0 then
 		combatTimerFrame:Show()
-		--		Parrot_CombatEvents:ScheduleRepeatingTimer(runCachedEvents, 0.1)
 	end
 
 	nextFrameCombatEvents[#nextFrameCombatEvents+1] = newList(category, name, infoCopy)
 end
-Parrot.TriggerCombatEvent = Parrot_CombatEvents.TriggerCombatEvent
+Parrot.TriggerCombatEvent = module.TriggerCombatEvent
 
 local function runEvent(category, name, info)
 	local cdb = db[category][name]
 	local data = combatEvents[category][name]
+
+	local filterType = data.filterType
+	if filterType then
+		local actualType = filterType[1]
+		local filterKey = filterType[2]
+		local base = db.filters[actualType] or filterDefaults[actualType]
+		local info_filterKey
+		if type(filterKey) == "function" then
+			info_filterKey = filterKey(info)
+		else
+			info_filterKey = info[filterKey]
+		end
+		if info_filterKey < base then
+			return
+		end
+	end
 
 	local throttle = data.throttle
 	local throttleSuffix
@@ -2061,11 +2068,9 @@ local function runEvent(category, name, info)
 		end
 	end
 
-	if db.hideUnitNames then
-		text = text:gsub("%(__NONAME__%)","")
-		text = text:gsub(" %- __NONAME__%)",")")
-		text = text:gsub("__NONAME__","")
-	end
+	text = text:gsub("%(__NONAME__%)","")
+	text = text:gsub(" %- __NONAME__%)",")")
+	text = text:gsub("__NONAME__","")
 
 	local t = newList(text)
 	local overhealAmount = info.overhealAmount
@@ -2076,13 +2081,13 @@ local function runEvent(category, name, info)
 			handler__translation = modifierTranslations.overheal
 			t[#t+1] = modifierDB.overheal.tag:gsub("(%b[])", handler)
 		end
-		text = table.concat(t)
+		text = tconcat(t)
 	elseif overkillAmount and overkillAmount >= 1 then
 		if modifierDB.overkill.enabled then
 			handler__translation = modifierTranslations.overkill
 			t[#t+1] = modifierDB.overkill.tag:gsub("(%b[])", handler)
 		end
-		text = table.concat(t)
+		text = tconcat(t)
 	else
 		if modifierDB.absorb.enabled then
 			local absorbAmount = info.absorbAmount
@@ -2112,7 +2117,7 @@ local function runEvent(category, name, info)
 				t[#t+1] = modifierDB.vulnerable.tag:gsub("(%b[])", handler)
 			end
 		end
-		text = table.concat(t)
+		text = tconcat(t)
 		if info.isGlancing then
 			if modifierDB.glancing.enabled then
 				handler__translation = modifierTranslations.glancing
@@ -2157,9 +2162,9 @@ local function runEvent(category, name, info)
 	if throttleSuffix then
 		text = text .. throttleSuffix
 	end
-	Parrot_Display:ShowMessage(text, cdb.scrollArea or category, sticky, r, g, b, cdb.font, cdb.fontSize, cdb.fontOutline, icon)
+	Parrot:ShowMessage(text, cdb.scrollArea or category, sticky, r, g, b, cdb.font, cdb.fontSize, cdb.fontOutline, icon)
 	if cdb.sound then
-		PlaySoundFile(SharedMedia:Fetch('sound', cdb.sound), "MASTER")
+		PlaySoundFile(LibSharedMedia:Fetch('sound', cdb.sound), "Master")
 	end
 end
 
@@ -2186,7 +2191,7 @@ combatTimerFrame = CreateFrame("Frame")
 combatTimerFrame:Hide()
 combatTimerFrame:SetScript("OnUpdate", runCachedEvents)
 
-function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
+function module:HandleBlizzardEvent(uid, eventName, ...)
 	if not self:IsEnabled() then return end
 
 	local handlers = registeredBlizzardEvents[eventName]
@@ -2203,11 +2208,6 @@ function Parrot_CombatEvents:HandleBlizzardEvent(uid, eventName, ...)
 			end
 		end
 	end
-end
-
-local playerGUID
-onEnableFuncs[#onEnableFuncs + 1] = function()
-	playerGUID = UnitGUID("player")
 end
 
 local function sfiltered(info)
@@ -2228,27 +2228,27 @@ local moreParams = {
 	ENVIRONMENTAL_DAMAGE = { "environmentalType", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
 	PARTY_KILL = { },
 	RANGE_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
-	RANGE_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffHand", "multistrike", "amountMissed", },
+	RANGE_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffHand", "amountMissed", },
 	SPELL_BUILDING_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", },
-	SPELL_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand", "multistrike", },
+	SPELL_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand", },
 	SPELL_DISPEL = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", "auraType", },
 	SPELL_DISPEL_FAILED = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", },
 	SPELL_DRAIN = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
-	SPELL_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
+	SPELL_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "arg2", "powerType", },
 	SPELL_EXTRA_ATTACKS = { "spellId", "spellName", "spellSchool", "amount", },
-	SPELL_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", "multistrike", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
+	SPELL_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
 	SPELL_INTERRUPT = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", },
 	SPELL_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
-	SPELL_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffHand", "multistrike", "amountMissed", },
-	SPELL_PERIODIC_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand", "multistrike",
+	SPELL_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffHand", "amountMissed", },
+	SPELL_PERIODIC_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand",
 		extra = { "if( info.spellID == 32409 and info.sourceName == nil ) then info.sourceName = info.recipientName; info.sourceID = info.recipientID end" } },
-	SPELL_PERIODIC_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "powerType", },
-	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", "multistrike", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
+	SPELL_PERIODIC_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "arg2", "powerType", },
+	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
 	SPELL_PERIODIC_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
-	SPELL_PERIODIC_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffHand", "multistrike", "amountMissed", },
+	SPELL_PERIODIC_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffHand", "amountMissed", },
 	SPELL_STOLEN = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", "auraType", },
-	SWING_DAMAGE = { "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand", "multistrike", },
-	SWING_MISSED = { "missType", "isOffHand", "multistrike",  "amountMissed", },
+	SWING_DAMAGE = { "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand", },
+	SWING_MISSED = { "missType", "isOffHand", "amountMissed", },
 	SPELL_AURA_APPLIED = { "spellId", "spellName", "spellSchool", "auraType", },
 	SPELL_AURA_APPLIED_DOSE = { "spellId", "spellName", "spellSchool", "auraType", "amount", },
 	SPELL_AURA_REMOVED = { "spellId", "spellName", "spellSchool", "auraType", },
@@ -2276,15 +2276,15 @@ local function makeParseFunction(event)
 	if next(moreParams[event]) then
 		local paramCode = newList()
 		for _,v in ipairs(moreParams[event]) do
-			table.insert(paramCode, ("info.%s"):format(legacyNames[v] or v))
+			tinsert(paramCode, ("info.%s"):format(legacyNames[v] or v))
 		end
-		code = code .. table.concat(paramCode, ",") .. " = ...;"
+		code = code .. tconcat(paramCode, ",") .. " = ...;"
 		del(paramCode)
 	end
 
 	local extras = moreParams[event].extra
 	if extras then
-		code = code .. table.concat(extras, ";") .. ";"
+		code = code .. tconcat(extras, ";") .. ";"
 	end
 
 	code = code .. "end"
@@ -2312,7 +2312,7 @@ local function checkForRelevance(sourceFlags, destFlags)
 	bit_band(destFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT
 end
 
-function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+function module:HandleCombatlogEvent(uid, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
 	if not self:IsEnabled() then return end -- TODO remove
 
 	if checkForRelevance(sourceFlags, destFlags) then
@@ -2320,10 +2320,10 @@ function Parrot_CombatEvents:HandleCombatlogEvent(uid, _, timestamp, eventType, 
 		if registeredHandlers then
 			local info = newList()
 			info.sourceID = sourceGUID
-			info.sourceName = sourceName
+			info.sourceName = sourceName or ""
 			info.sourceFlags = sourceFlags
 			info.recipientID = destGUID
-			info.recipientName = destName
+			info.recipientName = destName or ""
 			info.destFlags = destFlags
 			local parseFunc = combatLogParseFuncs[eventType]
 			if not parseFunc then
