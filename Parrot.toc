@@ -1,8 +1,13 @@
 ## Interface: 80000
 ## Title: Parrot 2
 ## Notes: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
+## Notes-esES: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
+## Notes-esMX: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-deDE: Scrollender Kampftext der Ungeheuerlichkeit. Kraaaah!
 ## Notes-frFR: Texte de combat flottant. Croac. Coco veut un gâteau.
+## Notes-itIT: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
+## Notes-koKR: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
+## Notes-ptBR: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-ruRU: Мощный плавающий текст боя.
 ## Notes-zhCN: 绝妙的战斗记录指示器。
 ## Notes-zhTW: 絕妙的戰鬥記錄指示器。
