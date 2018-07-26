@@ -534,10 +534,13 @@ local function updateDB()
 		db.triggers = nil
 	end
 
-	-- delete user-settings from triggers that are no longer available
 	for k, v in pairs(db.triggers2) do
 		if not v.name then
+			-- delete user-settings from triggers that are no longer available
 			db.triggers2[k] = nil
+		elseif not v.conditions then
+			-- make sure older triggers still have a conditions table
+			v.conditions = {}
 		end
 	end
 
