@@ -9,7 +9,7 @@
 ## Notes-koKR: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-ptBR: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-ruRU: Мощный плавающий текст боя.
-## Notes-zhCN: 绝妙的战斗记录指示器。
+## Notes-zhCN: 绝妙的浮动战斗文本。来人，喂公子吃饼。真香。
 ## Notes-zhTW: 絕妙的戰鬥記錄指示器。
 ## Author: Neb
 ## Version: @project-version@
