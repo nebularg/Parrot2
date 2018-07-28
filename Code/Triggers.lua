@@ -37,7 +37,7 @@ local db = nil
 local defaults = {
 	profile = {
 		triggers2 = {},
-		dbver = 0,
+		dbver2 = 0,
 	},
 }
 
@@ -523,34 +523,79 @@ local function rebuildEffectiveRegistry()
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("Parrot")
 end
 
-local updateFuncs = {}
+local updateFuncs = {
+	[1] = function()
+		-- Cleanup
+		db.triggers = nil
+		db.dbver = nil
+		-- Do all the old Parrot conversions
+		db.triggers2[1005] = nil
+		db.triggers2[1012] = nil
+		db.triggers2[1029] = nil
+
+		local function convertPower(t)
+			local powerToEnum = {
+				MANA = 0,
+				RAGE = 1,
+				FOCUS = 2,
+				ENERGY = 3,
+				COMBO_POINTS = 4,
+				RUNES = 5,
+				RUNIC_POWER = 6,
+				SOUL_SHARDS = 7,
+				HOLY_POWER = 9,
+			}
+			for _, v in next, t do
+				if type(v.amount) == "number" and v.amount <= 1 then
+					v.amount = (v.amount * 100) .. "%"
+				else
+					v.amount = tostring(v.amount)
+				end
+				if v.powerType and type(v.powerType) ~= "number" then
+					v.powerType = powerToEnum[v.powerType]
+				end
+			end
+		end
+
+		for k, v in next, db.triggers2 do
+			if not v.conditions then
+				v.conditions = {}
+			end
+			if v.class and not v.spec then
+				v.spec = {}
+				for class in next, {(";"):split(v.class)} do
+					local specs = specChoices[class]
+					if specs then
+						v.spec[class] = table.concat(specs, ";")
+					end
+				end
+			end
+			v.class = nil
+			if v.conditions["Unit power"] then
+				convertPower(v.conditions["Unit power"])
+			end
+			if v.secondaryConditions and v.secondaryConditions["Unit power"] then
+				convertPower(v.secondaryConditions["Unit power"])
+			end
+		end
+	end,
+}
 
 local function updateDB()
-	-- clean up old triggers
-	if db.triggers then
-		if not next(db.triggers2) and next(db.triggers) then
-			module:Print("Your triggers are really out of date and have been reset.")
-		end
-		db.triggers = nil
-	end
-
-	for k, v in pairs(db.triggers2) do
+	-- delete user-settings from triggers that are no longer available
+	for k, v in next, db.triggers2 do
 		if not v.name then
-			-- delete user-settings from triggers that are no longer available
 			db.triggers2[k] = nil
-		elseif not v.conditions then
-			-- make sure older triggers still have a conditions table
-			v.conditions = {}
 		end
 	end
 
-	if not db.dbver then
-		db.dbver = 0
+	if not db.dbver2 then
+		db.dbver2 = 0
 	end
-	for i = db.dbver + 1, #updateFuncs do
+	for i = db.dbver2 + 1, #updateFuncs do
 		updateFuncs[i]()
 	end
-	db.dbver = #updateFuncs
+	db.dbver2 = #updateFuncs
 end
 
 function module:OnProfileChanged()
