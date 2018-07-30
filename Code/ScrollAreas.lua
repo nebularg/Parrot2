@@ -402,7 +402,9 @@ function module:OnOptionsCreate()
 	end
 	local fontOutlineChoices = {
 		NONE = L["None"],
+		MONOCHROME = L["Monochrome"],
 		OUTLINE = L["Thin"],
+		["OUTLINE,MONOCHROME"] = L["Thin, Monochrome"],
 		THICKOUTLINE = L["Thick"],
 		[L["Inherit"]] = L["Inherit"],
 	}
