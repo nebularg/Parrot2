@@ -8,7 +8,57 @@ local Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 local db = nil
 local defaults = {
 	profile = {
-		areas = {
+		areas = {},
+		dbver = 0,
+	}
+}
+
+local setConfigMode
+local scrollAreas
+
+local choices = {}
+local function rebuildChoices()
+	wipe(choices)
+	for k, v in next, scrollAreas do
+		choices[k] = k
+	end
+end
+
+local updateFuncs = {
+	[1] = function()
+		-- Translate default names
+		if db.areas["Incoming"] and L["Incoming"] ~= "Incoming" then
+			db.areas[L["Incoming"]] = db.areas["Incoming"]
+			db.areas["Incoming"] = nil
+		end
+		if db.areas["Outgoing"] and L["Outgoing"] ~= "Outgoing" then
+			db.areas[L["Outgoing"]] = db.areas["Outgoing"]
+			db.areas["Outgoing"] = nil
+		end
+		if db.areas["Notification"] and L["Notification"] ~= "Notification" then
+			db.areas[L["Notification"]] = db.areas["Notification"]
+			db.areas["Notification"] = nil
+		end
+
+		-- Copy the defaults into the db
+		local function merge(dst, src)
+			for k, v in next, src do
+				if not dst[k] then
+					if type(v) == "table" then
+						dst[k] = CopyTable(v)
+					else
+						dst[k] = v
+					end
+				elseif type(v) == "table" then
+					if type(dst[k]) ~= "table" then
+						dst[k] = {}
+					end
+					merge(dst[k], v)
+				end
+			end
+		end
+
+		local defaultScrollAreas = {
 			["Notification"] = {
 				animationStyle = "Straight",
 				direction = "UP;CENTER",
@@ -40,33 +90,29 @@ local defaults = {
 				iconSide = "LEFT",
 			},
 		}
-	}
+		merge(db.areas, defaultScrollAreas)
+	end,
 }
 
-local setConfigMode
-local scrollAreas
-
-local choices = {}
-local choicesBase = {
-	Incoming = L["Incoming"],
-	Outgoing = L["Outgoing"],
-	Notification = L["Notification"],
-}
-
-local function rebuildChoices()
-	wipe(choices)
-	for k, v in next, scrollAreas do
-		choices[k] = choicesBase[k] or k
+local function updateDB()
+	if not db.dbver then
+		db.dbver = 0
 	end
+	for i = db.dbver + 1, #updateFuncs do
+		updateFuncs[i]()
+	end
+	db.dbver = #updateFuncs
 end
 
 function module:OnProfileChanged()
 	db = self.db.profile
+	updateDB()
+	scrollAreas = db.areas
+
 	if Parrot.options.args.scrollAreas then
 		Parrot.options.args.scrollAreas = nil
 		self:OnOptionsCreate()
 	end
-	scrollAreas = db.areas
 	rebuildChoices()
 end
 
@@ -114,7 +160,6 @@ local function showOffsetBox(k)
 		offsetBoxes = {}
 	end
 	local offsetBox = offsetBoxes[k]
-	local name = choicesBase[k] or k
 	if not offsetBox then
 		offsetBox = CreateFrame("Button", "ParrotScrollAreasOffsetBox" .. k, UIParent)
 		local midPoint = CreateFrame("Frame", "$parentMidPoint", offsetBox)
@@ -137,7 +182,7 @@ local function showOffsetBox(k)
 		text:SetPoint("CENTER")
 		local topText = offsetBox:CreateFontString("$parentTopText", "ARTWORK", "GameFontHighlight")
 		offsetBox.topText = topText
-		topText:SetText(L["Scroll area: %s"]:format(name))
+		topText:SetText(L["Scroll area: %s"]:format(k))
 		topText:SetPoint("BOTTOM", offsetBox, "TOP", 0, 5)
 		local bottomText = offsetBox:CreateFontString("$parentBottomText", "ARTWORK", "GameFontHighlight")
 		offsetBox.bottomText = bottomText
@@ -275,9 +320,6 @@ function module:OnOptionsCreate()
 	local scrollAreas_opt
 	local function getName(info)
 		local name = info.arg
-		if choicesBase[name] then
-			name = choicesBase[name]
-		end
 		return name
 	end
 	local function setName(info, new)
@@ -293,18 +335,14 @@ function module:OnOptionsCreate()
 		scrollAreas[old] = nil
 		scrollAreas[new] = v
 		local opt = scrollAreas_opt.args[tostring(v)]
-		local name = new
-		if choicesBase[name] then
-			name = choicesBase[name]
-		end
 		choices[old] = nil
-		choices[new] = name
+		choices[new] = new
 		if new == L["New scroll area"] then
 			opt.order = -110
 		else
 			opt.order = -100
 		end
-		opt.name = name
+		opt.name = new
 		opt.args.name.arg = new
 		opt.args.remove.arg = new
 		opt.args.size.arg = new
@@ -576,10 +614,9 @@ function module:OnOptionsCreate()
 
 	local function makeOption(k)
 		local v = scrollAreas[k]
-		local name = choicesBase[k] or k
 		local opt = {
 			type = 'group',
-			name = name,
+			name = k,
 			desc = L["Options for this scroll area."],
 			args = {
 				name = {
