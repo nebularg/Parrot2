@@ -12,7 +12,7 @@ local debug = Parrot.debug
 -- used as table for data about combatEvents in the registry
 local combatEvents = {}
 local sthrottles
-local playerGUID
+local playerGUID = UnitGUID("player")
 
 -- lookup-table for damage-types
 local LS = {
@@ -209,8 +209,6 @@ function module:OnInitialize()
 end
 
 function module:OnEnable()
-	playerGUID = UnitGUID("player")
-
 	self:ScheduleRepeatingTimer("RunThrottle", 0.05)
 end
 

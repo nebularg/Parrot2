@@ -4,6 +4,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList, newDict = Parrot.newList, Parrot.newDict
 
+local playerGUID = UnitGUID("player")
+
 local PET = _G.PET
 
 local bit_band = bit.band
@@ -45,7 +47,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				return auraType == "BUFF" and dstGUID == playerGUID
 			end,
 		},
 	},
@@ -68,7 +70,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				return auraType == "DEBUFF" and dstGUID == playerGUID
 			end,
 		},
 	},
@@ -92,7 +94,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				return auraType == "BUFF" and dstGUID == playerGUID
 			end,
 		}
 	},
@@ -117,7 +119,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				return auraType == "DEBUFF" and dstGUID == playerGUID
 			end,
 		}
 	},
@@ -142,7 +144,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				return auraType == "BUFF" and dstGUID == playerGUID
 			end,
 		},
 	},
@@ -165,7 +167,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				return auraType == "DEBUFF" and dstGUID == playerGUID
 			end,
 
 		},
@@ -477,7 +479,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		ENCHANT_APPLIED = {
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			func = parseItembuff,
 		},
@@ -505,7 +507,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		ENCHANT_REMOVED = {
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			func = parseItembuff,
 		},
