@@ -1449,6 +1449,11 @@ function module:OnOptionsCreate()
 		return false
 	end
 
+	local function isDefault(info)
+		local id = tonumber(getTriggerId(info))
+		return id > 1000
+	end
+
 	local tsharedopt = {
 		output = {
 			type = 'input',
@@ -1465,17 +1470,18 @@ function module:OnOptionsCreate()
 			desc = L["Whether the trigger is enabled or not."],
 			get = getEnabled,
 			set = setEnabled,
+			width = "half",
 			order = 3,
 		},
 		remove = {
 			type = 'execute',
-			-- buttonText = L["Remove"],
 			name = L["Remove trigger"],
 			desc = L["Remove this trigger completely."],
 			func = remove,
-			-- TODO confirm
-			-- confirm = L["Are you sure?"],
-			order = -2,
+			disabled = isDefault,
+			confirm = true,
+			confirmText = L["Are you sure?"],
+			order = 4,
 		},
 		classes = {
 			type = 'group',
