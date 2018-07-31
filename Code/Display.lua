@@ -81,7 +81,9 @@ end
 function module:OnOptionsCreate()
 	local outlineChoices = {
 		NONE = L["None"],
+		MONOCHROME = L["Monochrome"],
 		OUTLINE = L["Thin"],
+		["OUTLINE,MONOCHROME"] = L["Thin, Monochrome"],
 		THICKOUTLINE = L["Thick"],
 	}
 

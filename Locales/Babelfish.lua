@@ -34,6 +34,7 @@ for _, file in next, all_files do
 
 	local count = 0
 	for match in string.gmatch(text, "L%[\"(.-)\"%]") do
+		match = match:gsub("\\n", "\n"):gsub("\\\"", "\"")
 		strings[match] = true
 		count = count + 1
 	end
@@ -54,6 +55,7 @@ locale:write('local debug = true\r\n--@debug@\r\ndebug = nil\r\n--@end-debug@')
 locale:write('\r\n\r\nlocal L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)\r\n\r\n')
 
 for _, v in ipairs(sorted) do
+	v = v:gsub("\n", "\\n"):gsub("\"", "\\\"")
 	locale:write(string.format('L["%s"] = true\r\n', v))
 end
 locale:close()
@@ -77,6 +79,7 @@ for _, file in next, locale_files do
 	local count = 0
 	for index, key in ipairs(sorted) do
 		local value = L[key]
+		key = key:gsub("\n", "\\n"):gsub("\"", "\\\"")
 		if value then
 			value = value:gsub("\n", "\\n"):gsub("\"", "\\\"")
 			locale:write(string.format('L["%s"] = "%s"\r\n', key, value))
