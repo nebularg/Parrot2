@@ -67,6 +67,11 @@ Parrot:RegisterCombatEvent{
 				return auraType == "BUFF" and dstGUID == playerGUID
 			end,
 		},
+		SPELL_AURA_REFRESH = {
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+				return auraType == "BUFF" and dstGUID == playerGUID
+			end,
+		},
 	},
 	tagTranslations = {
 		Name = "abilityName",
@@ -579,6 +584,16 @@ local function saveSpell(arg)
 	return tonumber(arg) or arg
 end
 
+local function auraTriggerData(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
+	return newDict(
+		"spellId", spellId,
+		"spellName", spellName,
+		"dstGUID", dstGUID,
+		"auraType", auraType,
+		"amount", amount
+	)
+end
+
 Parrot:RegisterPrimaryTriggerCondition {
 	subCategory = L["Auras"],
 	name = "Aura gain",
@@ -586,14 +601,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return newDict(
-					"spellId", spellId,
-					"spellName", spellName,
-					"dstGUID", dstGUID,
-					"auraType", auraType
-				)
-			end,
+			triggerData = auraTriggerData,
+		},
+		{
+			eventType = "SPELL_AURA_REFRESH",
+			triggerData = auraTriggerData,
 		},
 	},
 	defaultParam = {
@@ -635,15 +647,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED_DOSE",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return newDict(
-					"spellId", spellId,
-					"spellName", spellName,
-					"dstGUID", dstGUID,
-					"auraType", auraType,
-					"amount", amount
-				)
-			end,
+			triggerData = auraTriggerData,
 		},
 	},
 	defaultParam = {
@@ -699,14 +703,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_REMOVED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return newDict(
-					"spellId", spellId,
-					"spellName", spellName,
-					"dstGUID", dstGUID,
-					"auraType", auraType
-				)
-			end,
+			triggerData = auraTriggerData,
 		},
 	},
 	defaultParam = {
