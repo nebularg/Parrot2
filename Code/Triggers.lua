@@ -528,11 +528,8 @@ local updateFuncs = {
 		-- Cleanup
 		db.triggers = nil
 		db.dbver = nil
-		-- Do all the old Parrot conversions
-		db.triggers2[1005] = nil
-		db.triggers2[1012] = nil
-		db.triggers2[1029] = nil
 
+		-- Do the old Parrot conversions
 		local function convertPower(t)
 			local powerToEnum = {
 				MANA = 0,
@@ -584,7 +581,7 @@ local updateFuncs = {
 local function updateDB()
 	-- delete user-settings from triggers that are no longer available
 	for k, v in next, db.triggers2 do
-		if not v.name then
+		if k > 1000 and not defaultTriggers[k] then
 			db.triggers2[k] = nil
 		end
 	end
