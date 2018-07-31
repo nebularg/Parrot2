@@ -34,6 +34,23 @@ local function retrieveDestName(info)
 	end
 end
 
+local FindAura do
+	local function checkID(auraToFind, _, _, ...)
+		local id = select(10, ...)
+		return auraToFind == id
+	end
+	local function checkName(auraToFind, _, _, name)
+		return auraToFind == name
+	end
+	function FindAura(unit, aura, filter)
+		if type(aura) == "number" then
+			return _G.AuraUtil.FindAura(checkID, unit, filter, aura)
+		else
+			return _G.AuraUtil.FindAura(checkName, unit, filter, aura)
+		end
+	end
+end
+
 --[[============================================================================
 -- Players Auras
 --============================================================================]]
@@ -530,7 +547,6 @@ Parrot:RegisterCombatEvent{
 
 local function compareUnitAndSpell(ref, info)
 	if not ref.unit or not ref.spell or not info.dstGUID then
-		debug("bailout, incomplete ref")
 		return false
 	end
 	local good = (info.dstGUID == UnitGUID(ref.unit)) and (ref.auraType == info.auraType)
@@ -845,7 +861,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
+		local name, _, _, _, _, _, unitCaster = FindAura(param.unit, param.spell)
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -903,7 +919,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, count, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
+		local name, _, count, _, _, _, unitCaster = FindAura(param.unit, param.spell)
 		if name and count == param.stackcount then
 			if param.byplayer == true then
 				return unitCaster == "player"
@@ -951,7 +967,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
+		local name, _, _, _, _, _, unitCaster = FindAura(param.unit, param.spell, "HARMFUL")
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -1002,7 +1018,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
+		local name, _, _, _, _, _, unitCaster = FindAura(param.unit, param.spell, "HARMFUL")
 		if name then
 			if param.byplayer == true then
 				return unitCaster == "player"
