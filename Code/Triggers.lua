@@ -167,7 +167,7 @@ local defaultTriggers = {
 		icon = 6572,
 		spec = { WARRIOR = "73" },
 		conditions = {
-			["Incoming miss"] = { "BLOCK", "DODGE", "PARRY", },
+			["Incoming miss"] = { "DODGE", "PARRY", },
 		},
 		secondaryConditions = {
 			["Spell ready"] = {
@@ -175,7 +175,7 @@ local defaultTriggers = {
 			},
 		},
 		sticky = true,
-		color = "ffff00",
+		color = "00ee00",
 		disabled = true,
 	}]],
 	[1017] = [[{
@@ -198,7 +198,7 @@ local defaultTriggers = {
 	[1018] = [[{
 		-- Killing Machine
 		name = L["%s!"]:format(GetSpellInfo(51124)),
-		icon = 51130,
+		icon = 51124,
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
@@ -211,6 +211,23 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "0000ff",
+	}]],
+	[1021] = [[{
+		-- Brain Freeze
+		name = L["%s!"]:format(GetSpellInfo(190447)),
+		icon = 190447,
+		spec = { MAGE = "64" },
+		conditions = {
+			["Aura gain"] = {
+				[1] = {
+					["unit"] = "player",
+					["spell"] = GetSpellInfo(190447),
+					["auraType"] = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "005ba9",
 	}]],
 	[1031] = [[{
 		-- Fingers of Frost
@@ -245,31 +262,6 @@ local defaultTriggers = {
 		},
 		sticky = true,
 		color = "ff0000",
-	}]],
-	[1040] = [[{
-		-- Raging Blow!
-		name = GetSpellInfo(131116),
-		icon = 131116,
-		spec = { WARRIOR = "72" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(131116),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-			["Aura stack gain"] = {
-				{
-					spell = GetSpellInfo(131116),
-					unit = "player",
-					auraType = "BUFF",
-					amount = 0,
-				},
-			},
-		},
-		sticky = true,
-		color = "6e0511",
 	}]],
 	[1041] = [[{
 		-- Sudden Doom
@@ -322,23 +314,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ff5900",
 	}]],
-	[1045] = [[{
-		-- Combo Breaker
-		name = L["%s!"]:format(GetSpellInfo(137384)),
-		icon = 137384,
-		spec = { MONK = "269" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(137384),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "158f00",
-	}]],
 	[1046] = [[{
 		-- Grand Crusader
 		name = L["%s!"]:format(GetSpellInfo(85416)),
@@ -360,7 +335,7 @@ local defaultTriggers = {
 		-- Lava Surge
 		name = L["%s!"]:format(GetSpellInfo(77756)),
 		icon = 77756,
-		spec = { SHAMAN = "262" },
+		spec = { SHAMAN = "262;264" },
 		conditions = {
 			["Aura gain"] = {
 				{
@@ -373,70 +348,382 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ddb800",
 	}]],
-	-- start new entries at 1050
+	[1050] = [[{
+		-- Raging Blow
+		name = L["%s!"]:format(GetSpellInfo(85288)),
+		icon = 85288,
+		spec = { WARRIOR = "72" },
+		conditions = {
+			["Spell overlay"] = {
+				"85288",
+			},
+		},
+		sticky = true,
+		color = "ff0000",
+	}]],
+	[1051] = [[{
+		-- Sudden Death
+		name = L["%s!"]:format(GetSpellInfo(280776)),
+		icon = 280776,
+		spec = { WARRIOR = "71;72" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(280776),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "cd3700",
+	}]],
+	[1052] = [[{
+		-- Shield Slam
+		name = L["%s!"]:format(GetSpellInfo(23922)),
+		icon = 23922,
+		spec = { WARRIOR = "73" },
+		conditions = {
+			["Spell overlay"] = {
+				"224324",
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	}]],
+	[1053] = [[{
+		-- Nightfall
+		name = L["%s!"]:format(GetSpellInfo(108558)),
+		icon = 108558,
+		spec = { WARLOCK = "265" },
+		conditions = {
+			["Spell overlay"] = {
+				"264571",
+			},
+		},
+		sticky = true,
+		color = "551A8B",
+	}]],
+	[1054] = [[{
+		-- Lethal Shots
+		name = L["%s!"]:format(GetSpellInfo(260395)),
+		icon = 260395,
+		spec = { HUNTER = "254" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(260395),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	}]],
+	[1055] = [[{
+		-- Lock and Load
+		name = L["%s!"]:format(GetSpellInfo(194594)),
+		icon = 194594,
+		spec = { HUNTER = "254" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(194594),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffffff",
+	}]],
+	[1056] = [[{
+		-- Kill Command
+		name = L["%s!"]:format(GetSpellInfo(259489)),
+		icon = 259489,
+		spec = { HUNTER = "255" },
+		conditions = {
+			["Spell overlay"] = {
+				"259285",
+			},
+		},
+		sticky = true,
+		color = "c72520",
+		disabled = true,
+	}]],
+	[1057] = [[{
+		-- Viper's Venom
+		name = L["%s!"]:format(GetSpellInfo(268552)),
+		icon = 268423,
+		spec = { HUNTER = "255" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(268552),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "008b00",
+	}]],
+	[1058] = [[{
+		-- Clearcasting
+		name = L["%s!"]:format(GetSpellInfo(16870)),
+		icon = 16870,
+		spec = {
+			DRUID = "103;105",
+			MAGE = "62",
+		},
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(16870),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "1e90ff",
+	}]],
+	[1059] = [[{
+		-- Gore
+		name = L["%s!"]:format(GetSpellInfo(93622)),
+		icon = 33917,
+		spec = { DRUID = "104" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(93622),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff0000",
+	}]],
+	[1060] = [[{
+		-- Galatic Guardian
+		name = L["%s!"]:format(GetSpellInfo(213708)),
+		icon = 8921,
+		spec = { DRUID = "104" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(213708),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffffff",
+	}]],
+	[1061] = [[{
+		-- Power of the Dark Side
+		name = L["%s!"]:format(GetSpellInfo(198069)),
+		icon = 198069,
+		spec = { PRIEST = "256" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(198069),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "9b30ff",
+		disabled = true,
+	}]],
+	[1062] = [[{
+		-- Surge of Light
+		name = L["%s!"]:format(GetSpellInfo(114255)),
+		icon = 114255,
+		spec = { PRIEST = "257" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(114255),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	}]],
+	[1063] = [[{
+		-- Divine Purpose
+		name = L["%s!"]:format(GetSpellInfo(216413)),
+		icon = 216413,
+		spec = { PALADIN = "65;70" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(216413),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ffff00",
+	}]],
+	[1063] = [[{
+		-- Blackout Kick!
+		name = GetSpellInfo(116768),
+		icon = 116768,
+		spec = { MONK = "269" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(116768),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff69b4",
+	}]],
+	[1064] = [[{
+		-- Stormbringer
+		name = GetSpellInfo(201846),
+		icon = 17364,
+		spec = { SHAMAN = "263" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(201846),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "4876ff",
+	}]],
+	[1065] = [[{
+		-- Opportunity
+		name = GetSpellInfo(195627),
+		icon = 195627,
+		spec = { ROGUE = "260" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(195627),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ee4000",
+	}]],
 }
+-- start new entries at 1066
 
 local specChoices = {
-	DRUID = {
-		102, -- Balance
-		103, -- Feral Combat
-		104, -- Guardian
-		105, -- Restoration
-	},
-	ROGUE = {
-		259, -- Assassination
-		260, -- Outlaw
-		261, -- Subtlety
-	},
-	SHAMAN = {
-		262, -- Elemental
-		263, -- Enhancement
-		264, -- Restoration
-	},
-	PALADIN = {
-		65, -- Holy
-		66, -- Protection
-		70, -- Retribution
-	},
-	MAGE = {
-		62, -- Arcane
-		63, -- Fire
-		64, -- Frost
-	},
-	WARLOCK = {
-		265, -- Affliction
-		266, -- Demonology
-		267, -- Destruction
-	},
-	PRIEST = {
-		256, -- Discipline
-		257, -- Holy
-		258, -- Shadow
-	},
-	WARRIOR = {
-		71, -- Arms
-		72, -- Furry
-		73, -- Protection
-	},
-	HUNTER = {
-		253, -- Beast Mastery
-		254, -- Marksmanship
-		255, -- Survival
-	},
 	DEATHKNIGHT = {
 		250, -- Blood
+			-- 1033 Crimson Scourge
 		251, -- Frost
+			-- 1017 Rime
+			-- 1018 Killing Machine
 		252, -- Unholy
-	},
-	MONK = {
-		268, -- Brewmaster
-		269, -- Windwalker
-		270, -- Mistweaver
+			-- 1041 Sudden Doom
 	},
 	DEMONHUNTER = {
 		577, -- Havoc
 		581, -- Vengeance
-	}
+	},
+	DRUID = {
+		102, -- Balance
+		103, -- Feral Combat
+			-- 1058 Clearcasting
+		104, -- Guardian
+			-- 1059 Gore
+			-- Galatic Guardian
+		105, -- Restoration
+			-- 1058 Clearcasting
+	},
+	HUNTER = {
+		253, -- Beast Mastery
+		254, -- Marksmanship
+			-- 1054 Lethal Shots
+			-- 1055 Lock and Load
+		255, -- Survival
+			-- 1056 Kill Command
+			-- 1057 Viper's Venom
+	},
+	MAGE = {
+		62, -- Arcane
+			-- 1058 Clearcasting
+		63, -- Fire
+			-- 1044 Heating Up
+			-- 1043 Hot Streak
+		64, -- Frost
+			-- 1021 Brain Freeze
+			-- 1031 Fingers of Frost
+	},
+	MONK = {
+		268, -- Brewmaster
+		269, -- Windwalker
+		  -- 1063 Blackout Kick!
+		270, -- Mistweaver
+	},
+	PALADIN = {
+		65, -- Holy
+			-- 1060 Divine Purpose
+		66, -- Protection
+			-- 1046 Grand Crusader
+		70, -- Retribution
+			-- 1060 Divine Purpose
+	},
+	PRIEST = {
+		256, -- Discipline
+			-- 1061 Power of the Dark Side
+		257, -- Holy
+			-- 1062 Surge of Light
+		258, -- Shadow
+	},
+	ROGUE = {
+		259, -- Assassination
+		260, -- Outlaw
+			-- 1065 Opportunity
+		261, -- Subtlety
+	},
+	SHAMAN = {
+		262, -- Elemental
+			-- 1047 Lava Surge
+		263, -- Enhancement
+			-- 1064 Stormbringer
+		264, -- Restoration
+			-- 1047 Lava Surge
+	},
+	WARLOCK = {
+		265, -- Affliction
+			-- 1053 Nightfall
+		266, -- Demonology
+		267, -- Destruction
+	},
+	WARRIOR = {
+		71, -- Arms
+			-- 1004 Execute
+			-- 1051 Sudden Death
+		72, -- Fury
+			-- 1004 Execute
+			-- 1051 Sudden Death
+		73, -- Protection
+			-- 1014 Revenge
+			-- 1052 Shield Slam
+	},
 }
 
 do
