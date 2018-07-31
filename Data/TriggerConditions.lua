@@ -1065,3 +1065,19 @@ Parrot:RegisterSecondaryTriggerCondition {
 		return func()
 	end,
 }
+
+Parrot:RegisterPrimaryTriggerCondition {
+	name = "Spell overlay",
+	localName = L["Spell overlay"],
+	param = {
+		type = "input",
+		usage = L["<SpellId>"],
+	},
+	events = {
+		SPELL_ACTIVATION_OVERLAY_SHOW = ret, -- hidden aura spell id
+		SPELL_ACTIVATION_OVERLAY_GLOW_SHOW = ret, -- button spell id
+	},
+	check = function(ref, info)
+		return tonumber(ref) == info
+	end,
+}
