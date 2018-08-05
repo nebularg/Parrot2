@@ -4,6 +4,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList, newDict = Parrot.newList, Parrot.newDict
 
+local playerGUID = UnitGUID("player")
+
 local PET = _G.PET
 
 local bit_band = bit.band
@@ -32,6 +34,23 @@ local function retrieveDestName(info)
 	end
 end
 
+local FindAura do
+	local function checkID(auraToFind, _, _, ...)
+		local id = select(10, ...)
+		return auraToFind == id
+	end
+	local function checkName(auraToFind, _, _, name)
+		return auraToFind == name
+	end
+	function FindAura(unit, aura, filter)
+		if type(aura) == "number" then
+			return _G.AuraUtil.FindAura(checkID, unit, filter, aura)
+		else
+			return _G.AuraUtil.FindAura(checkName, unit, filter, aura)
+		end
+	end
+end
+
 --[[============================================================================
 -- Players Auras
 --============================================================================]]
@@ -45,7 +64,12 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				return auraType == "BUFF" and dstGUID == playerGUID
+			end,
+		},
+		SPELL_AURA_REFRESH = {
+			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
+				return auraType == "BUFF" and dstGUID == playerGUID
 			end,
 		},
 	},
@@ -68,7 +92,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				return auraType == "DEBUFF" and dstGUID == playerGUID
 			end,
 		},
 	},
@@ -92,7 +116,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				return auraType == "BUFF" and dstGUID == playerGUID
 			end,
 		}
 	},
@@ -117,7 +141,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_APPLIED_DOSE = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				return auraType == "DEBUFF" and dstGUID == playerGUID
 			end,
 		}
 	},
@@ -142,7 +166,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "BUFF" and dstGUID == UnitGUID("player")
+				return auraType == "BUFF" and dstGUID == playerGUID
 			end,
 		},
 	},
@@ -165,7 +189,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		SPELL_AURA_REMOVED = {
 			check = function(_, _, _, dstGUID, _, _, _, _, _, auraType)
-				return auraType == "DEBUFF" and dstGUID == UnitGUID("player")
+				return auraType == "DEBUFF" and dstGUID == playerGUID
 			end,
 
 		},
@@ -477,7 +501,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		ENCHANT_APPLIED = {
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			func = parseItembuff,
 		},
@@ -505,7 +529,7 @@ Parrot:RegisterCombatEvent{
 	combatLogEvents = {
 		ENCHANT_REMOVED = {
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			func = parseItembuff,
 		},
@@ -528,7 +552,6 @@ Parrot:RegisterCombatEvent{
 
 local function compareUnitAndSpell(ref, info)
 	if not ref.unit or not ref.spell or not info.dstGUID then
-		debug("bailout, incomplete ref")
 		return false
 	end
 	local good = (info.dstGUID == UnitGUID(ref.unit)) and (ref.auraType == info.auraType)
@@ -561,6 +584,16 @@ local function saveSpell(arg)
 	return tonumber(arg) or arg
 end
 
+local function auraTriggerData(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
+	return newDict(
+		"spellId", spellId,
+		"spellName", spellName,
+		"dstGUID", dstGUID,
+		"auraType", auraType,
+		"amount", amount
+	)
+end
+
 Parrot:RegisterPrimaryTriggerCondition {
 	subCategory = L["Auras"],
 	name = "Aura gain",
@@ -568,14 +601,11 @@ Parrot:RegisterPrimaryTriggerCondition {
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return newDict(
-					"spellId", spellId,
-					"spellName", spellName,
-					"dstGUID", dstGUID,
-					"auraType", auraType
-				)
-			end,
+			triggerData = auraTriggerData,
+		},
+		{
+			eventType = "SPELL_AURA_REFRESH",
+			triggerData = auraTriggerData,
 		},
 	},
 	defaultParam = {
@@ -617,15 +647,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_APPLIED_DOSE",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return newDict(
-					"spellId", spellId,
-					"spellName", spellName,
-					"dstGUID", dstGUID,
-					"auraType", auraType,
-					"amount", amount
-				)
-			end,
+			triggerData = auraTriggerData,
 		},
 	},
 	defaultParam = {
@@ -681,14 +703,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 	combatLogEvents = {
 		{
 			eventType = "SPELL_AURA_REMOVED",
-			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, auraType, amount)
-				return newDict(
-					"spellId", spellId,
-					"spellName", spellName,
-					"dstGUID", dstGUID,
-					"auraType", auraType
-				)
-			end,
+			triggerData = auraTriggerData,
 		},
 	},
 	defaultParam = {
@@ -843,7 +858,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
+		local name, _, _, _, _, _, unitCaster = FindAura(param.unit, param.spell)
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -901,7 +916,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, count, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
+		local name, _, count, _, _, _, unitCaster = FindAura(param.unit, param.spell)
 		if name and count == param.stackcount then
 			if param.byplayer == true then
 				return unitCaster == "player"
@@ -949,7 +964,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
+		local name, _, _, _, _, _, unitCaster = FindAura(param.unit, param.spell, "HARMFUL")
 		if name then
 			-- aura present, but condition is false if the aura has not been cast by
 			-- the player?
@@ -1000,7 +1015,7 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not param.unit or not param.spell then
 			return false
 		end
-		local name, _, _, _, _, _, unitCaster = AuraUtil.FindAuraByName(param.spell, param.unit)
+		local name, _, _, _, _, _, unitCaster = FindAura(param.unit, param.spell, "HARMFUL")
 		if name then
 			if param.byplayer == true then
 				return unitCaster == "player"

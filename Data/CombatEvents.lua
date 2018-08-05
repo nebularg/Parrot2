@@ -16,11 +16,10 @@ local UNKNOWN = _G.UNKNOWN
 local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
 
 local db
-local playerGUID
+local playerGUID = UnitGUID("player")
 
 function mod:OnEnable()
 	db = Parrot.db:GetNamespace("CombatEvents").profile
-	playerGUID = UnitGUID("player")
 end
 
 function mod:OnProfileChanged()

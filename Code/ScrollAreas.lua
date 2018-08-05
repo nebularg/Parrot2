@@ -105,6 +105,7 @@ local function updateDB()
 end
 
 function module:OnProfileChanged()
+	setConfigMode(false)
 	db = self.db.profile
 	updateDB()
 	scrollAreas = db.areas

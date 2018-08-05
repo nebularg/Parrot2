@@ -5,6 +5,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList = Parrot.newList
 
+local playerGUID = UnitGUID("player")
+
 local onEnableFuncs = {}
 
 function module:OnEnable()
@@ -319,7 +321,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if dstGUID ~= UnitGUID("player") then
+				if dstGUID ~= playerGUID then
 					return nil
 				end
 				return missType
@@ -328,7 +330,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType )
-					if dstGUID ~= UnitGUID("player") then
+					if dstGUID ~= playerGUID then
 							return nil
 					end
 					return missType
@@ -337,7 +339,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "RANGE_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType )
-					if dstGUID ~= UnitGUID("player") then
+					if dstGUID ~= playerGUID then
 							return nil
 					end
 					return missType
@@ -359,7 +361,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, missType )
-				if srcGUID ~= UnitGUID("player") then
+				if srcGUID ~= playerGUID then
 					return nil
 				end
 				return missType
@@ -368,7 +370,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType, amountMissed )
-				if srcGUID ~= UnitGUID("player") then
+				if srcGUID ~= playerGUID then
 						return nil
 				end
 				return missType
@@ -377,7 +379,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "RANGE_MISSED",
 			triggerData = function( srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, missType )
-					if srcGUID ~= UnitGUID("player") then
+					if srcGUID ~= playerGUID then
 							return nil
 					end
 					return missType
@@ -399,7 +401,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if dstGUID ~= UnitGUID("player") or not critical then
+				if dstGUID ~= playerGUID or not critical then
 					return nil
 				end
 
@@ -410,7 +412,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if dstGUID ~= UnitGUID("player") or not critical then
+				if dstGUID ~= playerGUID or not critical then
 					return nil
 				end
 
@@ -421,7 +423,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "RANGE_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if dstGUID ~= UnitGUID("player") or not critical then
+				if dstGUID ~= playerGUID or not critical then
 					return nil
 				end
 
@@ -440,7 +442,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if srcGUID ~= UnitGUID("player") or not critical then
+				if srcGUID ~= playerGUID or not critical then
 					return nil
 				end
 
@@ -451,7 +453,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if srcGUID ~= UnitGUID("player") or not critical then
+				if srcGUID ~= playerGUID or not critical then
 					return nil
 				end
 
@@ -462,7 +464,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "RANGE_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if srcGUID ~= UnitGUID("player") or not critical then
+				if srcGUID ~= playerGUID or not critical then
 					return nil
 				end
 
@@ -482,7 +484,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if srcGUID ~= UnitGUID("player") then
+				if srcGUID ~= playerGUID then
 					return nil
 				end
 
@@ -494,7 +496,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if srcGUID ~= UnitGUID("player") then
+				if srcGUID ~= playerGUID then
 					return nil
 				end
 
@@ -517,7 +519,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if dstGUID ~= UnitGUID("player") then
+				if dstGUID ~= playerGUID then
 					return nil
 				end
 
@@ -529,7 +531,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
 			triggerData = function(srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing)
-				if dstGUID ~= UnitGUID("player") then
+				if dstGUID ~= playerGUID then
 					return nil
 				end
 
@@ -623,28 +625,28 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_DAMAGE",
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			triggerData = parseSwingDamage,
 		},
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			triggerData = parseSpellDamage,
 		},
 		{
 			eventType = "SPELL_DAMAGE",
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			triggerData = parseSpellDamage,
 		},
 		{
 			eventType = "RANGE_DAMAGE",
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			triggerData = parseSpellDamage,
 		},
@@ -701,28 +703,28 @@ Parrot:RegisterPrimaryTriggerCondition {
 		{
 			eventType = "SWING_DAMAGE",
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			triggerData = parseSwingDamage,
 		},
 		{
 			eventType = "SPELL_PERIODIC_DAMAGE",
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			triggerData = parseSpellDamage,
 		},
 		{
 			eventType = "SPELL_DAMAGE",
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			triggerData = parseSpellDamage,
 		},
 		{
 			eventType = "RANGE_DAMAGE",
 			check = function(_, _, _, dstGUID)
-				return dstGUID == UnitGUID("player")
+				return dstGUID == playerGUID
 			end,
 			triggerData = parseSpellDamage,
 		},
@@ -1061,5 +1063,21 @@ Parrot:RegisterSecondaryTriggerCondition {
 			end
 		end
 		return func()
+	end,
+}
+
+Parrot:RegisterPrimaryTriggerCondition {
+	name = "Spell overlay",
+	localName = L["Spell overlay"],
+	param = {
+		type = "input",
+		usage = L["<SpellId>"],
+	},
+	events = {
+		SPELL_ACTIVATION_OVERLAY_SHOW = ret, -- hidden aura spell id
+		SPELL_ACTIVATION_OVERLAY_GLOW_SHOW = ret, -- button spell id
+	},
+	check = function(ref, info)
+		return tonumber(ref) == info
 	end,
 }
