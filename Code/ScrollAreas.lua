@@ -17,29 +17,22 @@ local setConfigMode
 local scrollAreas
 
 local choices = {}
-local function rebuildChoices()
-	wipe(choices)
-	for k, v in next, scrollAreas do
-		choices[k] = k
+local rebuildChoices do
+	local localizedNames = {
+		["Incoming"] = L["Incoming"],
+		["Outgoing"] = L["Outgoing"],
+		["Notification"] = L["Notification"],
+	}
+	function rebuildChoices()
+		wipe(choices)
+		for k, v in next, scrollAreas do
+			choices[k] = localizedNames[k] or k
+		end
 	end
 end
 
 local updateFuncs = {
 	[1] = function()
-		-- Translate default names
-		if db.areas["Incoming"] and L["Incoming"] ~= "Incoming" then
-			db.areas[L["Incoming"]] = db.areas["Incoming"]
-			db.areas["Incoming"] = nil
-		end
-		if db.areas["Outgoing"] and L["Outgoing"] ~= "Outgoing" then
-			db.areas[L["Outgoing"]] = db.areas["Outgoing"]
-			db.areas["Outgoing"] = nil
-		end
-		if db.areas["Notification"] and L["Notification"] ~= "Notification" then
-			db.areas[L["Notification"]] = db.areas["Notification"]
-			db.areas["Notification"] = nil
-		end
-
 		-- Copy the defaults into the db
 		local function merge(dst, src)
 			for k, v in next, src do
@@ -91,6 +84,21 @@ local updateFuncs = {
 			},
 		}
 		merge(db.areas, defaultScrollAreas)
+	end,
+	[2] = function()
+		-- Translating the names was a mistake! x_x
+		if db.areas[L["Incoming"]] and L["Incoming"] ~= "Incoming" then
+			db.areas["Incoming"] = db.areas[L["Incoming"]]
+			db.areas[L["Incoming"]] = nil
+		end
+		if db.areas[L["Outgoing"]] and L["Outgoing"] ~= "Outgoing" then
+			db.areas["Outgoing"] = db.areas[L["Outgoing"]]
+			db.areas[L["Outgoing"]] = nil
+		end
+		if db.areas[L["Notification"]] and L["Notification"] ~= "Notification" then
+			db.areas["Notification"] = db.areas[L["Notification"]]
+			db.areas[L["Notification"]] = nil
+		end
 	end,
 }
 
@@ -617,7 +625,7 @@ function module:OnOptionsCreate()
 		local v = scrollAreas[k]
 		local opt = {
 			type = 'group',
-			name = k,
+			name = choices[k],
 			desc = L["Options for this scroll area."],
 			args = {
 				name = {
@@ -945,9 +953,9 @@ function module:OnOptionsCreate()
 						xOffset = 0,
 						yOffset = 0,
 					}
+					rebuildChoices()
 					makeOption(L["New scroll area"])
 					scrollAreas_opt.args[tostring(scrollAreas[L["New scroll area"]])].order = -110
-					rebuildChoices()
 					if shouldConfig then
 						setConfigMode(true)
 					end

@@ -575,23 +575,6 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ffff00",
 	}]],
-	[1063] = [[{
-		-- Blackout Kick!
-		name = GetSpellInfo(116768),
-		icon = 116768,
-		spec = { MONK = "269" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(116768),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff69b4",
-	}]],
 	[1064] = [[{
 		-- Stormbringer
 		name = GetSpellInfo(201846),
@@ -626,8 +609,25 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ee4000",
 	}]],
+	[1066] = [[{
+		-- Blackout Kick!
+		name = GetSpellInfo(116768),
+		icon = 116768,
+		spec = { MONK = "269" },
+		conditions = {
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(116768),
+					unit = "player",
+					auraType = "BUFF",
+				},
+			},
+		},
+		sticky = true,
+		color = "ff69b4",
+	}]],
 }
--- start new entries at 1066
+-- start new entries at 1067
 
 local specChoices = {
 	DEATHKNIGHT = {
