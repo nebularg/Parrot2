@@ -110,6 +110,10 @@ local damageTypeString = function(info)
 	end
 end
 
+local sanitizedPowerAmount = function(info)
+	return math.floor(10 * info.amount + 0.5) / 10
+end
+
 local classColorStrings = {}
 for k, v in next, _G.RAID_CLASS_COLORS do
 	classColorStrings[k] = ("|c%s%%s|r"):format(v.colorStr)
@@ -1843,7 +1847,7 @@ Parrot:RegisterCombatEvent{
 		SPELL_PERIODIC_LEECH = { check = checkPlayerOut, },
 	},
 	tagTranslations = {
-		Amount = "amount",
+		Amount = sanitizedPowerAmount,
 		Type = powerTypeString,
 		Skill = retrieveAbilityName,
 		Name = function(info)
