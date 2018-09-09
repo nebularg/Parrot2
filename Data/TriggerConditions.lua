@@ -139,7 +139,7 @@ Parrot:RegisterPrimaryTriggerCondition {
 		end
 		-- check the friendly-flag
 		if ref.friendly >= 0 then
-			local friendly = UnitIsFriend("player", info) or 0
+			local friendly = UnitIsFriend("player", info) and 1 or 0
 			if ref.friendly ~= friendly then
 				return false
 			end
@@ -224,7 +224,7 @@ local function checkPower(ref)
 	local unit = ref.unit
 	-- check the friendly-flag
 	if ref.friendly >= 0 then
-		local friendly = UnitIsFriend("player", unit) or 0
+		local friendly = UnitIsFriend("player", unit) and 1 or 0
 		if ref.friendly ~= friendly then
 			return false
 		end
@@ -871,21 +871,20 @@ Parrot:RegisterSecondaryTriggerCondition {
 		if not (ref.unit and ref.amount and ref.friendly and ref.comparator) then
 			return false
 		end
-		local good = true
 		-- check the friendly-flag
 		if ref.friendly >= 0 then
-			good = ref.friendly == 0 and (UnitIsFriend("player", ref.unit) == nil) or
-			ref.friendly == UnitIsFriend("player", ref.unit)
+			local friendly = UnitIsFriend("player", ref.unit) and 1 or 0
+			if ref.friendly ~= friendly then
+				return false
+			end
 		end
 		-- everything fits, check the amount
-		if good then
-			local amount = ref.amount
-			if amount <= 1 then
-				debug("checking percent amount")
-				amount = UnitHealthMax(ref.unit) * ref.amount
-			end
-			return compare(UnitHealth(ref.unit), ref.comparator, amount)
+		local amount = ref.amount
+		if amount <= 1 then
+			debug("checking percent amount")
+			amount = UnitHealthMax(ref.unit) * ref.amount
 		end
+		return compare(UnitHealth(ref.unit), ref.comparator, amount)
 	end,
 }
 
@@ -1001,11 +1000,9 @@ Parrot:RegisterPrimaryTriggerCondition {
 		end
 		-- check the friendly-flag
 		if ref.friendly >= 0 then
-			if not (ref.friendly == 0 and (UnitIsFriend("player", ref.unit) == nil)) then
-				return
-			end
-			if ref.friendly ~= UnitIsFriend("player", ref.unit) then
-				return
+			local friendly = UnitIsFriend("player", ref.unit) and 1 or 0
+			if ref.friendly ~= friendly then
+				return false
 			end
 		end
 		local spell = tonumber(ref.spell)
