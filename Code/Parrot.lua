@@ -34,7 +34,7 @@ do
 			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: --- end of table-dump")
 			return debug(...)
 		else
-			local text = strjoin(" ", tostringall(...))
+			local text = strjoin(" ", tostringall(arg1, ...))
 			PARROT_DEBUG_FRAME:AddMessage("|cff00ff00Parrot|r: " .. text)
 		end
 	end

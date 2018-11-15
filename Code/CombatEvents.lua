@@ -2327,7 +2327,7 @@ function module:HandleCombatlogEvent(uid, timestamp, eventType, _, sourceGUID, s
 			info.destFlags = destFlags
 			local parseFunc = combatLogParseFuncs[eventType]
 			if not parseFunc then
-				debug("!!!!no parseFunc for ", eventType)
+				debug("No parseFunc for " .. eventType)
 			else
 				parseFunc(info, ...)
 				for i, v in ipairs(registeredHandlers) do
