@@ -2240,8 +2240,7 @@ local moreParams = {
 	SPELL_INTERRUPT = { "spellId", "spellName", "spellSchool", "extraSpellID", "extraSpellName", "extraSchool", },
 	SPELL_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
 	SPELL_MISSED = { "spellId", "spellName", "spellSchool", "missType", "isOffHand", "amountMissed", },
-	SPELL_PERIODIC_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand",
-		extra = { "if( info.spellID == 32409 and info.sourceName == nil ) then info.sourceName = info.recipientName; info.sourceID = info.recipientID end" } },
+	SPELL_PERIODIC_DAMAGE = { "spellId", "spellName", "spellSchool", "amount", "overkill", "school", "resisted", "blocked", "absorbed", "critical", "glancing", "crushing", "isOffHand", },
 	SPELL_PERIODIC_ENERGIZE = { "spellId", "spellName", "spellSchool", "amount", "arg2", "powerType", },
 	SPELL_PERIODIC_HEAL = { "spellId", "spellName", "spellSchool", "amount", "overhealing", "absorbed", "critical", extra = { "info.realAmount = info.amount - info.overhealAmount", } },
 	SPELL_PERIODIC_LEECH = { "spellId", "spellName", "spellSchool", "amount", "powerType", "extraAmount", },
@@ -2251,6 +2250,7 @@ local moreParams = {
 	SWING_MISSED = { "missType", "isOffHand", "amountMissed", },
 	SPELL_AURA_APPLIED = { "spellId", "spellName", "spellSchool", "auraType", },
 	SPELL_AURA_APPLIED_DOSE = { "spellId", "spellName", "spellSchool", "auraType", "amount", },
+	SPELL_AURA_REFRESH = { "spellId", "spellName", "spellSchool", "auraType", "amount", },
 	SPELL_AURA_REMOVED = { "spellId", "spellName", "spellSchool", "auraType", },
 	ENCHANT_APPLIED = { "spellName", "itemID", "itemName", },
 	ENCHANT_REMOVED = { "spellName", "itemID", "itemName", },
@@ -2327,7 +2327,7 @@ function module:HandleCombatlogEvent(uid, timestamp, eventType, _, sourceGUID, s
 			info.destFlags = destFlags
 			local parseFunc = combatLogParseFuncs[eventType]
 			if not parseFunc then
-				debug("!!!!no parseFunc for ", eventType)
+				debug("No parseFunc for " .. eventType)
 			else
 				parseFunc(info, ...)
 				for i, v in ipairs(registeredHandlers) do
