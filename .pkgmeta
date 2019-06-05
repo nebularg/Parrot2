@@ -21,6 +21,9 @@ externals:
     Libs/LibSink-2.0: https://repos.wowace.com/wow/libsink-2-0/trunk/LibSink-2.0
     Libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
 
+tools-used:
+  - libdatabroker-1-1
+
 ignore:
   - ISSUE_TEMPLATE.md
   - README.md
