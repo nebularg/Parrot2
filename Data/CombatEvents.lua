@@ -127,7 +127,7 @@ end
 -- functions to retrieve player-names (to hide realm-names)
 --]]
 local function retrieveSourceName(info)
-	if db.hideUnitNames or info.sourceName == "" then
+	if db.hideUnitNames or info.sourceName == "" or not info.sourceID then
 		return "__NONAME__"
 	end
 
@@ -146,7 +146,7 @@ local function retrieveSourceName(info)
 end
 
 local function retrieveDestName(info)
-	if db.hideUnitNames or info.recipientName == "" then
+	if db.hideUnitNames or info.recipientName == "" or not info.recipientID then
 		return "__NONAME__"
 	end
 
