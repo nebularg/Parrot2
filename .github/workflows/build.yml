@@ -1,0 +1,32 @@
+name: Package Retail
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '!*classic*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install luarocks pandoc
+        luarocks install --local luacheck
+        wget -O ~/release.sh https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh
+        chmod +x ~/release.sh
+
+    - name: Lint with luacheck
+      run: ~/.luarocks/bin/luacheck . -o 011
+
+    - name: Package and Publish
+      run: ~/release.sh
+      env:
+        CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+        GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}

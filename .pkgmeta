@@ -25,6 +25,4 @@ tools-used:
   - libdatabroker-1-1
 
 ignore:
-  - ISSUE_TEMPLATE.md
-  - README.md
   - Locales/Babelfish.lua
