@@ -7,13 +7,11 @@ local newList = Parrot.newList
 
 local bit_bor, bit_band = bit.bor, bit.band
 local UnitGUID, UnitPower = UnitGUID, UnitPower
-local GetComboPoints, UnitHasVehicleUI = GetComboPoints, UnitHasVehicleUI
 
 local PET = _G.PET
 local INTERRUPT = _G.INTERRUPT
 local PLAYERSTAT_MELEE_COMBAT = _G.PLAYERSTAT_MELEE_COMBAT
 local UNKNOWN = _G.UNKNOWN
-local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
 
 local db
 local playerGUID = UnitGUID("player")
@@ -40,33 +38,19 @@ local SchoolParser = {
 	[24] = "Froststorm",
 	[32] = "Shadow",
 	[40] = "Shadowstorm",
-	[64] = "Arcane"
+	[64] = "Arcane",
 }
 
-local PowerTypeParser = setmetatable({
+local PowerTypeParser = {
 	[-2] = _G.HEALTH,
 	-- [-1] = _G.NONE,
 	[0] = _G.MANA,
 	[1] = _G.RAGE,
 	[2] = _G.FOCUS,
 	[3] = _G.ENERGY,
-	[4] = _G.COMBO_POINTS,
-	[5] = _G.RUNES,
-	[6] = _G.RUNIC_POWER,
-	[7] = _G.SOUL_SHARDS,
-	[8] = _G.LUNAR_POWER,
-	[9] = _G.HOLY_POWER,
-	[11] = _G.MAELSTROM,
-	[12] = _G.CHI,
-	[13] = _G.INSANITY,
-	[16] = _G.ARCANE_CHARGES,
-	[17] = _G.FURY,
-	[18] = _G.PAIN,
-}, { __index = function(self, key)
-	if key == ALTERNATE_POWER_INDEX then
-		return select(10, UnitAlternatePowerInfo("player"))
-	end
-end })
+	[4] = _G.HAPPINESS,
+	[14] = _G.COMBO_POINTS,
+}
 
 -- lookup-table for damage-types
 local LS = {
@@ -1920,15 +1904,14 @@ Parrot:RegisterCombatEvent{
 
 do
 	local function getMaxCP()
-		local max = UnitPowerMax("player", 4) or 5
-		local real_max = max
-		if max == 8 then max = 5 end -- Anticipation talent: 8 CP but finishers still use a max of 5
-		return max, real_max
+		local max = UnitPowerMax("player", 14) or 5
+		if max == 0 then max = 5 end
+		return max
 	end
 
 	local cur = 0
 	local function parseCPGain()
-		local num = UnitHasVehicleUI("player") and GetComboPoints("vehicle") or UnitPower("player", 4)
+		local num = UnitPower("player", 14)
 		if cur == num then return end
 		cur = num
 		if num > 0 and num < getMaxCP() then
@@ -1938,10 +1921,10 @@ do
 
 	local prev = 0
 	local function parseCPFull()
-		local num = UnitHasVehicleUI("player") and GetComboPoints("vehicle") or UnitPower("player", 4)
-		local max, real_max = getMaxCP()
+		local num = UnitPower("player", 14)
+		local max = getMaxCP()
 		local t = GetTime()
-		if num == real_max and t-prev < 0.1 then return end -- UNIT_POWER fires twice at max
+		if num == max and t-prev < 0.1 then return end -- UNIT_POWER fires twice at max
 		prev = t
 		if num >= max then
 			return newList(num)

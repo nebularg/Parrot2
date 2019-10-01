@@ -36,13 +36,14 @@ end
 local db = nil
 local defaults = {
 	profile = {
-		triggers2 = {},
-		dbver2 = 0,
+		triggers = {},
+		dbver3 = 0,
 	},
 }
 
 local _, playerClass = UnitClass("player")
 local periodicCheckTimer = nil
+local registry = nil
 local effectiveRegistry = {}
 local cooldowns = {}
 
@@ -55,11 +56,68 @@ local cooldowns = {}
 --]]
 
 local defaultTriggers = {
+	[1001] = [[{
+		name = L["Low Health!"],
+		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;ROGUE;SHAMAN;WARLOCK;WARRIOR",
+		conditions = {
+			["Unit health"] = {
+				{
+					unit = "player",
+					amount = 0.40,
+					comparator = "<=",
+					friendly = 1,
+				},
+			},
+		},
+		secondaryConditions = {
+			["Trigger cooldown"] = 3,
+		},
+		sticky = true,
+		color = "ff7f7f",
+	}]],
+	[1002] = [[{
+		name = L["Low Mana!"],
+		class = "DRUID;HUNTER;MAGE;PALADIN;PRIEST;SHAMAN;WARLOCK",
+		conditions = {
+			["Unit power"] = {
+				{
+					unit = "player",
+					amount = "35%",
+					comparator = "<=",
+					friendly = 1,
+					powerType = 0,
+				},
+			},
+		},
+		secondaryConditions = {
+			["Trigger cooldown"] = 3,
+		},
+		sticky = true,
+		color = "7f7fff",
+	}]],
+	[1003] = [[{
+		name = L["Low Pet Health!"],
+		class = "HUNTER;WARLOCK",
+		conditions = {
+			["Unit health"] = {
+				[1] = {
+					unit = "pet",
+					amount = 0.40,
+					comparator = "<=",
+					friendly = 1,
+				},
+			},
+		},
+		secondaryConditions = {
+			["Trigger cooldown"] = 3,
+		},
+		color = "ff7f7f",
+	}]],
 	[1004] = [[{
 		-- Execute
 		name = L["%s!"]:format(GetSpellInfo(5308)),
 		icon = 5308,
-		spec = { WARRIOR = "71;72", },
+		class = "WARRIOR",
 		conditions = {
 			["Unit health"] = {
 				{
@@ -78,96 +136,13 @@ local defaultTriggers = {
 		sticky = true,
 		color = "ffff00",
 	}]],
-	[1008] = [[{
-		name = L["Low Health!"],
-		spec = {
-			DRUID = "102;103;104;105",
-			HUNTER = "253;254;255",
-			MAGE = "62;63;64",
-			PALADIN = "65;66;70",
-			PRIEST = "256;257;258",
-			ROGUE = "259;260;261",
-			SHAMAN = "262;263;264",
-			WARLOCK = "265;266;267",
-			WARRIOR = "71;72;73",
-			DEATHKNIGHT = "250;251;252",
-			MONK = "268;269;270",
-			DEMONHUNTER = "577;581"
-		},
-		conditions = {
-			["Unit health"] = {
-				{
-					unit = "player",
-					amount = 0.40,
-					comparator = "<=",
-					friendly = 1,
-				},
-			},
-		},
-		secondaryConditions = {
-			["Trigger cooldown"] = 3,
-		},
-		sticky = true,
-		color = "ff7f7f",
-	}]],
-	[1009] = [[{
-		name = L["Low Mana!"],
-		spec = {
-			DRUID = "102;103;104;105",
-			MAGE = "62;63;64",
-			PALADIN = "65;66;70",
-			PRIEST = "256;257;258",
-			SHAMAN = "262;263;264",
-			WARLOCK = "265;266;267",
-			MONK = "270",
-		},
-		conditions = {
-			["Unit power"] = {
-				{
-					unit = "player",
-					amount = "35%",
-					comparator = "<=",
-					friendly = 1,
-					powerType = 0,
-				},
-			},
-		},
-		secondaryConditions = {
-			["Trigger cooldown"] = 3,
-		},
-		sticky = true,
-		color = "7f7fff",
-	}]],
-	[1010] = [[{
-		name = L["Low Pet Health!"],
-		spec = {
-			HUNTER = "253;254;255",
-			MAGE = "64",
-			WARLOCK = "265;266;267",
-			DEATHKNIGHT = "252",
-		},
-		conditions = {
-			["Unit health"] = {
-				[1] = {
-					unit = "pet",
-					amount = 0.40,
-					comparator = "<=",
-					friendly = 1,
-				},
-			},
-		},
-		secondaryConditions = {
-			["Trigger cooldown"] = 3,
-		},
-		color = "ff7f7f",
-	}]],
-	[1014] = [[{
+	[1005] = [[{
 		-- Revenge
 		name = L["%s!"]:format(GetSpellInfo(6572)),
 		icon = 6572,
-		spec = { WARRIOR = "73" },
+		class = "WARRIOR",
 		conditions = {
-			["Incoming miss"] = { "DODGE", "PARRY", },
+			["Incoming miss"] = { "DODGE", "PARRY", "BLOCK" },
 		},
 		secondaryConditions = {
 			["Spell ready"] = {
@@ -178,305 +153,28 @@ local defaultTriggers = {
 		color = "00ee00",
 		disabled = true,
 	}]],
-	[1017] = [[{
-		-- Rime
-		name = L["%s!"]:format(GetSpellInfo(59052)),
-		icon = 59052,
-		spec = { DEATHKNIGHT = "251" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(59052),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "0000ff",
-	}]],
-	[1018] = [[{
-		-- Killing Machine
-		name = L["%s!"]:format(GetSpellInfo(51124)),
-		icon = 51124,
-		spec = { DEATHKNIGHT = "251" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					spell = GetSpellInfo(51124),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "0000ff",
-	}]],
-	[1021] = [[{
-		-- Brain Freeze
-		name = L["%s!"]:format(GetSpellInfo(190447)),
-		icon = 190447,
-		spec = { MAGE = "64" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					["unit"] = "player",
-					["spell"] = GetSpellInfo(190447),
-					["auraType"] = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "005ba9",
-	}]],
-	[1031] = [[{
-		-- Fingers of Frost
-		name = L["%s!"]:format(GetSpellInfo(44544)),
-		icon = 44544,
-		spec = { MAGE = "64" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					["unit"] = "player",
-					["spell"] = GetSpellInfo(44544),
-					["auraType"] = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "005ba9",
-	}]],
-	[1033] = [[{
-		-- Crimson Scourge
-		name = L["%s!"]:format(GetSpellInfo(81141)),
-		icon = 81141,
-		spec = { DEATHKNIGHT = "250" },
-		conditions = {
-			["Aura gain"] = {
-				[1] = {
-					unit = "player",
-					spell = GetSpellInfo(81141),
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff0000",
-	}]],
-	[1041] = [[{
-		-- Sudden Doom
-		name = L["%s!"]:format(GetSpellInfo(81340)),
-		icon = 81340,
-		spec = { DEATHKNIGHT = "252" },
+	[1006] = [[{
+		-- Nightfall (Shadow Trance)
+		name = L["%s!"]:format(GetSpellInfo(18094)),
+		icon = 136223,
+		class = "WARLOCK",
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(81340),
+					spell = GetSpellInfo(17941),
 					unit = "player",
 					auraType = "BUFF",
 				},
-			},
-		},
-		sticky = true,
-		color = "9b00b3",
-	}]],
-	[1043] = [[{
-		-- Hot Streak!
-		name = GetSpellInfo(48108),
-		icon = 48108,
-		spec = { MAGE = "63" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(48108),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "b33f00",
-	}]],
-	[1044] = [[{
-		-- Heating Up
-		name = L["%s!"]:format(GetSpellInfo(48107)),
-		icon = 48107,
-		spec = { MAGE = "63" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(48107),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff5900",
-	}]],
-	[1046] = [[{
-		-- Grand Crusader
-		name = L["%s!"]:format(GetSpellInfo(85416)),
-		icon = 85416,
-		spec = { PALADIN = "66" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(85416),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "0038cd",
-	}]],
-	[1047] = [[{
-		-- Lava Surge
-		name = L["%s!"]:format(GetSpellInfo(77756)),
-		icon = 77756,
-		spec = { SHAMAN = "262;264" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(77756),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ddb800",
-	}]],
-	[1050] = [[{
-		-- Raging Blow
-		name = L["%s!"]:format(GetSpellInfo(85288)),
-		icon = 85288,
-		spec = { WARRIOR = "72" },
-		conditions = {
-			["Spell overlay"] = {
-				"85288",
-			},
-		},
-		sticky = true,
-		color = "ff0000",
-	}]],
-	[1051] = [[{
-		-- Sudden Death
-		name = L["%s!"]:format(GetSpellInfo(280776)),
-		icon = 280776,
-		spec = { WARRIOR = "71;72" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(280776),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "cd3700",
-	}]],
-	[1052] = [[{
-		-- Shield Slam
-		name = L["%s!"]:format(GetSpellInfo(23922)),
-		icon = 23922,
-		spec = { WARRIOR = "73" },
-		conditions = {
-			["Spell overlay"] = {
-				"224324",
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
-	[1053] = [[{
-		-- Nightfall
-		name = L["%s!"]:format(GetSpellInfo(108558)),
-		icon = 108558,
-		spec = { WARLOCK = "265" },
-		conditions = {
-			["Spell overlay"] = {
-				"264571",
 			},
 		},
 		sticky = true,
 		color = "551A8B",
 	}]],
-	[1054] = [[{
-		-- Lethal Shots
-		name = L["%s!"]:format(GetSpellInfo(260395)),
-		icon = 260395,
-		spec = { HUNTER = "254" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(260395),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
-	[1055] = [[{
-		-- Lock and Load
-		name = L["%s!"]:format(GetSpellInfo(194594)),
-		icon = 194594,
-		spec = { HUNTER = "254" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(194594),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffffff",
-	}]],
-	[1056] = [[{
-		-- Kill Command
-		name = L["%s!"]:format(GetSpellInfo(259489)),
-		icon = 259489,
-		spec = { HUNTER = "255" },
-		conditions = {
-			["Spell overlay"] = {
-				"259285",
-			},
-		},
-		sticky = true,
-		color = "c72520",
-		disabled = true,
-	}]],
-	[1057] = [[{
-		-- Viper's Venom
-		name = L["%s!"]:format(GetSpellInfo(268552)),
-		icon = 268423,
-		spec = { HUNTER = "255" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(268552),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "008b00",
-	}]],
-	[1058] = [[{
+	[1007] = [[{
 		-- Clearcasting
 		name = L["%s!"]:format(GetSpellInfo(16870)),
 		icon = 16870,
-		spec = {
-			DRUID = "103;105",
-			MAGE = "62",
-		},
+		class = "DRUID;MAGE",
 		conditions = {
 			["Aura gain"] = {
 				{
@@ -489,242 +187,8 @@ local defaultTriggers = {
 		sticky = true,
 		color = "1e90ff",
 	}]],
-	[1059] = [[{
-		-- Gore
-		name = L["%s!"]:format(GetSpellInfo(93622)),
-		icon = 33917,
-		spec = { DRUID = "104" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(93622),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff0000",
-	}]],
-	[1060] = [[{
-		-- Galatic Guardian
-		name = L["%s!"]:format(GetSpellInfo(213708)),
-		icon = 8921,
-		spec = { DRUID = "104" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(213708),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffffff",
-	}]],
-	[1061] = [[{
-		-- Power of the Dark Side
-		name = L["%s!"]:format(GetSpellInfo(198069)),
-		icon = 198069,
-		spec = { PRIEST = "256" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(198069),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "9b30ff",
-		disabled = true,
-	}]],
-	[1062] = [[{
-		-- Surge of Light
-		name = L["%s!"]:format(GetSpellInfo(114255)),
-		icon = 114255,
-		spec = { PRIEST = "257" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(114255),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
-	[1063] = [[{
-		-- Divine Purpose
-		name = L["%s!"]:format(GetSpellInfo(216413)),
-		icon = 216413,
-		spec = { PALADIN = "65;70" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(216413),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ffff00",
-	}]],
-	[1064] = [[{
-		-- Stormbringer
-		name = GetSpellInfo(201846),
-		icon = 17364,
-		spec = { SHAMAN = "263" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(201846),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "4876ff",
-	}]],
-	[1065] = [[{
-		-- Opportunity
-		name = GetSpellInfo(195627),
-		icon = 195627,
-		spec = { ROGUE = "260" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(195627),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ee4000",
-	}]],
-	[1066] = [[{
-		-- Blackout Kick!
-		name = GetSpellInfo(116768),
-		icon = 116768,
-		spec = { MONK = "269" },
-		conditions = {
-			["Aura gain"] = {
-				{
-					spell = GetSpellInfo(116768),
-					unit = "player",
-					auraType = "BUFF",
-				},
-			},
-		},
-		sticky = true,
-		color = "ff69b4",
-	}]],
 }
--- start new entries at 1067
-
-local specChoices = {
-	DEATHKNIGHT = {
-		250, -- Blood
-			-- 1033 Crimson Scourge
-		251, -- Frost
-			-- 1017 Rime
-			-- 1018 Killing Machine
-		252, -- Unholy
-			-- 1041 Sudden Doom
-	},
-	DEMONHUNTER = {
-		577, -- Havoc
-		581, -- Vengeance
-	},
-	DRUID = {
-		102, -- Balance
-		103, -- Feral Combat
-			-- 1058 Clearcasting
-		104, -- Guardian
-			-- 1059 Gore
-			-- Galatic Guardian
-		105, -- Restoration
-			-- 1058 Clearcasting
-	},
-	HUNTER = {
-		253, -- Beast Mastery
-		254, -- Marksmanship
-			-- 1054 Lethal Shots
-			-- 1055 Lock and Load
-		255, -- Survival
-			-- 1056 Kill Command
-			-- 1057 Viper's Venom
-	},
-	MAGE = {
-		62, -- Arcane
-			-- 1058 Clearcasting
-		63, -- Fire
-			-- 1044 Heating Up
-			-- 1043 Hot Streak
-		64, -- Frost
-			-- 1021 Brain Freeze
-			-- 1031 Fingers of Frost
-	},
-	MONK = {
-		268, -- Brewmaster
-		269, -- Windwalker
-		  -- 1063 Blackout Kick!
-		270, -- Mistweaver
-	},
-	PALADIN = {
-		65, -- Holy
-			-- 1060 Divine Purpose
-		66, -- Protection
-			-- 1046 Grand Crusader
-		70, -- Retribution
-			-- 1060 Divine Purpose
-	},
-	PRIEST = {
-		256, -- Discipline
-			-- 1061 Power of the Dark Side
-		257, -- Holy
-			-- 1062 Surge of Light
-		258, -- Shadow
-	},
-	ROGUE = {
-		259, -- Assassination
-		260, -- Outlaw
-			-- 1065 Opportunity
-		261, -- Subtlety
-	},
-	SHAMAN = {
-		262, -- Elemental
-			-- 1047 Lava Surge
-		263, -- Enhancement
-			-- 1064 Stormbringer
-		264, -- Restoration
-			-- 1047 Lava Surge
-	},
-	WARLOCK = {
-		265, -- Affliction
-			-- 1053 Nightfall
-		266, -- Demonology
-		267, -- Destruction
-	},
-	WARRIOR = {
-		71, -- Arms
-			-- 1004 Execute
-			-- 1051 Sudden Death
-		72, -- Fury
-			-- 1004 Execute
-			-- 1051 Sudden Death
-		73, -- Protection
-			-- 1014 Revenge
-			-- 1052 Shield Slam
-	},
-}
+-- start new entries at 1008
 
 do
 	local ScriptEnv = setmetatable({}, {__index = _G})
@@ -754,20 +218,18 @@ do
 		else
 			ScriptEnv.GetSpellInfo = _G.GetSpellInfo
 		end
-		local func = assert(loadstring(("return %s"):format(code)))
+		local func = loadstring(("return %s"):format(code))
+		if not func then
+			print("Parrot: Error creating trigger "..index)
+			return
+		end
 		setfenv(func, ScriptEnv)
-		defaults.profile.triggers2[index] = func()
+		defaults.profile.triggers[index] = func()
 	end
 
 	for k,v in pairs(defaultTriggers) do
 		makeDefaultTrigger(k,v)
 	end
-end
-
-local function getPlayerSpec()
-	local spec = GetSpecialization()
-	local specId = spec and GetSpecializationInfo(spec) or 0
-	return tostring(specId)
 end
 
 local function hexColorToTuple(color)
@@ -781,12 +243,9 @@ end
 local function checkTriggerEnabled(v)
 	if v.disabled then return end
 
-	local specstring = v.spec and v.spec[playerClass]
-	if not specstring then return end
-
-	local sets = deserializeSet(specstring)
-	local result = sets[getPlayerSpec()]
-	del(sets)
+	local set = deserializeSet(v.class)
+	local result = set[playerClass] and true
+	del(set)
 	return result
 end
 
@@ -796,7 +255,7 @@ local function rebuildEffectiveRegistry()
 
 	wipe(effectiveRegistry)
 
-	for _, v in next, db.triggers2 do
+	for _, v in next, registry do
 		if checkTriggerEnabled(v) then
 			effectiveRegistry[#effectiveRegistry+1] = v
 			if v.conditions["Check every XX seconds"] and not periodicCheckTimer then
@@ -812,78 +271,32 @@ end
 
 local updateFuncs = {
 	[1] = function()
-		-- Cleanup
-		db.triggers = nil
-		db.dbver = nil
-
-		-- Do the old Parrot conversions
-		local function convertPower(t)
-			local powerToEnum = {
-				MANA = 0,
-				RAGE = 1,
-				FOCUS = 2,
-				ENERGY = 3,
-				COMBO_POINTS = 4,
-				RUNES = 5,
-				RUNIC_POWER = 6,
-				SOUL_SHARDS = 7,
-				HOLY_POWER = 9,
-			}
-			for _, v in next, t do
-				if type(v.amount) == "number" and v.amount <= 1 then
-					v.amount = (v.amount * 100) .. "%"
-				else
-					v.amount = tostring(v.amount)
-				end
-				if v.powerType and type(v.powerType) ~= "number" then
-					v.powerType = powerToEnum[v.powerType]
-				end
-			end
-		end
-
-		for k, v in next, db.triggers2 do
-			if not v.conditions then
-				v.conditions = {}
-			end
-			if v.class and not v.spec then
-				v.spec = {}
-				for class in next, {(";"):split(v.class)} do
-					local specs = specChoices[class]
-					if specs then
-						v.spec[class] = table.concat(specs, ";")
-					end
-				end
-			end
-			v.class = nil
-			if v.conditions["Unit power"] then
-				convertPower(v.conditions["Unit power"])
-			end
-			if v.secondaryConditions and v.secondaryConditions["Unit power"] then
-				convertPower(v.secondaryConditions["Unit power"])
-			end
-		end
+		-- nuke it
+		db.triggers2 = 0
+		db.dbver2 = 0
 	end,
 }
 
 local function updateDB()
 	-- delete user-settings from triggers that are no longer available
-	for k, v in next, db.triggers2 do
+	for k, v in next, registry do
 		if k > 1000 and not defaultTriggers[k] then
-			db.triggers2[k] = nil
+			registry[k] = nil
 		end
 	end
 
-	if not db.dbver2 then
-		db.dbver2 = 0
+	if not db.dbver3 then
+		db.dbver3 = 0
 	end
-	for i = db.dbver2 + 1, #updateFuncs do
+	for i = db.dbver3 + 1, #updateFuncs do
 		updateFuncs[i]()
 	end
-	db.dbver2 = #updateFuncs
+	db.dbver3 = #updateFuncs
 end
 
 function module:OnProfileChanged()
 	db = self.db.profile
+	registry = db.triggers
 	updateDB()
 
 	if Parrot.options.args.triggers then
@@ -896,6 +309,7 @@ end
 function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Triggers", defaults)
 	db = self.db.profile
+	registry = db.triggers
 	updateDB()
 
 	Parrot_TriggerConditions = Parrot:GetModule("TriggerConditions")
@@ -934,7 +348,7 @@ function module:OnEnable()
 		registerTriggers = nil
 	end
 
-	self:RegisterEvent("PLAYER_TALENT_UPDATE", rebuildEffectiveRegistry)
+	self:RegisterEvent("CHARACTER_POINTS_CHANGED", rebuildEffectiveRegistry)
 	rebuildEffectiveRegistry()
 end
 
@@ -1110,21 +524,18 @@ function module:OnOptionsCreate()
 				func = function()
 					local t = {
 						name = L["New trigger"],
-						spec = {
-							[playerClass] = table.concat(specChoices[playerClass], ";"),
-						},
+						class = playerClass,
 						conditions = {},
 					}
-					local registry = db.triggers2
 					registry[#registry+1] = t
 					makeOption(#registry, t)
 					rebuildEffectiveRegistry()
 				end,
 				disabled = function()
-					if not db.triggers2 then
+					if not registry then
 						return true
 					end
-					for _,v in ipairs(db.triggers2) do
+					for _,v in ipairs(registry) do
 						if v.name == L["New trigger"] then
 							return true
 						end
@@ -1145,7 +556,7 @@ function module:OnOptionsCreate()
 	end
 
 	local function getTriggerTable(info)
-		return db.triggers2[tonumber(getTriggerId(info))]
+		return registry[tonumber(getTriggerId(info))]
 	end
 
 	local function getFontFace(info)
@@ -1225,7 +636,7 @@ function module:OnOptionsCreate()
 	-- not local, declared above
 	function remove(info)
 		local id = getTriggerId(info)
-		db.triggers2[tonumber(id)] = nil
+		registry[tonumber(id)] = nil
 		triggers_opt.args[id] = nil
 		rebuildEffectiveRegistry()
 	end
@@ -1328,17 +739,14 @@ function module:OnOptionsCreate()
 	local LC = _G.LOCALIZED_CLASS_NAMES_MALE
 	local classChoices = {
 		DRUID = LC["DRUID"],
+		HUNTER = LC["HUNTER"],
+		MAGE = LC["MAGE"],
+		PALADIN = LC["PALADIN"],
+		PRIEST = LC["PRIEST"],
 		ROGUE = LC["ROGUE"],
 		SHAMAN = LC["SHAMAN"],
-		PALADIN = LC["PALADIN"],
-		MAGE = LC["MAGE"],
 		WARLOCK = LC["WARLOCK"],
-		PRIEST = LC["PRIEST"],
 		WARRIOR = LC["WARRIOR"],
-		HUNTER = LC["HUNTER"],
-		DEATHKNIGHT = LC["DEATHKNIGHT"],
-		MONK = LC["MONK"],
-		DEMONHUNTER = LC["DEMONHUNTER"],
 	}
 
 	local function getConditionValue(info)
@@ -1647,15 +1055,18 @@ function module:OnOptionsCreate()
 	local function getClass(info)
 		local class = info[#info]
 		local t = getTriggerTable(info)
-		return t.spec[class] ~= nil
+		return t.class:find(class, nil, true) and true
 	end
 
 	local function doSetClass(t, class, value)
+		local sets = deserializeSet(t.class)
 		if not value then
-			t.spec[class] = nil
+			sets[class] = nil
 		else
-			t.spec[class] = table.concat(specChoices[class], ";")
+			sets[class] = true
 		end
+		t.class = serializeSet(sets)
+		del(sets)
 		if class == playerClass then
 			rebuildEffectiveRegistry()
 		end
@@ -1670,46 +1081,14 @@ function module:OnOptionsCreate()
 	local function notIsClass(info)
 		local class = info[#info]:gsub("-$", "")
 		local t = getTriggerTable(info)
-		return t.spec[class] == nil
-	end
-
-	local function doGetSpec(t, class, specid)
-		local specs = deserializeSet(t.spec[class])
-		local result = specs[specid]
-		del(specs)
-		return result
-	end
-
-	local function getSpec(info)
-		local specid = info[#info]:gsub("^Spec", "")
-		local class = info[#info-1]:gsub("-$", "")
-		local t = getTriggerTable(info)
-		return doGetSpec(t, class, specid)
-	end
-
-	local function setSpec(info, value)
-		local specid = info[#info]:gsub("^Spec", "")
-		local class = info[#info-1]:gsub("-$", "")
-		local t = getTriggerTable(info)
-		local specs = deserializeSet(t.spec[class])
-		specs[specid] = value or nil
-		if not next(specs) then
-			t.spec[class] = nil
-		else
-			t.spec[class] = serializeSet(specs)
-		end
-		if specid == getPlayerSpec() then
-			rebuildEffectiveRegistry()
-		end
+		return t.class:find(class, nil, true) and true
 	end
 
 	local function getColoredName(info)
 		local t = getTriggerTable(info)
-		if t.spec[playerClass] then
-			if not t.disabled and doGetSpec(t, playerClass, getPlayerSpec()) then
+		if t.class:find(playerClass, nil, true) then
+			if not t.disabled then
 				return ("|c0000dd00%s|r"):format(t.name) -- green
-			elseif not t.disabled then
-				return ("|c01006600%s|r"):format(t.name) -- dim green
 			else
 				return ("|c02cc1919%s|r"):format(t.name) -- dim red
 			end
@@ -1721,12 +1100,12 @@ function module:OnOptionsCreate()
 		local id = tonumber(getTriggerId(info))
 		if id > 1000 then
 			-- always show the "Low" triggers incase you screw it up for other classes
-			if id == 1008 or id == 1009 or id == 1010 then
+			if id == 1001 or id == 1002 or id == 1003 then
 				return false
 			end
 			-- hide default triggers not for your class
 			local t = getTriggerTable(info)
-			if t.spec and not t.spec[playerClass] then
+			if not t.class:find(playerClass, nil, true) then
 				return true
 			end
 		end
@@ -1918,27 +1297,6 @@ function module:OnOptionsCreate()
 			set = setClass,
 			order = j * 10,
 		}
-		tsharedopt.classes.args[class .. "-"] = {
-			type = 'group',
-			inline = true,
-			width = 'half',
-			name = localized,
-			desc = localized,
-			hidden = notIsClass,
-			order = j * 10 + 1,
-			args = {}
-		}
-		for i,v in ipairs(specChoices[class]) do
-			local _, name, desc = GetSpecializationInfoByID(v)
-			tsharedopt.classes.args[class .. "-"].args["Spec" .. v] = {
-				type = 'toggle',
-				name = name,
-				desc = desc,
-				get = getSpec,
-				set = setSpec,
-				hidden = false,
-			}
-		end
 	end
 
 	function makeOption(id, t)
@@ -1952,7 +1310,7 @@ function module:OnOptionsCreate()
 			args = {
 				primary = {
 					type = 'group',
-					--					inline = true,
+					-- inline = true,
 					name = L["Primary conditions"],
 					desc = L["When any of these conditions apply, the secondary conditions are checked."],
 					args = {
@@ -1970,7 +1328,7 @@ function module:OnOptionsCreate()
 				},
 				secondary = {
 					type = 'group',
-					--					inline = true,
+					-- inline = true,
 					name = L["Secondary conditions"],
 					desc = L["When all of these conditions apply, the trigger will be shown."],
 					args = {
@@ -2017,7 +1375,7 @@ function module:OnOptionsCreate()
 		end
 	end
 
-	for i, t in pairs(db.triggers2) do
+	for i, t in pairs(registry) do
 		makeOption(i, t)
 	end
 end

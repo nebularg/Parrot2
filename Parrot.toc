@@ -1,4 +1,4 @@
-## Interface: 80205
+## Interface: 11302
 ## Title: Parrot 2
 ## Notes: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-esES: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
@@ -21,7 +21,7 @@
 ## X-WoWI-ID: 24143
 
 ## SavedVariables: ParrotDB
-## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDDI-1.0, LibSink-2.0, LibDualSpec-1.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDDI-1.0, LibSink-2.0
 
 embeds.xml
 locales.xml

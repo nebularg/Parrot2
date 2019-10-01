@@ -30,7 +30,7 @@ do
 			end
 		end
 	end
-	addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
+	-- addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
 end
 
 function module:OnProfileChanged()

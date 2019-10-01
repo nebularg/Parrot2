@@ -567,7 +567,6 @@ end
 
 local unitChoices = {
 	["player"] = _G.PLAYER,
-	["focus"] = _G.FOCUS,
 	["target"] = _G.TARGET,
 	["pet"] = _G.PET,
 }

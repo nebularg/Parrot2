@@ -5,7 +5,6 @@
 	<Script file="libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 	<Script file="libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 
-	<!--@no-lib-strip@-->
 	<Include file="libs\AceAddon-3.0\AceAddon-3.0.xml"/>
 	<Include file="libs\AceEvent-3.0\AceEvent-3.0.xml"/>
 	<Include file="libs\AceTimer-3.0\AceTimer-3.0.xml"/>
@@ -19,6 +18,4 @@
 	<Include file="Libs\LibDDI-1.0\lib.xml"/>
 
 	<Include file="libs\LibSink-2.0\lib.xml"/>
-	<Include file="libs\LibDualSpec-1.0\LibDualSpec-1.0.lua"/>
-	<!--@end-no-lib-strip@-->
 </Ui>

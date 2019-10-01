@@ -212,15 +212,7 @@ end
 -- Init
 local db = nil
 local defaults = {
-	profile = {
-		gameText = true,
-		gameSelf = false,
-		gameDamage = false,
-		gamePetDamage = false,
-		gameHealing = false,
-		gameLowHealth = false,
-		gameReactives = false,
-	}
+	profile = {}
 }
 
 function Parrot:OnProfileChanged(event, database)
@@ -230,12 +222,10 @@ function Parrot:OnProfileChanged(event, database)
 			mod:OnProfileChanged(event, database)
 		end
 	end
-	self:UpdateFCT()
 end
 
 function Parrot:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("ParrotDB", defaults, true)
-	LibStub("LibDualSpec-1.0"):EnhanceDatabase(self.db, "Parrot")
 	db = self.db.profile
 
 	self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
@@ -299,67 +289,7 @@ function Parrot:OnInitialize()
 
 end
 
-do
-	local fct = {
-	  "enableFloatingCombatText",
-	  "floatingCombatTextCombatDamage",
-	  "floatingCombatTextCombatDamageAllAutos",
-	  "floatingCombatTextCombatLogPeriodicSpells",
-	  "floatingCombatTextPetMeleeDamage",
-	  "floatingCombatTextPetSpellDamage",
-	  "floatingCombatTextCombatHealing",
-	  "floatingCombatTextCombatHealingAbsorbTarget",
-	  "floatingCombatTextCombatHealingAbsorbSelf",
-	  "floatingCombatTextReactives",
-	  "floatingCombatTextLowManaHealth",
-		-- the rest default to off and we don't have toggles for them
-	  -- "floatingCombatTextCombatState",
-	  -- "floatingCombatTextDodgeParryMiss",
-	  -- "floatingCombatTextDamageReduction",
-	  -- "floatingCombatTextRepChanges",
-	  -- "floatingCombatTextFriendlyHealers",
-	  -- "floatingCombatTextComboPoints",
-	  -- "floatingCombatTextEnergyGains",
-	  -- "floatingCombatTextPeriodicEnergyGains",
-	  -- "floatingCombatTextHonorGains",
-	  -- "floatingCombatTextAuras",
-	  -- "floatingCombatTextAllSpellMechanics",
-	  -- "floatingCombatTextSpellMechanics",
-	  -- "floatingCombatTextSpellMechanicsOther",
-	}
-
-	function Parrot:ResetFCT()
-		for _, var in next, fct do
-			SetCVar(var, GetCVarDefault(var))
-		end
-	end
-
-	function Parrot:UpdateFCT()
-		if db.gameText then
-			SetCVar("enableFloatingCombatText", db.gameSelf and "1" or "0")
-
-			local damage = db.gameDamage and "1" or "0"
-			SetCVar("floatingCombatTextCombatDamage", damage)
-			SetCVar("floatingCombatTextCombatDamageAllAutos", damage)
-			SetCVar("floatingCombatTextCombatLogPeriodicSpells", damage)
-
-			local petDamage = db.gamePetDamage and "1" or "0"
-			SetCVar("floatingCombatTextPetMeleeDamage", petDamage)
-			SetCVar("floatingCombatTextPetSpellDamage", petDamage)
-
-			local healing = db.gameHealing and "1" or "0"
-			SetCVar("floatingCombatTextCombatHealing", healing)
-			SetCVar("floatingCombatTextCombatHealingAbsorbTarget", healing)
-			SetCVar("floatingCombatTextCombatHealingAbsorbSelf", healing)
-
-			SetCVar("floatingCombatTextReactives", db.gameReactives and "1" or "0")
-			SetCVar("floatingCombatTextLowManaHealth", db.gameLowHealth and "1" or "0")
-		end
-	end
-end
-
 function Parrot:OnEnable()
-	self:UpdateFCT()
 end
 
 -- Event handling
@@ -489,17 +419,8 @@ function Parrot:AddOption(name, args)
 end
 
 function Parrot:OnOptionsCreate()
-	local function setCVarOption(info, value)
-		db[info[#info]] = value
-		self:UpdateFCT()
-	end
-	local function disabled()
-		return not db.gameText
-	end
-
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
 	self.options.args.profiles.order = -1
-	LibStub("LibDualSpec-1.0"):EnhanceOptions(self.options.args.profiles, self.db)
 
 	self:AddOption("general", {
 		type = "group",
@@ -507,75 +428,7 @@ function Parrot:OnOptionsCreate()
 		desc = L["General settings"],
 		disabled = function() return not self:IsEnabled() end,
 		order = 1,
-		args = {
-			gameText = {
-				type = "group",
-				inline = true,
-				name = _G.COMBAT_TEXT_LABEL, -- Floating Combat Text
-				get = function(info) return db[info[#info]] end,
-				set = setCVarOption,
-				args = {
-					gameText = {
-						type = "toggle",
-						name = L["Control game options"],
-						desc = L["Whether Parrot should control the default interface's options below.\nThese settings always override manual changes to the default interface options."],
-						descStyle = "inline",
-						set = function(info, value)
-							db[info[#info]] = value
-							if value then
-								self:UpdateFCT()
-							else
-								self:ResetFCT()
-							end
-						end,
-						order = 0,
-						width = "full",
-					},
-					gameSelf = {
-						type = "toggle",
-						name = _G.COMBAT_SELF, -- Combat Self
-						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_TEXT, -- Checking this will enable additional combat messages to appear in the playfield.
-						disabled = disabled,
-						order = 1,
-					},
-					gameDamage = {
-						type = "toggle",
-						name = _G.SHOW_DAMAGE_TEXT, -- Damage
-						desc = _G.OPTION_TOOLTIP_SHOW_DAMAGE, -- Display damage numbers over hostile creatures when damaged.
-						disabled = disabled,
-						order = 2,
-					},
-					gamePetDamage = {
-						type = "toggle",
-						name = _G.SHOW_PET_MELEE_DAMAGE, -- Pet Damage
-						desc = _G.OPTION_TOOLTIP_SHOW_PET_MELEE_DAMAGE, -- Show damage caused by your pet.
-						disabled = disabled,
-						order = 3,
-					},
-					gameHealing = {
-						type = "toggle",
-						name = _G.SHOW_COMBAT_HEALING, -- Healing
-						desc = _G.OPTION_TOOLTIP_SHOW_COMBAT_HEALING, -- Display amount of healing you did to the target.
-						disabled = disabled,
-						order = 4,
-					},
-					gameLowHealth = {
-						type = "toggle",
-						name = _G.COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT, -- Low Mana & Health
-						desc = _G.OPTION_TOOLTIP_COMBAT_TEXT_SHOW_LOW_HEALTH_MANA, -- Shows a message when you fall below 20% mana or health.
-						disabled = disabled,
-						order = 5,
-					},
-					gameReactives = {
-						type = "toggle",
-						name = _G.COMBAT_TEXT_SHOW_REACTIVES_TEXT, -- Spell Alerts
-						desc = _G.OPTION_TOOLTIP_COMBAT_TEXT_SHOW_REACTIVES, -- Show alerts when certain important events occur.
-						disabled = disabled,
-						order = 6,
-					},
-				},
-			},
-		}
+		args = {}
 	})
 end
 

@@ -19,7 +19,6 @@ externals:
     Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
     Libs/LibDDI-1.0: https://repos.wowace.com/wow/libddi-1-0/trunk
     Libs/LibSink-2.0: https://repos.wowace.com/wow/libsink-2-0/trunk/LibSink-2.0
-    Libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
 
 embedded-libraries:
   - libdatabroker-1-1

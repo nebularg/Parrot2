@@ -1,12 +1,11 @@
-name: Package Retail
+name: Package Classic
 
 on:
   push:
     branches:
-      - master
+      - classic
     tags:
-      - '*'
-      - '!*classic*'
+      - '*classic*'
 
 jobs:
   build:
@@ -26,7 +25,7 @@ jobs:
       run: ~/.luarocks/bin/luacheck . -o 011
 
     - name: Package and Publish
-      run: ~/release.sh
+      run: ~/release.sh -g 1.13.2 -w 0
       env:
         CF_API_KEY: ${{ secrets.CF_API_KEY }}
         WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
