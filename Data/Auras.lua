@@ -22,7 +22,7 @@ local PET_FLAGS = bit.bor(
 )
 
 local function getIcon(info)
-	return GetSpellTexture(info.spellID)
+	return GetSpellTexture(info.abilityName)
 end
 
 local function retrieveDestName(info)
