@@ -127,38 +127,42 @@ end
 -- functions to retrieve player-names (to hide realm-names)
 --]]
 local function retrieveSourceName(info)
-	if db.hideUnitNames or info.sourceName == "" or not info.sourceID then
+	if db.hideUnitNames or info.sourceName == "" or info.hideCaster then
 		return "__NONAME__"
 	end
 
-	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.sourceID)
-	if class then
-		if not db.hideRealm then
-			name = info.sourceName
+	if info.sourceID and info.sourceID ~= "" then
+		local _, class, _, _, _, name = GetPlayerInfoByGUID(info.sourceID)
+		if class then
+			if not db.hideRealm then
+				name = info.sourceName
+			end
+			if db.classcolor then
+				name = classColorStrings[class]:format(name)
+			end
+			return name
 		end
-		if db.classcolor then
-			name = classColorStrings[class]:format(name)
-		end
-		return name
 	end
 
 	return info.sourceName
 end
 
 local function retrieveDestName(info)
-	if db.hideUnitNames or info.recipientName == "" or not info.recipientID then
+	if db.hideUnitNames or info.recipientName == "" or info.hideCaster then
 		return "__NONAME__"
 	end
 
-	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.recipientID)
-	if class then
-		if not db.hideRealm then
-			name = info.recipientName
+	if info.recipientID and info.recipientID ~= "" then
+		local _, class, _, _, _, name = GetPlayerInfoByGUID(info.recipientID)
+		if class then
+			if not db.hideRealm then
+				name = info.recipientName
+			end
+			if db.classcolor then
+				name = classColorStrings[class]:format(name)
+			end
+			return name
 		end
-		if db.classcolor then
-			name = classColorStrings[class]:format(name)
-		end
-		return name
 	end
 
 	return info.recipientName
