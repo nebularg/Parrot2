@@ -389,6 +389,9 @@ local defaultTriggers = {
 				"224324",
 			},
 		},
+		secondaryConditions = {
+			["Trigger cooldown"] = 1.5,
+		},
 		sticky = true,
 		color = "ffff00",
 	}]],
