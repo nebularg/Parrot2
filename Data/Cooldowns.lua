@@ -76,6 +76,12 @@ function module:CheckItems()
 	end
 end
 
+local generalWhitelist = {
+	[L["Racial"]] = true,
+	[L["Azerite Essence"]] = true,
+	[L["PvP Talent"]] = true,
+}
+
 function module:ResetSpells(e)
 	wipe(spells)
 	wipe(spellCooldowns)
@@ -85,7 +91,7 @@ function module:ResetSpells(e)
 		for slot = 1, numSlots do
 			local index = offset + slot
 			local spellName, subSpellName = GetSpellBookItemName(index, "spell")
-			if tab > 1 or subSpellName == "Racial" then -- damn Blizzard for not having a "Racial" global string
+			if tab > 1 or generalWhitelist[subSpellName] then
 				spells[spellName] = true
 				local start, duration = GetSpellCooldown(index, "spell")
 				if start and start > 0 and duration > db.threshold and not db.filters[spellName] then
