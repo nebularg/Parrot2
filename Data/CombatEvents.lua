@@ -1763,6 +1763,7 @@ Parrot:RegisterCombatEvent{
 	color = "ff7f00", -- orange
 	canCrit = true,
 	throttle = meleeThrottle,
+	filterType = { "Outgoing damage", 'amount' },
 }
 
 Parrot:RegisterCombatEvent{
