@@ -274,13 +274,20 @@ end
 --]]
 
 local function checkPlayerInc(srcGUID, _, _, dstGUID)
-	return dstGUID == playerGUID and srcGUID ~= dstGUID
+	return dstGUID == playerGUID
 end
 local function checkPlayerOut(srcGUID, _, _, dstGUID)
-	return srcGUID == playerGUID and srcGUID ~= dstGUID
+	return srcGUID == playerGUID
 end
 
 -- check player self damage
+local function checkPlayerNotSelfInc(srcGUID, _, _, dstGUID)
+	return dstGUID == playerGUID and srcGUID ~= dstGUID
+end
+local function checkPlayerNotSelfOut(srcGUID, _, _, dstGUID)
+	return srcGUID == playerGUID and srcGUID ~= dstGUID
+end
+
 local function checkPlayerSelfInc(srcGUID, _, _, dstGUID)
 	return dstGUID == playerGUID and srcGUID == dstGUID
 end
@@ -804,7 +811,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Skill damage"],
 	defaultTag = "([Name]) -[Amount]",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPlayerInc, },
+		SPELL_DAMAGE = { check = checkPlayerNotSelfInc, },
 		RANGE_DAMAGE = { check = checkPlayerInc, },
 		DAMAGE_SPLIT = { check = checkPlayerInc, },
 	},
@@ -824,7 +831,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "([Name]) -[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_DAMAGE = { check = checkPlayerInc, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerNotSelfInc, },
 	},
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = incSkillDamageTagTranslationsHelp,
