@@ -288,25 +288,16 @@ local function checkPlayerNotSelfOut(srcGUID, _, _, dstGUID)
 	return srcGUID == playerGUID and srcGUID ~= dstGUID
 end
 
-local function checkPlayerSelfInc(srcGUID, _, _, dstGUID)
+local function checkPlayerSelf(srcGUID, _, _, dstGUID)
 	return dstGUID == playerGUID and srcGUID == dstGUID
 end
-local function checkPlayerSelfOut(srcGUID, _, _, dstGUID)
-	return srcGUID == playerGUID and srcGUID == dstGUID
-end
 
-local function checkPlayerSelfIncAbsorb(srcGUID, _, _, dstGUID, _, _, missType)
+local function checkPlayerSelfAbsorb(srcGUID, _, _, dstGUID, _, _,_, _, _, missType)
 	return dstGUID == playerGUID and srcGUID == dstGUID and missType == "ABSORB"
 end
-local function checkPlayerSelfOutAbsorb(srcGUID, _, _, dstGUID, _, _, missType)
-	return srcGUID == playerGUID and srcGUID == dstGUID and missType == "ABSORB"
-end
 
-local function checkPlayerSelfIncMiss(srcGUID, _, _, dstGUID, _, _, missType)
+local function checkPlayerSelfMiss(srcGUID, _, _, dstGUID, _, _,_, _, _, missType)
 	return dstGUID == playerGUID and srcGUID == dstGUID and missType ~= "ABSORB"
-end
-local function checkPlayerSelfOutMiss(srcGUID, _, _, dstGUID, _, _, missType)
-	return srcGUID == playerGUID and srcGUID == dstGUID and missType ~= "ABSORB"
 end
 
 -- check pet damage
@@ -793,8 +784,8 @@ Parrot:RegisterCombatEvent{
 	localName = L["Self damage"],
 	defaultTag = "([Name]) -[Amount]",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPlayerSelfInc, },
-		SPELL_PERIODIC_DAMAGE = { check = checkPlayerSelfInc, },
+		SPELL_DAMAGE = { check = checkPlayerSelf, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerSelf, },
 	},
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = incSkillDamageTagTranslationsHelp,
@@ -893,8 +884,8 @@ Parrot:RegisterCombatEvent{
 	localName = L["Self damage absorbs"],
 	defaultTag = ("([Skill]) %s [Amount]!"):format(_G.ABSORB),
 	combatLogEvents = {
-		SPELL_MISSED = { check = checkPlayerSelfIncAbsorb, },
-		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfIncAbsorb, },
+		SPELL_MISSED = { check = checkPlayerSelfAbsorb, },
+		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfAbsorb, },
 	},
 	tagTranslations = incSpellMissTagTranslations,
 	tagTranslationsHelp = incSpellMissTagTranslationsHelp,
@@ -909,8 +900,8 @@ Parrot:RegisterCombatEvent{
 	localName = L["Self damage misses"],
 	defaultTag = "([Skill]) [MissType]!",
 	combatLogEvents = {
-		SPELL_MISSED = { check = checkPlayerSelfIncMiss, },
-		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfIncMiss, },
+		SPELL_MISSED = { check = checkPlayerSelfMiss, },
+		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfMiss, },
 	},
 	tagTranslations = {
 		Name = retrieveSourceName,
@@ -1436,8 +1427,8 @@ Parrot:RegisterCombatEvent{
 	localName = L["Self damage"],
 	defaultTag = "[Amount] ([Skill])",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPlayerSelfOut, },
-		SPELL_PERIODIC_DAMAGE = { check = checkPlayerSelfOut, },
+		SPELL_DAMAGE = { check = checkPlayerSelf, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerSelf, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
@@ -1454,7 +1445,7 @@ Parrot:RegisterCombatEvent{
 	localName = L["Skill damage"],
 	defaultTag = "[Amount] ([Skill])",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPlayerOut,	},
+		SPELL_DAMAGE = { check = checkPlayerNotSelfOut,	},
 		RANGE_DAMAGE = { check = checkPlayerOut, },
 		DAMAGE_SPLIT = { check = checkPlayerOut, },
 	},
@@ -1474,7 +1465,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "[Amount] ([Skill])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_DAMAGE = { check = checkPlayerOut, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerNotSelfOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
@@ -1540,8 +1531,8 @@ Parrot:RegisterCombatEvent{
 	localName = L["Self damage absorbs"],
 	defaultTag = ("([Skill]) %s [Amount]!"):format(_G.ABSORB),
 	combatLogEvents = {
-		SPELL_MISSED = { check = checkPlayerSelfIncAbsorb, },
-		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfIncAbsorb, },
+		SPELL_MISSED = { check = checkPlayerSelfAbsorb, },
+		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfAbsorb, },
 	},
 	tagTranslations = outSpellMissTagTranslations,
 	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
@@ -1556,8 +1547,8 @@ Parrot:RegisterCombatEvent{
 	localName = L["Self damage misses"],
 	defaultTag = "([Skill]) [MissType]!",
 	combatLogEvents = {
-		SPELL_MISSED = { check = checkPlayerSelfOutMiss, },
-		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfOutMiss, },
+		SPELL_MISSED = { check = checkPlayerSelfMiss, },
+		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfMiss, },
 	},
 	tagTranslations = {
 		Name = retrieveSourceName,
