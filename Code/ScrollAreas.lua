@@ -231,6 +231,7 @@ local function showOffsetBox(k)
 	offsetBox:Show()
 
 	local offsetX, offsetY = scrollAreas[k].xOffset, scrollAreas[k].yOffset
+	offsetBox.midPoint:ClearAllPoints()
 	offsetBox.midPoint:SetPoint("CENTER", UIParent, "CENTER", offsetX, offsetY)
 	offsetBox.bottomText:SetText(L["Position: %d, %d"]:format(offsetX, offsetY))
 end

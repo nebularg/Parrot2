@@ -2312,13 +2312,14 @@ local function checkForRelevance(sourceFlags, destFlags)
 	bit_band(destFlags, FLAGS_RELEVANT) == FLAGS_RELEVANT
 end
 
-function module:HandleCombatlogEvent(uid, timestamp, eventType, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
+function module:HandleCombatlogEvent(uid, timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, ...)
 	if not self:IsEnabled() then return end -- TODO remove
 
 	if checkForRelevance(sourceFlags, destFlags) then
 		local registeredHandlers = combatLogEvents[eventType]
 		if registeredHandlers then
 			local info = newList()
+			info.hideCaster = hideCaster
 			info.sourceID = sourceGUID
 			info.sourceName = sourceName or ""
 			info.sourceFlags = sourceFlags

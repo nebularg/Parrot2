@@ -127,38 +127,42 @@ end
 -- functions to retrieve player-names (to hide realm-names)
 --]]
 local function retrieveSourceName(info)
-	if db.hideUnitNames or info.sourceName == "" then
+	if db.hideUnitNames or info.sourceName == "" or info.hideCaster then
 		return "__NONAME__"
 	end
 
-	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.sourceID)
-	if class then
-		if not db.hideRealm then
-			name = info.sourceName
+	if info.sourceID and info.sourceID ~= "" then
+		local _, class, _, _, _, name = GetPlayerInfoByGUID(info.sourceID)
+		if class then
+			if not db.hideRealm then
+				name = info.sourceName
+			end
+			if db.classcolor then
+				name = classColorStrings[class]:format(name)
+			end
+			return name
 		end
-		if db.classcolor then
-			name = classColorStrings[class]:format(name)
-		end
-		return name
 	end
 
 	return info.sourceName
 end
 
 local function retrieveDestName(info)
-	if db.hideUnitNames or info.recipientName == "" then
+	if db.hideUnitNames or info.recipientName == "" or info.hideCaster then
 		return "__NONAME__"
 	end
 
-	local _, class, _, _, _, name = GetPlayerInfoByGUID(info.recipientID)
-	if class then
-		if not db.hideRealm then
-			name = info.recipientName
+	if info.recipientID and info.recipientID ~= "" then
+		local _, class, _, _, _, name = GetPlayerInfoByGUID(info.recipientID)
+		if class then
+			if not db.hideRealm then
+				name = info.recipientName
+			end
+			if db.classcolor then
+				name = classColorStrings[class]:format(name)
+			end
+			return name
 		end
-		if db.classcolor then
-			name = classColorStrings[class]:format(name)
-		end
-		return name
 	end
 
 	return info.recipientName
@@ -193,6 +197,13 @@ local dumbTriggerSpellOverride = {
 --]]
 local function retrieveIconFromAbilityName(info)
 	return dumbTriggerSpellOverride[info.spellID] or GetSpellTexture(info.spellID or info.abilityName)
+end
+
+--[[
+-- function to retrieve a localized miss reason
+--]]
+local function retrieveMissType(info)
+	return _G["ACTION_SPELL_MISSED_"..(info.missType or "")] or _G.ACTION_SPELL_MISSED_MISS
 end
 
 --[[
@@ -262,11 +273,31 @@ end
 -- All other units (pet, target, totems) are identified by flag-matching
 --]]
 
-local function checkPlayerInc(_, _, _, dstGUID, _, dstFlags)
+local function checkPlayerInc(srcGUID, _, _, dstGUID)
 	return dstGUID == playerGUID
 end
-local function checkPlayerOut(srcGUID, _, srcFlags)
+local function checkPlayerOut(srcGUID, _, _, dstGUID)
 	return srcGUID == playerGUID
+end
+
+-- check player self damage
+local function checkPlayerNotSelfInc(srcGUID, _, _, dstGUID)
+	return dstGUID == playerGUID and srcGUID ~= dstGUID
+end
+local function checkPlayerNotSelfOut(srcGUID, _, _, dstGUID)
+	return srcGUID == playerGUID and srcGUID ~= dstGUID
+end
+
+local function checkPlayerSelf(srcGUID, _, _, dstGUID)
+	return dstGUID == playerGUID and srcGUID == dstGUID
+end
+
+local function checkPlayerSelfAbsorb(srcGUID, _, _, dstGUID, _, _,_, _, _, missType)
+	return dstGUID == playerGUID and srcGUID == dstGUID and missType == "ABSORB"
+end
+
+local function checkPlayerSelfMiss(srcGUID, _, _, dstGUID, _, _,_, _, _, missType)
+	return dstGUID == playerGUID and srcGUID == dstGUID and missType ~= "ABSORB"
 end
 
 -- check pet damage
@@ -749,11 +780,29 @@ Parrot:RegisterCombatEvent{
 Parrot:RegisterCombatEvent{
 	category = "Incoming",
 	subCategory = L["Damage"],
+	name = "Self damage",
+	localName = L["Self damage"],
+	defaultTag = "([Name]) -[Amount]",
+	combatLogEvents = {
+		SPELL_DAMAGE = { check = checkPlayerSelf, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerSelf, },
+	},
+	tagTranslations = incSkillDamageTagTranslations,
+	tagTranslationsHelp = incSkillDamageTagTranslationsHelp,
+	color = "ff0000", -- red
+	canCrit = true,
+	throttle = skillThrottle,
+	filterType = { "Incoming damage", 'amount' },
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Incoming",
+	subCategory = L["Damage"],
 	name = "Skill damage",
 	localName = L["Skill damage"],
 	defaultTag = "([Name]) -[Amount]",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPlayerInc, },
+		SPELL_DAMAGE = { check = checkPlayerNotSelfInc, },
 		RANGE_DAMAGE = { check = checkPlayerInc, },
 		DAMAGE_SPLIT = { check = checkPlayerInc, },
 	},
@@ -773,7 +822,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "([Name]) -[Amount]",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_DAMAGE = { check = checkPlayerInc, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerNotSelfInc, },
 	},
 	tagTranslations = incSkillDamageTagTranslations,
 	tagTranslationsHelp = incSkillDamageTagTranslationsHelp,
@@ -825,6 +874,52 @@ end
 
 --[[============================================================================
 -- Incoming Events:
+-- Self-misses
+--============================================================================]]
+
+Parrot:RegisterCombatEvent{
+	category = "Incoming",
+	subCategory = L["Misses"],
+	name = "Self damage absorbs",
+	localName = L["Self damage absorbs"],
+	defaultTag = ("([Skill]) %s [Amount]!"):format(_G.ABSORB),
+	combatLogEvents = {
+		SPELL_MISSED = { check = checkPlayerSelfAbsorb, },
+		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfAbsorb, },
+	},
+	tagTranslations = incSpellMissTagTranslations,
+	tagTranslationsHelp = incSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
+	color = defaultMissColor.ABSORB,
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Incoming",
+	subCategory = L["Misses"],
+	name = "Self damage misses",
+	localName = L["Self damage misses"],
+	defaultTag = "([Skill]) [MissType]!",
+	combatLogEvents = {
+		SPELL_MISSED = { check = checkPlayerSelfMiss, },
+		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfMiss, },
+	},
+	tagTranslations = {
+		Name = retrieveSourceName,
+		Skill = retrieveAbilityName,
+		MissType = retrieveMissType,
+		Icon = retrieveIconFromAbilityName,
+	},
+	tagTranslationsHelp = {
+		Name = L["The name of the enemy that attacked you."],
+		Skill = L["The spell or ability that the enemy attacked you with."],
+		MissType = L["The reason the spell or ability missed."],
+	},
+	throttle = missThrottle,
+	color = defaultMissColor.MISS,
+}
+
+--[[============================================================================
+-- Incoming Events:
 -- Spell-misses
 --============================================================================]]
 
@@ -847,8 +942,8 @@ for k,v in pairs(missTypes) do
 	local tag = k == "ABSORB" and "([Skill]) %s [Amount]!" or "([Skill]) %s!"
 	tag = tag:format(_G[k])
 
-	local function check(_, _, _, dstGUID, _, _,_, _, _, missType)
-		return (dstGUID == playerGUID and missType == k)
+	local function check(srcGUID, _, _, dstGUID, _, _,_, _, _, missType)
+		return (dstGUID == playerGUID and srcGUID ~= dstGUID and missType == k)
 	end
 
 	Parrot:RegisterCombatEvent{
@@ -1328,11 +1423,29 @@ Parrot:RegisterCombatEvent{
 Parrot:RegisterCombatEvent{
 	category = "Outgoing",
 	subCategory = L["Damage"],
+	name = "Self damage",
+	localName = L["Self damage"],
+	defaultTag = "[Amount] ([Skill])",
+	combatLogEvents = {
+		SPELL_DAMAGE = { check = checkPlayerSelf, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerSelf, },
+	},
+	tagTranslations = outSkillDamageTagTranslations,
+	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
+	color = "ffff00", -- yellow
+	canCrit = true,
+	throttle = skillThrottle,
+	filterType = { "Outgoing damage", 'amount' },
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	subCategory = L["Damage"],
 	name = "Skill damage",
 	localName = L["Skill damage"],
 	defaultTag = "[Amount] ([Skill])",
 	combatLogEvents = {
-		SPELL_DAMAGE = { check = checkPlayerOut,	},
+		SPELL_DAMAGE = { check = checkPlayerNotSelfOut,	},
 		RANGE_DAMAGE = { check = checkPlayerOut, },
 		DAMAGE_SPLIT = { check = checkPlayerOut, },
 	},
@@ -1352,7 +1465,7 @@ Parrot:RegisterCombatEvent{
 	defaultTag = "[Amount] ([Skill])",
 	canCrit = true,
 	combatLogEvents = {
-		SPELL_PERIODIC_DAMAGE = { check = checkPlayerOut, },
+		SPELL_PERIODIC_DAMAGE = { check = checkPlayerNotSelfOut, },
 	},
 	tagTranslations = outSkillDamageTagTranslations,
 	tagTranslationsHelp = outSkillDamageTagTranslationsHelp,
@@ -1408,6 +1521,52 @@ end
 
 --[[============================================================================
 -- Outgoing Events:
+-- Self-misses
+--============================================================================]]
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	subCategory = L["Misses"],
+	name = "Self damage absorbs",
+	localName = L["Self damage absorbs"],
+	defaultTag = ("([Skill]) %s [Amount]!"):format(_G.ABSORB),
+	combatLogEvents = {
+		SPELL_MISSED = { check = checkPlayerSelfAbsorb, },
+		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfAbsorb, },
+	},
+	tagTranslations = outSpellMissTagTranslations,
+	tagTranslationsHelp = outSpellMissTagTranslationsHelp,
+	throttle = missThrottle,
+	color = defaultMissColor.ABSORB,
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	subCategory = L["Misses"],
+	name = "Self damage misses",
+	localName = L["Self damage misses"],
+	defaultTag = "([Skill]) [MissType]!",
+	combatLogEvents = {
+		SPELL_MISSED = { check = checkPlayerSelfMiss, },
+		SPELL_PERIODIC_MISSED = { check = checkPlayerSelfMiss, },
+	},
+	tagTranslations = {
+		Name = retrieveSourceName,
+		Skill = retrieveAbilityName,
+		MissType = retrieveMissType,
+		Icon = retrieveIconFromAbilityName,
+	},
+	tagTranslationsHelp = {
+		Name = L["The name of the enemy that attacked you."],
+		Skill = L["The spell or ability that the enemy attacked you with."],
+		MissType = L["The reason the spell or ability missed."],
+	},
+	throttle = missThrottle,
+	color = defaultMissColor.MISS,
+}
+
+--[[============================================================================
+-- Outgoing Events:
 -- Spell-misses
 --============================================================================]]
 
@@ -1415,8 +1574,8 @@ for k,v in pairs(missTypes) do
 	local name = "Skill " .. v
 	local tag = k == "ABSORB" and "%s [Amount]! ([Skill])" or "%s! ([Skill])"
 	tag = tag:format(_G[k])
-	local function check( srcGUID, _, _, _, _, _,_, _, _, missType)
-		return (srcGUID == playerGUID and missType == k)
+	local function check(srcGUID, _, _, dstGUID, _, _,_, _, _, missType)
+		return (srcGUID == playerGUID and srcGUID ~= dstGUID and missType == k)
 	end
 	Parrot:RegisterCombatEvent{
 		category = "Outgoing",
@@ -1625,6 +1784,7 @@ Parrot:RegisterCombatEvent{
 	color = "ff7f00", -- orange
 	canCrit = true,
 	throttle = meleeThrottle,
+	filterType = { "Outgoing damage", 'amount' },
 }
 
 Parrot:RegisterCombatEvent{

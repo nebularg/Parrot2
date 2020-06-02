@@ -167,11 +167,12 @@ local defaultTriggers = {
 		icon = 6572,
 		spec = { WARRIOR = "73" },
 		conditions = {
-			["Incoming miss"] = { "DODGE", "PARRY", },
-		},
-		secondaryConditions = {
-			["Spell ready"] = {
-				[1] = GetSpellInfo(6572),
+			["Aura gain"] = {
+				{
+					spell = GetSpellInfo(5302),
+					unit = "player",
+					auraType = "BUFF",
+				},
 			},
 		},
 		sticky = true,
@@ -387,6 +388,9 @@ local defaultTriggers = {
 			["Spell overlay"] = {
 				"224324",
 			},
+		},
+		secondaryConditions = {
+			["Trigger cooldown"] = 1.5,
 		},
 		sticky = true,
 		color = "ffff00",
