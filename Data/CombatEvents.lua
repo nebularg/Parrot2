@@ -1327,6 +1327,48 @@ Parrot:RegisterCombatEvent{
 
 --[[============================================================================
 -- Incoming Pet Events:
+-- Dispel
+--============================================================================]]
+
+Parrot:RegisterCombatEvent{
+	category = "Incoming",
+	subCategory = L["Dispel"],
+	name = "Pet dispel",
+	localName = L["Pet dispel"],
+	defaultTag = "[Skill] -[ExtraSkill]",
+	combatLogEvents = {
+		SPELL_DISPEL = { check = checkPetInc, },
+	},
+	tagTranslations = incDispelTagTranslations,
+	tagTranslationsHelp = {
+		Name = L["The name of the unit that dispelled the spell from your pet."],
+		Skill = L["The name of the spell that has been used for dispelling."],
+		ExtraSkill = L["The name of the spell that has been dispelled."],
+	},
+	color = "ffffff" -- white
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Incoming",
+	subCategory = L["Dispel"],
+	name = "Pet dispel fail",
+	localName = L["Pet dispel fail"],
+	defaultTag = L["%s failed"]:format("[Skill]"),
+	combatLogEvents = {
+		SPELL_DISPEL_FAILED = { check = checkPetInc, },
+	},
+	tagTranslations = incDispelTagTranslations,
+	tagTranslationsHelp = {
+		Name = L["The name of the unit that failed dispelling the spell from your pet."],
+		Skill = L["The name of the spell that has been used for dispelling."],
+		ExtraSkill = L["The name of the spell that has not been dispelled."],
+	},
+	sticky = true,
+	color = "ffffff" -- white
+}
+
+--[[============================================================================
+-- Incoming Pet Events:
 -- Other
 --============================================================================]]
 
@@ -1920,6 +1962,48 @@ Parrot:RegisterCombatEvent{
 	throttle = hotThrottle,
 	color = "00ff00", -- green
 	filterType = { "Incoming heals", 'realAmount' },
+}
+
+--[[============================================================================
+-- Outgoing Pet Events:
+-- Dispel
+--============================================================================]]
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	subCategory = L["Dispel"],
+	name = "Pet dispel",
+	localName = L["Pet dispel"],
+	defaultTag = "[Skill] -[ExtraSkill]",
+	combatLogEvents = {
+		SPELL_DISPEL = { check = checkPetOut, },
+	},
+	tagTranslations = outDispelTagTranslations,
+	tagTranslationsHelp = {
+		Name = L["The name of the unit from which the spell has been removed."],
+		Skill = L["The name of the spell that has been used for dispelling."],
+		ExtraSkill = L["The name of the spell that has been dispelled."],
+	},
+	color = "ffffff" -- white
+}
+
+Parrot:RegisterCombatEvent{
+	category = "Outgoing",
+	subCategory = L["Dispel"],
+	name = "Pet dispel fail",
+	localName = L["Pet dispel fail"],
+	defaultTag = L["%s failed"]:format("[Skill]"),
+	combatLogEvents = {
+		SPELL_DISPEL_FAILED = { check = checkPetOut, },
+	},
+	tagTranslations = outDispelTagTranslations,
+	tagTranslationsHelp = {
+		Name = L["The name of the unit from which the spell has not been removed."],
+		Skill = L["The name of the spell that has been used for dispelling."],
+		ExtraSkill = L["The name of the spell that has not been dispelled."],
+	},
+	sticky = true,
+	color = "ffffff" -- white
 }
 
 --[[============================================================================
