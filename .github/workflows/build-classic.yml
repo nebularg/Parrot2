@@ -31,4 +31,4 @@ jobs:
         run: ~/.luarocks/bin/luacheck . -o 011
 
       - name: Package and Publish
-        run: ~/release.sh -g 1.13.2
+        run: ~/release.sh
