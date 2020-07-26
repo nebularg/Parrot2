@@ -35,12 +35,26 @@ local SchoolParser = {
 	[2]  = "Holy",
 	[4]  = "Fire",
 	[8]  = "Nature",
+	[9]  = "Stormstrike",
 	[16] = "Frost",
 	[20] = "FrostFire",
 	[24] = "Froststorm",
 	[32] = "Shadow",
-	[40] = "Shadowstorm",
-	[64] = "Arcane"
+	[33] = "Shadowstrike",
+	[34] = "Twilight",
+	[36] = "Shadowflame",
+	[40] = "Plague",
+	[48] = "Shadowfrost",
+	[64] = "Arcane",
+	[64] = "Spellstrike",
+	[68] = "Spellfire",
+	[72] = "Astral",
+	[80] = "Spellfrost",
+	[96] = "Spellshadow",
+	[28] = "Elemental",
+	[124] = "Chaos", -- Chromatic
+	[126] = "Magic",
+	[127] = "Chaos",
 }
 
 local PowerTypeParser = setmetatable({
@@ -68,20 +82,6 @@ local PowerTypeParser = setmetatable({
 	end
 end })
 
--- lookup-table for damage-types
-local LS = {
-	["Physical"] = _G.STRING_SCHOOL_PHYSICAL,
-	["Holy"] = _G.STRING_SCHOOL_HOLY,
-	["Fire"] = _G.STRING_SCHOOL_FIRE,
-	["Nature"] = _G.STRING_SCHOOL_NATURE,
-	["Frost"] = _G.STRING_SCHOOL_FROST,
-	["Frostfire"] = _G.STRING_SCHOOL_FROSTFIRE,
-	["Froststorm"] = _G.STRING_SCHOOL_FROSTSTORM,
-	["Shadow"] = _G.STRING_SCHOOL_SHADOW,
-	["Shadowstorm"] = _G.STRING_SCHOOL_SHADOWSTORM,
-	["Arcane"] = _G.STRING_SCHOOL_ARCANE,
-}
-
 local coloredDamageAmount = function(info)
 	local damageType = SchoolParser[info.damageType or 1]
 	local amount = Parrot:ShortenAmount(info.amount)
@@ -102,12 +102,10 @@ local realDamageAmount = function(info)
 end
 
 local damageTypeString = function(info)
-	local damageType = SchoolParser[info.damageType]
-	if damageType then
-		return LS[damageType] or tostring(damageType)
-	else
+	if not info.damageType or info.damageType == 0 then
 		return ""
 	end
+	return GetSchoolString(info.damageType) or _G.STRING_SCHOOL_UNKNOWN
 end
 
 local sanitizedPowerAmount = function(info)
@@ -748,7 +746,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = {
 		Name = retrieveSourceName,
-		Amount = coloredDamageAmount,
+		Amount = damageAmount,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy that attacked you."],
@@ -1166,7 +1164,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = {
 		Name = retrieveSourceName,
-		Amount = coloredDamageAmount,
+		Amount = damageAmount,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy that attacked your pet."],
@@ -1433,7 +1431,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslations = {
 		Name = retrieveDestName,
-		Amount = coloredDamageAmount,
+		Amount = damageAmount,
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the enemy you attacked."],
