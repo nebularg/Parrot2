@@ -2268,7 +2268,7 @@ local legacyNames = {
 	spellName = "abilityName",
 	extraSpellName = "extraAbilityName",
 	overhealing = "overhealAmount",
-	spellSchool = "damageType",
+	school = "damageType",
 }
 
 local function makeParseFunction(event)
