@@ -565,7 +565,7 @@ Parrot:RegisterAnimationStyle {
 
 		local y = yOffset + yDiff
 		local x = xOffset + xDiff
-		local dir, clock = (";"):split(direction) -- luacheck: ignore
+		local dir = (";"):split(direction)
 		local point = "CENTER"
 		if dir == "LEFT" then
 			point = "RIGHT"
@@ -633,7 +633,7 @@ Parrot:RegisterAnimationStyle {
 
 		local y = yOffset + yDiff
 		local x = xOffset + xDiff
-		local dir, clock = (";"):split(direction) -- luacheck: ignore
+		local dir = (";"):split(direction)
 		local point = "CENTER"
 		if dir == "LEFT" then
 			point = "RIGHT"

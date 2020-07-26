@@ -69,7 +69,7 @@ _G.LibStub = setmetatable({}, { __call = function() return m end })
 for _, file in next, locale_files do
 	dofile(string.format("%sLocales/%s.lua", file_prefix or "", file))
 
-	local locale = assert(io.open(string.format("%sLocales/%s.lua", file_prefix or "", file), "wb"), "Could not open " .. file)
+	locale = assert(io.open(string.format("%sLocales/%s.lua", file_prefix or "", file), "wb"), "Could not open " .. file)
 	locale:write('local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "' .. file .. '")')
 	if file == "esES" then
 		locale:write(' or LibStub("AceLocale-3.0"):NewLocale("Parrot", "esMX")')

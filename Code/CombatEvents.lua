@@ -314,10 +314,6 @@ function module:GetAbbreviatedSpell(name)
 		t = del(t)
 		return s
 	elseif style == "truncate" then
-		local num = neededLen-3
-		if num < 3 then
-			num = 3
-		end
 		return utf8trunc(name, neededLen) .. "..."
 	end
 	return name

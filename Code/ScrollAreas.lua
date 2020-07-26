@@ -139,7 +139,6 @@ function module:OnDisable()
 end
 
 -- Register ConfigMode callback (http://wowpedia.org/ConfigMode)
--- luacheck: globals CONFIGMODE_CALLBACKS
 CONFIGMODE_CALLBACKS = CONFIGMODE_CALLBACKS or {}
 CONFIGMODE_CALLBACKS["Parrot"] = function(state)
 	setConfigMode(state == "ON")
@@ -949,7 +948,7 @@ function module:OnOptionsCreate()
 						animationStyle = "Straight",
 						direction = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection("Straight"),
 						stickyAnimationStyle = "Pow",
-						direction = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection("Pow"),
+						stickyDirection = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection("Pow"),
 						size = 150,
 						xOffset = 0,
 						yOffset = 0,
