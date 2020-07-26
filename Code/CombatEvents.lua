@@ -750,9 +750,9 @@ function module:OnOptionsCreate()
 				"Spellshadow", GetSchoolString(96)
 			),
 			newDict(
-			"Elemental", GetSchoolString(28),
-			"Magic", GetSchoolString(126),
-			"Chaos", GetSchoolString(127)
+				"Elemental", GetSchoolString(28),
+				"Magic", GetSchoolString(126),
+				"Chaos", GetSchoolString(127)
 			)
 		)
 		local function getColor(info)
@@ -762,6 +762,12 @@ function module:OnOptionsCreate()
 			db.damageTypes[info.arg] = tupleToHexColor(r, g, b)
 		end
 		for i, schools in ipairs(tmp) do
+			events_opt.args.damageTypes.args["spacer"..i] = {
+				type = "header",
+				name = "",
+				width = "full",
+				order = i + 0.5,
+			}
 			for k,v in pairs(schools) do
 				events_opt.args.damageTypes.args[k] = {
 					type = 'color',
@@ -772,13 +778,6 @@ function module:OnOptionsCreate()
 					arg = k,
 					order = i + 1,
 				}
-				if i < #tmp then
-					events_opt.args.damageTypes.args["spacer"..i] = {
-						type = "header",
-						name = "",
-						order = i + 1.5,
-					}
-				end
 			end
 			tmp[i] = del(schools)
 		end
