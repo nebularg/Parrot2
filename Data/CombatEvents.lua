@@ -78,7 +78,9 @@ local PowerTypeParser = setmetatable({
 	[18] = _G.PAIN,
 }, { __index = function(self, key)
 	if key == ALTERNATE_POWER_INDEX then
-		return select(10, UnitAlternatePowerInfo("player"))
+		local barID = UnitPowerBarID("player")
+		local name = GetUnitPowerBarStringsByID(barID)
+		return name
 	end
 end })
 
