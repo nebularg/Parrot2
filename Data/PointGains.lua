@@ -1,5 +1,3 @@
-local wow_900 = select(4, GetBuildInfo()) > 90000
-
 local _, ns = ...
 local Parrot = ns.addon
 local module = Parrot:NewModule("PointGains")
@@ -26,26 +24,18 @@ local function parseCurrencyUpdate(chatmsg)
 	end
 
 	if currency then
-		local name, total, texture, quality, _
-		if wow_900 then
-			local currencyInfo = C_CurrencyInfo.GetCurrencyInfoFromLink(currency)
-			name = currencyInfo.name
-			total = currencyInfo.quantity
-			texture = currencyInfo.iconFileID
-			quality = currencyInfo.quality
-		else
-			name, total, texture, _, _, _, _, quality = GetCurrencyInfo(currency)
-		end
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfoFromLink(currency)
+		local name = currencyInfo.name
 		if name == "" then return end
-		local color = ITEM_QUALITY_COLORS[quality]
+		local color = ITEM_QUALITY_COLORS[currencyInfo.quality]
 		if color then
 			name = ("%s%s|r"):format(color.hex, name)
 		end
 		return newDict(
 			"currency", name,
 			"amount", amount or 1,
-			"total", total,
-			"icon", texture
+			"total", currencyInfo.quantity,
+			"icon", currencyInfo.iconFileID
 		)
 	end
 end
