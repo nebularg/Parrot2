@@ -564,13 +564,13 @@ local defaultTriggers = {
 	}]],
 	[1063] = [[{
 		-- Divine Purpose
-		name = L["%s!"]:format(GetSpellInfo(216413)),
-		icon = 216413,
+		name = L["%s!"]:format(GetSpellInfo(223817)),
+		icon = 223817,
 		spec = { PALADIN = "65;70" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(216413),
+					spell = GetSpellInfo(223817),
 					unit = "player",
 					auraType = "BUFF",
 				},
