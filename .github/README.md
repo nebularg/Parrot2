@@ -49,6 +49,6 @@ time we check the item's count.
 [create a pull request](https://github.com/nebularg/Parrot2).
 
 ## Download
-[Curse](https://mods.curse.com/addons/wow/parrot2)  
+[Curse](https://www.curseforge.com/wow/addons/parrot2)
 [WoWInterface](http://www.wowinterface.com/downloads/info24143-Parrot2.html)  
 [GitHub](https://github.com/nebularg/Parrot2/releases)
