@@ -24,7 +24,7 @@ jobs:
       - name: Run luacheck
         uses: nebularg/actions-luacheck@v1
         with:
-          args: -q
+          args: -qo 011
 
       - name: Package Classic
         uses: BigWigsMods/packager@master
