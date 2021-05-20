@@ -210,13 +210,11 @@ do
 end
 
 -- Init
-local db = nil
 local defaults = {
 	profile = {}
 }
 
 function Parrot:OnProfileChanged(event, database)
-	db = self.db.profile
 	for _, mod in self:IterateModules() do
 		if type(mod.OnProfileChanged) == "function" then
 			mod:OnProfileChanged(event, database)
@@ -226,7 +224,6 @@ end
 
 function Parrot:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("ParrotDB", defaults, true)
-	db = self.db.profile
 
 	self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
