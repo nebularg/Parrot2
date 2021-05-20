@@ -6,6 +6,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 local newDict, newList = Parrot.newDict, Parrot.newList
 local Deformat = Parrot.Deformat
 
+local GetCurrencyInfo = C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo or GetCurrencyInfo
+
 local currentXP = 0
 
 function module:OnEnable()
