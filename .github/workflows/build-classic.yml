@@ -6,6 +6,8 @@ on:
       - classic
     tags:
       - '*classic*'
+    paths-ignore:
+      - '.github/**'
 
 env:
   CF_API_KEY: ${{ secrets.CF_API_KEY }}
@@ -15,20 +17,21 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'skip ci') != true
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get install luarocks pandoc
-          luarocks install --local luacheck
-          wget -O ~/release.sh https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh
-          chmod +x ~/release.sh
-
       - name: Run luacheck
-        run: ~/.luarocks/bin/luacheck . -o 011
+        uses: nebularg/actions-luacheck@v1
+        with:
+          args: -q
 
-      - name: Package and Publish
-        run: ~/release.sh
+      - name: Package Classic
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g classic
+
+      - name: Package BCC
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g bcc
