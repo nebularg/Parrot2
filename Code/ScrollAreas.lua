@@ -949,7 +949,7 @@ function module:OnOptionsCreate()
 						animationStyle = "Straight",
 						direction = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection("Straight"),
 						stickyAnimationStyle = "Pow",
-						direction = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection("Pow"),
+						stickyDirection = Parrot_AnimationStyles:GetAnimationStyleDefaultDirection("Pow"),
 						size = 150,
 						xOffset = 0,
 						yOffset = 0,

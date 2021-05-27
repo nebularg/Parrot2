@@ -18,20 +18,20 @@ local spellGroups = {}
 local spellCooldowns = {}
 local itemCooldowns = {}
 
-do
-	local function addGroup(name, ...)
-		for i=1, select("#", ...) do
-			local id = select(i, ...)
-			local spell = GetSpellInfo(id)
-			if spell then
-				spellGroups[spell] = name
-			else
-				print("Parrot: Cooldown spell missing:", id)
-			end
-		end
-	end
-	-- addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
-end
+-- do
+-- 	local function addGroup(name, ...)
+-- 		for i=1, select("#", ...) do
+-- 			local id = select(i, ...)
+-- 			local spell = GetSpellInfo(id)
+-- 			if spell then
+-- 				spellGroups[spell] = name
+-- 			else
+-- 				print("Parrot: Cooldown spell missing:", id)
+-- 			end
+-- 		end
+-- 	end
+-- 	addGroup(L["Strikes"], 17364, 73899) -- Stormstrike, Primal Strike
+-- end
 
 function module:OnProfileChanged()
 	db = self.db.profile

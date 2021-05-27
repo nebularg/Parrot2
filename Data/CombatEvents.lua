@@ -369,7 +369,6 @@ local long_format_texts = {
 	[" (%d heals, %d crit)"] = L[" (%d heals, %d crit)"],
 	[" (%d heals, %d crits)"] = L[" (%d heals, %d crits)"],
 	[" (%d heals)"] = L[" (%d heals)"],
-	[" (%d crits)"] = L[" (%d crits)"],
 }
 
 local short_format_texts = {
@@ -385,38 +384,37 @@ local short_format_texts = {
 	[" (%d heals, %d crit)"] = " (%dx, %d++)",
 	[" (%d heals, %d crits)"] = " (%dx, %d++)",
 	[" (%d heals)"] = " (%dx)",
-	[" (%d crits)"] = " (%d++)",
 }
 
 local function damageThrottleFunc(info)
-	local L = db.useShortThrottleText and short_format_texts or long_format_texts
+	local texts = db.useShortThrottleText and short_format_texts or long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0
 	if numNorm == 1 then
 		if numCrit == 1 then
-			return L[" (%d hit, %d crit)"]:format(1, 1)
+			return texts[" (%d hit, %d crit)"]:format(1, 1)
 		elseif numCrit == 0 then
 			-- just one hit
 			return nil
 		else -- >= 2
-			return L[" (%d hit, %d crits)"]:format(1, numCrit)
+			return texts[" (%d hit, %d crits)"]:format(1, numCrit)
 		end
 	elseif numNorm == 0 then
 		if numCrit < 2 then
 			-- just one crit
 			return nil
 		else -- >= 2
-			return L[" (%d crits)"]:format(numCrit)
+			return texts[" (%d crits)"]:format(numCrit)
 		end
 	else -- >= 2
 		if numCrit == 1 then
-			return L[" (%d hits, %d crit)"]:format(numNorm, 1)
+			return texts[" (%d hits, %d crit)"]:format(numNorm, 1)
 		elseif numCrit == 0 then
 			-- just one hit
-			return L[" (%d hits)"]:format(numNorm)
+			return texts[" (%d hits)"]:format(numNorm)
 		else -- >= 2
-			return L[" (%d hits, %d crits)"]:format(numNorm, numCrit)
+			return texts[" (%d hits, %d crits)"]:format(numNorm, numCrit)
 		end
 	end
 end
@@ -431,34 +429,34 @@ local function missThrottleFunc(info)
 end
 
 local healThrottleFunc = function(info)
-	local L = db.useShortThrottleText and short_format_texts or long_format_texts
+	local texts = db.useShortThrottleText and short_format_texts or long_format_texts
 	local numNorm = info.throttleCount_isCrit_false or 0
 	local numCrit = info.throttleCount_isCrit_true or 0
 	info.isCrit = numCrit > 0
 	if numNorm == 1 then
 		if numCrit == 1 then
-			return L[" (%d heal, %d crit)"]:format(1, 1)
+			return texts[" (%d heal, %d crit)"]:format(1, 1)
 		elseif numCrit == 0 then
 			-- just one hit
 			return nil
 		else -- >= 2
-			return L[" (%d heal, %d crits)"]:format(1, numCrit)
+			return texts[" (%d heal, %d crits)"]:format(1, numCrit)
 		end
 	elseif numNorm == 0 then
 		if numCrit < 2 then
 			-- just one crit
 			return nil
 		else -- >= 2
-			return L[" (%d crits)"]:format(numCrit)
+			return texts[" (%d crits)"]:format(numCrit)
 		end
 	else -- >= 2
 		if numCrit == 1 then
-			return L[" (%d heals, %d crit)"]:format(numNorm, 1)
+			return texts[" (%d heals, %d crit)"]:format(numNorm, 1)
 		elseif numCrit == 0 then
 			-- just one hit
-			return L[" (%d heals)"]:format(numNorm)
+			return texts[" (%d heals)"]:format(numNorm)
 		else -- >= 2
-			return L[" (%d heals, %d crits)"]:format(numNorm, numCrit)
+			return texts[" (%d heals, %d crits)"]:format(numNorm, numCrit)
 		end
 	end
 end

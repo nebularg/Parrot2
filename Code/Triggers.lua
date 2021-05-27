@@ -1078,12 +1078,6 @@ function module:OnOptionsCreate()
 		doSetClass(t, class, value)
 	end
 
-	local function notIsClass(info)
-		local class = info[#info]:gsub("-$", "")
-		local t = getTriggerTable(info)
-		return t.class:find(class, nil, true) and true
-	end
-
 	local function getColoredName(info)
 		local t = getTriggerTable(info)
 		if t.class:find(playerClass, nil, true) then

@@ -56,7 +56,7 @@ local getIcon do
 		pet = true,
 		target = true,
 	}
-	local i = 1, 40 do
+	for i = 1, 40 do
 		units["nameplate"..i] = true
 		-- units["raid"..i.."target"] = true
 	end
@@ -158,7 +158,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the buff gained."],
-		Name = L["New Amount of stacks of the buff."],
+		Amount = L["New Amount of stacks of the buff."],
 	},
 	color = "b2b200", -- dark yellow
 }
@@ -183,7 +183,7 @@ Parrot:RegisterCombatEvent{
 	},
 	tagTranslationsHelp = {
 		Name = L["The name of the debuff gained."],
-		Name = L["New Amount of stacks of the debuff."],
+		Amount = L["New Amount of stacks of the debuff."],
 	},
 	color = "007f7f", -- dark cyan
 }
