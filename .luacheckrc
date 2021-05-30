@@ -20,6 +20,7 @@ globals = {
 	"UIParent",
 
 	"bit",
+	"BackdropTemplateMixin",
 	"BreakUpLargeNumbers",
 	"C_CurrencyInfo",
 	"CombatLogGetCurrentEventInfo",

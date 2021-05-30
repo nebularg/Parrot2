@@ -488,7 +488,7 @@ ParrotFrame:SetScript("OnUpdate", Display_Update)
 
 local flasher = nil
 local function makeflasher()
-	flasher = CreateFrame("Frame", "ParrotFlash", UIParent)
+	flasher = CreateFrame("Frame", "ParrotFlash", UIParent, BackdropTemplateMixin and "BackdropTemplate")
 	flasher:SetFrameStrata("BACKGROUND")
 	flasher:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",})
 	flasher:SetAllPoints( UIParent)
