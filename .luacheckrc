@@ -39,6 +39,8 @@ globals = {
 	"GetItemIcon",
 	"GetItemInfo",
 	"GetPlayerInfoByGUID",
+	"GetPVPRankInfo",
+	"GetPVPSessionStats",
 	"GetSchoolString",
 	"GetScreenHeight",
 	"GetScreenWidth",
@@ -67,6 +69,7 @@ globals = {
 	"strsplit",
 	"tostringall",
 	"UnitClass",
+	"UnitFactionGroup",
 	"UnitGUID",
 	"UnitHasVehicleUI",
 	"UnitHealth",
@@ -79,6 +82,7 @@ globals = {
 	"UnitPower",
 	"UnitPowerBarID",
 	"UnitPowerMax",
+	"UnitPVPRank",
 	"UnitXP",
 	"wipe",
 
@@ -88,4 +92,7 @@ globals = {
 	"DISABLE",
 	"ENABLE",
 	"LARGE_NUMBER_SEPERATOR",
+	"WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
+	"WOW_PROJECT_CLASSIC",
+	"WOW_PROJECT_ID",
 }
