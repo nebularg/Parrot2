@@ -1,13 +1,15 @@
 local _, ns = ...
 local Parrot = ns.addon
+if not Parrot then return end
+
 local module = Parrot:NewModule("PointGains")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newDict, newList = Parrot.newDict, Parrot.newList
 local Deformat = Parrot.Deformat
 
-local wow_classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-local wow_bcc = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+local wow_classic_era = Parrot.wow_classic_era
+local wow_classic = Parrot.wow_classic
 
 local currentXP = 0
 
@@ -49,7 +51,7 @@ end
 local function parseHonorGain(chatmsg)
 	local amount = tonumber(chatmsg:match("%d+"))
 	if amount then
-		if wow_bcc then
+		if wow_classic then
 			local info = C_CurrencyInfo.GetCurrencyInfo(1901)
 			return newDict(
 				"currency", info.name,
@@ -57,7 +59,7 @@ local function parseHonorGain(chatmsg)
 				"total", info.totalEarned,
 				"icon", info.iconFileID
 			)
-		elseif wow_classic then
+		elseif wow_classic_era then
 			local total = GetPVPSessionStats()
 			local _, rank = GetPVPRankInfo(UnitPVPRank("player"))
 			local icon = nil

@@ -28,10 +28,3 @@ jobs:
 
       - name: Package Classic
         uses: BigWigsMods/packager@master
-        with:
-          args: -g classic
-
-      - name: Package BCC
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g bcc

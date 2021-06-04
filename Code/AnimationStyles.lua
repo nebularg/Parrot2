@@ -1,5 +1,7 @@
 local _, ns = ...
 local Parrot = ns.addon
+if not Parrot then return end
+
 local module = Parrot:NewModule("AnimationStyles")
 
 local animationStyles = {}

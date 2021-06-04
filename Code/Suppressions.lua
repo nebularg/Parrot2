@@ -1,5 +1,7 @@
 local _, ns = ...
 local Parrot = ns.addon
+if not Parrot then return end
+
 local module = Parrot:NewModule("Suppressions")
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 

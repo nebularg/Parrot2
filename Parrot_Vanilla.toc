@@ -1,6 +1,4 @@
-## Interface: 20501
-## Interface-BCC: 20501
-## Interface-Classic: 11307
+## Interface: 11403
 ## Title: Parrot 2
 ## Notes: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-esES: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
