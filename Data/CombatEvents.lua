@@ -175,7 +175,8 @@ local dumbTriggerSpellOverride = {
 -- helperfunction to retrieve an icon
 --]]
 local function retrieveIconFromAbilityName(info)
-	return dumbTriggerSpellOverride[info.spellID] or GetSpellTexture(info.abilityName)
+	local _, _, effectTexture = GetSpellInfo(info.spellID)
+	return dumbTriggerSpellOverride[info.spellID] or GetSpellTexture(info.abilityName) or effectTexture
 end
 
 --[[
