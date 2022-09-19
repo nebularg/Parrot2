@@ -49,6 +49,8 @@ local PowerTypeParser = {
 	[2] = _G.FOCUS,
 	[3] = _G.ENERGY,
 	[4] = _G.HAPPINESS,
+	[5] = _G.RUNES,
+	[6] = _G.RUNIC_POWER,
 	[14] = _G.COMBO_POINTS,
 }
 
