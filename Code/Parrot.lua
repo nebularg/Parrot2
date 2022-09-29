@@ -7,7 +7,7 @@ local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 Parrot.wow_classic_era = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-Parrot.wow_classic = WOW_PROJECT_ID == WOW_PROJECT_WRATH
+Parrot.wow_classic = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 
 -- Debug
 local debug = function() end
