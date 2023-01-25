@@ -385,6 +385,12 @@ function module:OnOptionsCreate()
 		db[category][arg][name] = value
 	end
 
+	local qualityPoor = select(4, GetItemQualityColor(0))
+	local qualityCommon = select(4, GetItemQualityColor(1))
+	local qualityUncommon = select(4, GetItemQualityColor(2))
+	local qualityRare = select(4, GetItemQualityColor(3))
+	local qualityEpic = select(4, GetItemQualityColor(4))
+
 	local events_opt
 	events_opt = {
 		type = 'group',
@@ -418,6 +424,66 @@ function module:OnOptionsCreate()
 							checkZone()
 						end,
 						order = 2,
+					},
+				},
+			},
+			lootoptions = {
+				name = "Loot options",
+				type = 'group',
+				inline = true,
+				args = {
+					lootQuestItem = {
+						type = 'toggle',
+						name = L["Always show quest items"],
+						set = function(info, value)
+							setOption(info, value)
+						end,
+						order = 1,
+					},
+					sep = {
+						type = "description",
+						name = "",
+						order = 2,
+					},
+					lootQualityPoor = {
+						type = 'toggle',
+						name = "|c"..qualityPoor..L["Poor"].."|r",
+						set = function(info, value)
+							setOption(info, value)
+						end,
+						order = 3,
+					},
+					lootQualityCommon = {
+						type = 'toggle',
+						name = "|c"..qualityCommon..L["Common"].."|r",
+						set = function(info, value)
+							setOption(info, value)
+						end,
+						order = 4,
+					},
+					lootQualityUncommon = {
+						type = 'toggle',
+						name = "|c"..qualityUncommon..L["Uncommon"].."|r",
+						set = function(info, value)
+							setOption(info, value)
+						end,
+						order = 5,
+					},
+					lootQualityRare = {
+						type = 'toggle',
+						name = "|c"..qualityRare..L["Rare"].."|r",
+						set = function(info, value)
+							setOption(info, value)
+						end,
+						order = 6,
+					},
+					lootQualityEpic = {
+						type = 'toggle',
+						name = "|c"..qualityEpic..L["Epic"].."|r",
+						set = function(info, value)
+							setOption(info, value)
+						end,
+						order = 7,
 					},
 				},
 			},
