@@ -1,7 +1,7 @@
 local debug = true
---@debug@
+--[==[@debug@
 debug = nil
---@end-debug@
+--@end-debug@]==]
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)
 
@@ -600,3 +600,10 @@ L["[Text] (crit)"] = true
 L["[Text] (crushing)"] = true
 L["[Text] (glancing)"] = true
 L["[[Spell] ready!]"] = true
+L["Loot options"] = true
+L["Always show quest items"] = true
+L["Poor"] = true
+L["Common"] = true
+L["Uncommon"] = true
+L["Rare"] = true
+L["Epic"] = true
