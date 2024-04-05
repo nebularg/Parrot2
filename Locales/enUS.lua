@@ -1,7 +1,7 @@
 local debug = true
---@debug@
+--[==[@debug@
 debug = nil
---@end-debug@
+--@end-debug@]==]
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Parrot", "enUS", true, debug)
 
@@ -17,6 +17,7 @@ L[" (%d hit, %d crits)"] = true
 L[" (%d hits)"] = true
 L[" (%d hits, %d crit)"] = true
 L[" (%d hits, %d crits)"] = true
+L[" ([Amount])"] = true
 L[" ([Amount] absorbed)"] = true
 L[" ([Amount] blocked)"] = true
 L[" ([Amount] overheal)"] = true
@@ -201,6 +202,8 @@ L["Ignore Cooldown"] = true
 L["In a group"] = true
 L["In combat"] = true
 L["In vehicle"] = true
+L["Include text details after amounts"] = true
+L["Include additional text details after amounts ('overheal', 'resisted', etc.)"] = true
 L["Incoming"] = true
 L["Incoming cast"] = true
 L["Incoming crit"] = true
