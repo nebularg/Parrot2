@@ -172,14 +172,14 @@ end
 -- they tend to use a different icon from the original spell, which annoys some
 -- people.
 --]]
-local dumbTriggerSpellOverride = {
-}
+-- local dumbTriggerSpellOverride = {
+-- }
 
 --[[
 -- helperfunction to retrieve an icon
 --]]
 local function retrieveIconFromAbilityName(info)
-	return dumbTriggerSpellOverride[info.spellID] or GetSpellTexture(info.abilityName)
+	return GetSpellTexture(info.spellID or info.abilityName) -- dumbTriggerSpellOverride[info.spellID] or
 end
 
 --[[

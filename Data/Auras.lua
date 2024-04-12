@@ -23,6 +23,10 @@ local PET_FLAGS = bit.bor(
 	_G.COMBATLOG_OBJECT_AFFILIATION_MINE
 )
 
+local function getIcon(info)
+	return GetSpellTexture(info.spellID or info.abilityName)
+end
+
 local function retrieveDestName(info)
 	if not info.recipientName then return end
 	if Parrot.db.profile.showNameRealm then
@@ -47,40 +51,6 @@ local FindAura do
 		else
 			return _G.AuraUtil.FindAura(checkName, unit, filter, aura)
 		end
-	end
-end
-
-local getIcon do
-	local iconCache = {}
-
-	local units = {
-		player = true,
-		pet = true,
-		target = true,
-	}
-	for i = 1, 40 do
-		units["nameplate"..i] = true
-		-- units["raid"..i.."target"] = true
-	end
-
-	local function getUnit(guid)
-		for unit in next, units do
-			if UnitGUID(unit) == guid then
-				return unit
-			end
-		end
-	end
-
-	function getIcon(info)
-		local icon = GetSpellTexture(info.abilityName)
-		if not icon then
-			local _, texture = FindAura(getUnit(info.recipientID), info.abilityName, info.auraType == "DEBUFF" and "HARMFUL" or nil)
-			if texture then
-				iconCache[info.abilityName] = texture
-				icon = texture
-			end
-		end
-		return icon or iconCache[info.abilityName]
 	end
 end
 
