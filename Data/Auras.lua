@@ -510,7 +510,7 @@ Parrot:RegisterCombatEvent{
 		Name = "abilityName",
 		ItemName = "itemName",
 		Icon = function(info)
-			return GetItemIcon(info.itemId)
+			return GetItemIcon(info.itemID)
 		end,
 	},
 	tagTranslationsHelp = {
@@ -538,7 +538,7 @@ Parrot:RegisterCombatEvent{
 		Name = "abilityName",
 		ItemName = "itemName",
 		Icon = function(info)
-			return GetItemIcon(info.itemId)
+			return GetItemIcon(info.itemID)
 		end,
 	},
 	tagTranslationsHelp = {
