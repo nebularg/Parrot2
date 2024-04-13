@@ -480,6 +480,35 @@ function module:OnOptionsCreate()
 						desc = L["Break up number values with '%s' (26500 -> %s)"]:format(LARGE_NUMBER_SEPERATOR, BreakUpLargeNumbers(26500)),
 						disabled = function() return db.shortenAmount end,
 						order = 8,
+					},
+					includeAdditionalText = {
+						type = 'toggle',
+						name = L["Include text details after amounts"],
+						desc = L["Include additional text details after amounts ('overheal', 'resisted', etc.)"],
+						order = 9,
+					  
+						get = function()
+						  for _, v in pairs(db.modifier) do
+							if type(v) == 'table' and v.tag ~= nil then
+							  if v.tag == L[" ([Amount])"] then
+								return false
+							  end
+							end
+						  end
+						  return true
+						end,
+					  
+						set = function(_, val)
+						  for k, v in pairs(db.modifier) do
+							if type(v) == 'table' and v.tag ~= nil then
+							  if val then
+								v.tag = L[" ([Amount] " .. string.lower(k) .. ")"]
+							  else
+								v.tag = L[" ([Amount])"]
+							  end
+							end
+						   end
+						end,
 					}
 				},
 			},
