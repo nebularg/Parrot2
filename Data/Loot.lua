@@ -3,6 +3,7 @@ local Parrot = ns.addon
 if not Parrot then return end
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
+local mod = Parrot:NewModule("LootData")
 
 local newDict = Parrot.newDict
 local Deformat = Parrot.Deformat
@@ -16,6 +17,44 @@ local LOOT_ITEM_CREATED_SELF_MULTIPLE = _G.LOOT_ITEM_CREATED_SELF_MULTIPLE
 local LOOT_ITEM_REFUND = _G.LOOT_ITEM_REFUND
 local LOOT_ITEM_REFUND_MULTIPLE = _G.LOOT_ITEM_REFUND_MULTIPLE
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
+
+local db
+
+function mod:OnEnable()
+	db = Parrot.db:GetNamespace("CombatEvents").profile
+end
+
+function mod:OnProfileChanged()
+	db = Parrot.db:GetNamespace("CombatEvents").profile
+end
+
+local function parrotShowItemLooted(quality, itemClassID)
+	if db.lootQuestItem and itemClassID == 12 then
+		return true
+	end
+
+	if quality == 0 and db.lootQualityPoor then
+		return true
+	end
+
+	if quality == 1 and db.lootQualityCommon then
+		return true
+	end
+
+	if quality == 2 and db.lootQualityUncommon then
+		return true
+	end
+
+	if quality == 3 and db.lootQualityRare then
+		return true
+	end
+
+	if quality >= 4 and db.lootQualityEpic then
+		return true
+	end
+
+	return false
+end
 
 local function parse_CHAT_MSG_LOOT(chatmsg)
 	-- check for multiple
@@ -49,18 +88,21 @@ local function parse_CHAT_MSG_LOOT(chatmsg)
 		if not amount then
 			amount = 1
 		end
-		local name, _, quality, _, _, _, _, _, _, texture = GetItemInfo(itemLink)
-		local color = ITEM_QUALITY_COLORS[quality]
-		if color then
-			name = ("%s%s|r"):format(color.hex, name)
-		end
+		local name, _, quality, _, _, itemType, _, _, _, texture, _, itemClassID = GetItemInfo(itemLink)
 
-		return newDict(
-			"name", name,
-			"amount", amount,
-			"total", GetItemCount(itemLink) + amount,
-			"icon", texture
-		)
+		if parrotShowItemLooted(quality, itemClassID) then
+			local color = ITEM_QUALITY_COLORS[quality]
+			if color then
+				name = ("%s%s|r"):format(color.hex, name)
+			end
+
+			return newDict(
+				"name", name,
+				"amount", amount,
+				"total", GetItemCount(itemLink) + amount,
+				"icon", texture
+			)
+		end
 	end
 end
 
