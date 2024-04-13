@@ -1558,7 +1558,6 @@ function module:RegisterCombatEvent(data)
 			tinsert(combatLogEvents[eventType], {
 					category = category,
 					name = data.name,
-					infofunc = v.func,
 					checkfunc = check,
 				}
 			)

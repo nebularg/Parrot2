@@ -210,6 +210,7 @@ Parrot:RegisterCombatEvent{
 --[[============================================================================
 -- Target's Auras
 --============================================================================]]
+
 Parrot:RegisterCombatEvent{
 	category = "Notification",
 	subCategory = L["Auras"],
@@ -486,14 +487,6 @@ Parrot:RegisterCombatEvent{
 --[[============================================================================
 -- Item Buffs
 --============================================================================]]
-local function parseItembuff(srcGUID, srcName, srcFlags, dstGUID, dstName,
-	dstFlags, spellName, itemId, itemName)
-	local info = newList()
-	info.itemId = itemId
-	info.abilityName = spellName
-	info.itemName = itemName
-	return info
-end
 
 Parrot:RegisterCombatEvent{
 	category = "Notification",
@@ -506,14 +499,13 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID)
 				return dstGUID == playerGUID
 			end,
-			func = parseItembuff,
 		},
 	},
 	tagTranslations = {
 		Name = "abilityName",
 		ItemName = "itemName",
 		Icon = function(info)
-			return GetItemIcon(info.itemId)
+			return GetItemIcon(info.itemID)
 		end,
 	},
 	tagTranslationsHelp = {
@@ -534,14 +526,13 @@ Parrot:RegisterCombatEvent{
 			check = function(_, _, _, dstGUID)
 				return dstGUID == playerGUID
 			end,
-			func = parseItembuff,
 		},
 	},
 	tagTranslations = {
 		Name = "abilityName",
 		ItemName = "itemName",
 		Icon = function(info)
-			return GetItemIcon(info.itemId)
+			return GetItemIcon(info.itemID)
 		end,
 	},
 	tagTranslationsHelp = {
