@@ -1,4 +1,4 @@
-## Interface: 30403
+## Interface: 54525
 ## Title: Parrot 2
 ## Notes: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
 ## Notes-esES: Floating Combat Text of awesomeness. Caw. It'll eat your crackers.
@@ -12,7 +12,7 @@
 ## Notes-zhCN: 绝妙的浮动战斗文本。来人，喂公子吃饼。真香。
 ## Notes-zhTW: 絕妙的戰鬥記錄指示器。
 ## Author: Neb
-## Version: @project-version@
+## Version: v2.3.5-classic
 
 ## X-Credits: ckknight, profalbert
 ## X-Category: Combat
