@@ -127,11 +127,13 @@ function module:CheckSpells(e)
 		end
 
 		if count > 4 then -- don't spam if something reset a bunch of spells
-			local name, texture = GetSpellTabInfo(2)
-			if name then
-				local info = newList(L["%s Tree"]:format(name), texture)
-				Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
-				info = del(info)
+			for tab = 1, GetNumSpellTabs() do
+				local name, texture = GetSpellTabInfo(tab)
+				if name then
+					local info = newList(L["%s Tree"]:format(name), texture)
+					Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
+					info = del(info)
+				end
 			end
 		else
 			local groupTriggered = newList()
