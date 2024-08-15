@@ -5,6 +5,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList = Parrot.newList
 
+local GetSpellName = C_Spell.GetSpellName
+
 local playerGUID = UnitGUID("player")
 
 function module:OnEnable()
@@ -836,11 +838,11 @@ Parrot:RegisterSecondaryTriggerCondition {
 	param = {
 		type = 'select',
 		values = {
-			["Bear Form"] = GetSpellInfo(5487),
-			["Cat Form"] = GetSpellInfo(768),
-			["Travel Form"] = GetSpellInfo(783),
-			["Moonkin Form"] = GetSpellInfo(24858),
-			--["Tree of Life"] = GetSpellInfo(48371),
+			["Bear Form"] = GetSpellName(5487),
+			["Cat Form"] = GetSpellName(768),
+			["Travel Form"] = GetSpellName(783),
+			["Moonkin Form"] = GetSpellName(24858),
+			--["Tree of Life"] = GetSpellName(48371),
 		}
 	},
 	check = function(param)

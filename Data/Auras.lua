@@ -2,7 +2,9 @@ local _, ns = ...
 local Parrot = ns.addon
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
-local newList, newDict = Parrot.newList, Parrot.newDict
+local newDict = Parrot.newDict
+
+local GetSpellTexture = C_Spell.GetSpellTexture
 
 local playerGUID = UnitGUID("player")
 

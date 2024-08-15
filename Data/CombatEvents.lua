@@ -8,6 +8,7 @@ local newList = Parrot.newList
 local bit_bor, bit_band = bit.bor, bit.band
 local UnitGUID, UnitPower = UnitGUID, UnitPower
 local GetComboPoints, UnitHasVehicleUI = GetComboPoints, UnitHasVehicleUI
+local GetSpellTexture = C_Spell.GetSpellTexture
 
 local PET = _G.PET
 local INTERRUPT = _G.INTERRUPT

@@ -57,7 +57,7 @@ local cooldowns = {}
 local defaultTriggers = {
 	[1004] = [[{
 		-- Execute
-		name = L["%s!"]:format(GetSpellInfo(5308)),
+		name = L["%s!"]:format(GetSpellName(5308)),
 		icon = 5308,
 		spec = { WARRIOR = "71;72", },
 		conditions = {
@@ -72,7 +72,7 @@ local defaultTriggers = {
 		},
 		secondaryConditions = {
 			["Spell ready"] = {
-				[1] = GetSpellInfo(5308),
+				[1] = GetSpellName(5308),
 			},
 		},
 		sticky = true,
@@ -163,13 +163,13 @@ local defaultTriggers = {
 	}]],
 	[1014] = [[{
 		-- Revenge
-		name = L["%s!"]:format(GetSpellInfo(6572)),
+		name = L["%s!"]:format(GetSpellName(6572)),
 		icon = 6572,
 		spec = { WARRIOR = "73" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(5302),
+					spell = GetSpellName(5302),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -181,13 +181,13 @@ local defaultTriggers = {
 	}]],
 	[1017] = [[{
 		-- Rime
-		name = L["%s!"]:format(GetSpellInfo(59052)),
+		name = L["%s!"]:format(GetSpellName(59052)),
 		icon = 59052,
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
-					spell = GetSpellInfo(59052),
+					spell = GetSpellName(59052),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -198,13 +198,13 @@ local defaultTriggers = {
 	}]],
 	[1018] = [[{
 		-- Killing Machine
-		name = L["%s!"]:format(GetSpellInfo(51124)),
+		name = L["%s!"]:format(GetSpellName(51124)),
 		icon = 51124,
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
-					spell = GetSpellInfo(51124),
+					spell = GetSpellName(51124),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -215,14 +215,14 @@ local defaultTriggers = {
 	}]],
 	[1021] = [[{
 		-- Brain Freeze
-		name = L["%s!"]:format(GetSpellInfo(190447)),
+		name = L["%s!"]:format(GetSpellName(190447)),
 		icon = 190447,
 		spec = { MAGE = "64" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
 					["unit"] = "player",
-					["spell"] = GetSpellInfo(190447),
+					["spell"] = GetSpellName(190447),
 					["auraType"] = "BUFF",
 				},
 			},
@@ -232,14 +232,14 @@ local defaultTriggers = {
 	}]],
 	[1031] = [[{
 		-- Fingers of Frost
-		name = L["%s!"]:format(GetSpellInfo(44544)),
+		name = L["%s!"]:format(GetSpellName(44544)),
 		icon = 44544,
 		spec = { MAGE = "64" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
 					["unit"] = "player",
-					["spell"] = GetSpellInfo(44544),
+					["spell"] = GetSpellName(44544),
 					["auraType"] = "BUFF",
 				},
 			},
@@ -249,14 +249,14 @@ local defaultTriggers = {
 	}]],
 	[1033] = [[{
 		-- Crimson Scourge
-		name = L["%s!"]:format(GetSpellInfo(81141)),
+		name = L["%s!"]:format(GetSpellName(81141)),
 		icon = 81141,
 		spec = { DEATHKNIGHT = "250" },
 		conditions = {
 			["Aura gain"] = {
 				[1] = {
 					unit = "player",
-					spell = GetSpellInfo(81141),
+					spell = GetSpellName(81141),
 					auraType = "BUFF",
 				},
 			},
@@ -266,13 +266,13 @@ local defaultTriggers = {
 	}]],
 	[1041] = [[{
 		-- Sudden Doom
-		name = L["%s!"]:format(GetSpellInfo(81340)),
+		name = L["%s!"]:format(GetSpellName(81340)),
 		icon = 81340,
 		spec = { DEATHKNIGHT = "252" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(81340),
+					spell = GetSpellName(81340),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -283,13 +283,13 @@ local defaultTriggers = {
 	}]],
 	[1043] = [[{
 		-- Hot Streak!
-		name = GetSpellInfo(48108),
+		name = GetSpellName(48108),
 		icon = 48108,
 		spec = { MAGE = "63" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(48108),
+					spell = GetSpellName(48108),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -300,13 +300,13 @@ local defaultTriggers = {
 	}]],
 	[1044] = [[{
 		-- Heating Up
-		name = L["%s!"]:format(GetSpellInfo(48107)),
+		name = L["%s!"]:format(GetSpellName(48107)),
 		icon = 48107,
 		spec = { MAGE = "63" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(48107),
+					spell = GetSpellName(48107),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -317,13 +317,13 @@ local defaultTriggers = {
 	}]],
 	[1046] = [[{
 		-- Grand Crusader
-		name = L["%s!"]:format(GetSpellInfo(85416)),
+		name = L["%s!"]:format(GetSpellName(85416)),
 		icon = 85416,
 		spec = { PALADIN = "66" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(85416),
+					spell = GetSpellName(85416),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -334,13 +334,13 @@ local defaultTriggers = {
 	}]],
 	[1047] = [[{
 		-- Lava Surge
-		name = L["%s!"]:format(GetSpellInfo(77756)),
+		name = L["%s!"]:format(GetSpellName(77756)),
 		icon = 77756,
 		spec = { SHAMAN = "262;264" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(77756),
+					spell = GetSpellName(77756),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -351,7 +351,7 @@ local defaultTriggers = {
 	}]],
 	[1050] = [[{
 		-- Raging Blow
-		name = L["%s!"]:format(GetSpellInfo(85288)),
+		name = L["%s!"]:format(GetSpellName(85288)),
 		icon = 85288,
 		spec = { WARRIOR = "72" },
 		conditions = {
@@ -364,13 +364,13 @@ local defaultTriggers = {
 	}]],
 	[1051] = [[{
 		-- Sudden Death
-		name = L["%s!"]:format(GetSpellInfo(280776)),
+		name = L["%s!"]:format(GetSpellName(280776)),
 		icon = 280776,
 		spec = { WARRIOR = "71;72" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(280776),
+					spell = GetSpellName(280776),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -381,7 +381,7 @@ local defaultTriggers = {
 	}]],
 	[1052] = [[{
 		-- Shield Slam
-		name = L["%s!"]:format(GetSpellInfo(23922)),
+		name = L["%s!"]:format(GetSpellName(23922)),
 		icon = 23922,
 		spec = { WARRIOR = "73" },
 		conditions = {
@@ -397,7 +397,7 @@ local defaultTriggers = {
 	}]],
 	[1053] = [[{
 		-- Nightfall
-		name = L["%s!"]:format(GetSpellInfo(108558)),
+		name = L["%s!"]:format(GetSpellName(108558)),
 		icon = 108558,
 		spec = { WARLOCK = "265" },
 		conditions = {
@@ -410,13 +410,13 @@ local defaultTriggers = {
 	}]],
 	[1054] = [[{
 		-- Lethal Shots
-		name = L["%s!"]:format(GetSpellInfo(260395)),
+		name = L["%s!"]:format(GetSpellName(260395)),
 		icon = 260395,
 		spec = { HUNTER = "254" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(260395),
+					spell = GetSpellName(260395),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -427,13 +427,13 @@ local defaultTriggers = {
 	}]],
 	[1055] = [[{
 		-- Lock and Load
-		name = L["%s!"]:format(GetSpellInfo(194594)),
+		name = L["%s!"]:format(GetSpellName(194594)),
 		icon = 194594,
 		spec = { HUNTER = "254" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(194594),
+					spell = GetSpellName(194594),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -444,7 +444,7 @@ local defaultTriggers = {
 	}]],
 	[1056] = [[{
 		-- Kill Command
-		name = L["%s!"]:format(GetSpellInfo(259489)),
+		name = L["%s!"]:format(GetSpellName(259489)),
 		icon = 259489,
 		spec = { HUNTER = "255" },
 		conditions = {
@@ -458,13 +458,13 @@ local defaultTriggers = {
 	}]],
 	[1057] = [[{
 		-- Viper's Venom
-		name = L["%s!"]:format(GetSpellInfo(268552)),
+		name = L["%s!"]:format(GetSpellName(268552)),
 		icon = 268423,
 		spec = { HUNTER = "255" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(268552),
+					spell = GetSpellName(268552),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -475,7 +475,7 @@ local defaultTriggers = {
 	}]],
 	[1058] = [[{
 		-- Clearcasting
-		name = L["%s!"]:format(GetSpellInfo(16870)),
+		name = L["%s!"]:format(GetSpellName(16870)),
 		icon = 16870,
 		spec = {
 			DRUID = "103;105",
@@ -484,7 +484,7 @@ local defaultTriggers = {
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(16870),
+					spell = GetSpellName(16870),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -495,13 +495,13 @@ local defaultTriggers = {
 	}]],
 	[1059] = [[{
 		-- Gore
-		name = L["%s!"]:format(GetSpellInfo(93622)),
+		name = L["%s!"]:format(GetSpellName(93622)),
 		icon = 33917,
 		spec = { DRUID = "104" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(93622),
+					spell = GetSpellName(93622),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -512,13 +512,13 @@ local defaultTriggers = {
 	}]],
 	[1060] = [[{
 		-- Galatic Guardian
-		name = L["%s!"]:format(GetSpellInfo(213708)),
+		name = L["%s!"]:format(GetSpellName(213708)),
 		icon = 8921,
 		spec = { DRUID = "104" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(213708),
+					spell = GetSpellName(213708),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -529,13 +529,13 @@ local defaultTriggers = {
 	}]],
 	[1061] = [[{
 		-- Power of the Dark Side
-		name = L["%s!"]:format(GetSpellInfo(198069)),
+		name = L["%s!"]:format(GetSpellName(198069)),
 		icon = 198069,
 		spec = { PRIEST = "256" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(198069),
+					spell = GetSpellName(198069),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -547,13 +547,13 @@ local defaultTriggers = {
 	}]],
 	[1062] = [[{
 		-- Surge of Light
-		name = L["%s!"]:format(GetSpellInfo(114255)),
+		name = L["%s!"]:format(GetSpellName(114255)),
 		icon = 114255,
 		spec = { PRIEST = "257" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(114255),
+					spell = GetSpellName(114255),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -564,13 +564,13 @@ local defaultTriggers = {
 	}]],
 	[1063] = [[{
 		-- Divine Purpose
-		name = L["%s!"]:format(GetSpellInfo(223817)),
+		name = L["%s!"]:format(GetSpellName(223817)),
 		icon = 223817,
 		spec = { PALADIN = "65;70" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(223817),
+					spell = GetSpellName(223817),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -581,13 +581,13 @@ local defaultTriggers = {
 	}]],
 	[1064] = [[{
 		-- Stormbringer
-		name = GetSpellInfo(201846),
+		name = GetSpellName(201846),
 		icon = 17364,
 		spec = { SHAMAN = "263" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(201846),
+					spell = GetSpellName(201846),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -598,13 +598,13 @@ local defaultTriggers = {
 	}]],
 	[1065] = [[{
 		-- Opportunity
-		name = GetSpellInfo(195627),
+		name = GetSpellName(195627),
 		icon = 195627,
 		spec = { ROGUE = "260" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(195627),
+					spell = GetSpellName(195627),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -615,13 +615,13 @@ local defaultTriggers = {
 	}]],
 	[1066] = [[{
 		-- Blackout Kick!
-		name = GetSpellInfo(116768),
+		name = GetSpellName(116768),
 		icon = 116768,
 		spec = { MONK = "269" },
 		conditions = {
 			["Aura gain"] = {
 				{
-					spell = GetSpellInfo(116768),
+					spell = GetSpellName(116768),
 					unit = "player",
 					auraType = "BUFF",
 				},
@@ -734,17 +734,16 @@ do
 	local ScriptEnv = setmetatable({}, {__index = _G})
 	ScriptEnv.L = L
 
-	local safeGetSpellInfo = function(id, ...)
-		if _G.GetSpellInfo(id, ...) then
-			return _G.GetSpellInfo(id, ...)
-		else
+	local safeGetSpellName = function(id, ...)
+		if not C_Spell.DoesSpellExist(id) then
 			return "_Unknown SpellId " .. id
 		end
+		return C_Spell.GetSpellName(id)
 	end
 
 	local function hasMissingSpellIds(code)
-		for spellId in code:gmatch("GetSpellInfo%((%d+)%)") do
-			if not GetSpellInfo(spellId) then
+		for spellId in code:gmatch("GetSpellName%((%d+)%)") do
+			if not C_Spell.DoesSpellExist(spellId) then
 				print("Parrot: Trigger spell missing:", spellId)
 				return true
 			end
@@ -754,9 +753,9 @@ do
 
 	local function makeDefaultTrigger(index, code)
 		if hasMissingSpellIds(code) then
-			ScriptEnv.GetSpellInfo = safeGetSpellInfo
+			ScriptEnv.GetSpellName = safeGetSpellName
 		else
-			ScriptEnv.GetSpellInfo = _G.GetSpellInfo
+			ScriptEnv.GetSpellName = C_Spell.GetSpellName
 		end
 		local func = assert(loadstring(("return %s"):format(code)))
 		setfenv(func, ScriptEnv)
@@ -949,7 +948,7 @@ local function getIconPath(icon)
 
 	local path = iconCache[icon]
 	if not path then
-		local texture = GetSpellTexture(icon)
+		local texture = C_Spell.GetSpellTexture(icon)
 		if texture then
 			path = texture
 		else

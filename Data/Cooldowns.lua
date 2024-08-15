@@ -5,6 +5,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList, del = Parrot.newList, Parrot.del
 
+local GetSpellName = C_Spell.GetSpellName
+local GetSpellTexture = C_Spell.GetSpellTexture
+
 local db = nil
 local defaults = {
 	profile = {
@@ -22,7 +25,7 @@ do
 	local function addGroup(name, ...)
 		for i=1, select("#", ...) do
 			local id = select(i, ...)
-			local spell = GetSpellInfo(id)
+			local spell = GetSpellName(id)
 			if spell then
 				spellGroups[spell] = name
 			else
@@ -86,16 +89,19 @@ function module:ResetSpells(e)
 	wipe(spells)
 	wipe(spellCooldowns)
 	-- cache spells from our current spec plus racials
-	for tab = 1, 2 do
-		local _, _, offset, numSlots = GetSpellTabInfo(tab)
-		for slot = 1, numSlots do
-			local index = offset + slot
-			local spellName, subSpellName = GetSpellBookItemName(index, "spell")
+	for tab = 1, 3 do -- general, class, spec
+		local tabInfo = C_SpellBook.GetSpellBookSkillLineInfo(tab)
+		for slot = 1, tabInfo.numSpellBookItems do
+			local index = tabInfo.itemIndexOffset + slot
+			local spellName, subSpellName = C_SpellBook.GetSpellBookItemName(index, Enum.SpellBookSpellBank.Player)
 			if tab > 1 or generalWhitelist[subSpellName] then
 				spells[spellName] = true
-				local start, duration = GetSpellCooldown(index, "spell")
-				if start and start > 0 and duration > db.threshold and not db.filters[spellName] then
-					spellCooldowns[spellName] = start
+				local cooldownInfo = C_SpellBook.GetSpellBookItemCooldown(index, Enum.SpellBookSpellBank.Player)
+				if cooldownInfo then
+					local start, duration = cooldownInfo.startTime, cooldownInfo.duration
+					if start and start > 0 and duration > db.threshold and not db.filters[spellName] then
+						spellCooldowns[spellName] = start
+					end
 				end
 			end
 		end
@@ -105,19 +111,22 @@ end
 function module:CheckSpells(e)
 	local expired = newList()
 	for spellName in next, spells do
-		local start, duration = GetSpellCooldown(spellName)
-		if spellCooldowns[spellName] and (start == 0 or spellCooldowns[spellName] == start) then
-			if start == 0 then
-				expired[spellName] = true
-				spellCooldowns[spellName] = nil
+		local cooldownInfo = C_Spell.GetSpellCooldown(spellName)
+		if cooldownInfo then
+			local start, duration = cooldownInfo.startTime, cooldownInfo.duration
+			if spellCooldowns[spellName] and (start == 0 or spellCooldowns[spellName] == start) then
+				if start == 0 then
+					expired[spellName] = true
+					spellCooldowns[spellName] = nil
+				end
+			elseif start and start > 0 and duration > db.threshold and not db.filters[spellName] then
+				spellCooldowns[spellName] = start
+				local remaining = duration - (GetTime() - start) + 0.1
+				self:ScheduleTimer("CheckSpells", remaining)
+				-- can probably improve this to schedule checking the single spell
+				-- that triggered the cooldown, but then I would have to move the
+				-- "tree reset" logic here, which would be run more frequently
 			end
-		elseif start and start > 0 and duration > db.threshold and not db.filters[spellName] then
-			spellCooldowns[spellName] = start
-			local remaining = duration - (GetTime() - start) + 0.1
-			self:ScheduleTimer("CheckSpells", remaining)
-			-- can probably improve this to schedule checking the single spell
-			-- that triggered the cooldown, but then I would have to move the
-			-- "tree reset" logic here, which would be run more frequently
 		end
 	end
 
@@ -131,9 +140,9 @@ function module:CheckSpells(e)
 		end
 
 		if count > 4 then -- don't spam if something reset a bunch of spells
-			local name, texture = GetSpellTabInfo(2)
-			if name then
-				local info = newList(L["%s Tree"]:format(name), texture)
+			local tabInfo = C_SpellBook.GetSpellBookSkillLineInfo(2) -- class name
+			if tabInfo then
+				local info = newList(L["%s Tree"]:format(tabInfo.name), tabInfo.iconID)
 				Parrot:TriggerCombatEvent("Notification", "Skill cooldown finish", info)
 				info = del(info)
 			end
@@ -217,7 +226,8 @@ Parrot:RegisterSecondaryTriggerCondition {
 		parse = parseSpell,
 	},
 	check = function(param)
-		return GetSpellCooldown(param) == 0
+		local cooldownInfo = C_Spell.GetSpellCooldown(param)
+		return cooldownInfo and cooldownInfo.startTime == 0
 	end,
 }
 
