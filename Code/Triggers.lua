@@ -870,6 +870,9 @@ local updateFuncs = {
 
 local function updateDB()
 	-- delete user-settings from triggers that are no longer available
+	if type(db.triggers2) ~= "table" then -- config from classic
+		db.triggers2 = {}
+	end
 	for k, v in next, db.triggers2 do
 		if k > 1000 and not defaultTriggers[k] then
 			db.triggers2[k] = nil
