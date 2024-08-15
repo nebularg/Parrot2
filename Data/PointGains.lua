@@ -9,7 +9,6 @@ local newDict, newList = Parrot.newDict, Parrot.newList
 local Deformat = Parrot.Deformat
 
 local wow_classic_era = Parrot.wow_classic_era
-local wow_classic = Parrot.wow_classic
 
 local currentXP = 0
 
@@ -51,15 +50,7 @@ end
 local function parseHonorGain(chatmsg)
 	local amount = tonumber(chatmsg:match("%d+"))
 	if amount then
-		if wow_classic then
-			local info = C_CurrencyInfo.GetCurrencyInfo(1901)
-			return newDict(
-				"currency", info.name,
-				"amount", amount,
-				"total", info.totalEarned,
-				"icon", info.iconFileID
-			)
-		elseif wow_classic_era then
+		if wow_classic_era then
 			local total = GetPVPSessionStats()
 			local _, rank = GetPVPRankInfo(UnitPVPRank("player"))
 			local icon = nil
@@ -71,6 +62,14 @@ local function parseHonorGain(chatmsg)
 				"amount", amount,
 				"total", total,
 				"icon", icon
+			)
+		else
+			local info = C_CurrencyInfo.GetCurrencyInfo(1901)
+			return newDict(
+				"currency", info.name,
+				"amount", amount,
+				"total", info.totalEarned,
+				"icon", info.iconFileID
 			)
 		end
 	end

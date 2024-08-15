@@ -4,7 +4,7 @@ if not Parrot then return end
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
-local newList, newDict = Parrot.newList, Parrot.newDict
+local newDict = Parrot.newDict
 
 local playerGUID = UnitGUID("player")
 
