@@ -22,7 +22,7 @@ do
 	local function addGroup(name, ...)
 		for i=1, select("#", ...) do
 			local id = select(i, ...)
-			local spell = GetSpellInfo(id)
+			local spell = C_Spell.GetSpellInfo(id)
 			if spell then
 				spellGroups[spell] = name
 			else
@@ -85,15 +85,18 @@ local generalWhitelist = {
 function module:ResetSpells(e)
 	wipe(spells)
 	wipe(spellCooldowns)
-	-- cache spells from our current spec plus racials
-	for tab = 1, 2 do
-		local _, _, offset, numSlots = GetSpellTabInfo(tab)
+
+	-- cache spells from our current spec, class and racials
+	for tab = 1, 3 do
+		local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(tab)
+		local offset, numSlots = skillLineInfo.itemIndexOffset, skillLineInfo.numSpellBookItems
 		for slot = 1, numSlots do
 			local index = offset + slot
-			local spellName, subSpellName = GetSpellBookItemName(index, "spell")
+			local spellName, subSpellName = C_SpellBook.GetSpellBookItemName(index, Enum.SpellBookSpellBank.Player)
 			if tab > 1 or generalWhitelist[subSpellName] then
 				spells[spellName] = true
-				local start, duration = GetSpellCooldown(index, "spell")
+				local spellCooldown = C_SpellBook.GetSpellBookItemCooldown(index, Enum.SpellBookSpellBank.Player)
+				local start, duration = spellCooldown.startTime, spellCooldown.duration
 				if start and start > 0 and duration > db.threshold and not db.filters[spellName] then
 					spellCooldowns[spellName] = start
 				end
@@ -105,7 +108,13 @@ end
 function module:CheckSpells(e)
 	local expired = newList()
 	for spellName in next, spells do
-		local start, duration = GetSpellCooldown(spellName)
+		local spellCooldown = C_Spell.GetSpellCooldown(spellName)
+		local start, duration = 0, 0
+		if spellCooldown then
+			start = spellCooldown.start
+			duration = spellCooldown.duration
+		end
+
 		if spellCooldowns[spellName] and (start == 0 or spellCooldowns[spellName] == start) then
 			if start == 0 then
 				expired[spellName] = true

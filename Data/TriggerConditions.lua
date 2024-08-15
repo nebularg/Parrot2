@@ -836,11 +836,11 @@ Parrot:RegisterSecondaryTriggerCondition {
 	param = {
 		type = 'select',
 		values = {
-			["Bear Form"] = GetSpellInfo(5487),
-			["Cat Form"] = GetSpellInfo(768),
-			["Travel Form"] = GetSpellInfo(783),
-			["Moonkin Form"] = GetSpellInfo(24858),
-			--["Tree of Life"] = GetSpellInfo(48371),
+			["Bear Form"] = C_Spell.GetSpellInfo(5487),
+			["Cat Form"] = C_Spell.GetSpellInfo(768),
+			["Travel Form"] = C_Spell.GetSpellInfo(783),
+			["Moonkin Form"] = C_Spell.GetSpellInfo(24858),
+			--["Tree of Life"] = C_Spell.GetSpellInfo(48371),
 		}
 	},
 	check = function(param)
