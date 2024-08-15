@@ -38,6 +38,7 @@ globals = {
 	"GetItemCount",
 	"GetItemIcon",
 	"GetItemInfo",
+	"GetNumSpellTabs",
 	"GetPlayerInfoByGUID",
 	"GetPVPRankInfo",
 	"GetPVPSessionStats",

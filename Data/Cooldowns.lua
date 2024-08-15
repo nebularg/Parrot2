@@ -81,8 +81,8 @@ end
 function module:ResetSpells(e)
 	wipe(spells)
 	wipe(spellCooldowns)
-	-- cache spells from our current spec plus racials
-	for tab = 1, 2 do
+	-- cache spells
+	for tab = 1, GetNumSpellTabs() do
 		local _, _, offset, numSlots = GetSpellTabInfo(tab)
 		for slot = 1, numSlots do
 			local index = offset + slot
