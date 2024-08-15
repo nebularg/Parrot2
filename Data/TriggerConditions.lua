@@ -7,6 +7,8 @@ local newList = Parrot.newList
 
 local playerGUID = UnitGUID("player")
 
+local GetSpellInfo = C_Spell.GetSpellInfo
+
 function module:OnEnable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")

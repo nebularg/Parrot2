@@ -5,6 +5,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Parrot")
 
 local newList, del = Parrot.newList, Parrot.del
 
+local GetSpellInfo, GetSpellTexture = C_Spell.GetSpellInfo, C_Spell.GetSpellTexture
+
 local db = nil
 local defaults = {
 	profile = {
@@ -87,16 +89,20 @@ function module:ResetSpells(e)
 	wipe(spellCooldowns)
 	-- cache spells from our current spec plus racials
 	for tab = 1, 2 do
-		local _, _, offset, numSlots = GetSpellTabInfo(tab)
+		local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(tab)
+		local offset, numSlots = skillLineInfo.itemIndexOffset, skillLineInfo.numSpellBookItems
 		for slot = 1, numSlots do
 			local index = offset + slot
-			local spellName, subSpellName = GetSpellBookItemName(index, "spell")
+			local spellName, subSpellName = C_SpellBook.GetSpellBookItemName(index, Enum.SpellBookSpellBank.Player)
 			if tab > 1 or generalWhitelist[subSpellName] then
 				spells[spellName] = true
-				local start, duration = GetSpellCooldown(index, "spell")
-				if start and start > 0 and duration > db.threshold and not db.filters[spellName] then
-					spellCooldowns[spellName] = start
-				end
+				local spellCooldownInfo = C_SpellBook.GetSpellBookItemCooldown(index, Enum.SpellBookSpellBank.Player)
+				if spellCooldownInfo then
+					local start, duration = spellCooldownInfo.startTime, spellCooldownInfo.duration
+					if start and start > 0 and duration > db.threshold and not db.filters[spellName] then
+						spellCooldowns[spellName] = start
+					end
+                end
 			end
 		end
 	end
@@ -105,20 +111,23 @@ end
 function module:CheckSpells(e)
 	local expired = newList()
 	for spellName in next, spells do
-		local start, duration = GetSpellCooldown(spellName)
-		if spellCooldowns[spellName] and (start == 0 or spellCooldowns[spellName] == start) then
-			if start == 0 then
-				expired[spellName] = true
-				spellCooldowns[spellName] = nil
+		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellName)
+		if spellCooldownInfo then
+			local start, duration = spellCooldownInfo.startTime, spellCooldownInfo.duration
+			if spellCooldowns[spellName] and (start == 0 or spellCooldowns[spellName] == start) then
+				if start == 0 then
+					expired[spellName] = true
+					spellCooldowns[spellName] = nil
+				end
+			elseif start and start > 0 and duration > db.threshold and not db.filters[spellName] then
+				spellCooldowns[spellName] = start
+				local remaining = duration - (GetTime() - start) + 0.1
+				self:ScheduleTimer("CheckSpells", remaining)
+				-- can probably improve this to schedule checking the single spell
+				-- that triggered the cooldown, but then I would have to move the
+				-- "tree reset" logic here, which would be run more frequently
 			end
-		elseif start and start > 0 and duration > db.threshold and not db.filters[spellName] then
-			spellCooldowns[spellName] = start
-			local remaining = duration - (GetTime() - start) + 0.1
-			self:ScheduleTimer("CheckSpells", remaining)
-			-- can probably improve this to schedule checking the single spell
-			-- that triggered the cooldown, but then I would have to move the
-			-- "tree reset" logic here, which would be run more frequently
-		end
+        end
 	end
 
 	if next(expired) then

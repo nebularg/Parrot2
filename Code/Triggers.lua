@@ -9,6 +9,8 @@ local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
 local newList, del = Parrot.newList, Parrot.del
 
+local GetSpellInfo = C_Spell.GetSpellInfo
+
 local function newSet(...)
 	local t = newList()
 	for i = 1, select("#", ...) do
@@ -57,7 +59,7 @@ local cooldowns = {}
 local defaultTriggers = {
 	[1004] = [[{
 		-- Execute
-		name = L["%s!"]:format(GetSpellInfo(5308)),
+		name = L["%s!"]:format(GetSpellInfo(5308).name),
 		icon = 5308,
 		spec = { WARRIOR = "71;72", },
 		conditions = {
@@ -163,7 +165,7 @@ local defaultTriggers = {
 	}]],
 	[1014] = [[{
 		-- Revenge
-		name = L["%s!"]:format(GetSpellInfo(6572)),
+		name = L["%s!"]:format(GetSpellInfo(6572).name),
 		icon = 6572,
 		spec = { WARRIOR = "73" },
 		conditions = {
@@ -181,7 +183,7 @@ local defaultTriggers = {
 	}]],
 	[1017] = [[{
 		-- Rime
-		name = L["%s!"]:format(GetSpellInfo(59052)),
+		name = L["%s!"]:format(GetSpellInfo(59052).name),
 		icon = 59052,
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
@@ -198,7 +200,7 @@ local defaultTriggers = {
 	}]],
 	[1018] = [[{
 		-- Killing Machine
-		name = L["%s!"]:format(GetSpellInfo(51124)),
+		name = L["%s!"]:format(GetSpellInfo(51124).name),
 		icon = 51124,
 		spec = { DEATHKNIGHT = "251" },
 		conditions = {
@@ -215,7 +217,7 @@ local defaultTriggers = {
 	}]],
 	[1021] = [[{
 		-- Brain Freeze
-		name = L["%s!"]:format(GetSpellInfo(190447)),
+		name = L["%s!"]:format(GetSpellInfo(190447).name),
 		icon = 190447,
 		spec = { MAGE = "64" },
 		conditions = {
@@ -232,7 +234,7 @@ local defaultTriggers = {
 	}]],
 	[1031] = [[{
 		-- Fingers of Frost
-		name = L["%s!"]:format(GetSpellInfo(44544)),
+		name = L["%s!"]:format(GetSpellInfo(44544).name),
 		icon = 44544,
 		spec = { MAGE = "64" },
 		conditions = {
@@ -249,7 +251,7 @@ local defaultTriggers = {
 	}]],
 	[1033] = [[{
 		-- Crimson Scourge
-		name = L["%s!"]:format(GetSpellInfo(81141)),
+		name = L["%s!"]:format(GetSpellInfo(81141).name),
 		icon = 81141,
 		spec = { DEATHKNIGHT = "250" },
 		conditions = {
@@ -266,7 +268,7 @@ local defaultTriggers = {
 	}]],
 	[1041] = [[{
 		-- Sudden Doom
-		name = L["%s!"]:format(GetSpellInfo(81340)),
+		name = L["%s!"]:format(GetSpellInfo(81340).name),
 		icon = 81340,
 		spec = { DEATHKNIGHT = "252" },
 		conditions = {
@@ -283,7 +285,7 @@ local defaultTriggers = {
 	}]],
 	[1043] = [[{
 		-- Hot Streak!
-		name = GetSpellInfo(48108),
+		name = GetSpellInfo(48108).name,
 		icon = 48108,
 		spec = { MAGE = "63" },
 		conditions = {
@@ -300,7 +302,7 @@ local defaultTriggers = {
 	}]],
 	[1044] = [[{
 		-- Heating Up
-		name = L["%s!"]:format(GetSpellInfo(48107)),
+		name = L["%s!"]:format(GetSpellInfo(48107).name),
 		icon = 48107,
 		spec = { MAGE = "63" },
 		conditions = {
@@ -317,7 +319,7 @@ local defaultTriggers = {
 	}]],
 	[1046] = [[{
 		-- Grand Crusader
-		name = L["%s!"]:format(GetSpellInfo(85416)),
+		name = L["%s!"]:format(GetSpellInfo(85416).name),
 		icon = 85416,
 		spec = { PALADIN = "66" },
 		conditions = {
@@ -334,7 +336,7 @@ local defaultTriggers = {
 	}]],
 	[1047] = [[{
 		-- Lava Surge
-		name = L["%s!"]:format(GetSpellInfo(77756)),
+		name = L["%s!"]:format(GetSpellInfo(77756).name),
 		icon = 77756,
 		spec = { SHAMAN = "262;264" },
 		conditions = {
@@ -351,7 +353,7 @@ local defaultTriggers = {
 	}]],
 	[1050] = [[{
 		-- Raging Blow
-		name = L["%s!"]:format(GetSpellInfo(85288)),
+		name = L["%s!"]:format(GetSpellInfo(85288).name),
 		icon = 85288,
 		spec = { WARRIOR = "72" },
 		conditions = {
@@ -364,7 +366,7 @@ local defaultTriggers = {
 	}]],
 	[1051] = [[{
 		-- Sudden Death
-		name = L["%s!"]:format(GetSpellInfo(280776)),
+		name = L["%s!"]:format(GetSpellInfo(280776).name),
 		icon = 280776,
 		spec = { WARRIOR = "71;72" },
 		conditions = {
@@ -381,7 +383,7 @@ local defaultTriggers = {
 	}]],
 	[1052] = [[{
 		-- Shield Slam
-		name = L["%s!"]:format(GetSpellInfo(23922)),
+		name = L["%s!"]:format(GetSpellInfo(23922).name),
 		icon = 23922,
 		spec = { WARRIOR = "73" },
 		conditions = {
@@ -397,7 +399,7 @@ local defaultTriggers = {
 	}]],
 	[1053] = [[{
 		-- Nightfall
-		name = L["%s!"]:format(GetSpellInfo(108558)),
+		name = L["%s!"]:format(GetSpellInfo(108558).name),
 		icon = 108558,
 		spec = { WARLOCK = "265" },
 		conditions = {
@@ -410,7 +412,7 @@ local defaultTriggers = {
 	}]],
 	[1054] = [[{
 		-- Lethal Shots
-		name = L["%s!"]:format(GetSpellInfo(260395)),
+		name = L["%s!"]:format(GetSpellInfo(260395).name),
 		icon = 260395,
 		spec = { HUNTER = "254" },
 		conditions = {
@@ -427,7 +429,7 @@ local defaultTriggers = {
 	}]],
 	[1055] = [[{
 		-- Lock and Load
-		name = L["%s!"]:format(GetSpellInfo(194594)),
+		name = L["%s!"]:format(GetSpellInfo(194594).name),
 		icon = 194594,
 		spec = { HUNTER = "254" },
 		conditions = {
@@ -444,7 +446,7 @@ local defaultTriggers = {
 	}]],
 	[1056] = [[{
 		-- Kill Command
-		name = L["%s!"]:format(GetSpellInfo(259489)),
+		name = L["%s!"]:format(GetSpellInfo(259489).name),
 		icon = 259489,
 		spec = { HUNTER = "255" },
 		conditions = {
@@ -458,7 +460,7 @@ local defaultTriggers = {
 	}]],
 	[1057] = [[{
 		-- Viper's Venom
-		name = L["%s!"]:format(GetSpellInfo(268552)),
+		name = L["%s!"]:format(GetSpellInfo(268552).name),
 		icon = 268423,
 		spec = { HUNTER = "255" },
 		conditions = {
@@ -475,7 +477,7 @@ local defaultTriggers = {
 	}]],
 	[1058] = [[{
 		-- Clearcasting
-		name = L["%s!"]:format(GetSpellInfo(16870)),
+		name = L["%s!"]:format(GetSpellInfo(16870).name),
 		icon = 16870,
 		spec = {
 			DRUID = "103;105",
@@ -495,7 +497,7 @@ local defaultTriggers = {
 	}]],
 	[1059] = [[{
 		-- Gore
-		name = L["%s!"]:format(GetSpellInfo(93622)),
+		name = L["%s!"]:format(GetSpellInfo(93622).name),
 		icon = 33917,
 		spec = { DRUID = "104" },
 		conditions = {
@@ -512,7 +514,7 @@ local defaultTriggers = {
 	}]],
 	[1060] = [[{
 		-- Galatic Guardian
-		name = L["%s!"]:format(GetSpellInfo(213708)),
+		name = L["%s!"]:format(GetSpellInfo(213708).name),
 		icon = 8921,
 		spec = { DRUID = "104" },
 		conditions = {
@@ -529,7 +531,7 @@ local defaultTriggers = {
 	}]],
 	[1061] = [[{
 		-- Power of the Dark Side
-		name = L["%s!"]:format(GetSpellInfo(198069)),
+		name = L["%s!"]:format(GetSpellInfo(198069).name),
 		icon = 198069,
 		spec = { PRIEST = "256" },
 		conditions = {
@@ -547,7 +549,7 @@ local defaultTriggers = {
 	}]],
 	[1062] = [[{
 		-- Surge of Light
-		name = L["%s!"]:format(GetSpellInfo(114255)),
+		name = L["%s!"]:format(GetSpellInfo(114255).name),
 		icon = 114255,
 		spec = { PRIEST = "257" },
 		conditions = {
@@ -564,7 +566,7 @@ local defaultTriggers = {
 	}]],
 	[1063] = [[{
 		-- Divine Purpose
-		name = L["%s!"]:format(GetSpellInfo(223817)),
+		name = L["%s!"]:format(GetSpellInfo(223817).name),
 		icon = 223817,
 		spec = { PALADIN = "65;70" },
 		conditions = {
@@ -581,7 +583,7 @@ local defaultTriggers = {
 	}]],
 	[1064] = [[{
 		-- Stormbringer
-		name = GetSpellInfo(201846),
+		name = GetSpellInfo(201846).name,
 		icon = 17364,
 		spec = { SHAMAN = "263" },
 		conditions = {
@@ -598,7 +600,7 @@ local defaultTriggers = {
 	}]],
 	[1065] = [[{
 		-- Opportunity
-		name = GetSpellInfo(195627),
+		name = GetSpellInfo(195627).name,
 		icon = 195627,
 		spec = { ROGUE = "260" },
 		conditions = {
@@ -615,7 +617,7 @@ local defaultTriggers = {
 	}]],
 	[1066] = [[{
 		-- Blackout Kick!
-		name = GetSpellInfo(116768),
+		name = GetSpellInfo(116768).name,
 		icon = 116768,
 		spec = { MONK = "269" },
 		conditions = {
@@ -756,7 +758,7 @@ do
 		if hasMissingSpellIds(code) then
 			ScriptEnv.GetSpellInfo = safeGetSpellInfo
 		else
-			ScriptEnv.GetSpellInfo = _G.GetSpellInfo
+			ScriptEnv.GetSpellInfo = GetSpellInfo
 		end
 		local func = assert(loadstring(("return %s"):format(code)))
 		setfenv(func, ScriptEnv)

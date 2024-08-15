@@ -8,6 +8,8 @@ local playerGUID = UnitGUID("player")
 
 local PET = _G.PET
 
+local GetSpellTexture = C_Spell.GetSpellTexture
+
 local bit_band = bit.band
 local function checkFlags(flags1, flags2)
 	return bit_band(flags1, flags2) == flags2

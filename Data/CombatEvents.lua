@@ -18,6 +18,8 @@ local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
 local db
 local playerGUID = UnitGUID("player")
 
+local GetSpellTexture = C_Spell.GetSpellTexture
+
 function mod:OnEnable()
 	db = Parrot.db:GetNamespace("CombatEvents").profile
 end
