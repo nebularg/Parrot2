@@ -92,7 +92,8 @@ local defaultTriggers = {
 			WARRIOR = "71;72;73",
 			DEATHKNIGHT = "250;251;252",
 			MONK = "268;269;270",
-			DEMONHUNTER = "577;581"
+			DEMONHUNTER = "577;581",
+			EVOKER = "1467;1468;1473"
 		},
 		conditions = {
 			["Unit health"] = {
@@ -120,6 +121,7 @@ local defaultTriggers = {
 			SHAMAN = "262;263;264",
 			WARLOCK = "265;266;267",
 			MONK = "270",
+			EVOKER = "1467;1468;1473"
 		},
 		conditions = {
 			["Unit power"] = {
@@ -727,6 +729,11 @@ local specChoices = {
 		73, -- Protection
 			-- 1014 Revenge
 			-- 1052 Shield Slam
+	},
+	EVOKER = {
+		1467,	-- Devastation Evoker
+		1468,	-- Preservation Evoker
+		1473, -- Augmentation Evoker
 	},
 }
 
@@ -1345,6 +1352,7 @@ function module:OnOptionsCreate()
 		DEATHKNIGHT = LC["DEATHKNIGHT"],
 		MONK = LC["MONK"],
 		DEMONHUNTER = LC["DEMONHUNTER"],
+		EVOKER = LC["EVOKER"],
 	}
 
 	local function getConditionValue(info)
