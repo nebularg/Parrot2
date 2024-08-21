@@ -15,7 +15,6 @@ local newList, del = Parrot.newList, Parrot.del
 local ParrotFrame = CreateFrame("Frame", "ParrotFrame", UIParent)
 ParrotFrame:Hide()
 ParrotFrame:SetFrameStrata("HIGH")
-ParrotFrame:SetToplevel(true)
 ParrotFrame:SetPoint("CENTER")
 ParrotFrame:SetWidth(0.0001)
 ParrotFrame:SetHeight(0.0001)
@@ -27,11 +26,12 @@ local defaults = {
 		alpha = 1,
 		iconAlpha = 1,
 		iconsEnabled = true,
-		font = DEFAULT_FONT_NAME, --"Friz Quadrata TT",
+		strata = "HIGH",
+		font = DEFAULT_FONT_NAME, -- "Friz Quadrata TT",
 		fontSize = 18,
 		fontOutline = "THICKOUTLINE",
 		fontShadow = true,
-		stickyFont = DEFAULT_FONT_NAME, --"Friz Quadrata TT",
+		stickyFont = DEFAULT_FONT_NAME, -- "Friz Quadrata TT",
 		stickyFontSize = 26,
 		stickyFontOutline = "THICKOUTLINE",
 		stickyFontShadow = true,
@@ -40,11 +40,12 @@ local defaults = {
 
 function module:OnProfileChanged()
 	db = self.db.profile
+	ParrotFrame:SetFrameStrata(db.strata)
 end
 
 function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Display", defaults)
-	db = self.db.profile
+	self:OnProfileChanged()
 
 	Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 	Parrot_Suppressions = Parrot:GetModule("Suppressions")
@@ -117,6 +118,32 @@ function module:OnOptionsCreate()
 		desc = L["Set whether icons should be enabled or disabled altogether."],
 		get = getOption,
 		set = setOption,
+	}
+	Parrot.options.args.general.args.strata = {
+		type = "select",
+		name = L["Strata"],
+		desc = L["Layering of the scrolling text relative to other frames."],
+		values = {
+			BACKGROUND = "BACKGROUND",
+			LOW = "LOW",
+			MEDIUM = "MEDIUM",
+			HIGH = "HIGH",
+			DIALOG = "DIALOG",
+			TOOLTIP = "TOOLTIP",
+		},
+		sorting = {
+			"BACKGROUND",
+			"LOW",
+			"MEDIUM",
+			"HIGH",
+			"DIALOG",
+			"TOOLTIP",
+		},
+		get = getOption,
+		set = function(info, value)
+			setOption(info, value)
+			ParrotFrame:SetFrameStrata(value)
+		end,
 	}
 	Parrot.options.args.general.args.font = {
 		type = "group",

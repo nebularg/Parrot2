@@ -93,7 +93,7 @@ local defaultTriggers = {
 			DEATHKNIGHT = "250;251;252",
 			MONK = "268;269;270",
 			DEMONHUNTER = "577;581",
-			EVOKER = "1467;1468;1473"
+			EVOKER = "1467;1468;1473",
 		},
 		conditions = {
 			["Unit health"] = {
@@ -121,7 +121,7 @@ local defaultTriggers = {
 			SHAMAN = "262;263;264",
 			WARLOCK = "265;266;267",
 			MONK = "270",
-			EVOKER = "1467;1468;1473"
+			EVOKER = "1467;1468;1473",
 		},
 		conditions = {
 			["Unit power"] = {

@@ -178,7 +178,7 @@ local function showOffsetBox(k)
 		offsetBox:SetPoint("CENTER", midPoint, "CENTER")
 		offsetBox:SetWidth(300)
 		offsetBox:SetHeight(100)
-		offsetBox:SetFrameStrata("MEDIUM")
+		offsetBox:SetFrameStrata("BACKGROUND")
 
 		local bg = offsetBox:CreateTexture("$parentBackground", "BACKGROUND")
 		bg:SetColorTexture(0.7, 0.4, 0, 0.5) -- orange
