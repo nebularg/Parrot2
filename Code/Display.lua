@@ -45,6 +45,7 @@ end
 function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Display", defaults)
 	db = self.db.profile
+	ParrotFrame:SetFrameStrata(db.StrataLevel)
 
 	Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
 	Parrot_Suppressions = Parrot:GetModule("Suppressions")
@@ -77,6 +78,11 @@ local function setFontFace(info, value)
 		db[info[#info]] = Parrot.fontValues[value]
 	end
 end
+local function setStrataLevel(info, value)
+	local name = info[#info]
+	db[name] = value
+	ParrotFrame:SetFrameStrata(value)
+end
 
 function module:OnOptionsCreate()
 	local outlineChoices = {
@@ -86,6 +92,15 @@ function module:OnOptionsCreate()
 		["OUTLINE,MONOCHROME"] = L["Thin, Monochrome"],
 		THICKOUTLINE = L["Thick"],
 	}
+	local strataChoices = {
+		BACKGROUND = L["BACKGROUND"],
+		LOW = L["LOW"],
+		MEDIUM = L["MEDIUM"],
+		HIGH = L["HIGH"],
+		DIALOG = L["DIALOG"],
+		TOOLTIP = L["TOOLTIP"],
+	}
+
 
 	Parrot.options.args.general.args.alpha = {
 		type = "range",
@@ -117,6 +132,13 @@ function module:OnOptionsCreate()
 		desc = L["Set whether icons should be enabled or disabled altogether."],
 		get = getOption,
 		set = setOption,
+	}
+	Parrot.options.args.general.args.StrataLevel = {
+		type = "select",
+		name = L["StrataLevel"],
+		values = strataChoices,
+		get = getOption,
+		set = setStrataLevel,
 	}
 	Parrot.options.args.general.args.font = {
 		type = "group",
@@ -172,6 +194,7 @@ function module:OnOptionsCreate()
 				type = "toggle",
 				name = L["Sticky font shadow"],
 			},
+
 		}
 	}
 end
