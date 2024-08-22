@@ -46,6 +46,7 @@ end
 function module:OnInitialize()
 	self.db = Parrot.db:RegisterNamespace("Display", defaults)
 	db = self.db.profile
+	
 	ParrotFrame:SetFrameStrata(db.StrataLevel)
 
 	Parrot_AnimationStyles = Parrot:GetModule("AnimationStyles")
