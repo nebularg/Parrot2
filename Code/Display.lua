@@ -35,6 +35,7 @@ local defaults = {
 		stickyFontSize = 26,
 		stickyFontOutline = "THICKOUTLINE",
 		stickyFontShadow = true,
+		StrataLevel("HIGH"),
 	},
 }
 
@@ -194,7 +195,6 @@ function module:OnOptionsCreate()
 				type = "toggle",
 				name = L["Sticky font shadow"],
 			},
-
 		}
 	}
 end
