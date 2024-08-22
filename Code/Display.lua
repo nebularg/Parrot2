@@ -35,7 +35,7 @@ local defaults = {
 		stickyFontSize = 26,
 		stickyFontOutline = "THICKOUTLINE",
 		stickyFontShadow = true,
-		StrataLevel("HIGH"),
+		StrataLevel = "HIGH",
 	},
 }
 
