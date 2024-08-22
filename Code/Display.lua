@@ -103,7 +103,6 @@ function module:OnOptionsCreate()
 		TOOLTIP = L["TOOLTIP"],
 	}
 
-
 	Parrot.options.args.general.args.alpha = {
 		type = "range",
 		name = L["Text transparency"],
