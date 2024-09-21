@@ -69,10 +69,13 @@ Parrot:RegisterThrottleType("Reputation gains", L["Reputation gains"], 0.1, true
 
 local REPUTATION = _G.REPUTATION
 local FACTION_STANDING_INCREASED = _G.FACTION_STANDING_INCREASED
+local FACTION_STANDING_INCREASED_ACCOUNT_WIDE = _G.FACTION_STANDING_INCREASED_ACCOUNT_WIDE
 local FACTION_STANDING_INCREASED_ACH_BONUS = _G.FACTION_STANDING_INCREASED_ACH_BONUS
+local FACTION_STANDING_INCREASED_ACH_BONUS_ACCOUNT_WIDE = _G.FACTION_STANDING_INCREASED_ACH_BONUS_ACCOUNT_WIDE
 local FACTION_STANDING_INCREASED_BONUS = _G.FACTION_STANDING_INCREASED_BONUS
 local FACTION_STANDING_INCREASED_DOUBLE_BONUS = _G.FACTION_STANDING_INCREASED_DOUBLE_BONUS
 local FACTION_STANDING_DECREASED = _G.FACTION_STANDING_DECREASED
+local FACTION_STANDING_DECREASED_ACCOUNT_WIDE = _G.FACTION_STANDING_DECREASED_ACCOUNT_WIDE
 
 local function repThrottleFunc(info)
 	local num = info.throttleCount or 0
@@ -85,7 +88,13 @@ end
 local function parseRepGain(chatmsg)
 	local faction, amount = Deformat(chatmsg, FACTION_STANDING_INCREASED)
 	if not faction then
+		faction, amount = Deformat(chatmsg, FACTION_STANDING_INCREASED_ACCOUNT_WIDE)
+	end
+	if not faction then
 		faction, amount = Deformat(chatmsg, FACTION_STANDING_INCREASED_ACH_BONUS)
+	end
+	if not faction then
+		faction, amount = Deformat(chatmsg, FACTION_STANDING_INCREASED_ACH_BONUS_ACCOUNT_WIDE)
 	end
 	if not faction then
 		faction, amount = Deformat(chatmsg, FACTION_STANDING_INCREASED_BONUS)
@@ -104,6 +113,9 @@ end
 
 local function parseRepLoss(chatmsg)
 	local faction, amount = Deformat(chatmsg, FACTION_STANDING_DECREASED)
+	if not faction then
+		faction, amount = Deformat(chatmsg, FACTION_STANDING_DECREASED_ACCOUNT_WIDE)
+	end
 	if faction and amount then
 		local info = newList()
 		info.amount = amount
