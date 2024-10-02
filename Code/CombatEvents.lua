@@ -1233,9 +1233,9 @@ function module:OnOptionsCreate()
 			name = localName,
 			desc = L["What amount to filter out. Any amount below this will be filtered.\nNote: a value of 0 will mean no filtering takes place."],
 			min = 0,
-			max = 100000,
+			max = 10000000,
 			step = 1,
-			bigStep = 20,
+			bigStep = 1000,
 			get = getAmount,
 			set = setAmount,
 			arg = filterType
