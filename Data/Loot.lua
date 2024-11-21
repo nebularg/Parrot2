@@ -56,7 +56,7 @@ local function parse_CHAT_MSG_LOOT(chatmsg)
 		return newDict(
 			"name", name,
 			"amount", amount,
-			"total", GetItemCount(itemLink) + amount,
+			"total", GetItemCount(itemLink),
 			"icon", texture
 		)
 	end
